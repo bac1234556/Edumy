@@ -1,0 +1,64 @@
+# Root .gitignore for EduMy project
+
+# dotnet / ASP.NET Core
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+appsettings.Development.json
+appsettings.Local.json
+
+# Node / React
+node_modules/
+dist/
+dist-ssr/
+*.local
+.env
+.env.production
+.env.development
+
+# Python / FastAPI
+venv/
+.venv/
+ENV/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+develop-eggs/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Jupyter / ML / Notebooks
+.ipynb_checkpoints
+*/.ipynb_checkpoints/*
+*.keras
+*.h5
+*.pkl
+*.pb
+*.onnx
+*.csv
+*.xlsx
+.pt
+.pth
+
+# OS
+.DS_Store
+Thumbs.db
+Desktop.ini

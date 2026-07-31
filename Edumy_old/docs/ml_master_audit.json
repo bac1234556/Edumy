@@ -1,0 +1,8 @@
+{
+  "score": 60,
+  "status": "BLOCKED",
+  "blockers": [
+    "Identity space mismatch between OULAD course codes and database CourseId primary keys",
+    "Frontend build failure on directory junctions escaping the workspace root"
+  ]
+}

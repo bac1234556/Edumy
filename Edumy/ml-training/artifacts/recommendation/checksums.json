@@ -1,0 +1,47 @@
+{
+    "gmf_model.keras": {
+        "relative_path": "ml-training/artifacts/recommendation/gmf_model.keras",
+        "sha256": "3a42a764e8cb088e738746f244cd6a074b2651a8960508d8bdb0fc15c68d9d3d",
+        "size_bytes": 5558105
+    },
+    "item_encoder.joblib": {
+        "relative_path": "ml-training/artifacts/recommendation/item_encoder.joblib",
+        "sha256": "ba147398a892cde19eee70aacd116dec82afc39b490b1f6a354cbd30c5eaf330",
+        "size_bytes": 514
+    },
+    "metadata.json": {
+        "relative_path": "ml-training/artifacts/recommendation/metadata.json",
+        "sha256": "405bb0b90049daa95bf366affaeaadc6c865f6beab0ab6720f411918a7821c17",
+        "size_bytes": 170
+    },
+    "model.json": {
+        "relative_path": "ml-training/artifacts/recommendation/model.json",
+        "sha256": "5d2012864f2297e51fb983ea30b4420bed653248bda94a970c8b60033079b619",
+        "size_bytes": 80
+    },
+    "neumf_model.keras": {
+        "relative_path": "ml-training/artifacts/recommendation/neumf_model.keras",
+        "sha256": "8b69598f2c1ea8066ad1d93b8dfab3f038a57023056fea488ae88bf8ec01cdd8",
+        "size_bytes": 16718245
+    },
+    "recommendation_metrics.json": {
+        "relative_path": "ml-training/artifacts/recommendation/recommendation_metrics.json",
+        "sha256": "c3ba444a3f02c95f924957aed2a8d1c115d891d5f5ea82bb948fd2e123905f3d",
+        "size_bytes": 316
+    },
+    "recommendation_model_comparison.csv": {
+        "relative_path": "ml-training/artifacts/recommendation/recommendation_model_comparison.csv",
+        "sha256": "122986df1514aecbae0da543c0b3bf331584fbe4de487be3af68470b2d22fd2e",
+        "size_bytes": 118
+    },
+    "training_config.json": {
+        "relative_path": "ml-training/artifacts/recommendation/training_config.json",
+        "sha256": "a58edd55499572952133b92830991698d56cebbd2146c1b2848a1cc4b652980b",
+        "size_bytes": 187
+    },
+    "user_encoder.joblib": {
+        "relative_path": "ml-training/artifacts/recommendation/user_encoder.joblib",
+        "sha256": "e1f61dcdd4ea7fbcf1c8a0790c8bb904719a002dfa1565bdbaaae1a426185fea",
+        "size_bytes": 230367
+    }
+}

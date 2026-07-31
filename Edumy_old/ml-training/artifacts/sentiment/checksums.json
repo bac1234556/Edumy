@@ -1,0 +1,17 @@
+{
+    "model.keras": {
+        "sha256": "2e4fac2de0beb265519ed0d75d3d7c47c7d8652f1cf2856edcdc3bba597cfe2e"
+    },
+    "tokenizer.joblib": {
+        "sha256": "4f6d09864d0c4be826fb718f811fe6c6c43e23560261dd2bb2aa4d61624e510a"
+    },
+    "metadata.json": {
+        "sha256": "d7cd63a8641593782cc03da3a028aeb8f68228738518cde183df2046c4469ec8"
+    },
+    "metrics.json": {
+        "sha256": "073ae34b8a5f72c23988fed911690e4a4683d43817358a884e248bae8974907e"
+    },
+    "training_config.json": {
+        "sha256": "2a84342866fd85b71c97396754bd87f533af15b12188716db04660175e6711a2"
+    }
+}

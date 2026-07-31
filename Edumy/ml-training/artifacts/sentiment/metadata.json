@@ -1,0 +1,14 @@
+{
+    "model_type": "BiLSTM",
+    "vocabulary_size": 10000,
+    "sequence_length": 100,
+    "embedding_dimension": 64,
+    "bilstm_units": 64,
+    "dropout": 0.2,
+    "output_classes": 2,
+    "loss": "binary_crossentropy",
+    "optimizer": "adam",
+    "epochs": 4,
+    "best_epoch": 2,
+    "trainable_parameters": 714369
+}

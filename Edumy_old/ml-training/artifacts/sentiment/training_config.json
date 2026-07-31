@@ -1,0 +1,7 @@
+{
+    "vocab_size": 10000,
+    "max_len": 100,
+    "embedding_dim": 64,
+    "lstm_units": 64,
+    "dropout_rate": 0.2
+}
