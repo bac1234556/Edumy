@@ -1,9 +1,0 @@
-{
-    "epochs": 3,
-    "batch_size": 256,
-    "optimizer": "adam",
-    "loss": "binary_crossentropy",
-    "latent_dim_gmf": 16,
-    "latent_dim_mlp": 32,
-    "negative_ratio": 4
-}
