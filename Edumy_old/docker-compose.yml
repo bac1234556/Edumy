@@ -1,0 +1,49 @@
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: edumy_sqlserver
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=EduMySuperSecurePassword123!
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+
+  mlservice:
+    build:
+      context: ./MLService
+      dockerfile: Dockerfile
+    container_name: edumy_mlservice
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+
+  backend:
+    build:
+      context: ./Backend
+      dockerfile: Dockerfile
+    container_name: edumy_backend
+    ports:
+      - "5150:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=EduMyDb;User Id=sa;Password=EduMySuperSecurePassword123!;TrustServerCertificate=True;
+      - MachineLearning__BaseUrl=http://mlservice:8000
+    depends_on:
+      - sqlserver
+      - mlservice
+
+  frontend:
+    build:
+      context: ./Frontend
+      dockerfile: Dockerfile
+    container_name: edumy_frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+volumes:
+  sqlserver_data:

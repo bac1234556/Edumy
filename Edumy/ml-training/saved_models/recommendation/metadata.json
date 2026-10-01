@@ -1,0 +1,9 @@
+{
+    "model_type": "Popularity",
+    "num_users": 28755,
+    "num_items": 7,
+    "metrics": {
+        "HR@10": 1.0,
+        "NDCG@10": 0.5194860325213382
+    }
+}
