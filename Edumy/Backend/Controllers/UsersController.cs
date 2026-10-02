@@ -3,7 +3,8 @@ using EduMy.Backend.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-
+// <summary>
+// UsersController handles user-related operations such as retrieving and updating user profiles. 
 namespace EduMy.Backend.Controllers
 {
     [ApiController]
