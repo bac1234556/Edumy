@@ -22,6 +22,11 @@
 **/.env.production
 **/.env.development
 
+# Build tool output
+**/.gradle/
+**/build/
+**/target/
+
 # Python / FastAPI
 **/venv/
 **/.venv/
