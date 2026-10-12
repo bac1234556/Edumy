@@ -1,18 +1,19 @@
 # EduMy System
 
 ## Yêu cầu môi trường
-- .NET 10.0 SDK
+- Java 17+ SDK (Eclipse Temurin / OpenJDK 17)
 - Python 3.11+ (cho ML Service)
-- SQL Server
-- Docker & Docker Compose
+- Microsoft SQL Server 2019+
+- Docker & Docker Compose (tùy chọn)
 
 ## Cấu trúc thư mục
-- `Backend/`: ASP.NET Core Web API (Xử lý Auth, Khóa học, Mua bán, Thanh toán, Tích hợp ML).
-- `Frontend/`: React Client (Giao diện người dùng).
+- `Backend/`: Spring Boot 3.2.0 Web API (Java 17, Spring Data JPA, Spring Security, JWT, MSSQL, Stripe).
+- `Frontend/`: React Client (Vite + React UI).
 - `MLService/`: FastAPI Machine Learning Service (Phân tích văn bản, gợi ý, phân loại).
+- `software_specification/`: Toàn bộ tài liệu đặc tả nghiệp vụ (SRS), luồng xử lý, ERD và kịch bản SQL DDL tạo 30 bảng.
 
 ## Hướng dẫn chạy dự án với Docker (Khuyên dùng)
-Dự án được cấu hình sẵn với Docker Compose bao gồm SQL Server, Backend và MLService.
+Dự án được cấu hình sẵn với Docker Compose bao gồm SQL Server, Backend và MLService:
 
 1. Chạy lệnh:
    ```bash
@@ -25,31 +26,35 @@ Dự án được cấu hình sẵn với Docker Compose bao gồm SQL Server, B
 ## Hướng dẫn chạy dự án thủ công
 
 ### Cấu hình SQL Server
-Trong thư mục `Backend`, tạo file `appsettings.Development.json` (hoặc sửa `appsettings.json`) và thay đổi chuỗi kết nối:
-```json
-"ConnectionStrings": {
-  "DefaultConnection": "Server=localhost;Database=EduMyDb;User Id=sa;Password=YourPassword123!;TrustServerCertificate=True;"
-}
-```
-
-### Chạy Backend
-1. Cài đặt các công cụ EF Core nếu chưa có:
-   ```bash
-   dotnet tool install --global dotnet-ef --version 10.0.10
+1. Chạy script SQL tạo database và 30 bảng trong thư mục:
+   `software_specification/06_Script_Tao_Database_EduMyDb.sql`
+2. Kiểm tra chuỗi kết nối trong `Backend/src/main/resources/application.yml`:
+   ```yaml
+   spring:
+     datasource:
+       url: jdbc:sqlserver://localhost;instanceName=SQLEXPRESS;databaseName=EduMyDb;encrypt=false;trustServerCertificate=true
+       username: sa
+       password: YourPassword123
    ```
-2. Chạy migration để tạo bảng:
+
+### Chạy Backend (Spring Boot)
+1. Di chuyển vào thư mục `Backend`:
    ```bash
    cd Backend
-   dotnet ef database update
    ```
-   *(Lưu ý: Nếu gặp lỗi chặn `An Application Control policy has blocked this file. (0x800711C7)`, bạn cần cấu hình lại chính sách bảo mật Windows hoặc dùng máy ảo / Docker).*
-3. Khởi động server:
-   ```bash
-   dotnet run
-   ```
+2. Khởi động server:
+   - Trên Windows:
+     ```bash
+     .\mvnw.cmd spring-boot:run
+     ```
+   - Trên Linux / macOS:
+     ```bash
+     ./mvnw spring-boot:run
+     ```
+3. Backend API lắng nghe tại port: `http://localhost:5000`
 
 ### Chạy ML Service
-1. Di chuyển vào thư mục MLService:
+1. Di chuyển vào thư mục `MLService`:
    ```bash
    cd MLService
    ```
@@ -59,11 +64,11 @@ Trong thư mục `Backend`, tạo file `appsettings.Development.json` (hoặc s�
    ```
 3. Chạy server:
    ```bash
-   uvicorn main:app --reload
+   uvicorn main:app --reload --port 8000
    ```
 
 ### Chạy Frontend
-1. Di chuyển vào thư mục Frontend:
+1. Di chuyển vào thư mục `Frontend`:
    ```bash
    cd Frontend
    ```
@@ -73,11 +78,11 @@ Trong thư mục `Backend`, tạo file `appsettings.Development.json` (hoặc s�
    ```
 3. Chạy ứng dụng:
    ```bash
-   npm start
+   npm run dev
    ```
 
 ## Tài khoản Seed Data
-Sau khi chạy thành công, hệ thống sẽ tự động tạo các tài khoản mẫu:
+Hệ thống có sẵn các tài khoản mẫu sau khi chạy script SQL:
 - **Admin**: admin@edumy.com / Admin@123
 - **Instructor**: instructor@edumy.com / Instructor@123
 - **Student**: student@edumy.com / Student@123

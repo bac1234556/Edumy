@@ -26,11 +26,12 @@ services:
       dockerfile: Dockerfile
     container_name: edumy_backend
     ports:
-      - "5150:8080"
+      - "5000:5000"
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=EduMyDb;User Id=sa;Password=EduMySuperSecurePassword123!;TrustServerCertificate=True;
-      - MachineLearning__BaseUrl=http://mlservice:8000
+      - SPRING_DATASOURCE_URL=jdbc:sqlserver://sqlserver:1433;databaseName=EduMyDb;encrypt=false;trustServerCertificate=true
+      - SPRING_DATASOURCE_USERNAME=sa
+      - SPRING_DATASOURCE_PASSWORD=EduMySuperSecurePassword123!
+      - MACHINE_LEARNING_BASE_URL=http://mlservice:8000
     depends_on:
       - sqlserver
       - mlservice

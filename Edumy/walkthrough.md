@@ -1,6 +1,6 @@
 # EduMy eLearning Platform Walkthrough
 
-We have successfully built and expanded the **EduMy** online learning platform. The system operates on separate concerns: ASP.NET Core (Backend API Orchestration), React (Visual Frontend Web Application), and FastAPI (Automated Text Processing & ML Analytics).
+We have successfully built and expanded the **EduMy** online learning platform. The system operates on separate concerns: Spring Boot 3.2.0 (Backend API Orchestration in Java 17), React (Visual Frontend Web Application), and FastAPI (Automated Text Processing & ML Analytics).
 
 ---
 
@@ -30,9 +30,9 @@ We have successfully built and expanded the **EduMy** online learning platform. 
                     |
                     |  HTTP REST
                     v
-    [ ASP.NET Core API Gateways ] <---- JWT Token (HttpOnly Cookie Rotation)
+    [ Spring Boot 3.2.0 API Gateway ] <---- JWT Token (HttpOnly Cookie Rotation)
        |           |
-       | EF Core   | HTTP REST / Polly Resilience
+       | JPA       | HTTP REST / RestTemplate
        v           v
  [SQL Server]   [FastAPI ML Service (Python)]
 ```
@@ -63,7 +63,7 @@ The database includes the following key tables and relations:
 ```mermaid
 graph TD
     A[Instructor submits course] --> B[Status = Analyzing]
-    B --> C[ASP.NET Core calls FastAPI /classify/course]
+    B --> C[Spring Boot calls FastAPI /classify/course]
     C --> D[Receive category, tags, toxicity and confidence]
     D --> E{Is content toxic?}
     E -- Yes --> F[NeedsReview]
@@ -89,13 +89,13 @@ graph TD
 
 ### Option B: Running Manually
 1. **Database & API:**
-   - In `Backend/appsettings.json`, set your SQL Server connection string.
+   - In `Backend/src/main/resources/application.yml`, set your SQL Server connection string.
    - Run:
      ```bash
      cd Backend
-     dotnet run
+     .\mvnw.cmd spring-boot:run
      ```
-   - Standard local URL: `http://localhost:5150`
+   - Standard local URL: `http://localhost:5000`
 
 2. **ML Service:**
    - Run:
@@ -171,7 +171,7 @@ Replaced the NTFS directory junction for the Frontend with a physical directory 
 ## 8. Verification & Evidence Logs
 
 ### 8.1 Build Logs
-- **ASP.NET Core Build**: Restored and compiled with 0 warnings, 0 errors.
+- **Spring Boot 3.2.0 Build**: Maven compiled and packaged with 0 warnings, 0 errors.
 - **Vite React Build**: Compiled successfully in 862ms.
 
 ### 8.2 FastAPI Health Response
@@ -262,4 +262,4 @@ We verified the complete visual and interactive layout of the React client appli
 - **Production readiness**: READY FOR DEMO
 
 > [!NOTE]
-> The EduMy ML subsystem is implemented and ready for academic demonstration. Sentiment analysis, course classification, and recommendation are served through FastAPI and orchestrated by ASP.NET Core. Remaining production considerations include real email delivery, broader recommendation identity coverage, domain-specific sentiment data, and continuous model monitoring.
+> The EduMy ML subsystem is implemented and ready for academic demonstration. Sentiment analysis, course classification, and recommendation are served through FastAPI and orchestrated by Spring Boot 3.2.0 (Java 17). Remaining production considerations include real email delivery, broader recommendation identity coverage, domain-specific sentiment data, and continuous model monitoring.

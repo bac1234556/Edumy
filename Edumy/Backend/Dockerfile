@@ -1,20 +1,14 @@
-FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
+FROM eclipse-temurin:17-jdk-alpine AS build
 WORKDIR /app
-EXPOSE 80
-EXPOSE 443
+COPY pom.xml .
+COPY .mvn .mvn
+COPY mvnw .
+RUN chmod +x mvnw && ./mvnw dependency:go-offline -B
+COPY src ./src
+RUN ./mvnw clean package -DskipTests
 
-FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
-WORKDIR /src
-COPY ["EduMy.Backend.csproj", "./"]
-RUN dotnet restore "./EduMy.Backend.csproj"
-COPY . .
-WORKDIR "/src/."
-RUN dotnet build "EduMy.Backend.csproj" -c Release -o /app/build
-
-FROM build AS publish
-RUN dotnet publish "EduMy.Backend.csproj" -c Release -o /app/publish
-
-FROM base AS final
+FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
-COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "EduMy.Backend.dll"]
+COPY --from=build /app/target/*.jar app.jar
+EXPOSE 5000
+ENTRYPOINT ["java", "-jar", "app.jar"]
