@@ -66,3 +66,8 @@ MANIFEST
 .DS_Store
 Thumbs.db
 Desktop.ini
+
+# Java / Spring Boot
+**/.gradle/
+**/build/
+**/target/

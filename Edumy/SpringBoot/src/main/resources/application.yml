@@ -1,0 +1,26 @@
+spring:
+  application:
+    name: edumy-spring
+  datasource:
+    url: "${EDUMY_DB_URL:jdbc:sqlserver://localhost:1433;databaseName=EduMyDb;encrypt=true;trustServerCertificate=true}"
+    username: "${EDUMY_DB_USERNAME:sa}"
+    password: "${EDUMY_DB_PASSWORD}"
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+  jpa:
+    hibernate:
+      ddl-auto: none
+    open-in-view: false
+
+server:
+  error:
+    include-message: never
+    include-stacktrace: never
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: never
