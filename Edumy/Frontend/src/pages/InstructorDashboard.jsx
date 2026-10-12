@@ -4,6 +4,8 @@ import api from '../api/axiosConfig';
 import { Users, BookOpen, DollarSign, Star, Sparkles, AlertTriangle, PlayCircle } from 'lucide-react';
 import './InstructorDashboard.css';
 
+const BACKEND_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api').replace('/api', '');
+
 function InstructorDashboard() {
   const [courses, setCourses] = useState([]);
   const [stats, setStats] = useState(null);
@@ -146,7 +148,7 @@ function InstructorDashboard() {
               courses.map(course => (
                 <div key={course.courseId} className="dashboard-course-card border-0 shadow-sm bg-white p-3 d-flex gap-3 mb-3 rounded" style={{ border: '1px solid var(--border-color)' }}>
                   <img 
-                    src={course.thumbnailUrl ? (course.thumbnailUrl.startsWith('http') ? course.thumbnailUrl : `http://localhost:5150${course.thumbnailUrl}`) : 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80'} 
+                    src={course.thumbnailUrl ? (course.thumbnailUrl.startsWith('http') ? course.thumbnailUrl : `${BACKEND_URL}${course.thumbnailUrl}`) : 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80'} 
                     alt={course.title} 
                     className="course-thumb rounded" 
                     style={{ width: '180px', height: '110px', objectFit: 'cover' }}

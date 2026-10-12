@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useContext } from 'react';
 import { AuthContext } from './context/AuthContext';
 import HomePage from './pages/HomePage';
@@ -48,6 +48,7 @@ function App() {
                 <MyLearning />
               </ProtectedRoute>
             } />
+            <Route path="/my-learning" element={<Navigate to="/my-courses" replace />} />
             <Route path="/my-courses/:id/learn" element={
               <ProtectedRoute allowedRoles={['Student', 'Instructor', 'Admin']}>
                 <CoursePlayer />

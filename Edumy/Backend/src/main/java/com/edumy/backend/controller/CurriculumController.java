@@ -1,15 +1,14 @@
 package com.edumy.backend.controller;
 
 import com.edumy.backend.model.*;
-import com.edumy.backend.dto.*;
 import com.edumy.backend.repository.*;
-import com.edumy.backend.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
@@ -23,6 +22,9 @@ public class CurriculumController {
     
     @Autowired
     private LessonRepository lessonRepository;
+
+    @Autowired
+    private EnrollmentRepository enrollmentRepository;
 
     private Integer getCurrentUserId() {
         try {
@@ -39,11 +41,50 @@ public class CurriculumController {
 
     @GetMapping("/courses/{courseId}/curriculum")
     public ResponseEntity<?> getCurriculum(@PathVariable Integer courseId) {
-        // Assume findByCourseIdOrderByOrderIndexAsc is available
+        Course course = courseRepository.findById(courseId).orElse(null);
+        if (course == null) return ResponseEntity.notFound().build();
+
+        Integer userId = getCurrentUserId();
+        boolean isEnrolled = userId != null && (
+            isUserInRole("Admin") || 
+            userId.equals(course.getInstructorId()) || 
+            enrollmentRepository.existsByUserIdAndCourseId(userId, courseId)
+        );
+
         List<CourseSection> sections = courseSectionRepository.findAll().stream()
                 .filter(s -> courseId.equals(s.getCourseId()))
-                .sorted(java.util.Comparator.comparing(CourseSection::getOrderIndex))
-                .collect(java.util.stream.Collectors.toList());
+                .sorted(Comparator.comparing(CourseSection::getOrderIndex))
+                .map(s -> {
+                    CourseSection copySection = new CourseSection();
+                    copySection.setSectionId(s.getSectionId());
+                    copySection.setCourseId(s.getCourseId());
+                    copySection.setTitle(s.getTitle());
+                    copySection.setOrderIndex(s.getOrderIndex());
+                    copySection.setQuizzes(s.getQuizzes());
+
+                    if (s.getLessons() != null) {
+                        List<Lesson> maskedLessons = s.getLessons().stream()
+                                .sorted(Comparator.comparing(Lesson::getOrderIndex))
+                                .map(l -> {
+                                    Lesson copy = new Lesson();
+                                    copy.setLessonId(l.getLessonId());
+                                    copy.setSectionId(l.getSectionId());
+                                    copy.setTitle(l.getTitle());
+                                    copy.setDuration(l.getDuration());
+                                    copy.setOrderIndex(l.getOrderIndex());
+                                    copy.setIsPreview(l.getIsPreview());
+                                    if (isEnrolled || Boolean.TRUE.equals(l.getIsPreview())) {
+                                        copy.setVideoUrl(l.getVideoUrl());
+                                    } else {
+                                        copy.setVideoUrl(null);
+                                    }
+                                    return copy;
+                                }).collect(Collectors.toList());
+                        copySection.setLessons(maskedLessons);
+                    }
+                    return copySection;
+                })
+                .collect(Collectors.toList());
         return ResponseEntity.ok(sections);
     }
 

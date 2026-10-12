@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../api/axiosConfig';
 
+const BACKEND_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api').replace('/api', '');
+
 function CourseList() {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -62,7 +64,7 @@ function CourseList() {
               <div className="card glass-card hover-lift h-100 border-0 p-2">
                 <div className="position-relative">
                   <img 
-                    src={course.thumbnailUrl ? `http://localhost:5150${course.thumbnailUrl}` : `https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80`} 
+                    src={course.thumbnailUrl ? (course.thumbnailUrl.startsWith('http') ? course.thumbnailUrl : `${BACKEND_URL}${course.thumbnailUrl}`) : `https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80`} 
                     className="card-img-top rounded-4 object-fit-cover" 
                     alt={course.title}
                     style={{ height: '200px' }}

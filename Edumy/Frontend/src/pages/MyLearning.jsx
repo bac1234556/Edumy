@@ -4,7 +4,7 @@ import api from '../api/axiosConfig';
 import { AuthContext } from '../context/AuthContext';
 import './MyLearning.css';
 
-const BACKEND_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5150/api').replace('/api', '');
+const BACKEND_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api').replace('/api', '');
 
 function MyLearning() {
   const [enrolledCourses, setEnrolledCourses] = useState([]);

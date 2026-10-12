@@ -5,7 +5,7 @@ import { AuthContext } from '../context/AuthContext';
 import { Heart, Trash2 } from 'lucide-react';
 import './CourseList.css'; // Reuse course list styles
 
-const BACKEND_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5150/api').replace('/api', '');
+const BACKEND_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api').replace('/api', '');
 
 function Wishlist() {
   const [wishlist, setWishlist] = useState([]);

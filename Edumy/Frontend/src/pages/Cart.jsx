@@ -2,57 +2,49 @@ import React, { useState, useEffect, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../api/axiosConfig';
 import { AuthContext } from '../context/AuthContext';
+import { CartContext } from '../context/CartContext';
+import { 
+  ShoppingCart, 
+  Trash2, 
+  ArrowRight, 
+  Tag, 
+  ShieldCheck, 
+  BookOpen,
+  ArrowLeft 
+} from 'lucide-react';
 import './Cart.css';
 
-const BACKEND_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5150/api').replace('/api', '');
+const BACKEND_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api').replace('/api', '');
 
 function Cart() {
-  const [cart, setCart] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const { user } = useContext(AuthContext);
+  const { cart, loadingCart, removeFromCart, fetchCart } = useContext(CartContext);
+  const navigate = useNavigate();
+
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [couponCode, setCouponCode] = useState('');
   const [appliedCoupon, setAppliedCoupon] = useState(null);
   const [couponError, setCouponError] = useState('');
   const [couponLoading, setCouponLoading] = useState(false);
-  
-  const { user } = useContext(AuthContext);
-  const navigate = useNavigate();
 
   useEffect(() => {
     fetchCart();
-  }, [user]);
-
-  const fetchCart = async () => {
-    if (!user) {
-      setLoading(false);
-      return;
-    }
-    try {
-      const response = await api.get('/cart');
-      setCart(response.data);
-    } catch (err) {
-      setError('Could not fetch cart.');
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [fetchCart]);
 
   const handleRemove = async (courseId) => {
     try {
-      await api.delete(`/cart/remove/${courseId}`);
-      fetchCart();
+      await removeFromCart(courseId);
     } catch (err) {
-      alert('Failed to remove course.');
+      alert('Không thể xóa khóa học khỏi giỏ hàng.');
     }
   };
 
   const handleApplyCoupon = async () => {
-    if (!couponCode) return;
+    if (!couponCode.trim()) return;
     setCouponLoading(true);
     setCouponError('');
     try {
-      const res = await api.post('/coupons/validate', { code: couponCode });
+      const res = await api.post('/coupons/validate', { code: couponCode.trim() });
       setAppliedCoupon({
         code: res.data.code,
         discountPercentage: res.data.discountPercentage,
@@ -60,7 +52,7 @@ function Cart() {
       });
       setCouponCode('');
     } catch (err) {
-      setCouponError(err.response?.data?.message || 'Invalid coupon.');
+      setCouponError(err.response?.data?.message || 'Mã giảm giá không hợp lệ hoặc đã hết hạn.');
       setAppliedCoupon(null);
     } finally {
       setCouponLoading(false);
@@ -73,99 +65,201 @@ function Cart() {
       const res = await api.post('/orders/checkout', {
         couponCode: appliedCoupon?.code || null
       });
-      // Redirect to mock payment gateway
-      navigate(res.data.paymentUrl);
+      // Navigate to payment gateway URL (e.g. /payment?orderId=...)
+      if (res.data.paymentUrl) {
+        navigate(res.data.paymentUrl);
+      } else {
+        navigate(`/payment?orderId=${res.data.orderId}`);
+      }
     } catch (err) {
-      alert(err.response?.data?.message || 'Checkout failed.');
+      alert(err.response?.data?.message || 'Khởi tạo đơn hàng thanh toán thất bại.');
     } finally {
       setCheckoutLoading(false);
     }
   };
 
+  const formatPrice = (price) => {
+    if (!price && price !== 0) return '0 ₫';
+    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
+  };
+
   if (!user) {
     return (
-      <div className="container text-center mt-5 mb-5" style={{padding: '5rem 0'}}>
-        <h2>Please <Link to="/login">login</Link> to view your cart.</h2>
+      <div className="cart-page-wrapper">
+        <div className="cart-container">
+          <div className="cart-empty-box">
+            <div className="cart-empty-icon-wrap">
+              <ShoppingCart size={36} />
+            </div>
+            <h2 className="cart-empty-title">Vui lòng đăng nhập để xem giỏ hàng</h2>
+            <p className="cart-empty-subtitle">
+              Đăng nhập tài khoản học viên để xem các khóa học bạn đã thêm vào giỏ.
+            </p>
+            <Link to="/login" className="btn-continue-shopping">
+              Đăng nhập ngay
+            </Link>
+          </div>
+        </div>
       </div>
     );
   }
 
-  if (loading) return <div className="container text-center mt-5 mb-5" style={{padding: '5rem 0'}}>Loading cart...</div>;
-  if (error) return <div className="container text-center mt-5 mb-5 error-msg">{error}</div>;
+  if (loadingCart && !cart) {
+    return (
+      <div className="cart-page-wrapper">
+        <div className="cart-container text-center" style={{ padding: '6rem 0', color: '#94a3b8' }}>
+          <div style={{ width: 40, height: 40, border: '4px solid #1f2937', borderTopColor: '#6366f1', borderRadius: '50%', margin: '0 auto 1rem auto', animation: 'spin 0.8s linear infinite' }}></div>
+          <p>Đang tải giỏ hàng của bạn...</p>
+        </div>
+      </div>
+    );
+  }
+
+  const items = cart?.items || [];
+  const rawTotal = cart?.totalPrice || 0;
+  const discountAmount = appliedCoupon ? (rawTotal * appliedCoupon.discountPercentage) / 100 : 0;
+  const finalTotal = Math.max(0, rawTotal - discountAmount);
 
   return (
-    <div className="cart-page container">
-      <h1>Shopping Cart</h1>
-      
-      {!cart || !cart.items || cart.items.length === 0 ? (
-        <div className="empty-cart">
-          <p>Your cart is empty. Keep shopping to find a course!</p>
-          <Link to="/" className="btn-udemy-primary">Keep shopping</Link>
-        </div>
-      ) : (
-        <div className="cart-content">
-          <div className="cart-items">
-            <h3>{cart.totalItems} Course{cart.totalItems > 1 ? 's' : ''} in Cart</h3>
-            {cart.items.map(item => (
-              <div key={item.id} className="cart-item">
-                <img 
-                  src={item.course.thumbnailUrl ? `${BACKEND_URL}${item.course.thumbnailUrl}` : "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=200&q=80"} 
-                  alt="Course" 
-                  className="cart-item-img" 
-                />
-                <div className="cart-item-info">
-                  <h4><Link to={`/courses/${item.courseId}`}>{item.course.title}</Link></h4>
-                  <p className="instructor">By {item.course.instructor?.fullName || 'Instructor'}</p>
-                  <button className="remove-btn" onClick={() => handleRemove(item.courseId)}>Remove</button>
-                </div>
-                <div className="cart-item-price">
-                  <div className="price">₫{item.course.price.toLocaleString()}</div>
-                </div>
-              </div>
-            ))}
-          </div>
+    <div className="cart-page-wrapper">
+      <div className="cart-container">
+        <h1 className="cart-page-heading">Giỏ hàng của bạn</h1>
 
-          <div className="cart-summary p-4 bg-light rounded shadow-sm">
-            <h3 className="mb-4">Total:</h3>
-            <div className="total-price mb-3" style={appliedCoupon ? {textDecoration: 'line-through', color: '#6c757d', fontSize: '1.2rem'} : {}}>
-              ₫{cart.totalPrice.toLocaleString()}
+        {items.length === 0 ? (
+          <div className="cart-empty-box">
+            <div className="cart-empty-icon-wrap">
+              <ShoppingCart size={36} />
             </div>
-            
-            {appliedCoupon && (
-              <div className="discount-price mb-3 text-success fw-bold fs-4">
-                ₫{(cart.totalPrice * (1 - appliedCoupon.discountPercentage / 100)).toLocaleString()}
-                <div className="small text-muted fw-normal">{appliedCoupon.discountPercentage}% off applied!</div>
+            <h3 className="cart-empty-title">Giỏ hàng của bạn đang trống</h3>
+            <p className="cart-empty-subtitle">
+              Khám phá hàng ngàn khóa học lập trình, thiết kế và công nghệ hàng đầu trên Edumy!
+            </p>
+            <Link to="/courses" className="btn-continue-shopping">
+              <BookOpen size={18} /> Khám phá khóa học ngay
+            </Link>
+          </div>
+        ) : (
+          <div className="cart-layout-grid">
+            {/* Left Column: List of items */}
+            <div className="cart-items-column">
+              <div className="cart-items-meta-header">
+                {items.length} Khóa học đã chọn
               </div>
-            )}
 
-            <div className="coupon-section mb-4">
-              <div className="input-group">
-                <input 
-                  type="text" 
-                  className="form-control" 
-                  placeholder="Enter coupon code" 
-                  value={couponCode}
-                  onChange={(e) => setCouponCode(e.target.value)}
-                />
+              <div className="cart-items-card-list">
+                {items.map(item => (
+                  <div key={item.id} className="cart-item-card">
+                    <img 
+                      src={item.course.thumbnailUrl 
+                        ? (item.course.thumbnailUrl.startsWith('http') ? item.course.thumbnailUrl : `${BACKEND_URL}${item.course.thumbnailUrl}`)
+                        : "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=300&q=80"} 
+                      alt={item.course.title} 
+                      className="cart-item-thumbnail" 
+                    />
+                    <div className="cart-item-details">
+                      <div>
+                        <Link to={`/courses/${item.courseId}`} className="cart-item-title-link">
+                          {item.course.title}
+                        </Link>
+                        <p className="cart-item-instructor">
+                          Giảng viên: {item.course.instructor?.fullName || 'Chuyên gia Edumy'}
+                        </p>
+                      </div>
+
+                      <div className="cart-item-actions">
+                        <button 
+                          className="btn-remove-cart-item" 
+                          onClick={() => handleRemove(item.courseId)}
+                        >
+                          <Trash2 size={14} /> Xóa khỏi giỏ
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="cart-item-price-col">
+                      <div className="item-main-price">
+                        {formatPrice(item.course.price)}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div style={{ marginTop: '1.25rem' }}>
+                <Link to="/courses" style={{ color: '#818cf8', textDecoration: 'none', fontSize: '0.875rem', display: 'inline-flex', alignItems: 'center', gap: '0.4rem', fontWeight: 600 }}>
+                  <ArrowLeft size={16} /> Tiếp tục tìm kiếm khóa học
+                </Link>
+              </div>
+            </div>
+
+            {/* Right Column: Order Summary */}
+            <aside className="cart-summary-column">
+              <div className="summary-card-box">
+                <h3 className="summary-heading">Tóm tắt đơn hàng</h3>
+
+                <div className="summary-row">
+                  <span>Tạm tính ({items.length} khóa học):</span>
+                  <span>{formatPrice(rawTotal)}</span>
+                </div>
+
+                {appliedCoupon && (
+                  <div className="summary-row discount-row">
+                    <span>Khuyến mãi ({appliedCoupon.code} -{appliedCoupon.discountPercentage}%):</span>
+                    <span>-{formatPrice(discountAmount)}</span>
+                  </div>
+                )}
+
+                <div className="summary-total-divider"></div>
+
+                <div className="summary-final-total-row">
+                  <span className="total-label">Tổng cộng:</span>
+                  <span className="total-amount-display">{formatPrice(finalTotal)}</span>
+                </div>
+
+                {/* Coupon Input */}
+                <div style={{ marginBottom: '1.25rem' }}>
+                  <div className="coupon-input-group">
+                    <input 
+                      type="text" 
+                      placeholder="Mã giảm giá (ví dụ: EDUMY50)"
+                      value={couponCode}
+                      onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                      className="coupon-input-field"
+                    />
+                    <button 
+                      type="button" 
+                      onClick={handleApplyCoupon}
+                      disabled={couponLoading || !couponCode.trim()}
+                      className="btn-apply-coupon"
+                    >
+                      {couponLoading ? '...' : 'Áp dụng'}
+                    </button>
+                  </div>
+                  {couponError && <div className="coupon-feedback-msg error">{couponError}</div>}
+                  {appliedCoupon && <div className="coupon-feedback-msg success">✓ {appliedCoupon.message}</div>}
+                </div>
+
                 <button 
-                  className="btn btn-outline-secondary" 
-                  type="button"
-                  onClick={handleApplyCoupon}
-                  disabled={couponLoading || !couponCode}
+                  className="btn-checkout-now" 
+                  onClick={handleCheckout}
+                  disabled={checkoutLoading}
                 >
-                  {couponLoading ? '...' : 'Apply'}
+                  {checkoutLoading ? 'Đang tạo đơn thanh toán...' : (
+                    <>
+                      Tiến hành Thanh toán <ArrowRight size={18} />
+                    </>
+                  )}
                 </button>
-              </div>
-              {couponError && <div className="text-danger small mt-1">{couponError}</div>}
-              {appliedCoupon && <div className="text-success small mt-1">{appliedCoupon.message}</div>}
-            </div>
 
-            <button className="btn btn-primary w-100 fw-bold py-2" onClick={handleCheckout} disabled={checkoutLoading}>
-              {checkoutLoading ? 'Processing...' : 'Checkout'}
-            </button>
+                <div className="guarantee-note-card">
+                  <ShieldCheck size={14} style={{ display: 'inline', marginRight: 4, verticalAlign: -2 }} />
+                  Bảo mật giao diện thanh toán & Cam kết hoàn tiền 30 ngày
+                </div>
+              </div>
+            </aside>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

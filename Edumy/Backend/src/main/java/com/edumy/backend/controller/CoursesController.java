@@ -187,6 +187,16 @@ public class CoursesController {
         return courseRepository.findById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/{id}/enrollment-status")
+    public ResponseEntity<?> getEnrollmentStatus(@PathVariable Integer id) {
+        Integer userId = getCurrentUserId();
+        if (userId == null) {
+            return ResponseEntity.ok(Map.of("isEnrolled", false));
+        }
+        boolean isEnrolled = enrollmentRepository.existsByUserIdAndCourseId(userId, id);
+        return ResponseEntity.ok(Map.of("isEnrolled", isEnrolled));
+    }
+
     @PostMapping
     @PreAuthorize("hasAnyRole('Instructor', 'Admin')")
     public ResponseEntity<?> createCourse(@RequestBody CreateCourseDto dto) {

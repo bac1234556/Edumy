@@ -3,12 +3,14 @@ import { Link } from 'react-router-dom';
 import { Star } from 'lucide-react';
 import './CourseCard.css';
 
+const BACKEND_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api').replace('/api', '');
+
 const CourseCard = ({ course }) => {
   return (
     <Link to={`/courses/${course.courseId || course.id || 1}`} className="course-card hover-3d">
       <div className="course-image">
         <img 
-          src={course.thumbnailUrl ? (course.thumbnailUrl.startsWith('http') ? course.thumbnailUrl : `http://localhost:5150${course.thumbnailUrl}`) : (course.image || "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800&q=80")} 
+          src={course.thumbnailUrl ? (course.thumbnailUrl.startsWith('http') ? course.thumbnailUrl : `${BACKEND_URL}${course.thumbnailUrl}`) : (course.image || "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800&q=80")} 
           alt={course.title} 
         />
       </div>

@@ -30,6 +30,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/reviews/course/**", "/api/Reviews/course/**").permitAll()
                 .requestMatchers("/api/quizzes/**", "/api/Quizzes/**").permitAll()
                 .requestMatchers("/api/mltest/**", "/api/MLTest/**").permitAll()
+                .requestMatchers("/api/payment/webhook", "/api/Payment/webhook", "/api/Payment/ipn/**").permitAll()
                 .requestMatchers("/uploads/**").permitAll()
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 .anyRequest().authenticated()
