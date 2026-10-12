@@ -6,11 +6,14 @@ import { CartContext } from '../context/CartContext';
 import { 
   ShoppingCart, 
   Trash2, 
+  Heart, 
   ArrowRight, 
   Tag, 
   ShieldCheck, 
   BookOpen,
-  ArrowLeft 
+  ArrowLeft,
+  CheckCircle,
+  AlertCircle
 } from 'lucide-react';
 import './Cart.css';
 
@@ -26,11 +29,13 @@ function Cart() {
   const [appliedCoupon, setAppliedCoupon] = useState(null);
   const [couponError, setCouponError] = useState('');
   const [couponLoading, setCouponLoading] = useState(false);
+  const [wishlistLoadingId, setWishlistLoadingId] = useState(null);
 
   useEffect(() => {
     fetchCart();
   }, [fetchCart]);
 
+  // Remove single item from cart
   const handleRemove = async (courseId) => {
     try {
       await removeFromCart(courseId);
@@ -39,6 +44,28 @@ function Cart() {
     }
   };
 
+  // Move item to Wishlist (Add to wishlist & remove from cart)
+  const handleMoveToWishlist = async (courseId) => {
+    try {
+      setWishlistLoadingId(courseId);
+      // 1. Add to wishlist
+      try {
+        await api.post(`/wishlist/add/${courseId}`);
+      } catch (err) {
+        // Ignored if already in wishlist
+      }
+
+      // 2. Remove from cart
+      await removeFromCart(courseId);
+      alert('Đã chuyển khóa học vào Danh sách yêu thích (Wishlist)!');
+    } catch (err) {
+      alert('Chuyển khóa học vào Wishlist thất bại. Vui lòng thử lại.');
+    } finally {
+      setWishlistLoadingId(null);
+    }
+  };
+
+  // Apply & Validate Coupon Code
   const handleApplyCoupon = async () => {
     if (!couponCode.trim()) return;
     setCouponLoading(true);
@@ -48,7 +75,7 @@ function Cart() {
       setAppliedCoupon({
         code: res.data.code,
         discountPercentage: res.data.discountPercentage,
-        message: res.data.message
+        message: res.data.message || `Đã áp dụng giảm giá ${res.data.discountPercentage}%`
       });
       setCouponCode('');
     } catch (err) {
@@ -59,13 +86,15 @@ function Cart() {
     }
   };
 
+  // Checkout Handler
   const handleCheckout = async () => {
     try {
       setCheckoutLoading(true);
       const res = await api.post('/orders/checkout', {
         couponCode: appliedCoupon?.code || null
       });
-      // Navigate to payment gateway URL (e.g. /payment?orderId=...)
+
+      // Redirect to payment URL
       if (res.data.paymentUrl) {
         navigate(res.data.paymentUrl);
       } else {
@@ -83,17 +112,18 @@ function Cart() {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
   };
 
+  // 1. Unauthenticated view
   if (!user) {
     return (
       <div className="cart-page-wrapper">
         <div className="cart-container">
           <div className="cart-empty-box">
             <div className="cart-empty-icon-wrap">
-              <ShoppingCart size={36} />
+              <ShoppingCart size={38} />
             </div>
             <h2 className="cart-empty-title">Vui lòng đăng nhập để xem giỏ hàng</h2>
             <p className="cart-empty-subtitle">
-              Đăng nhập tài khoản học viên để xem các khóa học bạn đã thêm vào giỏ.
+              Đăng nhập tài khoản học viên để xem và quản lý các khóa học bạn đã chọn.
             </p>
             <Link to="/login" className="btn-continue-shopping">
               Đăng nhập ngay
@@ -104,11 +134,12 @@ function Cart() {
     );
   }
 
+  // 2. Loading view
   if (loadingCart && !cart) {
     return (
       <div className="cart-page-wrapper">
         <div className="cart-container text-center" style={{ padding: '6rem 0', color: '#94a3b8' }}>
-          <div style={{ width: 40, height: 40, border: '4px solid #1f2937', borderTopColor: '#6366f1', borderRadius: '50%', margin: '0 auto 1rem auto', animation: 'spin 0.8s linear infinite' }}></div>
+          <div style={{ width: 44, height: 44, border: '4px solid #1f2937', borderTopColor: '#6366f1', borderRadius: '50%', margin: '0 auto 1.25rem auto', animation: 'spin 0.8s linear infinite' }}></div>
           <p>Đang tải giỏ hàng của bạn...</p>
         </div>
       </div>
@@ -120,15 +151,21 @@ function Cart() {
   const discountAmount = appliedCoupon ? (rawTotal * appliedCoupon.discountPercentage) / 100 : 0;
   const finalTotal = Math.max(0, rawTotal - discountAmount);
 
+  // 3. Main Cart View
   return (
     <div className="cart-page-wrapper">
       <div className="cart-container">
-        <h1 className="cart-page-heading">Giỏ hàng của bạn</h1>
+        <h1 className="cart-page-heading">
+          Giỏ hàng của bạn
+          {items.length > 0 && (
+            <span className="cart-heading-count">({items.length} khóa học)</span>
+          )}
+        </h1>
 
         {items.length === 0 ? (
           <div className="cart-empty-box">
             <div className="cart-empty-icon-wrap">
-              <ShoppingCart size={36} />
+              <ShoppingCart size={38} />
             </div>
             <h3 className="cart-empty-title">Giỏ hàng của bạn đang trống</h3>
             <p className="cart-empty-subtitle">
@@ -143,7 +180,7 @@ function Cart() {
             {/* Left Column: List of items */}
             <div className="cart-items-column">
               <div className="cart-items-meta-header">
-                {items.length} Khóa học đã chọn
+                Danh sách khóa học đã chọn
               </div>
 
               <div className="cart-items-card-list">
@@ -166,12 +203,23 @@ function Cart() {
                         </p>
                       </div>
 
+                      {/* Action buttons: Xóa & Chuyển vào Wishlist */}
                       <div className="cart-item-actions">
                         <button 
                           className="btn-remove-cart-item" 
                           onClick={() => handleRemove(item.courseId)}
+                          title="Xóa khóa học khỏi giỏ hàng"
                         >
-                          <Trash2 size={14} /> Xóa khỏi giỏ
+                          <Trash2 size={14} /> Xóa
+                        </button>
+
+                        <button 
+                          className="btn-move-wishlist" 
+                          onClick={() => handleMoveToWishlist(item.courseId)}
+                          disabled={wishlistLoadingId === item.courseId}
+                          title="Lưu vào danh sách yêu thích và xóa khỏi giỏ"
+                        >
+                          <Heart size={14} /> {wishlistLoadingId === item.courseId ? 'Đang chuyển...' : 'Chuyển vào Wishlist'}
                         </button>
                       </div>
                     </div>
@@ -185,14 +233,14 @@ function Cart() {
                 ))}
               </div>
 
-              <div style={{ marginTop: '1.25rem' }}>
-                <Link to="/courses" style={{ color: '#818cf8', textDecoration: 'none', fontSize: '0.875rem', display: 'inline-flex', alignItems: 'center', gap: '0.4rem', fontWeight: 600 }}>
+              <div style={{ marginTop: '1.5rem' }}>
+                <Link to="/courses" style={{ color: '#818cf8', textDecoration: 'none', fontSize: '0.9rem', display: 'inline-flex', alignItems: 'center', gap: '0.4rem', fontWeight: 600 }}>
                   <ArrowLeft size={16} /> Tiếp tục tìm kiếm khóa học
                 </Link>
               </div>
             </div>
 
-            {/* Right Column: Order Summary */}
+            {/* Right Column: Order Summary & Coupon Form */}
             <aside className="cart-summary-column">
               <div className="summary-card-box">
                 <h3 className="summary-heading">Tóm tắt đơn hàng</h3>
@@ -204,7 +252,7 @@ function Cart() {
 
                 {appliedCoupon && (
                   <div className="summary-row discount-row">
-                    <span>Khuyến mãi ({appliedCoupon.code} -{appliedCoupon.discountPercentage}%):</span>
+                    <span>Mã giảm giá ({appliedCoupon.code} -{appliedCoupon.discountPercentage}%):</span>
                     <span>-{formatPrice(discountAmount)}</span>
                   </div>
                 )}
@@ -216,12 +264,12 @@ function Cart() {
                   <span className="total-amount-display">{formatPrice(finalTotal)}</span>
                 </div>
 
-                {/* Coupon Input */}
+                {/* Form Nhập Mã Giảm Giá Coupon */}
                 <div style={{ marginBottom: '1.25rem' }}>
                   <div className="coupon-input-group">
                     <input 
                       type="text" 
-                      placeholder="Mã giảm giá (ví dụ: EDUMY50)"
+                      placeholder="Mã coupon (ví dụ: EDUMY50)"
                       value={couponCode}
                       onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
                       className="coupon-input-field"
@@ -235,10 +283,19 @@ function Cart() {
                       {couponLoading ? '...' : 'Áp dụng'}
                     </button>
                   </div>
-                  {couponError && <div className="coupon-feedback-msg error">{couponError}</div>}
-                  {appliedCoupon && <div className="coupon-feedback-msg success">✓ {appliedCoupon.message}</div>}
+                  {couponError && (
+                    <div className="coupon-feedback-msg error">
+                      <AlertCircle size={13} /> {couponError}
+                    </div>
+                  )}
+                  {appliedCoupon && (
+                    <div className="coupon-feedback-msg success">
+                      <CheckCircle size={13} /> {appliedCoupon.message}
+                    </div>
+                  )}
                 </div>
 
+                {/* Checkout CTA */}
                 <button 
                   className="btn-checkout-now" 
                   onClick={handleCheckout}
@@ -253,7 +310,7 @@ function Cart() {
 
                 <div className="guarantee-note-card">
                   <ShieldCheck size={14} style={{ display: 'inline', marginRight: 4, verticalAlign: -2 }} />
-                  Bảo mật giao diện thanh toán & Cam kết hoàn tiền 30 ngày
+                  Bảo mật giao dịch mã hóa SSL 256-bit & Cam kết hoàn tiền 30 ngày
                 </div>
               </div>
             </aside>
