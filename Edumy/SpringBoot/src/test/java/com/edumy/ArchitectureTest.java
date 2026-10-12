@@ -27,7 +27,8 @@ class ArchitectureTest {
     @ArchTest
     static final ArchRule field_injection_is_forbidden =
             noFields().that().areDeclaredInClassesThat().resideInAnyPackage(
-                            "..aspects..", "..config..", "..filters..", "..interceptors..", "..modules..")
+                            "..aspects..", "..config..", "..controllers..", "..filters..",
+                            "..interceptors..", "..modules..", "..repositories..", "..services..")
                     .should().beAnnotatedWith(Autowired.class)
                     .because("Use constructor injection")
                     .allowEmptyShould(true);

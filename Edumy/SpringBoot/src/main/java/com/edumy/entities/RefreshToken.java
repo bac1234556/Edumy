@@ -12,28 +12,30 @@ import jakarta.persistence.Table;
 import java.time.Instant;
 
 @Entity
-@Table(name = "refresh_tokens")
+@Table(name = "RefreshTokens")
 public class RefreshToken {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "Id")
+    private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "UserId", nullable = false)
     private User user;
 
-    @Column(nullable = false, unique = true, length = 128)
+    @Column(name = "Token", nullable = false)
     private String token;
 
-    @Column(nullable = false)
+    @Column(name = "Expires", nullable = false)
     private Instant expires;
 
-    @Column(nullable = false)
+    @Column(name = "Created", nullable = false)
     private Instant created = Instant.now();
 
+    @Column(name = "Revoked")
     private Instant revoked;
 
-    @Column(length = 128)
+    @Column(name = "ReplacedByToken")
     private String replacedByToken;
 
     protected RefreshToken() {

@@ -1,8 +1,8 @@
 # Edumy Spring Boot foundation
 
-This is a new Spring Boot 3.3 / Java 17 application alongside the existing
-ASP.NET Core backend. It contains shared application infrastructure only;
-business modules have not been migrated.
+This is the Spring Boot 3.3 / Java 17 Maven application alongside the
+existing ASP.NET Core backend. The Auth module is included; other business
+modules have not been migrated.
 
 ## Run
 
@@ -43,7 +43,13 @@ src/main/java/com/edumy/
   annotations/     Annotations consumed by aspects/interceptors
   aspects/         Cross-cutting logging and metrics
   common/          Shared API/error contracts
-  modules/         Future business modules; none migrated yet
+  auth/            JWT verification, token handling and identity context
+  controllers/     Auth HTTP endpoints
+  dto/             Auth request/response contracts
+  entities/        Auth entities mapped to the existing EF Core tables
+  repositories/    Auth persistence access
+  services/        Auth business operations
+  modules/         Future business modules
 src/main/resources/
   application.yml
   application-test.yml
@@ -55,7 +61,7 @@ and delegate; services contain business logic and use Spring's
 `@Transactional` annotation where required. Do not put logging, authorization,
 metrics, or transaction plumbing inline in service methods.
 
-Authentication token verification is intentionally not implemented in this
-foundation. Wire the authentication module to establish a trusted servlet
-principal before protecting its routes. Use `@RequiresRoles` for role rules;
-`AuthorizationInterceptor` enforces those rules outside controllers.
+JWT verification is handled by the Auth filter. The Auth interceptor requires
+authentication on `/api/**` except `/api/auth/**` and enforces
+`@RequiresRoles` outside controllers. MVC errors are mapped by the shared
+`@RestControllerAdvice`; request-wide IDs and JWT parsing use servlet filters.

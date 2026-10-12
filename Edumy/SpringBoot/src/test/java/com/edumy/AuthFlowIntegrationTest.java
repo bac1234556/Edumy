@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,11 +27,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(properties = {
-        "edumy.jwt.secret=architecture-test-only-secret-32-bytes-minimum",
         "edumy.auth.expose-reset-token=true",
         "spring.datasource.url=jdbc:h2:mem:auth-integration;DB_CLOSE_DELAY=-1"
 })
 @AutoConfigureMockMvc
+@ActiveProfiles("test")
 @Import(AuthFlowIntegrationTest.ProtectedTestController.class)
 class AuthFlowIntegrationTest {
     @Autowired

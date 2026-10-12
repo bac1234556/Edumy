@@ -1,7 +1,7 @@
 package com.edumy.services;
 
 import com.edumy.annotations.Loggable;
-import com.edumy.annotations.Monitor;
+import com.edumy.annotations.Monitored;
 import com.edumy.auth.AuthException;
 import com.edumy.auth.GoogleIdentity;
 import com.edumy.auth.GoogleTokenVerifier;
@@ -56,7 +56,7 @@ public class AuthService {
 
     @Transactional
     @Loggable
-    @Monitor("auth.register")
+    @Monitored("auth.register")
     public void register(RegisterRequest request) {
         String email = normalizeEmail(request.email());
         if (userRepository.existsByEmail(email)) {
@@ -71,7 +71,7 @@ public class AuthService {
 
     @Transactional
     @Loggable
-    @Monitor("auth.login")
+    @Monitored("auth.login")
     public AuthResponse login(LoginRequest request) {
         User user = userRepository.findByEmail(normalizeEmail(request.email()))
                 .filter(User::isActive)
@@ -83,7 +83,7 @@ public class AuthService {
 
     @Transactional
     @Loggable
-    @Monitor("auth.google-login")
+    @Monitored("auth.google-login")
     public AuthResponse googleLogin(GoogleLoginRequest request) {
         GoogleIdentity identity = googleTokenVerifier.verify(request.token());
         String email = normalizeEmail(identity.email());
@@ -100,7 +100,7 @@ public class AuthService {
 
     @Transactional
     @Loggable
-    @Monitor("auth.refresh")
+    @Monitored("auth.refresh")
     public AuthResponse refresh(String tokenValue) {
         if (tokenValue == null || tokenValue.isBlank()) {
             throw new AuthException(HttpStatus.UNAUTHORIZED, "Token is required.");
@@ -122,7 +122,7 @@ public class AuthService {
 
     @Transactional
     @Loggable
-    @Monitor("auth.forgot-password")
+    @Monitored("auth.forgot-password")
     public Map<String, String> forgotPassword(ForgotPasswordRequest request) {
         return userRepository.findByEmail(normalizeEmail(request.email()))
                 .map(user -> {
@@ -143,7 +143,7 @@ public class AuthService {
 
     @Transactional
     @Loggable
-    @Monitor("auth.reset-password")
+    @Monitored("auth.reset-password")
     public void resetPassword(ResetPasswordRequest request) {
         User user = userRepository.findByEmail(normalizeEmail(request.email()))
                 .filter(existing -> request.token().equals(existing.getResetToken()))
@@ -158,7 +158,7 @@ public class AuthService {
 
     @Transactional
     @Loggable
-    @Monitor("auth.revoke")
+    @Monitored("auth.revoke")
     public void revoke(String tokenValue) {
         if (tokenValue == null || tokenValue.isBlank()) {
             throw new AuthException(HttpStatus.BAD_REQUEST, "Token is required.");

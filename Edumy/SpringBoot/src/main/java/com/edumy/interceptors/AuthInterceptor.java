@@ -2,13 +2,15 @@ package com.edumy.interceptors;
 
 import com.edumy.annotations.RequiresRoles;
 import com.edumy.auth.AuthenticatedUser;
+import com.edumy.common.api.ApiError;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.Instant;
 import java.util.Arrays;
-import java.util.Map;
 import org.springframework.core.annotation.AnnotatedElementUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -35,32 +37,45 @@ public class AuthInterceptor implements HandlerInterceptor {
 
         AuthenticatedUser authenticatedUser =
                 (AuthenticatedUser) request.getAttribute(AUTHENTICATED_USER_ATTRIBUTE);
-        if (authenticatedUser == null) {
-            writeError(response, HttpServletResponse.SC_UNAUTHORIZED, "Authentication is required.");
+        if (authenticatedUser == null && request.getUserPrincipal() == null) {
+            writeError(response, request, HttpStatus.UNAUTHORIZED, "Authentication is required.");
             return false;
         }
 
         if (handler instanceof HandlerMethod handlerMethod) {
-            RequiresRoles requirement = AnnotatedElementUtils.findMergedAnnotation(
+            RequiresRoles requiredRoles = AnnotatedElementUtils.findMergedAnnotation(
                     handlerMethod.getMethod(), RequiresRoles.class);
-            if (requirement == null) {
-                requirement = AnnotatedElementUtils.findMergedAnnotation(
+            if (requiredRoles == null) {
+                requiredRoles = AnnotatedElementUtils.findMergedAnnotation(
                         handlerMethod.getBeanType(), RequiresRoles.class);
             }
 
-            if (requirement != null
-                    && Arrays.stream(requirement.value()).noneMatch(authenticatedUser.role()::equals)) {
-                writeError(response, HttpServletResponse.SC_FORBIDDEN, "Insufficient permissions.");
-                return false;
+            if (requiredRoles != null) {
+                boolean hasRequiredRole = authenticatedUser != null
+                        ? Arrays.stream(requiredRoles.value()).anyMatch(authenticatedUser.role()::equals)
+                        : Arrays.stream(requiredRoles.value()).anyMatch(request::isUserInRole);
+                if (!hasRequiredRole) {
+                    writeError(response, request, HttpStatus.FORBIDDEN, "Insufficient permissions.");
+                    return false;
+                }
             }
         }
         return true;
     }
 
-    private void writeError(HttpServletResponse response, int status, String message) throws IOException {
-        response.setStatus(status);
+    private void writeError(
+            HttpServletResponse response,
+            HttpServletRequest request,
+            HttpStatus status,
+            String message) throws IOException {
+        response.setStatus(status.value());
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-        objectMapper.writeValue(response.getWriter(), Map.of("message", message));
+        objectMapper.writeValue(response.getWriter(), new ApiError(
+                Instant.now(),
+                status.value(),
+                status.getReasonPhrase(),
+                message,
+                request.getRequestURI()));
     }
 }

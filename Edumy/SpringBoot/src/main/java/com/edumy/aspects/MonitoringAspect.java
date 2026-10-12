@@ -27,6 +27,7 @@ public class MonitoringAspect {
         } finally {
             sample.stop(Timer.builder("edumy.method.execution")
                     .tag("operation", monitored.value())
+                    .tag("method", joinPoint.getSignature().toShortString())
                     .register(meterRegistry));
         }
     }

@@ -4,7 +4,7 @@ spring:
   datasource:
     url: "${EDUMY_DB_URL:jdbc:sqlserver://localhost:1433;databaseName=EduMyDb;encrypt=true;trustServerCertificate=true}"
     username: "${EDUMY_DB_USERNAME:sa}"
-    password: "${EDUMY_DB_PASSWORD}"
+    password: "${EDUMY_DB_PASSWORD:}"
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
   jpa:
     hibernate:
@@ -24,3 +24,14 @@ management:
   endpoint:
     health:
       show-details: never
+
+edumy:
+  auth:
+    expose-reset-token: "${EDUMY_AUTH_EXPOSE_RESET_TOKEN:false}"
+  google:
+    client-id: "${GOOGLE_CLIENT_ID:}"
+  jwt:
+    secret: "${EDUMY_JWT_SECRET:}"
+    issuer: "${EDUMY_JWT_ISSUER:edumy}"
+    audience: "${EDUMY_JWT_AUDIENCE:edumy-api}"
+    expire-minutes: "${EDUMY_JWT_EXPIRE_MINUTES:15}"

@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 import io.micrometer.core.instrument.MeterRegistry;
 import com.edumy.annotations.Monitored;
 import com.edumy.annotations.RequiresRoles;
+import com.edumy.auth.AuthenticatedUser;
+import com.edumy.interceptors.AuthInterceptor;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -57,15 +59,15 @@ class FoundationContextTest {
                 .andExpect(status().isUnauthorized());
 
         mockMvc.perform(get("/api/foundation/admin")
-                        .principal(() -> "test-user"))
+                        .requestAttr(
+                                AuthInterceptor.AUTHENTICATED_USER_ATTRIBUTE,
+                                new AuthenticatedUser("1", "test@example.test", "Student")))
                 .andExpect(status().isForbidden());
 
         mockMvc.perform(get("/api/foundation/admin")
-                        .principal(() -> "test-user")
-                        .with(request -> {
-                            request.addUserRole("Admin");
-                            return request;
-                        }))
+                        .requestAttr(
+                                AuthInterceptor.AUTHENTICATED_USER_ATTRIBUTE,
+                                new AuthenticatedUser("1", "test@example.test", "Admin")))
                 .andExpect(status().isOk());
     }
 

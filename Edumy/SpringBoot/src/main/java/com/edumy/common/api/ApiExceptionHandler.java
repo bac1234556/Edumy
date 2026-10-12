@@ -1,5 +1,6 @@
 package com.edumy.common.api;
 
+import com.edumy.auth.AuthException;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.Instant;
 import org.springframework.http.HttpStatus;
@@ -10,6 +11,13 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class ApiExceptionHandler {
+    @ExceptionHandler(AuthException.class)
+    public ResponseEntity<ApiError> handleAuthException(
+            AuthException exception,
+            HttpServletRequest request) {
+        return errorResponse(exception.status(), exception.getMessage(), request);
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiError> handleValidation(
             MethodArgumentNotValidException exception,

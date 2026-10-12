@@ -1,21 +1,22 @@
 package com.edumy.config;
 
-import com.edumy.interceptors.AuthorizationInterceptor;
+import com.edumy.interceptors.AuthInterceptor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
-    private final AuthorizationInterceptor authorizationInterceptor;
+    private final AuthInterceptor authInterceptor;
 
-    public WebConfig(AuthorizationInterceptor authorizationInterceptor) {
-        this.authorizationInterceptor = authorizationInterceptor;
+    public WebConfig(AuthInterceptor authInterceptor) {
+        this.authInterceptor = authInterceptor;
     }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(authorizationInterceptor)
-                .addPathPatterns("/api/**");
+        registry.addInterceptor(authInterceptor)
+                .addPathPatterns("/api/**")
+                .excludePathPatterns("/api/auth/**");
     }
 }

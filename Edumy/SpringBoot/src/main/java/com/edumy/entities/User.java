@@ -14,33 +14,35 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "users")
+@Table(name = "Users")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long userId;
+    @Column(name = "UserId")
+    private Integer userId;
 
-    @Column(nullable = false, length = 100)
+    @Column(name = "FullName", nullable = false)
     private String fullName;
 
-    @Column(nullable = false, unique = true, length = 254)
+    @Column(name = "Email", nullable = false, unique = true, length = 450)
     private String email;
 
-    @Column(nullable = false)
+    @Column(name = "PasswordHash")
     private String passwordHash;
 
-    @Column(nullable = false, length = 32)
+    @Column(name = "Role", nullable = false)
     private String role = "Student";
 
-    @Column(nullable = false)
+    @Column(name = "IsActive", nullable = false)
     private boolean active = true;
 
-    @Column(nullable = false)
+    @Column(name = "CreatedAt", nullable = false)
     private Instant createdAt = Instant.now();
 
-    @Column(length = 128)
+    @Column(name = "ResetToken")
     private String resetToken;
 
+    @Column(name = "ResetTokenExpiry")
     private Instant resetTokenExpiry;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
@@ -55,7 +57,7 @@ public class User {
         this.passwordHash = passwordHash;
     }
 
-    public Long getUserId() {
+    public Integer getUserId() {
         return userId;
     }
 
