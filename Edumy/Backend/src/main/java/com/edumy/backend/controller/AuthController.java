@@ -26,6 +26,9 @@ public class AuthController {
     @Autowired
     private RefreshTokenRepository refreshTokenRepository;
 
+    @Autowired
+    private com.edumy.backend.security.JwtTokenProvider jwtTokenProvider;
+
     private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @PostMapping("/register")
@@ -181,10 +184,7 @@ public class AuthController {
     }
 
     private String generateJwtToken(User user) {
-        String payload = String.format("{\"sub\":\"%s\", \"email\":\"%s\", \"unique_name\":\"%s\", \"role\":\"%s\"}", 
-            user.getUserId(), user.getEmail(), user.getFullName(), user.getRole());
-        String encodedPayload = java.util.Base64.getEncoder().encodeToString(payload.getBytes());
-        return "header." + encodedPayload + ".signature";
+        return jwtTokenProvider.generateToken(user.getUserId(), user.getEmail(), user.getRole());
     }
     
     private String generateRefreshToken() {

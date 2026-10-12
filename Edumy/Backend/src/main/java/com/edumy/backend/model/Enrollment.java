@@ -32,6 +32,10 @@ public class Enrollment {
     @Builder.Default
     private Integer progressPercentage = 0;
 
+    @Column(name = "Status")
+    @Builder.Default
+    private String status = "ACTIVE";
+
     @Column(name = "CompletedAt")
     private LocalDateTime completedAt;
 

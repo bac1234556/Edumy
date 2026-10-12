@@ -1,155 +1,127 @@
 package com.edumy.backend.controller;
 
-import com.edumy.backend.model.*;
-import com.edumy.backend.repository.*;
+import com.edumy.backend.dto.PaymentCreateRequestDto;
+import com.edumy.backend.dto.PaymentUrlResponseDto;
+import com.edumy.backend.dto.PaymentWebhookResponseDto;
+import com.edumy.backend.service.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import java.time.LocalDateTime;
-import java.util.Map;
+
 import java.util.HashMap;
-import java.util.List;
-import lombok.Data;
+import java.util.Map;
 
 @RestController
-@RequestMapping("/api/Payment")
+@RequestMapping
 public class PaymentController {
 
     @Autowired
-    private OrderRepository orderRepository;
-
-    @Autowired
-    private EnrollmentRepository enrollmentRepository;
-
-    @Autowired
-    private CartRepository cartRepository;
-
-    @Autowired
-    private CourseRepository courseRepository;
-    
-    @Autowired
-    private CartItemRepository cartItemRepository;
+    private PaymentService paymentService;
 
     private Integer getCurrentUserId() {
         try {
-            return Integer.parseInt(SecurityContextHolder.getContext().getAuthentication().getName());
+            String name = SecurityContextHolder.getContext().getAuthentication().getName();
+            return (name != null && !name.equalsIgnoreCase("anonymousUser")) ? Integer.parseInt(name) : null;
         } catch (Exception e) {
             return null;
         }
     }
 
     /**
-     * Client-initiated callback from Mock Gateway / Stripe Redirect
+     * POST /api/v1/payments/create-url
+     * Tạo đường dẫn thanh toán qua cổng thanh toán VNPay / MoMo / Stripe
      */
-    @PostMapping("/callback")
-    public ResponseEntity<?> paymentCallback(@RequestBody PaymentResultDto result) {
-        Integer userId = getCurrentUserId();
-        if (userId == null) return ResponseEntity.status(401).build();
-
-        Order order = orderRepository.findById(result.getOrderId()).orElse(null);
-        if (order == null || !userId.equals(order.getUserId())) {
-            return ResponseEntity.status(404).body("Order not found");
+    @PostMapping({"/api/v1/payments/create-url", "/api/Payment/create-url"})
+    public ResponseEntity<?> createPaymentUrl(@RequestBody PaymentCreateRequestDto request) {
+        Integer currentUserId = getCurrentUserId();
+        if (currentUserId == null) {
+            return ResponseEntity.status(401).body(Map.of("message", "Yêu cầu đăng nhập trước khi thanh toán."));
         }
 
-        if (!"Pending".equals(order.getStatus())) {
-            return ResponseEntity.ok(Map.of(
-                "message", "Order already processed.",
-                "status", order.getStatus()
-            ));
+        try {
+            PaymentUrlResponseDto response = paymentService.createPaymentUrl(request, currentUserId);
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException | java.util.NoSuchElementException ex) {
+            return ResponseEntity.badRequest().body(Map.of("message", ex.getMessage()));
+        } catch (org.springframework.security.access.AccessDeniedException ex) {
+            return ResponseEntity.status(403).body(Map.of("message", ex.getMessage()));
+        } catch (Exception ex) {
+            return ResponseEntity.internalServerError().body(Map.of("message", "Lỗi tạo đường dẫn thanh toán: " + ex.getMessage()));
         }
-
-        processOrderCompletion(order, result.isSuccess());
-
-        return ResponseEntity.ok(Map.of(
-            "message", result.isSuccess() ? "Payment successful" : "Payment cancelled",
-            "status", order.getStatus(),
-            "orderId", order.getOrderId()
-        ));
     }
 
     /**
-     * Server-to-server IPN / Webhook endpoint from payment provider
+     * GET /api/v1/payments/vnpay-ipn
+     * Webhook server-to-server callback chuẩn từ cổng VNPay (IPN)
+     * Xác thực HMAC SHA512 Checksum và phản hồi định dạng chuẩn VNPay (RspCode, Message)
      */
-    @PostMapping("/webhook")
-    public ResponseEntity<?> handleIpnWebhook(@RequestBody WebhookPayloadDto payload,
-                                              @RequestHeader(value = "X-Webhook-Signature", required = false) String signature) {
-        if (payload == null || payload.getOrderId() == null) {
-            return ResponseEntity.badRequest().body("Invalid webhook payload");
-        }
+    @GetMapping({"/api/v1/payments/vnpay-ipn", "/api/Payment/ipn"})
+    public ResponseEntity<?> handleVnPayIpn(@RequestParam Map<String, String> allParams) {
+        PaymentWebhookResponseDto result = paymentService.processIpnWebhook(allParams);
 
-        Order order = orderRepository.findById(payload.getOrderId()).orElse(null);
-        if (order == null) {
-            return ResponseEntity.status(404).body("Order not found");
-        }
+        // VNPay IPN bắt buộc trả về JSON { "RspCode": "xx", "Message": "..." }
+        Map<String, String> response = new HashMap<>();
+        response.put("RspCode", result.getRspCode());
+        response.put("Message", result.getMessage());
 
-        // Idempotent processing: if already completed, acknowledge success to gateway immediately
-        if ("Completed".equals(order.getStatus())) {
-            return ResponseEntity.ok(Map.of("status", "ALREADY_COMPLETED", "message", "Order previously processed"));
-        }
-
-        boolean success = "SUCCESS".equalsIgnoreCase(payload.getTransactionStatus()) || 
-                          "COMPLETED".equalsIgnoreCase(payload.getTransactionStatus()) ||
-                          payload.isSuccess();
-
-        processOrderCompletion(order, success);
-
-        return ResponseEntity.ok(Map.of(
-            "status", "PROCESSED",
-            "orderId", order.getOrderId(),
-            "orderStatus", order.getStatus()
-        ));
+        return ResponseEntity.ok(response);
     }
 
-    private synchronized void processOrderCompletion(Order order, boolean isSuccess) {
-        if (isSuccess) {
-            order.setStatus("Completed");
-            Integer orderUserId = order.getUserId();
+    /**
+     * GET /api/v1/payments/vnpay-return
+     * Callback trả về trên trình duyệt khi người dùng hoàn tất thanh toán trên VNPay
+     */
+    @GetMapping({"/api/v1/payments/vnpay-return", "/api/Payment/vnpay-return"})
+    public ResponseEntity<?> handleVnPayReturn(@RequestParam Map<String, String> allParams) {
+        PaymentWebhookResponseDto result = paymentService.processClientCallback(allParams);
+        return ResponseEntity.ok(result);
+    }
 
-            if (order.getOrderItems() != null) {
-                for (OrderItem item : order.getOrderItems()) {
-                    boolean existingEnrollment = enrollmentRepository.existsByUserIdAndCourseId(orderUserId, item.getCourseId());
-                    
-                    if (!existingEnrollment) {
-                        Enrollment enrollment = new Enrollment();
-                        enrollment.setUserId(orderUserId);
-                        enrollment.setCourseId(item.getCourseId());
-                        enrollment.setEnrolledAt(LocalDateTime.now());
-                        enrollment.setProgressPercentage(0);
-                        enrollmentRepository.save(enrollment);
-                    }
-                    
-                    Course course = courseRepository.findById(item.getCourseId()).orElse(null);
-                    if (course != null) {
-                        course.setStudentCount(course.getStudentCount() + 1);
-                        courseRepository.save(course);
-                    }
-                }
-            }
-
-            Cart cart = cartRepository.findByUserId(orderUserId);
-            if (cart != null && cart.getCartItems() != null && !cart.getCartItems().isEmpty()) {
-                cartItemRepository.deleteAll(cart.getCartItems());
-            }
-        } else {
-            order.setStatus("Cancelled");
+    /**
+     * POST /api/v1/payments/webhook
+     * Webhook chung (MoMo, Stripe hoặc hệ thống thanh toán bên thứ ba)
+     */
+    @PostMapping({"/api/v1/payments/webhook", "/api/Payment/webhook"})
+    public ResponseEntity<?> handleGenericWebhook(@RequestBody(required = false) Map<String, Object> body,
+                                                  @RequestParam(required = false) Map<String, String> params,
+                                                  @RequestHeader(value = "X-Webhook-Signature", required = false) String signature) {
+        Map<String, String> combinedParams = new HashMap<>();
+        if (params != null) {
+            combinedParams.putAll(params);
+        }
+        if (body != null) {
+            body.forEach((k, v) -> {
+                if (v != null) combinedParams.put(k, v.toString());
+            });
+        }
+        if (signature != null) {
+            combinedParams.putIfAbsent("vnp_SecureHash", signature);
         }
 
-        orderRepository.save(order);
+        PaymentWebhookResponseDto result = paymentService.processIpnWebhook(combinedParams);
+        return ResponseEntity.ok(result);
     }
-}
 
-@Data
-class PaymentResultDto {
-    private Integer orderId;
-    private boolean success;
-}
+    /**
+     * POST /api/Payment/callback
+     * Legacy callback cho client mock hoặc frontend cũ
+     */
+    @PostMapping("/api/Payment/callback")
+    public ResponseEntity<?> legacyPaymentCallback(@RequestBody Map<String, Object> payload) {
+        Map<String, String> params = new HashMap<>();
+        payload.forEach((k, v) -> {
+            if (v != null) params.put(k, v.toString());
+        });
+        
+        // Mock fallback hash if testing
+        if (!params.containsKey("vnp_SecureHash") && params.containsKey("orderId")) {
+            params.put("vnp_TxnRef", params.get("orderId"));
+            params.put("vnp_ResponseCode", Boolean.TRUE.equals(payload.get("success")) ? "00" : "99");
+            params.put("vnp_TransactionStatus", "00");
+        }
 
-@Data
-class WebhookPayloadDto {
-    private Integer orderId;
-    private String transactionId;
-    private String transactionStatus;
-    private boolean success;
-    private Double amount;
+        PaymentWebhookResponseDto result = paymentService.processIpnWebhook(params);
+        return ResponseEntity.ok(result);
+    }
 }

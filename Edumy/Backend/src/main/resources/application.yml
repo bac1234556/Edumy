@@ -31,6 +31,13 @@ stripe:
   publishable-key: "pk_test_51..."
   webhook-secret: "whsec_..."
 
+payment:
+  vnpay:
+    tmn-code: "EDUMY01"
+    hash-secret: "edumy_vnpay_secret_key_2026_super_secure_checksum_key"
+    payment-url: "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html"
+    return-url: "http://localhost:5173/payment/vnpay-return"
+
 machine-learning:
   base-url: "http://localhost:8000"
 
