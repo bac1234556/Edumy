@@ -321,34 +321,41 @@ public class CoursesController {
         Integer userId = getCurrentUserId();
         if (userId == null) return ResponseEntity.status(401).build();
 
-        boolean isEnrolled = enrollmentRepository.existsByUserIdAndCourseId(userId, courseId);
-        if (!isEnrolled) return ResponseEntity.status(403).body("You must be enrolled to complete lessons.");
+        boolean isEnrolled = enrollmentRepository.existsByUserIdAndCourseIdAndStatus(userId, courseId, "ACTIVE");
+        if (!isEnrolled) {
+            return ResponseEntity.status(403).body(Map.of("message", "Bạn phải có lượt ghi danh ACTIVE để hoàn thành bài học."));
+        }
 
-        LessonProgress progress = lessonProgressRepository.findAll().stream()
-                .filter(lp -> userId.equals(lp.getUserId()) && courseId.equals(lp.getCourseId()) && lessonId.equals(lp.getLessonId()))
-                .findFirst().orElse(null);
+        boolean alreadyCompleted = lessonProgressRepository.existsByUserIdAndCourseIdAndLessonId(userId, courseId, lessonId);
 
-        if (progress == null) {
-            progress = new LessonProgress();
+        if (!alreadyCompleted) {
+            LessonProgress progress = new LessonProgress();
             progress.setUserId(userId);
             progress.setCourseId(courseId);
             progress.setLessonId(lessonId);
             progress.setCompletedAt(LocalDateTime.now());
             lessonProgressRepository.save(progress);
 
-            long totalLessons = lessonRepository.findAll().stream().filter(l -> l.getSection() != null && courseId.equals(l.getSection().getCourseId())).count();
-            long completedLessons = lessonProgressRepository.findAll().stream().filter(lp -> userId.equals(lp.getUserId()) && courseId.equals(lp.getCourseId())).count();
+            // Truy vấn COUNT tối ưu qua CSDL thay vì load toàn bộ bảng vào RAM
+            long totalLessons = lessonRepository.countLessonsByCourseId(courseId);
+            long completedLessons = lessonProgressRepository.countCompletedLessonsByUserAndCourse(userId, courseId);
 
-            if (totalLessons > 0 && completedLessons == totalLessons) {
-                Enrollment enrollment = enrollmentRepository.findAll().stream()
-                        .filter(e -> userId.equals(e.getUserId()) && courseId.equals(e.getCourseId()))
-                        .findFirst().orElse(null);
-                if (enrollment != null) {
-                    enrollment.setProgressPercentage(100);
-                    enrollmentRepository.save(enrollment);
+            int progressPercentage = (totalLessons > 0)
+                    ? (int) Math.min(100, Math.round((double) completedLessons / totalLessons * 100))
+                    : 100;
+
+            Enrollment enrollment = enrollmentRepository.findByUserIdAndCourseId(userId, courseId);
+            if (enrollment != null) {
+                enrollment.setProgressPercentage(progressPercentage);
+                if (progressPercentage >= 100 && enrollment.getCompletedAt() == null) {
+                    enrollment.setCompletedAt(LocalDateTime.now());
                 }
+                enrollmentRepository.save(enrollment);
+            }
 
-                boolean hasCert = certificateRepository.findAll().stream().anyMatch(c -> userId.equals(c.getUserId()) && courseId.equals(c.getCourseId()));
+            // Tự động sinh Certificate khi hoàn thành toàn bộ bài học
+            if (totalLessons > 0 && completedLessons >= totalLessons) {
+                boolean hasCert = certificateRepository.existsByUserIdAndCourseId(userId, courseId);
                 if (!hasCert) {
                     Certificate cert = new Certificate();
                     cert.setUserId(userId);
@@ -359,7 +366,8 @@ public class CoursesController {
                 }
             }
         }
-        return ResponseEntity.ok(Map.of("message", "Lesson completed"));
+
+        return ResponseEntity.ok(Map.of("message", "Đã ghi nhận hoàn thành bài học thành công."));
     }
 
     @GetMapping("/{courseId}/progress")
@@ -368,19 +376,16 @@ public class CoursesController {
         Integer userId = getCurrentUserId();
         if (userId == null) return ResponseEntity.status(401).build();
 
-        long totalLessons = lessonRepository.findAll().stream().filter(l -> l.getSection() != null && courseId.equals(l.getSection().getCourseId())).count();
-        List<Integer> completedLessons = lessonProgressRepository.findAll().stream()
-                .filter(lp -> userId.equals(lp.getUserId()) && courseId.equals(lp.getCourseId()))
-                .map(LessonProgress::getLessonId).collect(Collectors.toList());
+        long totalLessons = lessonRepository.countLessonsByCourseId(courseId);
+        List<LessonProgress> progresses = lessonProgressRepository.findByUserIdAndCourseId(userId, courseId);
+        List<Integer> completedLessonIds = progresses.stream().map(LessonProgress::getLessonId).collect(Collectors.toList());
 
-        double percentage = totalLessons > 0 ? (double) completedLessons.size() / totalLessons * 100 : 0;
+        double percentage = totalLessons > 0 ? (double) completedLessonIds.size() / totalLessons * 100 : 0;
 
-        Certificate cert = certificateRepository.findAll().stream()
-                .filter(c -> userId.equals(c.getUserId()) && courseId.equals(c.getCourseId()))
-                .findFirst().orElse(null);
+        Certificate cert = certificateRepository.findByUserIdAndCourseId(userId, courseId);
 
         Map<String, Object> res = new HashMap<>();
-        res.put("completedLessonIds", completedLessons);
+        res.put("completedLessonIds", completedLessonIds);
         res.put("totalLessons", totalLessons);
         res.put("progressPercentage", Math.round(percentage * 100.0) / 100.0);
         res.put("certificateId", cert != null ? cert.getId() : null);
@@ -398,29 +403,34 @@ public class CoursesController {
         Course course = courseRepository.findById(id).orElse(null);
         if (course == null) return ResponseEntity.notFound().build();
 
-        boolean isEnrolled = enrollmentRepository.existsByUserIdAndCourseId(userId, id);
-        if (!isEnrolled) return ResponseEntity.status(403).body("You must be enrolled to leave a review.");
+        boolean isEnrolled = enrollmentRepository.existsByUserIdAndCourseIdAndStatus(userId, id, "ACTIVE");
+        if (!isEnrolled) {
+            return ResponseEntity.status(403).body(Map.of("message", "Bạn phải đăng ký và có tài khoản ACTIVE mới được đánh giá khóa học."));
+        }
 
-        boolean alreadyReviewed = reviewRepository.findAll().stream().anyMatch(r -> userId.equals(r.getUserId()) && id.equals(r.getCourseId()));
-        if (alreadyReviewed) return ResponseEntity.badRequest().body("You have already reviewed this course.");
+        boolean alreadyReviewed = reviewRepository.existsByUserIdAndCourseId(userId, id);
+        if (alreadyReviewed) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Bạn đã gửi đánh giá cho khóa học này rồi."));
+        }
 
-        String sentimentLabel = "Unavailable";
-        Double sentimentScore = null;
+        if (dto.getRating() == null || dto.getRating() < 1 || dto.getRating() > 5) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Số sao đánh giá phải từ 1 đến 5 sao."));
+        }
 
         Review review = new Review();
         review.setUserId(userId);
         review.setCourseId(id);
         review.setRating(dto.getRating());
         review.setComment(dto.getComment());
-        review.setSentimentLabel(sentimentLabel);
-        review.setSentimentScore(sentimentScore);
+        review.setSentimentLabel("Neutral");
+        review.setSentimentScore(0.5);
         review.setCreatedAt(LocalDateTime.now());
         
         review = reviewRepository.save(review);
         
-        List<Review> courseReviews = reviewRepository.findAll().stream().filter(r -> id.equals(r.getCourseId())).collect(Collectors.toList());
+        List<Review> courseReviews = reviewRepository.findByCourseId(id);
         double avg = courseReviews.stream().mapToInt(Review::getRating).average().orElse(0.0);
-        course.setAverageRating(avg);
+        course.setAverageRating(Math.round(avg * 10.0) / 10.0);
         courseRepository.save(course);
 
         return ResponseEntity.ok(review);

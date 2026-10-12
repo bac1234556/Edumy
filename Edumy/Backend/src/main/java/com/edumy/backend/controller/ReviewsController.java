@@ -56,26 +56,35 @@ public class ReviewsController {
         Integer userId = getCurrentUserId();
         if (userId == null) return ResponseEntity.status(401).build();
 
-        boolean isEnrolled = enrollmentRepository.existsByUserIdAndCourseId(userId, courseId);
-        if (!isEnrolled) return ResponseEntity.badRequest().body(Map.of("message", "You must be enrolled to review this course."));
+        Course course = courseRepository.findById(courseId).orElse(null);
+        if (course == null) return ResponseEntity.notFound().build();
+
+        boolean isEnrolled = enrollmentRepository.existsByUserIdAndCourseIdAndStatus(userId, courseId, "ACTIVE");
+        if (!isEnrolled) {
+            return ResponseEntity.status(403).body(Map.of("message", "Bạn phải có trạng thái ghi danh ACTIVE mới được đánh giá khóa học này."));
+        }
+
+        boolean alreadyReviewed = reviewRepository.existsByUserIdAndCourseId(userId, courseId);
+        if (alreadyReviewed) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Bạn đã đánh giá khóa học này rồi. Vui lòng cập nhật đánh giá nếu muốn thay đổi."));
+        }
+
+        if (review.getRating() == null || review.getRating() < 1 || review.getRating() > 5) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Số sao đánh giá phải từ 1 đến 5 sao."));
+        }
 
         review.setSentimentLabel("Neutral");
         review.setSentimentScore(0.5);
-
         review.setCourseId(courseId);
         review.setUserId(userId);
         review.setCreatedAt(LocalDateTime.now());
 
         Review saved = reviewRepository.save(review);
 
-        List<Review> courseReviews = reviewRepository.findAll().stream().filter(r -> courseId.equals(r.getCourseId())).collect(Collectors.toList());
+        List<Review> courseReviews = reviewRepository.findByCourseId(courseId);
         double avg = courseReviews.stream().mapToInt(Review::getRating).average().orElse(0.0);
-        
-        Course course = courseRepository.findById(courseId).orElse(null);
-        if (course != null) {
-            course.setAverageRating(Math.round(avg * 10.0) / 10.0);
-            courseRepository.save(course);
-        }
+        course.setAverageRating(Math.round(avg * 10.0) / 10.0);
+        courseRepository.save(course);
 
         return ResponseEntity.created(java.net.URI.create("/api/Reviews/course/" + courseId)).body(saved);
     }

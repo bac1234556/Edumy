@@ -42,6 +42,7 @@ public class SecurityConfig {
                 // Payment callbacks & Webhooks: public endpoints called by payment gateways
                 .requestMatchers("/api/v1/payments/vnpay-ipn", "/api/v1/payments/vnpay-return", "/api/v1/payments/webhook", 
                                  "/api/payment/webhook", "/api/Payment/webhook", "/api/Payment/ipn/**").permitAll()
+                .requestMatchers("/api/coupons/validate", "/api/Coupons/validate").permitAll()
                 .requestMatchers("/uploads/**").permitAll()
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 .anyRequest().authenticated()

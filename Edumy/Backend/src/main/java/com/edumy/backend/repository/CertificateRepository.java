@@ -8,4 +8,5 @@ import org.springframework.stereotype.Repository;
 public interface CertificateRepository extends JpaRepository<Certificate, Integer> {
     Certificate findByUserIdAndCourseId(Integer userId, Integer courseId);
     Certificate findByCertificateUrl(String certificateUrl);
+    boolean existsByUserIdAndCourseId(Integer userId, Integer courseId);
 }
