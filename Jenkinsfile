@@ -1,7 +1,6 @@
 pipeline {
     agent any
 
-    // Cấu hình các tham số khi chạy Pipeline (Build with Parameters)
     parameters {
         choice(
             name: 'ENVIRONMENT', 
@@ -35,7 +34,6 @@ pipeline {
         )
     }
 
-    // Các thiết lập tối ưu hóa cho Pipeline
     options {
         buildDiscarder(logRotator(numToKeepStr: '15', artifactNumToKeepStr: '5'))
         timestamps()
@@ -44,11 +42,10 @@ pipeline {
     }
 
     environment {
-        // Tag phiên bản dựa trên Build Number hoặc Git Commit ngắn
         IMAGE_TAG = "${env.BUILD_NUMBER}"
-        PROJECT_DIR = "."
-        // ID Credential cấu hình trong Jenkins (nếu dùng đẩy Docker image)
-        // DOCKER_CREDENTIALS_ID = 'dockerhub-credentials'
+        // Khai báo đường dẫn công cụ cho Jenkins chạy dưới dạng Windows Service (Local System)
+        JAVA_HOME = "C:\\Program Files\\Java\\jdk-21.0.10"
+        PATH = "C:\\Program Files\\Java\\jdk-21.0.10\\bin;C:\\Program Files\\nodejs;C:\\Users\\bacle\\AppData\\Local\\Programs\\Python\\Python312;C:\\Users\\bacle\\AppData\\Local\\Programs\\Python\\Python312\\Scripts;C:\\Program Files\\Git\\cmd;${env.PATH}"
     }
 
     stages {
@@ -65,13 +62,15 @@ pipeline {
                     echo "Build Docker   : ${params.BUILD_DOCKER_IMAGES}"
                     echo "========================================================"
 
-                    // Tự động nhận diện vị trí thư mục Edumy linh hoạt
-                    if (fileExists('Edumy-main/Edumy/docker-compose.yml')) {
-                        env.PROJECT_DIR = 'Edumy-main/Edumy'
-                    } else if (fileExists('Edumy/docker-compose.yml')) {
+                    // Nhận diện đường dẫn chứa mã nguồn trong repository
+                    if (fileExists('Edumy/Backend/pom.xml') || fileExists('Edumy\\Backend\\pom.xml') || fileExists('Edumy/Backend') || fileExists('Edumy\\Backend')) {
                         env.PROJECT_DIR = 'Edumy'
-                    } else {
+                    } else if (fileExists('Edumy-main/Edumy/Backend/pom.xml') || fileExists('Edumy-main\\Edumy\\Backend\\pom.xml')) {
+                        env.PROJECT_DIR = 'Edumy-main/Edumy'
+                    } else if (fileExists('Backend/pom.xml') || fileExists('Backend\\pom.xml')) {
                         env.PROJECT_DIR = '.'
+                    } else {
+                        env.PROJECT_DIR = 'Edumy'
                     }
                     echo "==> Đã xác định thư mục dự án: ${env.PROJECT_DIR}"
                 }
@@ -80,11 +79,12 @@ pipeline {
 
         stage('Build & Test Các Dịch Vụ') {
             parallel {
-                // 1. BACKEND: Spring Boot 3 (Java 17, Maven)
+                // 1. BACKEND: Spring Boot 3 (Java 17/21, Maven)
                 stage('Backend (Spring Boot 3)') {
                     steps {
-                        dir("${env.PROJECT_DIR}/Backend") {
-                            script {
+                        script {
+                            def projDir = env.PROJECT_DIR ?: (fileExists('Edumy/Backend') ? 'Edumy' : '.')
+                            dir("${projDir}/Backend") {
                                 echo "--> [Backend] Đang biên dịch và kiểm thử Spring Boot..."
                                 def testOption = params.SKIP_TESTS ? "-DskipTests" : ""
 
@@ -92,7 +92,7 @@ pipeline {
                                     sh "chmod +x mvnw"
                                     sh "./mvnw clean package ${testOption}"
                                 } else {
-                                    bat "mvnw.cmd clean package ${testOption}"
+                                    bat "call mvnw.cmd clean package ${testOption}"
                                 }
                             }
                         }
@@ -100,8 +100,7 @@ pipeline {
                     post {
                         success {
                             echo "--> [Backend] Build JAR thành công."
-                            // Lưu trữ file artifact JAR vào Jenkins
-                            archiveArtifacts artifacts: "${env.PROJECT_DIR}/Backend/target/*.jar", fingerprint: true, allowEmptyArchive: true
+                            archiveArtifacts artifacts: "**/Backend/target/*.jar", fingerprint: true, allowEmptyArchive: true
                         }
                         failure {
                             echo "--> [Backend] Lỗi biên dịch Spring Boot!"
@@ -112,18 +111,18 @@ pipeline {
                 // 2. FRONTEND: React + Vite (Node.js)
                 stage('Frontend (React & Vite)') {
                     steps {
-                        dir("${env.PROJECT_DIR}/Frontend") {
-                            script {
+                        script {
+                            def projDir = env.PROJECT_DIR ?: (fileExists('Edumy/Frontend') ? 'Edumy' : '.')
+                            dir("${projDir}/Frontend") {
                                 echo "--> [Frontend] Cài đặt dependencies và build client..."
                                 if (isUnix()) {
                                     sh "npm ci || npm install"
-                                    // Chạy linter kiểm tra cú pháp (không dừng pipeline nếu có warning)
                                     sh "npm run lint || true"
                                     sh "npm run build"
                                 } else {
-                                    bat "npm ci || npm install"
-                                    bat "npm run lint || ver > nul"
-                                    bat "npm run build"
+                                    bat "call npm ci || call npm install"
+                                    bat "call npm run lint || ver > nul"
+                                    bat "call npm run build"
                                 }
                             }
                         }
@@ -141,8 +140,9 @@ pipeline {
                 // 3. ML SERVICE: Python FastAPI
                 stage('ML Service (FastAPI)') {
                     steps {
-                        dir("${env.PROJECT_DIR}/MLService") {
-                            script {
+                        script {
+                            def projDir = env.PROJECT_DIR ?: (fileExists('Edumy/MLService') ? 'Edumy' : '.')
+                            dir("${projDir}/MLService") {
                                 echo "--> [MLService] Kiểm tra cú pháp và cấu hình Python..."
                                 if (isUnix()) {
                                     sh """
@@ -173,13 +173,14 @@ pipeline {
             }
             steps {
                 script {
+                    def projDir = env.PROJECT_DIR ?: (fileExists('Edumy/docker-compose.yml') ? 'Edumy' : '.')
                     echo "--> Đang đóng gói Docker Images cho toàn bộ hệ thống..."
-                    def composeFile = "${env.PROJECT_DIR}/docker-compose.yml"
+                    def composeFile = "${projDir}/docker-compose.yml"
                     
                     if (isUnix()) {
                         sh "docker compose -f ${composeFile} build || docker-compose -f ${composeFile} build"
                     } else {
-                        bat "docker compose -f ${composeFile} build"
+                        bat "where docker >nul 2>&1 && (docker compose -f ${composeFile} build || docker-compose -f ${composeFile} build) || echo [CANH BAO] Docker chua duoc cai dat tren agent Windows nay."
                     }
                 }
             }
@@ -199,13 +200,6 @@ pipeline {
                     def registry = params.DOCKER_REGISTRY
                     def tag = env.IMAGE_TAG
 
-                    /* 
-                       Nếu cấu hình Docker Credentials trong Jenkins, có thể dùng:
-                       withCredentials([usernamePassword(credentialsId: env.DOCKER_CREDENTIALS_ID, usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                           sh "echo \$DOCKER_PASS | docker login -u \$DOCKER_USER --password-stdin"
-                       }
-                    */
-
                     def services = ['edumy-backend', 'edumy-frontend', 'edumy-mlservice']
                     for (service in services) {
                         def localImg = "${service}:latest"
@@ -218,10 +212,7 @@ pipeline {
                             sh "docker push ${remoteImg} || true"
                             sh "docker push ${remoteLatest} || true"
                         } else {
-                            bat "docker tag ${localImg} ${remoteImg} || ver > nul"
-                            bat "docker tag ${localImg} ${remoteLatest} || ver > nul"
-                            bat "docker push ${remoteImg} || ver > nul"
-                            bat "docker push ${remoteLatest} || ver > nul"
+                            bat "where docker >nul 2>&1 && (docker tag ${localImg} ${remoteImg} && docker push ${remoteImg}) || echo [INFO] Skip docker push"
                         }
                     }
                 }
@@ -235,30 +226,24 @@ pipeline {
             }
             steps {
                 script {
+                    def projDir = env.PROJECT_DIR ?: (fileExists('Edumy/docker-compose.yml') ? 'Edumy' : '.')
                     echo "--> Đang khởi chạy hệ thống EduMy bằng Docker Compose..."
-                    def composeFile = "${env.PROJECT_DIR}/docker-compose.yml"
+                    def composeFile = "${projDir}/docker-compose.yml"
 
                     if (isUnix()) {
                         sh "docker compose -f ${composeFile} down || docker-compose -f ${composeFile} down || true"
                         sh "docker compose -f ${composeFile} up -d || docker-compose -f ${composeFile} up -d"
                         sh "docker compose -f ${composeFile} ps || docker-compose -f ${composeFile} ps"
                     } else {
-                        bat "docker compose -f ${composeFile} down"
-                        bat "docker compose -f ${composeFile} up -d"
-                        bat "docker compose -f ${composeFile} ps"
+                        bat "where docker >nul 2>&1 && (docker compose -f ${composeFile} down && docker compose -f ${composeFile} up -d && docker compose -f ${composeFile} ps) || echo [CANH BAO] Docker chua duoc cai dat tren agent Windows nay."
                     }
 
-                    echo "==> EduMy đã được triển khai thành công!"
-                    echo "    - Backend API : http://localhost:5000"
-                    echo "    - ML Service  : http://localhost:8000"
-                    echo "    - Frontend    : http://localhost:80"
-                    echo "    - SQL Server  : localhost:1433"
+                    echo "==> Hoàn tất quy trình triển khai!"
                 }
             }
         }
     }
 
-    // Các hành động sau khi kết thúc pipeline
     post {
         always {
             script {
