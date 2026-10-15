@@ -137,6 +137,7 @@ pipeline {
                                         where npm >nul 2>&1
                                         if %ERRORLEVEL% NEQ 0 (
                                             echo [CANH BAO] npm khong tim thay tren agent, bo qua build client frontend.
+                                            exit /b 0
                                         ) else (
                                             call npm ci || call npm install
                                             call npm run lint || ver > nul
@@ -167,7 +168,13 @@ pipeline {
                                     bat """
                                         @echo off
                                         set "PATH=C:\\Users\\bacle\\AppData\\Local\\Programs\\Python\\Python312;C:\\Users\\bacle\\AppData\\Local\\Programs\\Python\\Python312\\Scripts;%PATH%"
-                                        python -m py_compile main.py || py -m py_compile main.py || echo [CANH BAO] Python khong tim thay tren agent, bo qua kiem tra cu phap.
+                                        where python >nul 2>&1 || where py >nul 2>&1
+                                        if %ERRORLEVEL% NEQ 0 (
+                                            echo [CANH BAO] Python khong tim thay tren agent, bo qua kiem tra cu phap.
+                                            exit /b 0
+                                        ) else (
+                                            python -m py_compile main.py || py -m py_compile main.py
+                                        )
                                     """
                                 }
                             }
@@ -194,9 +201,17 @@ pipeline {
                     def composeFile = "${projDir}/docker-compose.yml"
                     
                     if (isUnix()) {
-                        sh "docker compose -f ${composeFile} build || docker-compose -f ${composeFile} build"
+                        sh "docker compose -f ${composeFile} build || docker-compose -f ${composeFile} build || echo '[CANH BAO] Docker build that bai'"
                     } else {
-                        bat "where docker >nul 2>&1 && (docker compose -f ${composeFile} build || docker-compose -f ${composeFile} build) || echo [CANH BAO] Docker chua duoc cai dat tren agent Windows nay."
+                        bat """
+                            @echo off
+                            where docker >nul 2>&1
+                            if %ERRORLEVEL% NEQ 0 (
+                                echo [CANH BAO] Docker chua duoc cai dat tren agent Windows nay.
+                                exit /b 0
+                            )
+                            docker compose -f ${composeFile} build || docker-compose -f ${composeFile} build
+                        """
                     }
                 }
             }
@@ -228,7 +243,15 @@ pipeline {
                             sh "docker push ${remoteImg} || true"
                             sh "docker push ${remoteLatest} || true"
                         } else {
-                            bat "where docker >nul 2>&1 && (docker tag ${localImg} ${remoteImg} && docker push ${remoteImg}) || echo [INFO] Skip docker push"
+                            bat """
+                                @echo off
+                                where docker >nul 2>&1
+                                if %ERRORLEVEL% NEQ 0 (
+                                    echo [INFO] Skip docker push do docker khong tim thay
+                                    exit /b 0
+                                )
+                                docker tag ${localImg} ${remoteImg} && docker push ${remoteImg}
+                            """
                         }
                     }
                 }
@@ -251,7 +274,15 @@ pipeline {
                         sh "docker compose -f ${composeFile} up -d || docker-compose -f ${composeFile} up -d"
                         sh "docker compose -f ${composeFile} ps || docker-compose -f ${composeFile} ps"
                     } else {
-                        bat "where docker >nul 2>&1 && (docker compose -f ${composeFile} down && docker compose -f ${composeFile} up -d && docker compose -f ${composeFile} ps) || echo [CANH BAO] Docker chua duoc cai dat tren agent Windows nay."
+                        bat """
+                            @echo off
+                            where docker >nul 2>&1
+                            if %ERRORLEVEL% NEQ 0 (
+                                echo [CANH BAO] Docker chua duoc cai dat tren agent Windows nay.
+                                exit /b 0
+                            )
+                            docker compose -f ${composeFile} down && docker compose -f ${composeFile} up -d && docker compose -f ${composeFile} ps
+                        """
                     }
 
                     echo "==> Hoàn tất quy trình triển khai!"
