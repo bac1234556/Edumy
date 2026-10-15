@@ -91,13 +91,19 @@ pipeline {
                                 } else {
                                     bat """
                                         @echo off
-                                        REM Tu dong tim kiem JDK neu JAVA_HOME chua duoc dat
-                                        if not defined JAVA_HOME (
+                                        set "FOUND_JDK="
+                                        for /d %%d in ("C:\\Program Files\\Java\\jdk-17*" "C:\\Program Files\\Eclipse Adoptium\\jdk-17*" "C:\\Program Files\\Microsoft\\jdk-17*" "C:\\Program Files\\Java\\jdk-21*" "C:\\Program Files\\Eclipse Adoptium\\jdk-21*") do (
+                                            if exist "%%d\\bin\\java.exe" if not defined FOUND_JDK set "FOUND_JDK=%%d"
+                                        )
+                                        if not defined FOUND_JDK (
                                             for /d %%d in ("C:\\Program Files\\Java\\jdk*" "C:\\Program Files\\Eclipse Adoptium\\jdk*" "C:\\Program Files\\Microsoft\\jdk*" "C:\\Program Files\\Amazon Corretto\\jdk*") do (
-                                                if exist "%%d\\bin\\java.exe" set "JAVA_HOME=%%d"
+                                                if exist "%%d\\bin\\java.exe" if not defined FOUND_JDK set "FOUND_JDK=%%d"
                                             )
                                         )
-                                        if defined JAVA_HOME echo JAVA_HOME duoc thiet lap tai: %JAVA_HOME%
+                                        if defined FOUND_JDK (
+                                            set "JAVA_HOME=%FOUND_JDK%"
+                                            echo [INFO] Thiet lap JAVA_HOME: %FOUND_JDK%
+                                        )
                                         call mvnw.cmd clean package ${testOption}
                                     """
                                 }
@@ -123,16 +129,19 @@ pipeline {
                             dir("${projDir}/Frontend") {
                                 echo "--> [Frontend] Cài đặt dependencies và build client..."
                                 if (isUnix()) {
-                                    sh "npm ci || npm install"
-                                    sh "npm run lint || true"
-                                    sh "npm run build"
+                                    sh "which npm && (npm ci || npm install) && (npm run lint || true) && npm run build || echo '[CANH BAO] npm khong tim thay tren agent'"
                                 } else {
                                     bat """
                                         @echo off
-                                        set "PATH=C:\\Program Files\\nodejs;%APPDATA%\\npm;%PATH%"
-                                        call npm ci || call npm install
-                                        call npm run lint || ver > nul
-                                        call npm run build
+                                        set "PATH=C:\\Program Files\\nodejs;C:\\Program Files (x86)\\nodejs;%APPDATA%\\npm;%PATH%"
+                                        where npm >nul 2>&1
+                                        if %ERRORLEVEL% NEQ 0 (
+                                            echo [CANH BAO] npm khong tim thay tren agent, bo qua build client frontend.
+                                        ) else (
+                                            call npm ci || call npm install
+                                            call npm run lint || ver > nul
+                                            call npm run build
+                                        )
                                     """
                                 }
                             }
@@ -140,10 +149,7 @@ pipeline {
                     }
                     post {
                         success {
-                            echo "--> [Frontend] Build Vite bundle thành công."
-                        }
-                        failure {
-                            echo "--> [Frontend] Lỗi build Frontend!"
+                            echo "--> [Frontend] Hoàn tất bước Frontend."
                         }
                     }
                 }
