@@ -43,9 +43,6 @@ pipeline {
 
     environment {
         IMAGE_TAG = "${env.BUILD_NUMBER}"
-        // Cú pháp PATH+ của Jenkins giúp bổ sung an toàn vào PATH mà KHÔNG ghi đè làm mất C:\Windows\System32
-        PATH+NODE = "C:\\Program Files\\nodejs"
-        PATH+GIT  = "C:\\Program Files\\Git\\cmd"
     }
 
     stages {
@@ -61,14 +58,6 @@ pipeline {
                     echo "Skip Tests     : ${params.SKIP_TESTS}"
                     echo "Build Docker   : ${params.BUILD_DOCKER_IMAGES}"
                     echo "========================================================"
-
-                    // In thông tin môi trường để kiểm tra
-                    if (isUnix()) {
-                        sh "which java || true"
-                    } else {
-                        bat "where java || true"
-                        bat "where npm || true"
-                    }
 
                     // Nhận diện đường dẫn chứa mã nguồn trong repository
                     if (fileExists('Edumy/Backend/pom.xml') || fileExists('Edumy\\Backend\\pom.xml') || fileExists('Edumy/Backend') || fileExists('Edumy\\Backend')) {
@@ -87,7 +76,7 @@ pipeline {
 
         stage('Build & Test Các Dịch Vụ') {
             parallel {
-                // 1. BACKEND: Spring Boot 3 (Java 17/21, Maven)
+                // 1. BACKEND: Spring Boot 3 (Java, Maven)
                 stage('Backend (Spring Boot 3)') {
                     steps {
                         script {
@@ -100,7 +89,17 @@ pipeline {
                                     sh "chmod +x mvnw"
                                     sh "./mvnw clean package ${testOption}"
                                 } else {
-                                    bat "call mvnw.cmd clean package ${testOption}"
+                                    bat """
+                                        @echo off
+                                        REM Tu dong tim kiem JDK neu JAVA_HOME chua duoc dat
+                                        if not defined JAVA_HOME (
+                                            for /d %%d in ("C:\\Program Files\\Java\\jdk*" "C:\\Program Files\\Eclipse Adoptium\\jdk*" "C:\\Program Files\\Microsoft\\jdk*" "C:\\Program Files\\Amazon Corretto\\jdk*") do (
+                                                if exist "%%d\\bin\\java.exe" set "JAVA_HOME=%%d"
+                                            )
+                                        )
+                                        if defined JAVA_HOME echo JAVA_HOME duoc thiet lap tai: %JAVA_HOME%
+                                        call mvnw.cmd clean package ${testOption}
+                                    """
                                 }
                             }
                         }
@@ -129,6 +128,8 @@ pipeline {
                                     sh "npm run build"
                                 } else {
                                     bat """
+                                        @echo off
+                                        set "PATH=C:\\Program Files\\nodejs;%APPDATA%\\npm;%PATH%"
                                         call npm ci || call npm install
                                         call npm run lint || ver > nul
                                         call npm run build
@@ -157,7 +158,11 @@ pipeline {
                                 if (isUnix()) {
                                     sh "python3 -m py_compile main.py || python -m py_compile main.py || true"
                                 } else {
-                                    bat "python -m py_compile main.py || py -m py_compile main.py || echo [CANH BAO] Python khong tim thay tren agent, bo qua kiem tra cu phap."
+                                    bat """
+                                        @echo off
+                                        set "PATH=C:\\Users\\bacle\\AppData\\Local\\Programs\\Python\\Python312;C:\\Users\\bacle\\AppData\\Local\\Programs\\Python\\Python312\\Scripts;%PATH%"
+                                        python -m py_compile main.py || py -m py_compile main.py || echo [CANH BAO] Python khong tim thay tren agent, bo qua kiem tra cu phap.
+                                    """
                                 }
                             }
                         }
