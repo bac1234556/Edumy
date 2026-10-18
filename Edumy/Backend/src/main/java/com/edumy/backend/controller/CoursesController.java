@@ -50,6 +50,9 @@ public class CoursesController {
     private CourseMlAnalysisRepository courseMlAnalysisRepository;
 
     @Autowired
+    private com.edumy.backend.service.CourseAiService courseAiService;
+
+    @Autowired
     private com.edumy.backend.service.MachineLearningService machineLearningService;
 
     @Autowired
@@ -440,8 +443,18 @@ public class CoursesController {
         review.setCourseId(id);
         review.setRating(dto.getRating());
         review.setComment(dto.getComment());
-        review.setSentimentLabel("Neutral");
-        review.setSentimentScore(0.5);
+
+        // AI Sentiment Analysis
+        com.edumy.backend.dto.SentimentAnalysisResponse sentiment =
+                courseAiService.analyzeSentiment(dto.getRating(), dto.getComment());
+        if (sentiment != null) {
+            review.setSentimentLabel(sentiment.getSentiment());
+            review.setSentimentScore(sentiment.getScore());
+        } else {
+            review.setSentimentLabel(dto.getRating() >= 4 ? "POSITIVE" : (dto.getRating() == 3 ? "NEUTRAL" : "NEGATIVE"));
+            review.setSentimentScore(dto.getRating() >= 4 ? 0.90 : (dto.getRating() == 3 ? 0.50 : 0.20));
+        }
+
         review.setCreatedAt(LocalDateTime.now());
         
         review = reviewRepository.save(review);

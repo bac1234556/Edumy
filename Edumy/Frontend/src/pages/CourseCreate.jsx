@@ -14,6 +14,7 @@ import {
   Layers,
   HelpCircle
 } from 'lucide-react';
+import AiCategorySuggest from '../components/AiCategorySuggest';
 import './CourseCreate.css';
 
 function CourseCreate() {
@@ -229,6 +230,20 @@ function CourseCreate() {
                   onChange={handleInputChange}
                   required
                   autoFocus
+                />
+                {/* Feature 1: AI Category & Curriculum Suggestion Chip */}
+                <AiCategorySuggest
+                  title={formData.title}
+                  description={formData.description}
+                  onApplyCategory={(catId) => {
+                    setFormData((prev) => ({ ...prev, categoryId: catId.toString() }));
+                  }}
+                  onApplyTags={(tags) => {
+                    console.log('AI suggested tags applied:', tags);
+                  }}
+                  onApplyCurriculum={(outline) => {
+                    alert(`Đã áp dụng khung đề cương ${outline.length} chương do AI gợi ý vào khóa học.`);
+                  }}
                 />
               </div>
 

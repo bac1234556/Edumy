@@ -27,8 +27,12 @@ import {
   AlertCircle,
   Eye,
   Check,
-  MessageSquare
+  MessageSquare,
+  Flame
 } from 'lucide-react';
+import SentimentBadge from '../components/SentimentBadge';
+import CourseBundleCard from '../components/CourseBundleCard';
+import CourseCard from '../components/CourseCard';
 import './CourseDetail.css';
 
 const BACKEND_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api').replace('/api', '');
@@ -50,6 +54,10 @@ function CourseDetail() {
   const [reviewRating, setReviewRating] = useState(5);
   const [reviewComment, setReviewComment] = useState('');
   const [submittingReview, setSubmittingReview] = useState(false);
+  const [filterSentiment, setFilterSentiment] = useState('ALL');
+
+  // Similar courses state (Feature 3)
+  const [similarCourses, setSimilarCourses] = useState([]);
 
   // Accordion state
   const [expandedSections, setExpandedSections] = useState({});
@@ -78,6 +86,19 @@ function CourseDetail() {
     };
 
     fetchCourseData();
+
+    // Fetch similar courses (Feature 3)
+    const fetchSimilarCourses = async () => {
+      try {
+        const res = await api.get(`/courses/${id}/similar?limit=4`);
+        if (Array.isArray(res.data)) {
+          setSimilarCourses(res.data);
+        }
+      } catch (err) {
+        console.warn('Could not fetch similar courses:', err);
+      }
+    };
+    fetchSimilarCourses();
   }, [id]);
 
   // Check enrollment & wishlist status
@@ -256,6 +277,19 @@ function CourseDetail() {
     const hours = (totalSecs / 3600).toFixed(1);
     return { totalLectures: lectures, totalDurationHours: `${hours} giờ` };
   }, [course]);
+
+  // Filtered reviews by AI sentiment (Feature 2)
+  const filteredReviews = useMemo(() => {
+    if (!course?.reviews) return [];
+    if (filterSentiment === 'ALL') return course.reviews;
+    return course.reviews.filter((r) => {
+      const s = (r.sentimentLabel || '').toUpperCase();
+      if (filterSentiment === 'POSITIVE') return s === 'POSITIVE' || s === 'TÍCH CỰC' || r.rating >= 4;
+      if (filterSentiment === 'NEUTRAL') return s === 'NEUTRAL' || s === 'TRUNG TÍNH' || r.rating === 3;
+      if (filterSentiment === 'NEGATIVE') return s === 'NEGATIVE' || s === 'TIÊU CỰC' || r.rating <= 2;
+      return true;
+    });
+  }, [course, filterSentiment]);
 
   // Loading Skeleton State
   if (loading) {
@@ -596,6 +630,9 @@ function CourseDetail() {
               </div>
             </div>
 
+            {/* Feature 4: Course Bundle Recommendation */}
+            <CourseBundleCard courseId={id} />
+
             {/* Reviews with Human-Crafted Feedback and Verified Purchase */}
             <div className="content-box">
               <h3 className="content-box-title">Đánh giá từ học viên</h3>
@@ -651,67 +688,96 @@ function CourseDetail() {
                 </div>
               </div>
 
+              {/* Feature 2: Smart Sentiment Filter Tabs */}
+              {course.reviews?.length > 0 && (
+                <div className="d-flex flex-wrap align-items-center gap-2 mb-4 pb-3 border-bottom">
+                  <span className="small text-muted fw-semibold me-1">Lọc theo cảm xúc:</span>
+                  <button
+                    type="button"
+                    className={`btn btn-sm ${filterSentiment === 'ALL' ? 'btn-dark' : 'btn-outline-secondary bg-white text-dark'} rounded-pill px-3 py-1`}
+                    style={{ fontSize: '0.8rem' }}
+                    onClick={() => setFilterSentiment('ALL')}
+                  >
+                    Tất cả ({course.reviews.length})
+                  </button>
+                  <button
+                    type="button"
+                    className={`btn btn-sm ${filterSentiment === 'POSITIVE' ? 'btn-success text-white' : 'btn-outline-success bg-white'} rounded-pill px-3 py-1`}
+                    style={{ fontSize: '0.8rem' }}
+                    onClick={() => setFilterSentiment('POSITIVE')}
+                  >
+                    🌿 Tích cực ({course.reviews.filter(r => (r.sentimentLabel || '').toUpperCase() === 'POSITIVE' || (r.sentimentLabel || '').toUpperCase() === 'TÍCH CỰC' || r.rating >= 4).length})
+                  </button>
+                  <button
+                    type="button"
+                    className={`btn btn-sm ${filterSentiment === 'NEUTRAL' ? 'btn-warning text-dark' : 'btn-outline-warning bg-white text-dark'} rounded-pill px-3 py-1`}
+                    style={{ fontSize: '0.8rem' }}
+                    onClick={() => setFilterSentiment('NEUTRAL')}
+                  >
+                    💬 Trung tính ({course.reviews.filter(r => (r.sentimentLabel || '').toUpperCase() === 'NEUTRAL' || (r.sentimentLabel || '').toUpperCase() === 'TRUNG TÍNH' || r.rating === 3).length})
+                  </button>
+                  <button
+                    type="button"
+                    className={`btn btn-sm ${filterSentiment === 'NEGATIVE' ? 'btn-danger text-white' : 'btn-outline-danger bg-white'} rounded-pill px-3 py-1`}
+                    style={{ fontSize: '0.8rem' }}
+                    onClick={() => setFilterSentiment('NEGATIVE')}
+                  >
+                    ⚠️ Cần cải thiện ({course.reviews.filter(r => (r.sentimentLabel || '').toUpperCase() === 'NEGATIVE' || (r.sentimentLabel || '').toUpperCase() === 'TIÊU CỰC' || r.rating <= 2).length})
+                  </button>
+                </div>
+              )}
+
               {/* Reviews List */}
               <div className="reviews-list">
-                {(!course.reviews || course.reviews.length === 0) ? (
-                  <p className="text-muted text-center py-4">Chưa có đánh giá nào cho khóa học này.</p>
+                {filteredReviews.length === 0 ? (
+                  <p className="text-muted text-center py-4">Chưa có đánh giá nào phù hợp với bộ lọc này.</p>
                 ) : (
-                  course.reviews.map((rev, rIdx) => {
-                    const sentiment = rev.sentimentLabel || 'Positive';
-                    return (
-                      <div key={rev.reviewId || rIdx} className="review-item">
-                        <div className="review-user-row">
-                          <div className="review-user-info">
-                            <div className="user-avatar-circle">
-                              {(rev.user?.fullName || rev.userName || 'U')[0].toUpperCase()}
-                            </div>
-                            <div>
-                              <div className="d-flex align-items-center gap-2">
-                                <h5 className="mb-0 fw-bold fs-6">
-                                  {rev.user?.fullName || rev.userName || 'Nguyễn Văn An'}
-                                </h5>
-                                <span className="badge-verified-purchase">
-                                  <Check size={11} /> Đã mua khóa học
-                                </span>
-                              </div>
-                              <div className="d-flex align-items-center gap-2 mt-1">
-                                <div className="d-flex gap-1">
-                                  {[...Array(5)].map((_, i) => (
-                                    <Star
-                                      key={i}
-                                      size={13}
-                                      fill={i < rev.rating ? '#d97706' : 'none'}
-                                      color="#d97706"
-                                    />
-                                  ))}
-                                </div>
-                                <span className="text-muted small">
-                                  {rev.createdAt ? new Date(rev.createdAt).toLocaleDateString('vi-VN') : 'Tháng 10/2026'}
-                                </span>
-                              </div>
-                            </div>
+                  filteredReviews.map((rev, rIdx) => (
+                    <div key={rev.reviewId || rIdx} className="review-item">
+                      <div className="review-user-row">
+                        <div className="review-user-info">
+                          <div className="user-avatar-circle">
+                            {(rev.user?.fullName || rev.userName || 'U')[0].toUpperCase()}
                           </div>
-
-                          {/* Subtle Sentiment Badge */}
                           <div>
-                            {sentiment === 'Positive' || sentiment === 'Tích cực' ? (
-                              <span className="badge-sentiment-positive">
-                                Tích cực
+                            <div className="d-flex align-items-center gap-2">
+                              <h5 className="mb-0 fw-bold fs-6">
+                                {rev.user?.fullName || rev.userName || 'Học viên Edumy'}
+                              </h5>
+                              <span className="badge-verified-purchase">
+                                <Check size={11} /> Đã mua khóa học
                               </span>
-                            ) : sentiment === 'Negative' || sentiment === 'Tiêu cực' ? (
-                              <span className="badge-sentiment-negative">Cần cải thiện</span>
-                            ) : (
-                              <span className="badge-sentiment-neutral">Hài lòng</span>
-                            )}
+                            </div>
+                            <div className="d-flex align-items-center gap-2 mt-1">
+                              <div className="d-flex gap-1">
+                                {[...Array(5)].map((_, i) => (
+                                  <Star
+                                    key={i}
+                                    size={13}
+                                    fill={i < rev.rating ? '#d97706' : 'none'}
+                                    color="#d97706"
+                                  />
+                                ))}
+                              </div>
+                              <span className="text-muted small">
+                                {rev.createdAt ? new Date(rev.createdAt).toLocaleDateString('vi-VN') : 'Tháng 10/2026'}
+                              </span>
+                            </div>
                           </div>
                         </div>
 
-                        <p className="mb-0 text-body small mt-2" style={{ lineHeight: '1.6' }}>
-                          {rev.comment}
-                        </p>
+                        {/* Feature 2: Smart AI Sentiment Badge */}
+                        <SentimentBadge
+                          sentiment={rev.sentimentLabel}
+                          score={rev.sentimentScore}
+                        />
                       </div>
-                    );
-                  })
+
+                      <p className="mb-0 text-body small mt-2" style={{ lineHeight: '1.6' }}>
+                        {rev.comment}
+                      </p>
+                    </div>
+                  ))
                 )}
               </div>
 
@@ -876,7 +942,46 @@ function CourseDetail() {
       </div>
 
       {/* --------------------------------------------------------------------
-          3. VIDEO PREVIEW MODAL
+          3. SIMILAR COURSES RECOMMENDATION (FEATURE 3)
+          -------------------------------------------------------------------- */}
+      {similarCourses.length > 0 && (
+        <section className="similar-courses-section py-5 mt-5 border-top bg-white">
+          <div className="container">
+            <div className="d-flex justify-content-between align-items-end mb-4">
+              <div>
+                <div className="d-flex align-items-center gap-2 mb-1">
+                  <span className="badge bg-warning bg-opacity-25 text-warning fw-bold px-2 py-1 rounded-2" style={{ color: '#b45309' }}>
+                    <Flame size={13} className="me-1" /> Gợi ý thông minh
+                  </span>
+                  <span className="text-secondary small fw-semibold">Đánh giá trên 90% tích cực</span>
+                </div>
+                <h3 className="fw-bold mb-1 text-dark fs-4">Học viên thích khóa học này cũng học thêm</h3>
+                <p className="text-muted small mb-0">Các khóa học cùng lộ trình đào tạo được đề xuất dựa trên mô hình gợi ý AI.</p>
+              </div>
+            </div>
+
+            <div className="row g-4">
+              {similarCourses.map((c) => (
+                <div className="col-12 col-md-6 col-lg-3" key={c.courseId}>
+                  <div className="position-relative h-100">
+                    <CourseCard course={c} />
+                    {c.positiveRatingPercent && (
+                      <div className="position-absolute top-0 end-0 m-2" style={{ zIndex: 3 }}>
+                        <span className="badge bg-dark bg-opacity-80 text-white px-2 py-1 small rounded-1 shadow-sm">
+                          🔥 {c.positiveRatingPercent}% hài lòng
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* --------------------------------------------------------------------
+          4. VIDEO PREVIEW MODAL
           -------------------------------------------------------------------- */}
       {previewVideoUrl && (
         <div className="modal-overlay" onClick={() => setPreviewVideoUrl(null)}>

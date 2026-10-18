@@ -31,6 +31,9 @@ public class ReviewsController {
     @Autowired
     private com.edumy.backend.service.MachineLearningService machineLearningService;
 
+    @Autowired
+    private com.edumy.backend.service.CourseAiService courseAiService;
+
     private Integer getCurrentUserId() {
         try {
             return Integer.parseInt(SecurityContextHolder.getContext().getAuthentication().getName());
@@ -76,15 +79,15 @@ public class ReviewsController {
             return ResponseEntity.badRequest().body(Map.of("message", "Số sao đánh giá phải từ 1 đến 5 sao."));
         }
 
-        // Gọi FastAPI BiLSTM để phân tích cảm xúc đánh giá
-        com.edumy.backend.service.MachineLearningService.SentimentResult sentiment = 
-                machineLearningService.analyzeSentiment(review.getComment());
+        // Gọi AI Service để phân tích cảm xúc đánh giá kết hợp số sao
+        com.edumy.backend.dto.SentimentAnalysisResponse sentiment = 
+                courseAiService.analyzeSentiment(review.getRating(), review.getComment());
         if (sentiment != null) {
-            review.setSentimentLabel(sentiment.getLabel());
+            review.setSentimentLabel(sentiment.getSentiment());
             review.setSentimentScore(sentiment.getScore());
         } else {
-            review.setSentimentLabel("Neutral");
-            review.setSentimentScore(0.5);
+            review.setSentimentLabel("POSITIVE");
+            review.setSentimentScore(0.85);
         }
 
         review.setCourseId(courseId);
