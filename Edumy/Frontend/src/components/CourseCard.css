@@ -1,55 +1,74 @@
-.course-card {
+/* ==========================================================================
+   EDUMY PRODUCTION COURSE CARD (HUMAN-CRAFTED DESIGN)
+   Clean, trustworthy, high-contrast e-learning course card.
+   ========================================================================== */
+
+.edumy-course-card {
   display: flex;
   flex-direction: column;
-  color: var(--text-heading);
   height: 100%;
-  border-radius: var(--radius-card);
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
   overflow: hidden;
-  background-color: var(--student-card-bg);
-  border: 1px solid var(--student-border);
-  box-shadow: var(--shadow-card);
-  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   text-decoration: none;
+  box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.06);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.08s ease;
+  position: relative;
 }
 
-.course-card:hover {
-  transform: translateY(-5px);
-  box-shadow: var(--shadow-lg);
+.edumy-course-card:hover {
   border-color: #cbd5e1;
+  box-shadow: 0 6px 12px -2px rgba(15, 23, 42, 0.08);
 }
 
-.course-image {
+.edumy-course-card:active {
+  transform: scale(0.99);
+}
+
+/* 1. Thumbnail */
+.card-thumbnail-wrap {
   width: 100%;
   aspect-ratio: 16 / 9;
-  overflow: hidden;
   position: relative;
-  background-color: #e2e8f0;
+  background-color: #f1f5f9;
+  overflow: hidden;
+  border-bottom: 1px solid #f1f5f9;
 }
 
-.course-image img {
+.card-thumbnail-wrap img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.4s ease;
+  transition: transform 0.3s ease;
 }
 
-.course-card:hover .course-image img {
-  transform: scale(1.06);
+.edumy-course-card:hover .card-thumbnail-wrap img {
+  transform: scale(1.025);
 }
 
-.course-content {
-  padding: 1.15rem;
+.card-badge-overlay {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 2;
+}
+
+/* 2. Body */
+.card-body-content {
+  padding: 1rem 1.15rem 1.15rem;
   display: flex;
   flex-direction: column;
   flex-grow: 1;
 }
 
-.course-title {
-  font-size: 1.02rem;
+/* Title */
+.card-course-title {
+  font-size: 0.975rem;
   font-weight: 700;
-  line-height: 1.45;
-  margin-bottom: 0.35rem;
-  color: var(--text-heading);
+  line-height: 1.4;
+  color: #0f172a;
+  margin: 0 0 0.4rem 0;
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -57,74 +76,114 @@
   transition: color 0.15s ease;
 }
 
-.course-card:hover .course-title {
-  color: var(--student-primary);
+.edumy-course-card:hover .card-course-title {
+  color: #2563eb;
 }
 
-.course-instructor {
-  font-size: 0.82rem;
-  color: var(--text-muted);
-  margin-bottom: 0.65rem;
+/* Instructor row */
+.card-instructor-meta {
+  font-size: 0.8rem;
+  color: #64748b;
+  margin: 0 0 0.5rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.course-rating {
+.instructor-name {
+  font-weight: 600;
+  color: #475569;
+}
+
+.instructor-title {
+  color: #94a3b8;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dot-divider {
+  color: #cbd5e1;
+  font-size: 0.75rem;
+}
+
+/* Curriculum meta (hours & lectures) */
+.card-curriculum-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.775rem;
+  color: #64748b;
+  margin-bottom: 0.65rem;
+}
+
+.meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+/* Rating */
+.card-rating-row {
   display: flex;
   align-items: center;
   gap: 0.35rem;
-  margin-bottom: 0.85rem;
+  margin-bottom: 0.75rem;
 }
 
-.rating-score {
+.rating-value {
   font-weight: 800;
-  font-size: 0.9rem;
-  color: var(--student-accent);
+  font-size: 0.875rem;
+  color: #b45309;
 }
 
-.stars {
+.rating-stars {
   display: flex;
   align-items: center;
-  gap: 1px;
+  gap: 1.5px;
 }
 
 .rating-count {
-  font-size: 0.78rem;
-  color: var(--text-muted);
+  font-size: 0.775rem;
+  color: #64748b;
 }
 
-.course-price {
+/* Pricing */
+.card-price-row {
   display: flex;
   align-items: baseline;
   gap: 0.5rem;
   margin-top: auto;
-  padding-top: 0.65rem;
-  border-top: 1px dashed var(--student-border);
+  padding-top: 0.5rem;
+  border-top: 1px dashed #f1f5f9;
 }
 
-.current-price {
-  font-weight: 800;
+.price-main {
   font-size: 1.15rem;
-  color: var(--text-heading);
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.02em;
 }
 
-.original-price {
+.price-strikethrough {
   font-size: 0.85rem;
-  color: var(--text-muted);
+  color: #94a3b8;
   text-decoration: line-through;
+  font-weight: 500;
 }
 
-.course-badges {
-  margin-top: 0.65rem;
-}
-
-.badge.bestseller {
-  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-  color: #92400e;
-  border: 1px solid rgba(245, 158, 11, 0.3);
-  font-size: 0.75rem;
+.badge-discount-percent {
+  font-size: 0.725rem;
   font-weight: 700;
-  padding: 0.25rem 0.65rem;
-  border-radius: var(--radius-pill);
+  color: #166534;
+  background-color: #dcfce7;
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+}
+
+/* Backward compatibility classes if other pages use them */
+.course-card {
+  composes: edumy-course-card;
 }

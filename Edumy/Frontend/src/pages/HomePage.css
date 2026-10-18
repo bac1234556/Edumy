@@ -16,22 +16,10 @@
    -------------------------------------------------------------------------- */
 .edumy-hero-section {
   position: relative;
-  background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 60%, #312e81 100%);
+  background-color: #0f172a;
   color: #ffffff;
   padding: 4.5rem 0 5.5rem;
-  overflow: hidden;
-}
-
-.edumy-hero-section::before {
-  content: '';
-  position: absolute;
-  top: -30%;
-  right: -10%;
-  width: 650px;
-  height: 650px;
-  background: radial-gradient(circle, rgba(99, 102, 241, 0.25) 0%, rgba(15, 23, 42, 0) 70%);
-  border-radius: 50%;
-  pointer-events: none;
+  border-bottom: 1px solid #1e293b;
 }
 
 .hero-grid {
@@ -69,9 +57,7 @@
 }
 
 .hero-title .gradient-text {
-  background: linear-gradient(135deg, #a5b4fc 0%, #818cf8 50%, #fbcfe8 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: #38bdf8; /* Crisp Sky Blue accent */
 }
 
 .hero-subtitle {
@@ -570,29 +556,17 @@
    9. CALL TO ACTION (CTA) BANNER
    -------------------------------------------------------------------------- */
 .cta-banner {
-  background: linear-gradient(135deg, #1e1b4b 0%, #312e81 60%, #4338ca 100%);
-  border-radius: 20px;
-  padding: 4rem 3rem;
+  background-color: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 16px;
+  padding: 3.5rem 3rem;
   color: #ffffff;
   display: flex;
   justify-content: space-between;
   align-items: center;
   position: relative;
-  overflow: hidden;
-  box-shadow: var(--shadow-lg);
+  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.12);
   margin: 2rem 0;
-}
-
-.cta-banner::after {
-  content: '';
-  position: absolute;
-  top: -50%;
-  right: -10%;
-  width: 400px;
-  height: 400px;
-  background: radial-gradient(circle, rgba(245, 158, 11, 0.2) 0%, transparent 70%);
-  border-radius: 50%;
-  pointer-events: none;
 }
 
 .cta-content {
