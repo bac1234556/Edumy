@@ -14,7 +14,7 @@ import java.math.BigDecimal;
 import lombok.Data;
 
 @RestController
-@RequestMapping("/api/Coupons")
+@RequestMapping({"/api/Coupons", "/api/coupons"})
 public class CouponsController {
 
     @Autowired

@@ -3,9 +3,9 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import './CategorySlider.css';
 
 const categories = [
-  "IT & Software", "Business", "Finance & Accounting", 
-  "Development", "Design", "Marketing", "Health & Fitness", 
-  "Music", "Photography", "Teaching & Academics"
+  "Lập trình phần mềm", "Công nghệ thông tin", "Kinh doanh & Khởi nghiệp", 
+  "Thiết kế đồ họa & UI/UX", "Marketing & Truyền thông", "Tài chính & Đầu tư", 
+  "Trí tuệ nhân tạo (AI)", "Phát triển bản thân", "Ngoại ngữ & Du học", "Nhiếp ảnh & Video"
 ];
 
 const CategorySlider = () => {

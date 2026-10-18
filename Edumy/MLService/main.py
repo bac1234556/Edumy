@@ -364,6 +364,7 @@ def analyze_sentiment(req: SentimentRequest):
     return SentimentResponse(label=label, score=score, confidence=score, modelVersion="Fallback_RuleBased")
 
 @app.post("/classification/course", response_model=ClassificationResponse)
+@app.post("/classification/predict", response_model=ClassificationResponse)
 def classify_course(req: ClassificationRequest):
     if not loader.initialized:
         loader.initialize()

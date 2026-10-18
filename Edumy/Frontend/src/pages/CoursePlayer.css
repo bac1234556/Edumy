@@ -3,18 +3,18 @@
    ========================================================================== */
 
 :root {
-  --player-bg: #090d16;
-  --player-surface: #0f172a;
-  --player-card: #141e33;
-  --player-border: #1e293b;
-  --player-border-light: #334155;
-  --player-primary: #6366f1;
-  --player-primary-hover: #4f46e5;
-  --player-emerald: #10b981;
+  --player-bg: var(--cinema-bg, #0b0f19);
+  --player-surface: var(--cinema-surface, #111827);
+  --player-card: #151e2e;
+  --player-border: var(--cinema-border, #1f2937);
+  --player-border-light: #374151;
+  --player-primary: var(--student-primary, #4f46e5);
+  --player-primary-hover: var(--student-primary-hover, #4338ca);
+  --player-emerald: var(--color-success, #10b981);
   --player-emerald-bg: rgba(16, 185, 129, 0.12);
-  --player-text-main: #f8fafc;
-  --player-text-sub: #cbd5e1;
-  --player-text-muted: #64748b;
+  --player-text-main: var(--cinema-text-heading, #f8fafc);
+  --player-text-sub: var(--cinema-text-body, #cbd5e1);
+  --player-text-muted: var(--cinema-text-muted, #94a3b8);
   --player-sidebar-w: 390px;
 }
 
@@ -24,7 +24,7 @@
   height: 100vh;
   background-color: var(--player-bg);
   color: var(--player-text-main);
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   overflow: hidden;
 }
 

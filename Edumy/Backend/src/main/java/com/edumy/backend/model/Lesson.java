@@ -39,5 +39,6 @@ public class Lesson {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "SectionId", insertable = false, updatable = false)
+    @com.fasterxml.jackson.annotation.JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "lessons", "quizzes", "course"})
     private CourseSection section;
 }

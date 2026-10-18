@@ -5,6 +5,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,6 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,13 +34,16 @@ public class Category {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ParentCategoryId", insertable = false, updatable = false)
+    @JsonIgnoreProperties({"parentCategory", "subCategories", "courses"})
     private Category parentCategory;
 
     @OneToMany(mappedBy = "parentCategory")
     @Builder.Default
+    @JsonIgnoreProperties({"parentCategory", "subCategories", "courses"})
     private List<Category> subCategories = new ArrayList<>();
     
-    @OneToMany(mappedBy = "category") // Assuming Course has a ManyToOne back to Category named 'category'
+    @OneToMany(mappedBy = "category")
     @Builder.Default
+    @JsonIgnore
     private List<Course> courses = new ArrayList<>();
 }

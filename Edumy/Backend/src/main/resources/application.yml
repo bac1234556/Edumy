@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:sqlserver://localhost;instanceName=SQLEXPRESS;databaseName=EduMyDb;encrypt=false;trustServerCertificate=true
+    url: jdbc:sqlserver://127.0.0.1:1433;databaseName=EduMyDb;encrypt=false;trustServerCertificate=true;sendStringParametersAsUnicode=true;characterEncoding=UTF-8;useUnicode=true
     username: sa
     password: YourPassword123
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
@@ -12,13 +12,24 @@ spring:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.SQLServerDialect
+        connection:
+          characterEncoding: UTF-8
+          useUnicode: true
   servlet:
     multipart:
       max-file-size: 50MB
       max-request-size: 50MB
+  jackson:
+    serialization:
+      fail-on-empty-beans: false
 
 server:
   port: 5000
+  servlet:
+    encoding:
+      charset: UTF-8
+      force: true
+      enabled: true
 
 jwt:
   key: "ThisIsASecretKeyForJwtAuthenticationInEduMyProject_PleaseChangeInProduction"

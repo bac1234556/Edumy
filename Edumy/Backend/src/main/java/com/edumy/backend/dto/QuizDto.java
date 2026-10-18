@@ -13,4 +13,7 @@ public class QuizDto {
     private Integer timeLimitMinutes;
     private Integer courseSectionId;
     private List<QuestionDto> questions = new ArrayList<>();
+
+    public Integer getId() { return quizId; }
+    public void setId(Integer id) { this.quizId = id; }
 }

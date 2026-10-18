@@ -17,7 +17,7 @@ import java.security.SecureRandom;
 import java.util.Base64;
 
 @RestController
-@RequestMapping("/api/Auth")
+@RequestMapping({"/api/Auth", "/api/auth"})
 public class AuthController {
 
     @Autowired
@@ -28,6 +28,9 @@ public class AuthController {
 
     @Autowired
     private com.edumy.backend.security.JwtTokenProvider jwtTokenProvider;
+
+    @Autowired
+    private com.edumy.backend.service.UserActivityService userActivityService;
 
     private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
@@ -72,6 +75,8 @@ public class AuthController {
         authResponse.setFullName(user.getFullName());
         authResponse.setRole(user.getRole());
         authResponse.setMessage("Login successful.");
+
+        userActivityService.logActivity(user.getUserId(), "LOGIN_PASSWORD", "AUTH");
 
         return ResponseEntity.ok(authResponse);
     }
@@ -146,6 +151,33 @@ public class AuthController {
         try {
             String email = "google@example.com"; 
             String name = "Google User"; 
+            String avatarUrl = null;
+
+            if (googleLoginDto != null && googleLoginDto.getToken() != null && googleLoginDto.getToken().contains(".")) {
+                try {
+                    String[] parts = googleLoginDto.getToken().split("\\.");
+                    if (parts.length >= 2) {
+                        String payload = parts[1];
+                        int rem = payload.length() % 4;
+                        if (rem == 2) payload += "==";
+                        else if (rem == 3) payload += "=";
+                        byte[] decodedBytes = java.util.Base64.getUrlDecoder().decode(payload);
+                        String payloadJson = new String(decodedBytes, java.nio.charset.StandardCharsets.UTF_8);
+                        com.fasterxml.jackson.databind.JsonNode node = new com.fasterxml.jackson.databind.ObjectMapper().readTree(payloadJson);
+                        if (node.has("email") && !node.get("email").asText().isEmpty()) {
+                            email = node.get("email").asText();
+                        }
+                        if (node.has("name") && !node.get("name").asText().isEmpty()) {
+                            name = node.get("name").asText();
+                        }
+                        if (node.has("picture") && !node.get("picture").asText().isEmpty()) {
+                            avatarUrl = node.get("picture").asText();
+                        }
+                    }
+                } catch (Exception ex) {
+                    System.err.println("Google token payload parsing failed: " + ex.getMessage());
+                }
+            }
 
             User user = userRepository.findByEmail(email);
             if (user == null) {
@@ -154,8 +186,23 @@ public class AuthController {
                 user.setEmail(email);
                 user.setPasswordHash("");
                 user.setRole("Student");
+                user.setAvatarUrl(avatarUrl);
+                user.setProvider("Google");
                 user.setCreatedAt(LocalDateTime.now());
                 user = userRepository.save(user);
+            } else {
+                boolean updated = false;
+                if (name != null && !name.isEmpty() && !name.equals("Google User") && !name.equals(user.getFullName())) {
+                    user.setFullName(name);
+                    updated = true;
+                }
+                if (avatarUrl != null && !avatarUrl.isEmpty() && !avatarUrl.equals(user.getAvatarUrl())) {
+                    user.setAvatarUrl(avatarUrl);
+                    updated = true;
+                }
+                if (updated) {
+                    user = userRepository.save(user);
+                }
             }
 
             String token = generateJwtToken(user);
@@ -177,6 +224,8 @@ public class AuthController {
             authResponse.setRole(user.getRole());
             authResponse.setMessage("Google login successful.");
 
+            userActivityService.logActivity(user.getUserId(), "LOGIN_GOOGLE", "AUTH");
+
             return ResponseEntity.ok(authResponse);
         } catch (Exception ex) {
             return ResponseEntity.badRequest().body(Map.of("message", "Google token validation failed.", "error", ex.getMessage()));
@@ -184,7 +233,7 @@ public class AuthController {
     }
 
     private String generateJwtToken(User user) {
-        return jwtTokenProvider.generateToken(user.getUserId(), user.getEmail(), user.getRole());
+        return jwtTokenProvider.generateToken(user.getUserId(), user.getEmail(), user.getRole(), user.getFullName());
     }
     
     private String generateRefreshToken() {

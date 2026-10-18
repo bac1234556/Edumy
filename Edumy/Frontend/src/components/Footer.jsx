@@ -9,31 +9,31 @@ const Footer = () => {
         <div className="footer-top">
           <div className="footer-links-grid">
             <div className="footer-col">
-              <a href="#">Edumy Business</a>
-              <a href="#">Teach on Edumy</a>
-              <a href="#">Get the app</a>
-              <a href="#">About us</a>
-              <a href="#">Contact us</a>
+              <a href="#">Edumy Doanh nghiệp</a>
+              <a href="#">Giảng dạy trên Edumy</a>
+              <a href="#">Tải ứng dụng di động</a>
+              <a href="#">Về chúng tôi</a>
+              <a href="#">Liên hệ hỗ trợ</a>
             </div>
             <div className="footer-col">
-              <a href="#">Careers</a>
-              <a href="#">Blog</a>
-              <a href="#">Help and Support</a>
-              <a href="#">Affiliate</a>
-              <a href="#">Investors</a>
+              <a href="#">Cơ hội nghề nghiệp</a>
+              <a href="#">Blog công nghệ</a>
+              <a href="#">Trung tâm trợ giúp</a>
+              <a href="#">Tiếp thị liên kết</a>
+              <a href="#">Nhà đầu tư</a>
             </div>
             <div className="footer-col">
-              <a href="#">Terms</a>
-              <a href="#">Privacy policy</a>
-              <a href="#">Cookie settings</a>
-              <a href="#">Sitemap</a>
-              <a href="#">Accessibility statement</a>
+              <a href="#">Điều khoản sử dụng</a>
+              <a href="#">Chính sách bảo mật</a>
+              <a href="#">Cài đặt Cookie</a>
+              <a href="#">Sơ đồ trang web</a>
+              <a href="#">Tuyên bố trợ năng</a>
             </div>
           </div>
           <div className="footer-lang">
             <button className="lang-btn-footer">
               <Globe size={18} />
-              <span>English</span>
+              <span>Tiếng Việt</span>
             </button>
           </div>
         </div>
@@ -43,7 +43,7 @@ const Footer = () => {
             <span className="logo-text">Edumy</span>
           </div>
           <div className="footer-copyright">
-            © 2026 Edumy, Inc.
+            © 2026 Edumy, Inc. Bản quyền được bảo lưu.
           </div>
         </div>
       </div>

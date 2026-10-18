@@ -40,13 +40,13 @@ function CourseList() {
     <div className="py-4">
       <div className="d-flex justify-content-between align-items-end mb-5">
         <div>
-          <h2 className="display-6 fw-bold mb-2">Explore <span className="gradient-text">Courses</span></h2>
-          <p className="text-muted fs-5 mb-0">Find the perfect course to advance your skills.</p>
+          <h2 className="display-6 fw-bold mb-2">Khám phá <span className="gradient-text">Khóa học</span></h2>
+          <p className="text-muted fs-5 mb-0">Tìm kiếm khóa học phù hợp nhất để nâng tầm kỹ năng và sự nghiệp của bạn.</p>
         </div>
         <div className="d-none d-md-block">
           <div className="input-group glass-card overflow-hidden rounded-pill">
             <span className="input-group-text bg-transparent border-0 pe-1"><i className="bi bi-search text-muted"></i></span>
-            <input type="text" className="form-control bg-transparent border-0 shadow-none py-2" placeholder="Search courses..." />
+            <input type="text" className="form-control bg-transparent border-0 shadow-none py-2" placeholder="Tìm kiếm khóa học..." />
           </div>
         </div>
       </div>
@@ -55,8 +55,8 @@ function CourseList() {
         {courses.length === 0 ? (
           <div className="col-12 text-center py-5">
             <div className="text-muted mb-3"><i className="bi bi-inbox fs-1"></i></div>
-            <h4>No courses found</h4>
-            <p className="text-muted">Check back later for new content.</p>
+            <h4>Không tìm thấy khóa học nào</h4>
+            <p className="text-muted">Vui lòng quay lại sau để cập nhật các khóa học mới.</p>
           </div>
         ) : (
           courses.map(course => (
@@ -70,13 +70,13 @@ function CourseList() {
                     style={{ height: '200px' }}
                   />
                   <span className="position-absolute top-0 end-0 m-3 badge bg-white text-dark shadow-sm rounded-pill px-3 py-2 fw-bold">
-                    ${course.price}
+                    ₫{(course.price || 0).toLocaleString()}
                   </span>
                 </div>
                 <div className="card-body p-4 d-flex flex-column">
                   <div className="d-flex justify-content-between align-items-center mb-2">
-                    <span className="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3">{course.category?.name || 'General'}</span>
-                    <span className="text-warning small fw-bold"><i className="bi bi-star-fill me-1"></i>{course.averageRating}</span>
+                    <span className="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3">{course.category?.name || 'Tổng hợp'}</span>
+                    <span className="text-warning small fw-bold"><i className="bi bi-star-fill me-1"></i>{course.averageRating || '5.0'}</span>
                   </div>
                   <h5 className="card-title fw-bold mb-3">{course.title}</h5>
                   <p className="card-text text-muted small flex-grow-1">{course.description?.substring(0, 80)}...</p>
@@ -84,10 +84,10 @@ function CourseList() {
                   <div className="d-flex justify-content-between align-items-center">
                     <div className="d-flex align-items-center gap-2">
                       <div className="bg-secondary rounded-circle" style={{width: '32px', height: '32px'}}></div>
-                      <small className="text-muted fw-medium">{course.instructor?.fullName || 'Instructor'}</small>
+                      <small className="text-muted fw-medium">{course.instructor?.fullName || 'Giảng viên'}</small>
                     </div>
                     <Link to={`/courses/${course.courseId}`} className="btn btn-outline-primary rounded-pill btn-sm fw-medium px-3">
-                      View Details
+                      Xem chi tiết
                     </Link>
                   </div>
                 </div>

@@ -17,7 +17,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @RestController
-@RequestMapping("/api/Cart")
+@RequestMapping({"/api/Cart", "/api/cart"})
 @PreAuthorize("isAuthenticated()")
 public class CartController {
 

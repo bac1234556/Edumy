@@ -18,6 +18,7 @@ import PaymentSuccess from './pages/PaymentSuccess';
 import PaymentCancel from './pages/PaymentCancel';
 import MockPaymentGateway from './pages/MockPaymentGateway';
 import CertificateView from './pages/CertificateView';
+import CourseCurriculumEditor from './pages/CourseCurriculumEditor';
 import Wishlist from './pages/Wishlist';
 import UserProfile from './pages/UserProfile';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -74,6 +75,11 @@ function App() {
             <Route path="/instructor/courses/new" element={
               <ProtectedRoute allowedRoles={['Instructor', 'Admin']}>
                 <CourseCreate />
+              </ProtectedRoute>
+            } />
+            <Route path="/instructor/courses/:id/curriculum" element={
+              <ProtectedRoute allowedRoles={['Instructor', 'Admin']}>
+                <CourseCurriculumEditor />
               </ProtectedRoute>
             } />
             <Route path="/admin" element={

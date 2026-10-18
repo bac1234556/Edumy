@@ -28,7 +28,7 @@ function UserProfile() {
         bio: response.data.bio || ''
       });
     } catch (err) {
-      setError('Could not fetch profile information.');
+      setError('Không thể tải thông tin hồ sơ người dùng.');
     } finally {
       setLoading(false);
     }
@@ -57,19 +57,19 @@ function UserProfile() {
       const response = await api.put('/users/profile', formData);
       setProfile(response.data);
       setIsEditing(false);
-      alert('Profile updated successfully!');
+      alert('Cập nhật hồ sơ cá nhân thành công!');
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to update profile.');
+      alert(err.response?.data?.message || 'Cập nhật hồ sơ thất bại. Vui lòng thử lại.');
     } finally {
       setSaving(false);
     }
   };
 
   if (!user) {
-    return <div className="container text-center my-5">Please login to view your profile.</div>;
+    return <div className="container text-center my-5">Vui lòng đăng nhập để xem hồ sơ cá nhân.</div>;
   }
 
-  if (loading) return <div className="container text-center my-5">Loading profile...</div>;
+  if (loading) return <div className="container text-center my-5">Đang tải hồ sơ...</div>;
   if (error) return <div className="container text-center my-5 text-danger">{error}</div>;
 
   return (
@@ -78,10 +78,10 @@ function UserProfile() {
         <div className="col-md-8">
           <div className="card shadow-sm border-0 profile-card">
             <div className="card-header bg-white border-bottom-0 pt-4 pb-0 d-flex justify-content-between align-items-center">
-              <h3 className="mb-0">Public Profile</h3>
+              <h3 className="mb-0">Hồ sơ cá nhân</h3>
               {!isEditing && (
                 <button className="btn btn-outline-primary btn-sm rounded-pill px-3" onClick={handleEdit}>
-                  <Edit3 size={16} className="me-2" /> Edit Profile
+                  <Edit3 size={16} className="me-2" /> Chỉnh sửa hồ sơ
                 </button>
               )}
             </div>
@@ -92,13 +92,13 @@ function UserProfile() {
                   {profile.fullName ? profile.fullName.charAt(0).toUpperCase() : 'U'}
                 </div>
                 <h4 className="mb-1">{profile.fullName}</h4>
-                <p className="text-muted mb-0"><User size={14} className="me-1"/> {user.role}</p>
+                <p className="text-muted mb-0"><User size={14} className="me-1"/> {user.role === 'Admin' ? 'Quản trị viên' : user.role === 'Instructor' ? 'Giảng viên' : 'Học viên'}</p>
               </div>
 
               {isEditing ? (
                 <form onSubmit={handleSubmit} className="profile-form">
                   <div className="mb-3">
-                    <label className="form-label fw-bold">Full Name</label>
+                    <label className="form-label fw-bold">Họ và tên</label>
                     <input 
                       type="text" 
                       className="form-control" 
@@ -110,50 +110,50 @@ function UserProfile() {
                   </div>
                   
                   <div className="mb-3">
-                    <label className="form-label fw-bold">Bio</label>
+                    <label className="form-label fw-bold">Tiểu sử giới thiệu</label>
                     <textarea 
                       className="form-control" 
                       name="bio" 
                       rows="4" 
                       value={formData.bio} 
-                      onChange={handleChange}
-                      placeholder="Tell us a little bit about yourself..."
+                      onChange={handleChange} 
+                      placeholder="Chia sẻ đôi nét về kinh nghiệm, sở thích hoặc định hướng học tập của bạn..."
                     ></textarea>
                   </div>
 
                   <div className="d-flex gap-2 justify-content-end mt-4">
                     <button type="button" className="btn btn-light px-4" onClick={handleCancel} disabled={saving}>
-                      <X size={18} className="me-1" /> Cancel
+                      <X size={18} className="me-1" /> Hủy bỏ
                     </button>
                     <button type="submit" className="btn btn-primary px-4" disabled={saving}>
-                      {saving ? 'Saving...' : <><Check size={18} className="me-1" /> Save Changes</>}
+                      {saving ? 'Đang lưu...' : <><Check size={18} className="me-1" /> Lưu thay đổi</>}
                     </button>
                   </div>
                 </form>
               ) : (
                 <div className="profile-info">
                   <div className="row mb-3">
-                    <div className="col-sm-3 text-muted"><Mail size={16} className="me-2"/> Email</div>
+                    <div className="col-sm-3 text-muted"><Mail size={16} className="me-2"/> Địa chỉ Email</div>
                     <div className="col-sm-9 fw-medium">{profile.email}</div>
                   </div>
                   
                   <div className="row mb-3">
-                    <div className="col-sm-3 text-muted"><User size={16} className="me-2"/> Full Name</div>
+                    <div className="col-sm-3 text-muted"><User size={16} className="me-2"/> Họ và tên</div>
                     <div className="col-sm-9 fw-medium">{profile.fullName}</div>
                   </div>
 
                   <div className="row mb-3">
-                    <div className="col-sm-3 text-muted"><Calendar size={16} className="me-2"/> Member Since</div>
-                    <div className="col-sm-9 fw-medium">{new Date(profile.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</div>
+                    <div className="col-sm-3 text-muted"><Calendar size={16} className="me-2"/> Ngày gia nhập</div>
+                    <div className="col-sm-9 fw-medium">{new Date(profile.createdAt).toLocaleDateString('vi-VN', { year: 'numeric', month: 'long', day: 'numeric' })}</div>
                   </div>
 
                   <div className="row mt-4 pt-3 border-top">
                     <div className="col-12">
-                      <h6 className="text-muted mb-3">Bio</h6>
+                      <h6 className="text-muted mb-3">Tiểu sử giới thiệu</h6>
                       {profile.bio ? (
                         <p className="mb-0" style={{whiteSpace: 'pre-line'}}>{profile.bio}</p>
                       ) : (
-                        <p className="text-muted fst-italic mb-0">No bio provided yet.</p>
+                        <p className="text-muted fst-italic mb-0">Chưa có thông tin giới thiệu.</p>
                       )}
                     </div>
                   </div>

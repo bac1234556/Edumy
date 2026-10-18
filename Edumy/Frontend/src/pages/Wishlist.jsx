@@ -23,7 +23,7 @@ function Wishlist() {
       setWishlist(response.data);
     } catch (err) {
       console.error(err);
-      setError('Could not load wishlist.');
+      setError('Không thể tải danh sách khóa học yêu thích.');
     } finally {
       setLoading(false);
     }
@@ -36,26 +36,26 @@ function Wishlist() {
       setWishlist(prev => prev.filter(item => item.courseId !== courseId));
     } catch (err) {
       console.error(err);
-      alert('Failed to remove course from wishlist.');
+      alert('Không thể xóa khóa học khỏi danh sách yêu thích.');
     }
   };
 
   if (!user) {
-    return <div className="container text-center my-5">Please login to view your wishlist.</div>;
+    return <div className="container text-center my-5">Vui lòng đăng nhập để xem danh sách yêu thích.</div>;
   }
 
-  if (loading) return <div className="container text-center my-5">Loading wishlist...</div>;
+  if (loading) return <div className="container text-center my-5">Đang tải danh sách yêu thích...</div>;
   if (error) return <div className="container text-center my-5 text-danger">{error}</div>;
 
   return (
     <div className="container my-5">
-      <h2 className="mb-4">My Wishlist <Heart className="text-danger ms-2" /></h2>
+      <h2 className="mb-4">Khóa học yêu thích <Heart className="text-danger ms-2" /></h2>
       
       {wishlist.length === 0 ? (
         <div className="text-center my-5">
-          <h4 className="text-muted">Your wishlist is empty.</h4>
-          <p>Browse our courses and add your favorites here!</p>
-          <Link to="/courses" className="btn btn-primary mt-3 fw-bold">Explore Courses</Link>
+          <h4 className="text-muted">Danh sách yêu thích của bạn đang trống.</h4>
+          <p>Khám phá kho khóa học phong phú và lưu lại những khóa học bạn quan tâm!</p>
+          <Link to="/courses" className="btn btn-primary mt-3 fw-bold">Khám phá khóa học ngay</Link>
         </div>
       ) : (
         <div className="course-grid">
@@ -81,7 +81,7 @@ function Wishlist() {
                   e.preventDefault();
                   handleRemove(item.courseId);
                 }}
-                title="Remove from Wishlist"
+                title="Xóa khỏi danh sách yêu thích"
               >
                 <Trash2 size={18} className="text-danger" />
               </button>

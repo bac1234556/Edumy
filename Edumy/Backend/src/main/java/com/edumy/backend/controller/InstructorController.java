@@ -1,9 +1,7 @@
 package com.edumy.backend.controller;
 
 import com.edumy.backend.model.*;
-import com.edumy.backend.dto.*;
 import com.edumy.backend.repository.*;
-import com.edumy.backend.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -12,10 +10,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @RestController
-@RequestMapping("/api/Instructor")
+@RequestMapping({"/api/Instructor", "/api/instructor"})
 @PreAuthorize("hasAnyRole('Instructor', 'Admin')")
 public class InstructorController {
 
@@ -54,8 +51,10 @@ public class InstructorController {
                 .map(Enrollment::getUserId)
                 .distinct().count();
 
+        // Tính doanh thu bao gồm cả trạng thái PAID và Completed
         BigDecimal totalRevenue = orderItemRepository.findAll().stream()
-                .filter(oi -> oi.getCourse() != null && instructorId.equals(oi.getCourse().getInstructorId()) && oi.getOrder() != null && "Completed".equals(oi.getOrder().getStatus()))
+                .filter(oi -> oi.getCourse() != null && instructorId.equals(oi.getCourse().getInstructorId()) 
+                        && oi.getOrder() != null && ("PAID".equalsIgnoreCase(oi.getOrder().getStatus()) || "Completed".equalsIgnoreCase(oi.getOrder().getStatus())))
                 .map(OrderItem::getPrice)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
@@ -106,5 +105,33 @@ public class InstructorController {
         response.put("recommendations", recommendations);
 
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/courses/{courseId}/students")
+    public ResponseEntity<?> getCourseStudents(@PathVariable Integer courseId) {
+        Integer instructorId = getCurrentUserId();
+        if (instructorId == null) return ResponseEntity.status(401).build();
+
+        Course course = courseRepository.findById(courseId).orElse(null);
+        if (course == null) return ResponseEntity.notFound().build();
+
+        if (!instructorId.equals(course.getInstructorId())) {
+            return ResponseEntity.status(403).body(Map.of("message", "Bạn không có quyền quản lý khóa học này."));
+        }
+
+        List<Enrollment> enrollments = enrollmentRepository.findByCourseId(courseId);
+        List<Map<String, Object>> students = enrollments.stream().map(e -> {
+            Map<String, Object> m = new HashMap<>();
+            m.put("enrollmentId", e.getEnrollmentId());
+            m.put("userId", e.getUserId());
+            m.put("fullName", e.getUser() != null ? e.getUser().getFullName() : "Học viên #" + e.getUserId());
+            m.put("email", e.getUser() != null ? e.getUser().getEmail() : "");
+            m.put("enrolledAt", e.getEnrolledAt());
+            m.put("progressPercentage", e.getProgressPercentage());
+            m.put("status", e.getStatus());
+            return m;
+        }).collect(Collectors.toList());
+
+        return ResponseEntity.ok(students);
     }
 }

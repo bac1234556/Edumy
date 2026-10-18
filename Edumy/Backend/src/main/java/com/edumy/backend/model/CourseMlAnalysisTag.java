@@ -22,6 +22,7 @@ public class CourseMlAnalysisTag {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "CourseMlAnalysisId", insertable = false, updatable = false)
+    @com.fasterxml.jackson.annotation.JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "tags", "course", "approvedByUser"})
     private CourseMlAnalysis courseMlAnalysis;
     
     @Column(name = "TagName", nullable = false)

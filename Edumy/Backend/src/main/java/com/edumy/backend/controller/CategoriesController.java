@@ -12,7 +12,7 @@ import java.util.List;
 import java.net.URI;
 
 @RestController
-@RequestMapping("/api/Categories")
+@RequestMapping({"/api/Categories", "/api/categories"})
 public class CategoriesController {
 
     @Autowired

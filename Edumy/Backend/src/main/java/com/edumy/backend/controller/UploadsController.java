@@ -17,7 +17,7 @@ import java.util.Arrays;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/Uploads")
+@RequestMapping({"/api/Uploads", "/api/uploads"})
 public class UploadsController {
 
     @PostMapping("/image")

@@ -13,7 +13,7 @@ import java.net.URI;
 import java.util.ArrayList;
 
 @RestController
-@RequestMapping("/api/Tags")
+@RequestMapping({"/api/Tags", "/api/tags"})
 public class TagsController {
 
     @Autowired

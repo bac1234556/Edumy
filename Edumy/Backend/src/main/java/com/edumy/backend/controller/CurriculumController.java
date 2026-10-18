@@ -108,15 +108,61 @@ public class CurriculumController {
     @PreAuthorize("hasAnyRole('Instructor', 'Admin')")
     public ResponseEntity<?> createLesson(@PathVariable Integer sectionId, @RequestBody Lesson lesson) {
         CourseSection section = courseSectionRepository.findById(sectionId).orElse(null);
-        if (section == null || section.getCourse() == null) return ResponseEntity.status(404).body("Section not found");
+        if (section == null) return ResponseEntity.status(404).body("Section not found");
+
+        Course course = courseRepository.findById(section.getCourseId()).orElse(null);
+        if (course == null) return ResponseEntity.status(404).body("Course not found");
 
         Integer userId = getCurrentUserId();
-        if (userId != null && !userId.equals(section.getCourse().getInstructorId()) && !isUserInRole("Admin")) {
+        if (userId != null && !userId.equals(course.getInstructorId()) && !isUserInRole("Admin")) {
             return ResponseEntity.status(403).build();
         }
 
         lesson.setSectionId(sectionId);
         Lesson saved = lessonRepository.save(lesson);
         return ResponseEntity.ok(saved);
+    }
+
+    @PutMapping("/sections/{sectionId}")
+    @PreAuthorize("hasAnyRole('Instructor', 'Admin')")
+    public ResponseEntity<?> updateSection(@PathVariable Integer sectionId, @RequestBody CourseSection updated) {
+        CourseSection section = courseSectionRepository.findById(sectionId).orElse(null);
+        if (section == null) return ResponseEntity.status(404).body("Section not found");
+
+        Course course = courseRepository.findById(section.getCourseId()).orElse(null);
+        if (course == null) return ResponseEntity.status(404).body("Course not found");
+
+        Integer userId = getCurrentUserId();
+        if (userId != null && !userId.equals(course.getInstructorId()) && !isUserInRole("Admin")) {
+            return ResponseEntity.status(403).build();
+        }
+
+        if (updated.getTitle() != null) section.setTitle(updated.getTitle());
+        if (updated.getOrderIndex() != null) section.setOrderIndex(updated.getOrderIndex());
+        CourseSection saved = courseSectionRepository.save(section);
+        return ResponseEntity.ok(saved);
+    }
+
+    @DeleteMapping("/sections/{sectionId}")
+    @PreAuthorize("hasAnyRole('Instructor', 'Admin')")
+    public ResponseEntity<?> deleteSection(@PathVariable Integer sectionId) {
+        CourseSection section = courseSectionRepository.findById(sectionId).orElse(null);
+        if (section == null) return ResponseEntity.status(404).body("Section not found");
+
+        Course course = courseRepository.findById(section.getCourseId()).orElse(null);
+        if (course == null) return ResponseEntity.status(404).body("Course not found");
+
+        Integer userId = getCurrentUserId();
+        if (userId != null && !userId.equals(course.getInstructorId()) && !isUserInRole("Admin")) {
+            return ResponseEntity.status(403).build();
+        }
+
+        List<Lesson> lessons = lessonRepository.findAll().stream()
+                .filter(l -> sectionId.equals(l.getSectionId()))
+                .collect(Collectors.toList());
+        lessonRepository.deleteAll(lessons);
+
+        courseSectionRepository.delete(section);
+        return ResponseEntity.noContent().build();
     }
 }

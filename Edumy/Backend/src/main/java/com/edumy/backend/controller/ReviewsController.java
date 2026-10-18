@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/Reviews")
+@RequestMapping({"/api/Reviews", "/api/reviews"})
 public class ReviewsController {
 
     @Autowired
@@ -27,6 +27,9 @@ public class ReviewsController {
 
     @Autowired
     private CourseRepository courseRepository;
+
+    @Autowired
+    private com.edumy.backend.service.MachineLearningService machineLearningService;
 
     private Integer getCurrentUserId() {
         try {
@@ -73,8 +76,17 @@ public class ReviewsController {
             return ResponseEntity.badRequest().body(Map.of("message", "Số sao đánh giá phải từ 1 đến 5 sao."));
         }
 
-        review.setSentimentLabel("Neutral");
-        review.setSentimentScore(0.5);
+        // Gọi FastAPI BiLSTM để phân tích cảm xúc đánh giá
+        com.edumy.backend.service.MachineLearningService.SentimentResult sentiment = 
+                machineLearningService.analyzeSentiment(review.getComment());
+        if (sentiment != null) {
+            review.setSentimentLabel(sentiment.getLabel());
+            review.setSentimentScore(sentiment.getScore());
+        } else {
+            review.setSentimentLabel("Neutral");
+            review.setSentimentScore(0.5);
+        }
+
         review.setCourseId(courseId);
         review.setUserId(userId);
         review.setCreatedAt(LocalDateTime.now());

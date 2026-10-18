@@ -14,7 +14,7 @@ function QuizTaker({ quizId, onComplete }) {
         const res = await api.get(`/quizzes/${quizId}`);
         setQuiz(res.data);
       } catch (err) {
-        setError("Failed to load quiz.");
+        setError("Không thể tải bài kiểm tra trắc nghiệm.");
       } finally {
         setLoading(false);
       }
@@ -35,14 +35,14 @@ function QuizTaker({ quizId, onComplete }) {
       });
       if (onComplete) onComplete(res.data);
     } catch (err) {
-      setError("Failed to submit quiz.");
+      setError("Nộp bài kiểm tra thất bại. Vui lòng thử lại.");
       setSubmitting(false);
     }
   };
 
-  if (loading) return <div>Loading quiz...</div>;
+  if (loading) return <div>Đang tải bài kiểm tra...</div>;
   if (error) return <div className="text-danger">{error}</div>;
-  if (!quiz) return <div>Quiz not found.</div>;
+  if (!quiz) return <div>Không tìm thấy bài kiểm tra.</div>;
 
   return (
     <div className="quiz-taker p-4 bg-white rounded shadow-sm text-dark h-100 overflow-auto">
@@ -53,7 +53,7 @@ function QuizTaker({ quizId, onComplete }) {
         <div key={q.questionId} className="card mb-4 shadow-sm border-0 bg-light">
           <div className="card-body">
             <h5 className="card-title mb-3">
-              Question {i + 1} <span className="badge bg-secondary ms-2">{q.points} pts</span>
+              Câu hỏi {i + 1} <span className="badge bg-secondary ms-2">{q.points} điểm</span>
             </h5>
             <p className="card-text fw-medium">{q.content}</p>
             <div className="d-flex flex-column gap-2 mt-3">
@@ -84,7 +84,7 @@ function QuizTaker({ quizId, onComplete }) {
           onClick={handleSubmit}
           disabled={submitting || Object.keys(answers).length !== quiz.questions.length}
         >
-          {submitting ? 'Submitting...' : 'Submit Quiz'}
+          {submitting ? 'Đang nộp bài...' : 'Nộp bài kiểm tra'}
         </button>
       </div>
     </div>

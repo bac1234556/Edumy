@@ -17,7 +17,7 @@ import java.util.Map;
 import java.util.HashMap;
 
 @RestController
-@RequestMapping("/api/Wishlist")
+@RequestMapping({"/api/Wishlist", "/api/wishlist"})
 @PreAuthorize("isAuthenticated()")
 public class WishlistController {
 

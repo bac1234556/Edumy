@@ -41,6 +41,32 @@ public class DataSeeder implements CommandLineRunner {
         ur.setRoleId(adminRole.getId());
         userRoleRepository.save(ur);
 
+        User instructor = new User();
+        instructor.setEmail("instructor@edumy.com");
+        instructor.setPasswordHash(passwordEncoder.encode("Admin@123"));
+        instructor.setFullName("Giảng viên Edumy");
+        instructor.setIsActive(true);
+        instructor.setRole("Instructor");
+        userRepository.save(instructor);
+
+        UserRole urInst = new UserRole();
+        urInst.setUserId(instructor.getUserId());
+        urInst.setRoleId(instructorRole.getId());
+        userRoleRepository.save(urInst);
+
+        User student = new User();
+        student.setEmail("student@edumy.com");
+        student.setPasswordHash(passwordEncoder.encode("Admin@123"));
+        student.setFullName("Học viên Edumy");
+        student.setIsActive(true);
+        student.setRole("Student");
+        userRepository.save(student);
+
+        UserRole urStud = new UserRole();
+        urStud.setUserId(student.getUserId());
+        urStud.setRoleId(studentRole.getId());
+        userRoleRepository.save(urStud);
+
         Category devCat = new Category(); devCat.setName("Development");
         Category busCat = new Category(); busCat.setName("Business");
         Category designCat = new Category(); designCat.setName("Design");

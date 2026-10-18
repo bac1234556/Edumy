@@ -15,10 +15,10 @@ const HeroSection = () => {
           transition={{ duration: 0.6 }}
         >
           <div className="hero-card">
-            <h1>Learning that gets you</h1>
-            <p>Skills for your present (and your future). Get started with us.</p>
+            <h1>Học tập mở lối tương lai</h1>
+            <p>Trang bị kỹ năng thực chiến cho hiện tại và tương lai. Bắt đầu hành trình cùng Edumy ngay hôm nay.</p>
             <div className="hero-search-mobile">
-              <input type="text" placeholder="What do you want to learn?" />
+              <input type="text" placeholder="Bạn muốn học kỹ năng gì hôm nay?" />
               <button className="search-btn">🔍</button>
             </div>
           </div>
@@ -32,7 +32,7 @@ const HeroSection = () => {
         >
           <img 
             src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1000&q=80" 
-            alt="Students learning" 
+            alt="Học viên trực tuyến Edumy" 
             className="hero-image"
           />
         </motion.div>

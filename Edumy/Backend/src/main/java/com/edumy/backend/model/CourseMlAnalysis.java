@@ -25,6 +25,7 @@ public class CourseMlAnalysis {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "CourseId", insertable = false, updatable = false)
+    @com.fasterxml.jackson.annotation.JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "sections", "enrollments", "reviews", "orderItems", "wishlists", "courseCoupons", "certificates", "mlAnalyses", "courseTags"})
     private Course course;
     
     @Column(name = "PrimaryCategory")
@@ -66,6 +67,7 @@ public class CourseMlAnalysis {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ApprovedByUserId", insertable = false, updatable = false)
+    @com.fasterxml.jackson.annotation.JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "courses", "enrollments", "reviews", "orders", "userRoles", "refreshTokens", "wishlists", "certificates", "quizAttempts", "cart"})
     private User approvedByUser;
     
     @OneToMany(mappedBy = "courseMlAnalysis") // Assuming back-reference is courseMlAnalysis

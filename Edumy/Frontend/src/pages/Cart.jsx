@@ -3,17 +3,20 @@ import { Link, useNavigate } from 'react-router-dom';
 import api from '../api/axiosConfig';
 import { AuthContext } from '../context/AuthContext';
 import { CartContext } from '../context/CartContext';
-import { 
-  ShoppingCart, 
-  Trash2, 
-  Heart, 
-  ArrowRight, 
-  Tag, 
-  ShieldCheck, 
+import {
+  ShoppingCart,
+  Trash2,
+  Heart,
+  ArrowRight,
+  Tag,
+  ShieldCheck,
   BookOpen,
   ArrowLeft,
   CheckCircle,
-  AlertCircle
+  AlertCircle,
+  Star,
+  Lock,
+  Sparkles
 } from 'lucide-react';
 import './Cart.css';
 
@@ -48,14 +51,12 @@ function Cart() {
   const handleMoveToWishlist = async (courseId) => {
     try {
       setWishlistLoadingId(courseId);
-      // 1. Add to wishlist
       try {
         await api.post(`/wishlist/add/${courseId}`);
       } catch (err) {
         // Ignored if already in wishlist
       }
 
-      // 2. Remove from cart
       await removeFromCart(courseId);
       alert('Đã chuyển khóa học vào Danh sách yêu thích (Wishlist)!');
     } catch (err) {
@@ -86,6 +87,11 @@ function Cart() {
     }
   };
 
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponError('');
+  };
+
   // Checkout Handler
   const handleCheckout = async () => {
     try {
@@ -94,10 +100,11 @@ function Cart() {
         couponCode: appliedCoupon?.code || null
       });
 
-      // Redirect to payment URL
       if (res.data.paymentUrl) {
-        navigate(res.data.paymentUrl);
+        // External payment gateway (e.g. VNPay sandbox)
+        window.location.href = res.data.paymentUrl;
       } else {
+        // Internal mock payment gateway
         navigate(`/payment?orderId=${res.data.orderId}`);
       }
     } catch (err) {
@@ -119,14 +126,14 @@ function Cart() {
         <div className="cart-container">
           <div className="cart-empty-box">
             <div className="cart-empty-icon-wrap">
-              <ShoppingCart size={38} />
+              <ShoppingCart size={40} />
             </div>
             <h2 className="cart-empty-title">Vui lòng đăng nhập để xem giỏ hàng</h2>
             <p className="cart-empty-subtitle">
-              Đăng nhập tài khoản học viên để xem và quản lý các khóa học bạn đã chọn.
+              Đăng nhập tài khoản học viên để xem các khóa học bạn đã chọn và hoàn tất đăng ký học.
             </p>
             <Link to="/login" className="btn-continue-shopping">
-              Đăng nhập ngay
+              Đăng nhập ngay <ArrowRight size={16} />
             </Link>
           </div>
         </div>
@@ -134,13 +141,39 @@ function Cart() {
     );
   }
 
-  // 2. Loading view
+  // 2. Loading Skeleton View
   if (loadingCart && !cart) {
     return (
       <div className="cart-page-wrapper">
-        <div className="cart-container text-center" style={{ padding: '6rem 0', color: '#94a3b8' }}>
-          <div style={{ width: 44, height: 44, border: '4px solid #1f2937', borderTopColor: '#6366f1', borderRadius: '50%', margin: '0 auto 1.25rem auto', animation: 'spin 0.8s linear infinite' }}></div>
-          <p>Đang tải giỏ hàng của bạn...</p>
+        <div className="cart-container">
+          <div className="cart-header-row">
+            <div className="skeleton-box mb-2" style={{ width: '260px', height: '36px' }}></div>
+          </div>
+
+          <div className="cart-layout-grid">
+            <div className="cart-items-column">
+              {[1, 2].map((n) => (
+                <div key={n} className="cart-skeleton-item">
+                  <div className="skeleton-thumb skeleton-box"></div>
+                  <div>
+                    <div className="skeleton-box mb-2" style={{ width: '70%', height: '20px' }}></div>
+                    <div className="skeleton-box mb-2" style={{ width: '40%', height: '16px' }}></div>
+                    <div className="skeleton-box" style={{ width: '30%', height: '16px' }}></div>
+                  </div>
+                  <div className="skeleton-box" style={{ width: '80px', height: '24px' }}></div>
+                </div>
+              ))}
+            </div>
+
+            <div className="cart-summary-column">
+              <div className="order-summary-card">
+                <div className="skeleton-box mb-3" style={{ width: '60%', height: '28px' }}></div>
+                <div className="skeleton-box mb-3" style={{ width: '100%', height: '20px' }}></div>
+                <div className="skeleton-box mb-4" style={{ width: '100%', height: '36px' }}></div>
+                <div className="skeleton-box" style={{ width: '100%', height: '48px' }}></div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -151,169 +184,226 @@ function Cart() {
   const discountAmount = appliedCoupon ? (rawTotal * appliedCoupon.discountPercentage) / 100 : 0;
   const finalTotal = Math.max(0, rawTotal - discountAmount);
 
-  // 3. Main Cart View
   return (
     <div className="cart-page-wrapper">
       <div className="cart-container">
-        <h1 className="cart-page-heading">
-          Giỏ hàng của bạn
-          {items.length > 0 && (
-            <span className="cart-heading-count">({items.length} khóa học)</span>
-          )}
-        </h1>
+        {/* Header Row */}
+        <div className="cart-header-row d-flex justify-content-between align-items-center">
+          <div>
+            <h1 className="cart-page-heading">
+              Giỏ hàng của bạn
+              {items.length > 0 && (
+                <span className="cart-heading-count">({items.length} khóa học)</span>
+              )}
+            </h1>
+            <Link to="/courses" className="cart-breadcrumb-back">
+              <ArrowLeft size={16} /> Tiếp tục tìm kiếm khóa học
+            </Link>
+          </div>
+        </div>
 
+        {/* Empty Cart State */}
         {items.length === 0 ? (
           <div className="cart-empty-box">
             <div className="cart-empty-icon-wrap">
-              <ShoppingCart size={38} />
+              <ShoppingCart size={40} />
             </div>
             <h3 className="cart-empty-title">Giỏ hàng của bạn đang trống</h3>
             <p className="cart-empty-subtitle">
-              Khám phá hàng ngàn khóa học lập trình, thiết kế và công nghệ hàng đầu trên Edumy!
+              Bạn chưa thêm khóa học nào vào giỏ hàng. Hãy khám phá kho tàng kiến thức công nghệ hiện đại trên Edumy ngay hôm nay!
             </p>
             <Link to="/courses" className="btn-continue-shopping">
-              <BookOpen size={18} /> Khám phá khóa học ngay
+              <BookOpen size={18} /> Khám phá các khóa học ngay
             </Link>
           </div>
         ) : (
           <div className="cart-layout-grid">
-            {/* Left Column: List of items */}
+            {/* Left Column: Cart Items List */}
             <div className="cart-items-column">
               <div className="cart-items-meta-header">
-                Danh sách khóa học đã chọn
+                Danh sách khóa học trong đơn ({items.length})
               </div>
 
-              <div className="cart-items-card-list">
-                {items.map(item => (
-                  <div key={item.id} className="cart-item-card">
-                    <img 
-                      src={item.course.thumbnailUrl 
-                        ? (item.course.thumbnailUrl.startsWith('http') ? item.course.thumbnailUrl : `${BACKEND_URL}${item.course.thumbnailUrl}`)
-                        : "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=300&q=80"} 
-                      alt={item.course.title} 
-                      className="cart-item-thumbnail" 
+              {items.map((item) => (
+                <div key={item.id} className="cart-item-card">
+                  {/* Thumbnail */}
+                  <div className="cart-item-thumbnail-wrap">
+                    <img
+                      src={
+                        item.course?.thumbnailUrl
+                          ? item.course.thumbnailUrl.startsWith('http')
+                            ? item.course.thumbnailUrl
+                            : `${BACKEND_URL}${item.course.thumbnailUrl}`
+                          : 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=300&q=80'
+                      }
+                      alt={item.course?.title}
+                      className="cart-item-thumbnail"
                     />
-                    <div className="cart-item-details">
-                      <div>
-                        <Link to={`/courses/${item.courseId}`} className="cart-item-title-link">
-                          {item.course.title}
-                        </Link>
-                        <p className="cart-item-instructor">
-                          Giảng viên: {item.course.instructor?.fullName || 'Chuyên gia Edumy'}
-                        </p>
-                      </div>
+                  </div>
 
-                      {/* Action buttons: Xóa & Chuyển vào Wishlist */}
-                      <div className="cart-item-actions">
-                        <button 
-                          className="btn-remove-cart-item" 
-                          onClick={() => handleRemove(item.courseId)}
-                          title="Xóa khóa học khỏi giỏ hàng"
-                        >
-                          <Trash2 size={14} /> Xóa
-                        </button>
-
-                        <button 
-                          className="btn-move-wishlist" 
-                          onClick={() => handleMoveToWishlist(item.courseId)}
-                          disabled={wishlistLoadingId === item.courseId}
-                          title="Lưu vào danh sách yêu thích và xóa khỏi giỏ"
-                        >
-                          <Heart size={14} /> {wishlistLoadingId === item.courseId ? 'Đang chuyển...' : 'Chuyển vào Wishlist'}
-                        </button>
+                  {/* Details */}
+                  <div className="cart-item-details">
+                    <div>
+                      <Link
+                        to={`/courses/${item.courseId}`}
+                        className="cart-item-title-link"
+                      >
+                        {item.course?.title || 'Khóa học Edumy'}
+                      </Link>
+                      <p className="cart-item-instructor">
+                        Giảng viên:{' '}
+                        <strong>
+                          {item.course?.instructor?.fullName || item.course?.instructor || 'Chuyên gia Edumy'}
+                        </strong>
+                      </p>
+                      <div className="cart-item-rating-row">
+                        <span className="cart-rating-score">
+                          {item.course?.averageRating || '4.8'}
+                        </span>
+                        <div className="stars">
+                          {[...Array(5)].map((_, i) => (
+                            <Star key={i} size={13} fill="#f59e0b" color="#f59e0b" />
+                          ))}
+                        </div>
+                        <span className="text-muted">
+                          ({item.course?.reviews?.length || 24} đánh giá)
+                        </span>
                       </div>
                     </div>
 
-                    <div className="cart-item-price-col">
-                      <div className="item-main-price">
-                        {formatPrice(item.course.price)}
-                      </div>
+                    {/* Actions */}
+                    <div className="cart-item-actions">
+                      <button
+                        onClick={() => handleMoveToWishlist(item.courseId)}
+                        disabled={wishlistLoadingId === item.courseId}
+                        className="btn-item-action"
+                      >
+                        <Heart size={15} /> Lưu vào yêu thích
+                      </button>
+                      <button
+                        onClick={() => handleRemove(item.courseId)}
+                        className="btn-item-action remove-btn"
+                      >
+                        <Trash2 size={15} /> Xóa khỏi giỏ
+                      </button>
                     </div>
                   </div>
-                ))}
-              </div>
 
-              <div style={{ marginTop: '1.5rem' }}>
-                <Link to="/courses" style={{ color: '#818cf8', textDecoration: 'none', fontSize: '0.9rem', display: 'inline-flex', alignItems: 'center', gap: '0.4rem', fontWeight: 600 }}>
-                  <ArrowLeft size={16} /> Tiếp tục tìm kiếm khóa học
-                </Link>
-              </div>
+                  {/* Price */}
+                  <div className="cart-item-price-box">
+                    <span className="item-current-price">
+                      {formatPrice(item.course?.price)}
+                    </span>
+                    {item.course?.originalPrice && item.course.originalPrice > item.course.price && (
+                      <span className="item-original-price">
+                        {formatPrice(item.course.originalPrice)}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              ))}
             </div>
 
-            {/* Right Column: Order Summary & Coupon Form */}
-            <aside className="cart-summary-column">
-              <div className="summary-card-box">
+            {/* Right Column: Order Summary (Sticky) */}
+            <div className="cart-summary-column">
+              <div className="order-summary-card">
                 <h3 className="summary-heading">Tóm tắt đơn hàng</h3>
 
-                <div className="summary-row">
-                  <span>Tạm tính ({items.length} khóa học):</span>
-                  <span>{formatPrice(rawTotal)}</span>
-                </div>
-
-                {appliedCoupon && (
-                  <div className="summary-row discount-row">
-                    <span>Mã giảm giá ({appliedCoupon.code} -{appliedCoupon.discountPercentage}%):</span>
-                    <span>-{formatPrice(discountAmount)}</span>
+                <div className="summary-rows-stack">
+                  <div className="summary-row">
+                    <span>Tổng tiền gốc:</span>
+                    <span>{formatPrice(rawTotal)}</span>
                   </div>
-                )}
 
-                <div className="summary-total-divider"></div>
+                  {appliedCoupon && (
+                    <div className="summary-row discount-row">
+                      <span>Giảm giá ({appliedCoupon.discountPercentage}%):</span>
+                      <span>-{formatPrice(discountAmount)}</span>
+                    </div>
+                  )}
 
-                <div className="summary-final-total-row">
-                  <span className="total-label">Tổng cộng:</span>
-                  <span className="total-amount-display">{formatPrice(finalTotal)}</span>
+                  <div className="summary-row total-row">
+                    <span>Tổng thanh toán:</span>
+                    <span className="final-price-value">{formatPrice(finalTotal)}</span>
+                  </div>
                 </div>
 
-                {/* Form Nhập Mã Giảm Giá Coupon */}
-                <div style={{ marginBottom: '1.25rem' }}>
+                {/* Coupon Code Section */}
+                <div className="coupon-section-box">
+                  <label className="coupon-section-label">
+                    <Tag size={16} /> Mã giảm giá (Coupon):
+                  </label>
                   <div className="coupon-input-group">
-                    <input 
-                      type="text" 
-                      placeholder="Mã coupon (ví dụ: EDUMY50)"
+                    <input
+                      type="text"
+                      className="coupon-input"
+                      placeholder="Nhập mã (VD: EDUMY50)"
                       value={couponCode}
                       onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
-                      className="coupon-input-field"
                     />
-                    <button 
-                      type="button" 
+                    <button
+                      type="button"
                       onClick={handleApplyCoupon}
-                      disabled={couponLoading || !couponCode.trim()}
+                      disabled={couponLoading}
                       className="btn-apply-coupon"
                     >
-                      {couponLoading ? '...' : 'Áp dụng'}
+                      {couponLoading ? 'Kiểm tra...' : 'Áp dụng'}
                     </button>
                   </div>
-                  {couponError && (
-                    <div className="coupon-feedback-msg error">
-                      <AlertCircle size={13} /> {couponError}
+
+                  {appliedCoupon && (
+                    <div className="applied-coupon-tag">
+                      <span className="d-flex align-items-center gap-1">
+                        <CheckCircle size={14} /> Mã <strong>{appliedCoupon.code}</strong> (-{appliedCoupon.discountPercentage}%)
+                      </span>
+                      <button
+                        type="button"
+                        onClick={handleRemoveCoupon}
+                        className="btn-remove-coupon"
+                      >
+                        Gỡ bỏ
+                      </button>
                     </div>
                   )}
-                  {appliedCoupon && (
-                    <div className="coupon-feedback-msg success">
-                      <CheckCircle size={13} /> {appliedCoupon.message}
+
+                  {couponError && (
+                    <div className="coupon-error-text">
+                      <AlertCircle size={14} /> {couponError}
                     </div>
                   )}
                 </div>
 
-                {/* Checkout CTA */}
-                <button 
-                  className="btn-checkout-now" 
+                {/* Checkout Primary Button */}
+                <button
                   onClick={handleCheckout}
-                  disabled={checkoutLoading}
+                  disabled={checkoutLoading || items.length === 0}
+                  className="btn-checkout-primary"
                 >
-                  {checkoutLoading ? 'Đang tạo đơn thanh toán...' : (
+                  {checkoutLoading ? (
+                    'Đang khởi tạo đơn...'
+                  ) : (
                     <>
                       Tiến hành Thanh toán <ArrowRight size={18} />
                     </>
                   )}
                 </button>
 
-                <div className="guarantee-note-card">
-                  <ShieldCheck size={14} style={{ display: 'inline', marginRight: 4, verticalAlign: -2 }} />
-                  Bảo mật giao dịch mã hóa SSL 256-bit & Cam kết hoàn tiền 30 ngày
+                {/* Trust & Guarantee Info */}
+                <div className="payment-trust-box">
+                  <div className="trust-badge-row">
+                    <Lock size={14} /> Giao dịch bảo mật chuẩn SSL 256-bit
+                  </div>
+                  <div className="trust-badge-row mb-3">
+                    <ShieldCheck size={14} /> Bảo đảm hoàn tiền trong 30 ngày
+                  </div>
+                  <div className="payment-methods-strip">
+                    <span className="payment-pill">VNPay QR</span>
+                    <span className="payment-pill">ATM Nội Địa</span>
+                    <span className="payment-pill">Visa / Master</span>
+                  </div>
                 </div>
               </div>
-            </aside>
+            </div>
           </div>
         )}
       </div>

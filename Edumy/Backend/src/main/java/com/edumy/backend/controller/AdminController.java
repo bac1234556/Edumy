@@ -15,9 +15,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @RestController
-@RequestMapping("/api/Admin")
+@RequestMapping({"/api/Admin", "/api/admin"})
 @PreAuthorize("hasRole('Admin')")
 public class AdminController {
 
@@ -39,17 +40,44 @@ public class AdminController {
     @Autowired
     private CategoryRepository categoryRepository;
 
+    @Autowired
+    private UserActivityRepository userActivityRepository;
+
+    @GetMapping("/activities")
+    public ResponseEntity<?> getActivities() {
+        var list = userActivityRepository.findAll().stream()
+                .sorted((a, b) -> b.getTimestamp().compareTo(a.getTimestamp()))
+                .limit(50)
+                .map(a -> {
+                    Map<String, Object> m = new HashMap<>();
+                    m.put("id", a.getId());
+                    m.put("userId", a.getUserId());
+                    m.put("userEmail", a.getUser() != null ? a.getUser().getEmail() : "user_" + a.getUserId());
+                    m.put("action", a.getActivityType());
+                    m.put("resourceId", a.getResourceId());
+                    m.put("timestamp", a.getTimestamp());
+                    return m;
+                })
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(list);
+    }
+
     @GetMapping("/stats")
     public ResponseEntity<?> getDashboardStats() {
         long totalUsers = userRepository.count();
         long totalCourses = courseRepository.count();
         
-        List<Order> completedOrders = orderRepository.findByStatus("Completed");
-        BigDecimal totalRevenue = completedOrders.stream()
+        BigDecimal totalRevenue = orderRepository.findAll().stream()
+                .filter(o -> "PAID".equalsIgnoreCase(o.getStatus()) || "Completed".equalsIgnoreCase(o.getStatus()))
                 .map(Order::getTotalAmount)
+                .filter(Objects::nonNull)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         Map<String, Object> response = new HashMap<>();
+        // Hỗ trợ cả 2 chuẩn camelCase và PascalCase cho Frontend
+        response.put("totalUsers", totalUsers);
+        response.put("totalCourses", totalCourses);
+        response.put("totalRevenue", totalRevenue);
         response.put("TotalUsers", totalUsers);
         response.put("TotalCourses", totalCourses);
         response.put("TotalRevenue", totalRevenue);
@@ -68,6 +96,7 @@ public class AdminController {
                     m.put("email", u.getEmail());
                     m.put("role", u.getRole());
                     m.put("createdAt", u.getCreatedAt());
+                    m.put("isActive", u.getIsActive());
                     return m;
                 }).collect(Collectors.toList());
 
@@ -83,15 +112,24 @@ public class AdminController {
     }
 
     @PutMapping("/courses/{id}/status")
-    public ResponseEntity<?> updateCourseStatus(@PathVariable Integer id, @RequestBody String status) {
+    public ResponseEntity<?> updateCourseStatus(@PathVariable Integer id, @RequestBody Object body) {
         Course course = courseRepository.findById(id).orElse(null);
         if (course == null) return ResponseEntity.notFound().build();
 
-        course.setStatus(status.replace("\"", ""));
+        String statusStr = "";
+        if (body instanceof Map) {
+            Object s = ((Map<?, ?>) body).get("status");
+            statusStr = s != null ? s.toString() : "";
+        } else {
+            statusStr = body != null ? body.toString().replace("\"", "").trim() : "";
+        }
+
+        course.setStatus(statusStr);
         courseRepository.save(course);
 
         Map<String, String> response = new HashMap<>();
-        response.put("message", "Status updated");
+        response.put("message", "Status updated to " + statusStr);
+        response.put("status", statusStr);
         return ResponseEntity.ok(response);
     }
 
@@ -134,12 +172,30 @@ public class AdminController {
         long pendingReviews = courseMlAnalysisRepository.countByStatusIn(List.of("NeedsManualReview", "InstructorConfirmationRequired"));
         
         long totalReviews = reviewRepository.count();
+        long posCount = reviewRepository.findAll().stream()
+                .filter(r -> "POSITIVE".equalsIgnoreCase(r.getSentimentLabel()) || "POS".equalsIgnoreCase(r.getSentimentLabel())).count();
+        long negCount = reviewRepository.findAll().stream()
+                .filter(r -> "NEGATIVE".equalsIgnoreCase(r.getSentimentLabel()) || "NEG".equalsIgnoreCase(r.getSentimentLabel())).count();
+        long neuCount = reviewRepository.findAll().stream()
+                .filter(r -> "NEUTRAL".equalsIgnoreCase(r.getSentimentLabel()) || "NEU".equalsIgnoreCase(r.getSentimentLabel())).count();
+
+        List<Map<String, Object>> sentimentStats = List.of(
+                Map.of("label", "POS", "count", posCount),
+                Map.of("label", "NEG", "count", negCount),
+                Map.of("label", "NEU", "count", neuCount)
+        );
         
         Map<String, Object> response = new HashMap<>();
         response.put("TotalAnalyses", totalAnalyses);
         response.put("HighRiskCount", highRiskCount);
         response.put("PendingReviews", pendingReviews);
         response.put("TotalReviews", totalReviews);
+        response.put("SentimentStats", sentimentStats);
+        response.put("sentimentStats", sentimentStats);
+        response.put("totalAnalyses", totalAnalyses);
+        response.put("highRiskCount", highRiskCount);
+        response.put("pendingReviews", pendingReviews);
+        response.put("totalReviews", totalReviews);
         
         List<CourseMlAnalysis> history = courseMlAnalysisRepository.findTop20ByOrderByCreatedAtDesc();
         List<Map<String, Object>> analysesHistory = history.stream().map(a -> {
@@ -157,6 +213,7 @@ public class AdminController {
         }).collect(Collectors.toList());
         
         response.put("AnalysesHistory", analysesHistory);
+        response.put("analysesHistory", analysesHistory);
         return ResponseEntity.ok(response);
     }
 

@@ -38,6 +38,7 @@ public class Quiz {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "CourseSectionId", insertable = false, updatable = false)
+    @com.fasterxml.jackson.annotation.JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "lessons", "quizzes", "course"})
     private CourseSection courseSection;
     
     @OneToMany(mappedBy = "quiz")
@@ -46,5 +47,6 @@ public class Quiz {
 
     @OneToMany(mappedBy = "quiz")
     @Builder.Default
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private List<QuizAttempt> quizAttempts = new ArrayList<>();
 }

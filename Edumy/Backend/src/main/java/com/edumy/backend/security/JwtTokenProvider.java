@@ -36,13 +36,24 @@ public class JwtTokenProvider {
     }
 
     public String generateToken(Integer userId, String email, String role) {
+        return generateToken(userId, email, role, null);
+    }
+
+    public String generateToken(Integer userId, String email, String role, String fullName) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + (long) expireDays * 24 * 60 * 60 * 1000);
 
-        return Jwts.builder()
+        var builder = Jwts.builder()
                 .setSubject(String.valueOf(userId))
                 .claim("email", email)
-                .claim("role", role)
+                .claim("role", role);
+                
+        if (fullName != null && !fullName.isEmpty()) {
+            builder.claim("name", fullName);
+            builder.claim("unique_name", fullName);
+        }
+
+        return builder
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)

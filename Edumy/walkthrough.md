@@ -2,7 +2,7 @@
 
 We have successfully built and expanded the **EduMy** online learning platform. The system operates on separate concerns: Spring Boot 3.2.0 (Backend API Orchestration in Java 17), React (Visual Frontend Web Application), and FastAPI (Automated Text Processing & ML Analytics).
 
-
+---
 
 ## 1. List of Implemented Features
 

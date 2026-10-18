@@ -23,6 +23,7 @@ public class QuizAttemptAnswer {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "QuizAttemptId", insertable = false, updatable = false)
+    @com.fasterxml.jackson.annotation.JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "selectedAnswers", "user", "quiz"})
     private QuizAttempt quizAttempt;
     
     @Column(name = "QuestionId")
@@ -30,6 +31,7 @@ public class QuizAttemptAnswer {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "QuestionId", insertable = false, updatable = false)
+    @com.fasterxml.jackson.annotation.JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "answers", "quiz"})
     private Question question;
     
     @Column(name = "AnswerId")
@@ -37,5 +39,6 @@ public class QuizAttemptAnswer {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "AnswerId", insertable = false, updatable = false)
+    @com.fasterxml.jackson.annotation.JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "question"})
     private Answer answer;
 }

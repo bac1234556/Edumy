@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 import lombok.Data;
 
 @RestController
-@RequestMapping("/api/Orders")
+@RequestMapping({"/api/Orders", "/api/orders"})
 @PreAuthorize("isAuthenticated()")
 public class OrdersController {
 

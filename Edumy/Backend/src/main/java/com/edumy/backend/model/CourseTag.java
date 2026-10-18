@@ -29,6 +29,7 @@ public class CourseTag {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "CourseId", insertable = false, updatable = false)
+    @com.fasterxml.jackson.annotation.JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "sections", "enrollments", "reviews", "orderItems", "wishlists", "courseCoupons", "certificates", "mlAnalyses", "courseTags"})
     private Course course;
     
     @Id
@@ -37,5 +38,6 @@ public class CourseTag {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "TagId", insertable = false, updatable = false)
+    @com.fasterxml.jackson.annotation.JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Tag tag;
 }

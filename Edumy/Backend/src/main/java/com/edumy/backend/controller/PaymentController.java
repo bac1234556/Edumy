@@ -32,7 +32,7 @@ public class PaymentController {
      * POST /api/v1/payments/create-url
      * Tạo đường dẫn thanh toán qua cổng thanh toán VNPay / MoMo / Stripe
      */
-    @PostMapping({"/api/v1/payments/create-url", "/api/Payment/create-url"})
+    @PostMapping({"/api/v1/payments/create-url", "/api/Payment/create-url", "/api/payment/create-url"})
     public ResponseEntity<?> createPaymentUrl(@RequestBody PaymentCreateRequestDto request) {
         Integer currentUserId = getCurrentUserId();
         if (currentUserId == null) {
@@ -56,7 +56,7 @@ public class PaymentController {
      * Webhook server-to-server callback chuẩn từ cổng VNPay (IPN)
      * Xác thực HMAC SHA512 Checksum và phản hồi định dạng chuẩn VNPay (RspCode, Message)
      */
-    @GetMapping({"/api/v1/payments/vnpay-ipn", "/api/Payment/ipn"})
+    @GetMapping({"/api/v1/payments/vnpay-ipn", "/api/Payment/ipn", "/api/payment/ipn"})
     public ResponseEntity<?> handleVnPayIpn(@RequestParam Map<String, String> allParams) {
         PaymentWebhookResponseDto result = paymentService.processIpnWebhook(allParams);
 
@@ -72,7 +72,7 @@ public class PaymentController {
      * GET /api/v1/payments/vnpay-return
      * Callback trả về trên trình duyệt khi người dùng hoàn tất thanh toán trên VNPay
      */
-    @GetMapping({"/api/v1/payments/vnpay-return", "/api/Payment/vnpay-return"})
+    @GetMapping({"/api/v1/payments/vnpay-return", "/api/Payment/vnpay-return", "/api/payment/vnpay-return"})
     public ResponseEntity<?> handleVnPayReturn(@RequestParam Map<String, String> allParams) {
         PaymentWebhookResponseDto result = paymentService.processClientCallback(allParams);
         return ResponseEntity.ok(result);
@@ -82,7 +82,7 @@ public class PaymentController {
      * POST /api/v1/payments/webhook
      * Webhook chung (MoMo, Stripe hoặc hệ thống thanh toán bên thứ ba)
      */
-    @PostMapping({"/api/v1/payments/webhook", "/api/Payment/webhook"})
+    @PostMapping({"/api/v1/payments/webhook", "/api/Payment/webhook", "/api/payment/webhook"})
     public ResponseEntity<?> handleGenericWebhook(@RequestBody(required = false) Map<String, Object> body,
                                                   @RequestParam(required = false) Map<String, String> params,
                                                   @RequestHeader(value = "X-Webhook-Signature", required = false) String signature) {
@@ -107,7 +107,7 @@ public class PaymentController {
      * POST /api/Payment/callback
      * Legacy callback cho client mock hoặc frontend cũ
      */
-    @PostMapping("/api/Payment/callback")
+    @PostMapping({"/api/Payment/callback", "/api/payment/callback", "/api/v1/payments/callback"})
     public ResponseEntity<?> legacyPaymentCallback(@RequestBody Map<String, Object> payload) {
         Map<String, String> params = new HashMap<>();
         payload.forEach((k, v) -> {

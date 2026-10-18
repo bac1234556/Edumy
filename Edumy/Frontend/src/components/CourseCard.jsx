@@ -15,8 +15,8 @@ const CourseCard = ({ course }) => {
         />
       </div>
       <div className="course-content">
-        <h3 className="course-title">{course.title || "Untitled Course"}</h3>
-        <p className="course-instructor">{course.instructor?.fullName || course.instructor || "Instructor"}</p>
+        <h3 className="course-title">{course.title || "Khóa học chưa đặt tên"}</h3>
+        <p className="course-instructor">{course.instructor?.fullName || course.instructor || "Giảng viên"}</p>
         
         <div className="course-rating">
           <span className="rating-score">{course.averageRating || course.rating || "4.5"}</span>
@@ -43,7 +43,7 @@ const CourseCard = ({ course }) => {
         
         {course.bestseller && (
           <div className="course-badges">
-            <span className="badge bestseller">Bestseller</span>
+            <span className="badge bestseller">Bán chạy nhất</span>
           </div>
         )}
       </div>

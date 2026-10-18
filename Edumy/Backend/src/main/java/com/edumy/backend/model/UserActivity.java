@@ -23,6 +23,7 @@ public class UserActivity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "UserId", insertable = false, updatable = false)
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private User user;
 
     @Column(name = "ActivityType", nullable = false)

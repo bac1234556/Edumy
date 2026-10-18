@@ -28,7 +28,7 @@ function MockPaymentGateway() {
         navigate('/payment-cancel');
       }
     } catch (error) {
-      alert('Payment processing error');
+      alert('Lỗi xử lý giao dịch thanh toán');
       setProcessing(false);
     }
   };
@@ -38,13 +38,13 @@ function MockPaymentGateway() {
       <div className="card shadow-lg border-0" style={{ maxWidth: '500px', width: '100%' }}>
         <div className="card-header bg-primary text-white text-center py-4">
           <h3 className="mb-0">EduMy Pay</h3>
-          <p className="mb-0 opacity-75">Secure Mock Payment Gateway</p>
+          <p className="mb-0 opacity-75">Cổng thanh toán thử nghiệm an toàn</p>
         </div>
         <div className="card-body p-4">
           <div className="text-center mb-4">
-            <h5 className="text-muted mb-2">Total Amount to Pay</h5>
+            <h5 className="text-muted mb-2">Tổng số tiền thanh toán</h5>
             <h1 className="display-4 fw-bold text-primary">₫{parseFloat(amount || 0).toLocaleString()}</h1>
-            <p className="text-muted">Order ID: #{orderId}</p>
+            <p className="text-muted">Mã đơn hàng: #{orderId}</p>
           </div>
 
           <hr className="my-4" />
@@ -52,9 +52,9 @@ function MockPaymentGateway() {
           {processing ? (
             <div className="text-center py-4">
               <div className="spinner-border text-primary" role="status">
-                <span className="visually-hidden">Processing...</span>
+                <span className="visually-hidden">Đang xử lý...</span>
               </div>
-              <p className="mt-3 text-muted">Processing your payment...</p>
+              <p className="mt-3 text-muted">Đang xử lý giao dịch thanh toán của bạn...</p>
             </div>
           ) : (
             <div className="d-grid gap-3">
@@ -63,7 +63,7 @@ function MockPaymentGateway() {
                 onClick={() => handlePayment(true)}
               >
                 <i className="bi bi-check-circle-fill"></i>
-                Simulate Successful Payment
+                Mô phỏng Thanh toán Thành công
               </button>
               
               <button 
@@ -71,14 +71,14 @@ function MockPaymentGateway() {
                 onClick={() => handlePayment(false)}
               >
                 <i className="bi bi-x-circle-fill"></i>
-                Simulate Failed Payment
+                Mô phỏng Thanh toán Thất bại
               </button>
             </div>
           )}
 
           <div className="text-center mt-4 text-muted small">
             <i className="bi bi-shield-lock-fill text-success me-1"></i>
-            This is a mock gateway for testing purposes only. No real money will be charged.
+            Đây là cổng thanh toán giả lập phục vụ mục đích học tập và kiểm thử. Tài khoản thực tế của bạn sẽ không bị trừ tiền.
           </div>
         </div>
       </div>

@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 import lombok.Data;
 
 @RestController
-@RequestMapping("/api/Courses")
+@RequestMapping({"/api/Courses", "/api/courses"})
 public class CoursesController {
 
     @Autowired
@@ -49,6 +49,12 @@ public class CoursesController {
     @Autowired
     private CourseMlAnalysisRepository courseMlAnalysisRepository;
 
+    @Autowired
+    private com.edumy.backend.service.MachineLearningService machineLearningService;
+
+    @Autowired
+    private com.edumy.backend.service.UserActivityService userActivityService;
+
     private Integer getCurrentUserId() {
         try {
             return Integer.parseInt(SecurityContextHolder.getContext().getAuthentication().getName());
@@ -68,7 +74,8 @@ public class CoursesController {
         Integer userId = getCurrentUserId();
         if (userId == null) return ResponseEntity.status(401).build();
 
-        List<Integer> recommendedCourseIds = new ArrayList<>(); 
+        var recResult = machineLearningService.recommendCourses(userId);
+        List<Integer> recommendedCourseIds = recResult != null ? recResult.getRecommendedCourseIds() : new ArrayList<>(); 
         
         if (!recommendedCourseIds.isEmpty()) {
             List<Course> courses = courseRepository.findAllById(recommendedCourseIds);
@@ -85,6 +92,10 @@ public class CoursesController {
 
     @GetMapping
     public ResponseEntity<?> getCourses(@ModelAttribute CourseQueryDto queryDto) {
+        if (queryDto.getSearch() != null && !queryDto.getSearch().trim().isEmpty()) {
+            userActivityService.logSearch(getCurrentUserId(), queryDto.getSearch().trim());
+        }
+
         List<Course> all = courseRepository.findAll();
         
         List<Course> filtered = all.stream().filter(c -> {
@@ -267,10 +278,17 @@ public class CoursesController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/{id}/status")
+    @RequestMapping(value = "/{id}/status", method = {RequestMethod.POST, RequestMethod.PUT})
     @PreAuthorize("hasAnyRole('Instructor', 'Admin')")
-    public ResponseEntity<?> updateStatus(@PathVariable Integer id, @RequestBody String newStatus) {
-        newStatus = newStatus.replace("\"", "");
+    public ResponseEntity<?> updateStatus(@PathVariable Integer id, @RequestBody Object body) {
+        String newStatus = "";
+        if (body instanceof Map) {
+            Object s = ((Map<?, ?>) body).get("status");
+            newStatus = s != null ? s.toString() : "";
+        } else {
+            newStatus = body != null ? body.toString().replace("\"", "").trim() : "";
+        }
+
         List<String> validStatuses = Arrays.asList("Draft", "Analyzing", "NeedsReview", "PendingApproval", "Published");
         if (!validStatuses.contains(newStatus)) {
             return ResponseEntity.badRequest().body("Invalid status.");
@@ -304,7 +322,7 @@ public class CoursesController {
         course.setUpdatedAt(LocalDateTime.now());
         courseRepository.save(course);
 
-        return ResponseEntity.ok(Map.of("message", "Status updated to " + newStatus));
+        return ResponseEntity.ok(Map.of("message", "Status updated to " + newStatus, "status", newStatus));
     }
 
     private static String generateSlug(String title) {

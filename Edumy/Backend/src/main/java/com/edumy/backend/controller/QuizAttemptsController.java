@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/QuizAttempts")
+@RequestMapping({"/api/QuizAttempts", "/api/quizattempts", "/api/quiz-attempts"})
 @PreAuthorize("isAuthenticated()")
 public class QuizAttemptsController {
 

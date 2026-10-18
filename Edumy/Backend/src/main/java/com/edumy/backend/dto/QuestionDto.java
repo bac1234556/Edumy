@@ -11,4 +11,9 @@ public class QuestionDto {
     private Integer points;
     private String explanation;
     private List<AnswerDto> answers = new ArrayList<>();
+
+    public Integer getId() { return questionId; }
+    public void setId(Integer id) { this.questionId = id; }
+    public String getQuestionText() { return content; }
+    public void setQuestionText(String questionText) { this.content = questionText; }
 }

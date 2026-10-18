@@ -14,7 +14,7 @@ import java.util.HashMap;
 import lombok.Data;
 
 @RestController
-@RequestMapping("/api/Users")
+@RequestMapping({"/api/Users", "/api/users"})
 @PreAuthorize("isAuthenticated()")
 public class UsersController {
 

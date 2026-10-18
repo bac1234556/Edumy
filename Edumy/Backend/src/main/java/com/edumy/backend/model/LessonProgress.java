@@ -23,6 +23,7 @@ public class LessonProgress {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "UserId", insertable = false, updatable = false)
+    @com.fasterxml.jackson.annotation.JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "courses", "enrollments", "reviews", "orders", "userRoles", "refreshTokens", "wishlists", "certificates", "quizAttempts", "cart"})
     private User user;
     
     @Column(name = "CourseId")
@@ -30,6 +31,7 @@ public class LessonProgress {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "CourseId", insertable = false, updatable = false)
+    @com.fasterxml.jackson.annotation.JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "sections", "enrollments", "reviews", "orderItems", "wishlists", "courseCoupons", "certificates", "mlAnalyses", "courseTags"})
     private Course course;
     
     @Column(name = "LessonId")
@@ -37,6 +39,7 @@ public class LessonProgress {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "LessonId", insertable = false, updatable = false)
+    @com.fasterxml.jackson.annotation.JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "section"})
     private Lesson lesson;
     
     @Column(name = "CompletedAt")
