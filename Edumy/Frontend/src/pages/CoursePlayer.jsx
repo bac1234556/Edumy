@@ -196,23 +196,34 @@ function CoursePlayer() {
     }
   };
 
-  // Toggle Complete / Incomplete Lesson
+  // Toggle Complete / Incomplete Lesson with Instant Optimistic UI Update
   const handleToggleComplete = async () => {
     if (!activeLesson || activeLesson.isQuiz) return;
     const lessonId = activeLesson.lessonId;
     const isAlreadyCompleted = completedLessons.includes(lessonId);
 
+    // 1. Optimistic state updates (instant number jump)
+    const nextCompleted = isAlreadyCompleted
+      ? completedLessons.filter(item => item !== lessonId)
+      : [...completedLessons, lessonId];
+    
+    setCompletedLessons(nextCompleted);
+
+    const totalItems = allPlayableItems.length || 1;
+    const optimisticPercent = Math.min(100, Math.round((nextCompleted.length / totalItems) * 100));
+    setProgressPercent(optimisticPercent);
+
+    // 2. Synchronize with backend in background
     try {
       if (!isAlreadyCompleted) {
         await api.post(`/courses/${id}/lessons/${lessonId}/complete`);
-        setCompletedLessons(prev => [...prev, lessonId]);
-      } else {
-        // Toggle optimistic state
-        setCompletedLessons(prev => prev.filter(item => item !== lessonId));
       }
       fetchProgress();
     } catch (err) {
       console.error('Failed to toggle completion:', err);
+      // Revert on failure
+      setCompletedLessons(completedLessons);
+      fetchProgress();
     }
   };
 
@@ -502,10 +513,12 @@ function CoursePlayer() {
                       result={quizResult} 
                       quizTitle={activeLesson.title} 
                       onRetry={() => setQuizResult(null)} 
+                      darkMode={true}
                     />
                   ) : (
                     <QuizTaker 
                       quizId={activeLesson.quizId} 
+                      darkMode={true}
                       onComplete={(result) => {
                         setQuizResult(result);
                         fetchProgress();

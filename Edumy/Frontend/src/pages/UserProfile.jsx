@@ -14,8 +14,27 @@ function UserProfile() {
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({ fullName: '', bio: '' });
   const [saving, setSaving] = useState(false);
+  const [upgrading, setUpgrading] = useState(false);
+  const [upgradeMessage, setUpgradeMessage] = useState('');
 
-  const { user } = useContext(AuthContext);
+  const { user, updateUserRole } = useContext(AuthContext);
+
+  const handleUpgradeToInstructor = async () => {
+    if (!window.confirm('Bạn có chắc chắn muốn nâng cấp tài khoản thành Giảng viên trên Edumy?')) return;
+    try {
+      setUpgrading(true);
+      const res = await api.post('/users/become-instructor');
+      if (res.data?.token) {
+        localStorage.setItem('token', res.data.token);
+      }
+      updateUserRole('Instructor');
+      setUpgradeMessage(res.data?.message || 'Chúc mừng! Bạn đã nâng cấp tài khoản thành Giảng viên thành công.');
+    } catch (err) {
+      alert(err.response?.data?.message || 'Nâng cấp tài khoản thất bại. Vui lòng thử lại sau.');
+    } finally {
+      setUpgrading(false);
+    }
+  };
 
   useEffect(() => {
     fetchProfile();
@@ -140,6 +159,45 @@ function UserProfile() {
                 <h4 className="mb-1">{profile.fullName}</h4>
                 <p className="text-muted mb-0"><User size={14} className="me-1"/> {user.role === 'Admin' ? 'Quản trị viên' : user.role === 'Instructor' ? 'Giảng viên' : 'Học viên'}</p>
               </div>
+
+              {upgradeMessage && (
+                <div className="alert alert-success d-flex align-items-center mb-4" role="alert">
+                  <Check size={18} className="me-2" />
+                  <div>{upgradeMessage}</div>
+                </div>
+              )}
+
+              {user?.role === 'Student' && (
+                <div 
+                  className="mb-4 p-3 rounded"
+                  style={{
+                    backgroundColor: '#eef2ff',
+                    border: '1px solid #c7d2fe',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    flexWrap: 'wrap',
+                    gap: '12px'
+                  }}
+                >
+                  <div>
+                    <h6 className="mb-1" style={{ color: '#3730a3', fontWeight: 700 }}>
+                      👨‍🏫 Bạn muốn chia sẻ kiến thức trên Edumy?
+                    </h6>
+                    <p className="mb-0" style={{ color: '#4338ca', fontSize: '0.85rem' }}>
+                      Nâng cấp thành Giảng viên để tự tạo khóa học, soạn giáo trình và tiếp cận hàng nghìn học viên.
+                    </p>
+                  </div>
+                  <button 
+                    type="button" 
+                    className="btn btn-primary btn-sm px-3 fw-bold"
+                    onClick={handleUpgradeToInstructor}
+                    disabled={upgrading}
+                  >
+                    {upgrading ? 'Đang kích hoạt...' : 'Nâng cấp Giảng viên'}
+                  </button>
+                </div>
+              )}
 
               {isEditing ? (
                 <form onSubmit={handleSubmit} className="profile-form">

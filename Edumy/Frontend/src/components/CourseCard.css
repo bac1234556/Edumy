@@ -54,6 +54,18 @@
   z-index: 2;
 }
 
+.badge-bestseller {
+  background-color: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fde68a;
+  font-size: 0.725rem;
+  font-weight: 700;
+  padding: 0.25rem 0.55rem;
+  border-radius: 4px;
+  display: inline-block;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
 /* 2. Body */
 .card-body-content {
   padding: 1rem 1.15rem 1.15rem;
@@ -95,11 +107,11 @@
 
 .instructor-name {
   font-weight: 600;
-  color: #475569;
+  color: #334155;
 }
 
 .instructor-title {
-  color: #94a3b8;
+  color: #64748b;
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -169,7 +181,7 @@
 
 .price-strikethrough {
   font-size: 0.85rem;
-  color: #94a3b8;
+  color: #64748b;
   text-decoration: line-through;
   font-weight: 500;
 }

@@ -2,12 +2,15 @@ import { useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { GoogleLogin } from '@react-oauth/google';
+import { AlertCircle } from 'lucide-react';
 import './Auth.css';
 
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const { login, googleLogin } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -19,14 +22,33 @@ function Login() {
     googleClientId.trim().length > 15
   );
 
+  const validate = () => {
+    const errors = {};
+    if (!email.trim()) {
+      errors.email = 'Vui lòng nhập địa chỉ email.';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      errors.email = 'Email không hợp lệ. Ví dụ: student@edumy.com';
+    }
+    if (!password) {
+      errors.password = 'Vui lòng nhập mật khẩu.';
+    }
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   const handleLogin = async (e) => {
     e.preventDefault();
+    if (!validate() || isSubmitting) return;
+
+    setIsSubmitting(true);
+    setError('');
     try {
-      setError('');
-      await login(email, password);
+      await login(email.trim().toLowerCase(), password);
       navigate('/');
     } catch (err) {
       setError(err.response?.data?.message || 'Đăng nhập thất bại. Vui lòng kiểm tra lại email hoặc mật khẩu.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -55,15 +77,20 @@ function Login() {
         
         {error && (
           <div style={{ 
-            color: '#b32d0f', 
-            backgroundColor: '#fcd3ce', 
+            color: '#b91c1c', 
+            backgroundColor: '#fef2f2', 
+            border: '1px solid #fecaca',
             padding: '12px', 
             marginBottom: '16px', 
             borderRadius: '6px', 
             fontSize: '14px', 
-            fontWeight: 600 
+            fontWeight: 600,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px'
           }}>
-            {error}
+            <AlertCircle size={16} />
+            <span>{error}</span>
           </div>
         )}
         
@@ -86,17 +113,26 @@ function Login() {
           </>
         )}
         
-        <form className="auth-form" onSubmit={handleLogin}>
+        <form className="auth-form" onSubmit={handleLogin} noValidate>
           <div className="form-group">
             <label>Email tài khoản</label>
             <input 
               type="email" 
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                if (fieldErrors.email) setFieldErrors(prev => ({ ...prev, email: null }));
+              }}
               placeholder="ví dụ: student@edumy.com"
-              required 
+              style={fieldErrors.email ? { borderColor: '#ef4444' } : {}}
             />
+            {fieldErrors.email && (
+              <div className="field-error-text">
+                <AlertCircle size={14} /> {fieldErrors.email}
+              </div>
+            )}
           </div>
+
           <div className="form-group">
             <div className="d-flex justify-content-between align-items-center">
               <label>Mật khẩu</label>
@@ -105,13 +141,42 @@ function Login() {
             <input 
               type="password" 
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                if (fieldErrors.password) setFieldErrors(prev => ({ ...prev, password: null }));
+              }}
               placeholder="••••••••"
-              required 
+              style={fieldErrors.password ? { borderColor: '#ef4444' } : {}}
             />
+            {fieldErrors.password && (
+              <div className="field-error-text">
+                <AlertCircle size={14} /> {fieldErrors.password}
+              </div>
+            )}
           </div>
-          <button type="submit" className="auth-submit-btn" disabled={isGoogleLoading}>
-            Đăng nhập
+
+          <button 
+            type="submit" 
+            className="auth-submit-btn touch-target" 
+            disabled={isSubmitting || isGoogleLoading}
+            style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center', 
+              gap: '8px',
+              minHeight: '44px',
+              opacity: isSubmitting ? 0.8 : 1,
+              cursor: isSubmitting ? 'not-allowed' : 'pointer'
+            }}
+          >
+            {isSubmitting ? (
+              <>
+                <span className="btn-spinner"></span>
+                Đang xác thực...
+              </>
+            ) : (
+              'Đăng nhập'
+            )}
           </button>
         </form>
         

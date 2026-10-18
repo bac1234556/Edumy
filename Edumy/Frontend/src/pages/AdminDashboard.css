@@ -291,7 +291,7 @@
 
 .admin-kpi-hint {
   font-size: 0.75rem;
-  color: #94a3b8;
+  color: #64748b;
   margin: 0;
 }
 
@@ -352,7 +352,7 @@
   left: 0.75rem;
   top: 50%;
   transform: translateY(-50%);
-  color: #94a3b8;
+  color: #64748b;
   font-size: 0.85rem;
   pointer-events: none;
 }
@@ -759,7 +759,7 @@
 
 .admin-empty-desc {
   font-size: 0.85rem;
-  color: #94a3b8;
+  color: #64748b;
   max-width: 320px;
   margin: 0 auto;
 }

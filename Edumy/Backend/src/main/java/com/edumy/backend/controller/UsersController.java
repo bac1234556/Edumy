@@ -21,6 +21,9 @@ public class UsersController {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private com.edumy.backend.security.JwtTokenProvider jwtTokenProvider;
+
     private Integer getCurrentUserId() {
         try {
             return Integer.parseInt(SecurityContextHolder.getContext().getAuthentication().getName());
@@ -72,6 +75,30 @@ public class UsersController {
         res.put("bio", user.getBio());
 
         return ResponseEntity.ok(res);
+    }
+
+    @PostMapping("/become-instructor")
+    public ResponseEntity<?> becomeInstructor() {
+        Integer userId = getCurrentUserId();
+        if (userId == null) return ResponseEntity.status(401).build();
+
+        User user = userRepository.findById(userId).orElse(null);
+        if (user == null) return ResponseEntity.notFound().build();
+
+        if ("Admin".equalsIgnoreCase(user.getRole())) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Tài khoản Quản trị viên đã có toàn quyền giảng viên."));
+        }
+
+        user.setRole("Instructor");
+        userRepository.save(user);
+
+        String newToken = jwtTokenProvider.generateToken(user.getUserId(), user.getEmail(), user.getRole(), user.getFullName());
+
+        return ResponseEntity.ok(Map.of(
+            "message", "Chúc mừng! Bạn đã nâng cấp tài khoản thành Giảng viên thành công.",
+            "role", "Instructor",
+            "token", newToken
+        ));
     }
 }
 

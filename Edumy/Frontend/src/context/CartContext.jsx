@@ -45,9 +45,29 @@ export const CartProvider = ({ children }) => {
   };
 
   const removeFromCart = async (courseId) => {
-    const res = await api.delete(`/cart/remove/${courseId}`);
-    await fetchCart();
-    return res.data;
+    // Optimistic local update so UI immediately transitions
+    if (cart && cart.items) {
+      const updatedItems = cart.items.filter(item => item.courseId !== courseId);
+      const updatedCount = updatedItems.length;
+      const updatedTotal = updatedItems.reduce((acc, item) => acc + (item.price || 0), 0);
+      setCart({
+        ...cart,
+        items: updatedItems,
+        totalItems: updatedCount,
+        totalPrice: updatedTotal
+      });
+      setCartCount(updatedCount);
+    }
+
+    try {
+      const res = await api.delete(`/cart/remove/${courseId}`);
+      await fetchCart();
+      return res.data;
+    } catch (err) {
+      // Revert if API failed
+      fetchCart();
+      throw err;
+    }
   };
 
   const clearCartState = () => {

@@ -10,7 +10,9 @@ import {
   User, 
   LogOut, 
   ChevronDown,
-  Sparkles
+  Sparkles,
+  Menu,
+  X
 } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
 import { CartContext } from '../context/CartContext';
@@ -21,6 +23,7 @@ const Navbar = () => {
   const { cartCount } = useContext(CartContext);
   const [searchTerm, setSearchTerm] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
 
@@ -92,7 +95,7 @@ const Navbar = () => {
               Quản trị viên
             </Link>
           ) : (
-            <Link to="/instructor" className="nav-text-link hide-on-mobile">
+            <Link to={user ? "/profile" : "/register?role=instructor"} className="nav-text-link hide-on-mobile">
               Dạy học trên Edumy
             </Link>
           )}
@@ -207,8 +210,158 @@ const Navbar = () => {
               </Link>
             </div>
           )}
+
+          {/* Mobile Hamburger Toggle Button */}
+          <button 
+            type="button"
+            className="navbar-mobile-toggle-btn"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label="Toggle navigation menu"
+            aria-expanded={mobileMenuOpen}
+          >
+            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
         </div>
       </div>
+
+      {/* Mobile Navigation Slide-out Drawer */}
+      {mobileMenuOpen && (
+        <div className="mobile-drawer-overlay" onClick={() => setMobileMenuOpen(false)}>
+          <div className="mobile-drawer-content" onClick={(e) => e.stopPropagation()}>
+            <div className="mobile-drawer-header">
+              <div className="brand-name-text">
+                Edu<span>my</span>
+              </div>
+              <button 
+                className="mobile-drawer-close-btn"
+                onClick={() => setMobileMenuOpen(false)}
+                aria-label="Close menu"
+              >
+                <X size={22} />
+              </button>
+            </div>
+
+            {/* Mobile Search */}
+            <form className="mobile-drawer-search" onSubmit={(e) => {
+              handleSearchSubmit(e);
+              setMobileMenuOpen(false);
+            }}>
+              <input 
+                type="text" 
+                placeholder="Tìm khóa học, giảng viên..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="mobile-search-input"
+              />
+              <button type="submit" className="mobile-search-btn" aria-label="Search">
+                <Search size={18} />
+              </button>
+            </form>
+
+            {/* Mobile Navigation Links */}
+            <div className="mobile-drawer-nav-list">
+              <Link 
+                to="/courses" 
+                className="mobile-drawer-link"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <BookOpen size={20} /> Khám phá khóa học
+              </Link>
+
+              {user && (
+                <>
+                  <Link 
+                    to="/my-courses" 
+                    className="mobile-drawer-link"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <BookOpen size={20} /> Khóa học của tôi
+                  </Link>
+
+                  <Link 
+                    to="/wishlist" 
+                    className="mobile-drawer-link"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <Heart size={20} /> Danh sách yêu thích
+                  </Link>
+                </>
+              )}
+
+              {user?.role === 'Instructor' ? (
+                <Link 
+                  to="/instructor" 
+                  className="mobile-drawer-link"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <LayoutDashboard size={20} /> Kênh Giảng viên
+                </Link>
+              ) : user?.role === 'Admin' ? (
+                <Link 
+                  to="/admin" 
+                  className="mobile-drawer-link"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <Shield size={20} /> Bảng điều khiển Quản trị
+                </Link>
+              ) : (
+                <Link 
+                  to={user ? "/profile" : "/register?role=instructor"} 
+                  className="mobile-drawer-link"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <LayoutDashboard size={20} /> Dạy học trên Edumy
+                </Link>
+              )}
+
+              {user && (
+                <Link 
+                  to="/profile" 
+                  className="mobile-drawer-link"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <User size={20} /> Hồ sơ cá nhân
+                </Link>
+              )}
+            </div>
+
+            {/* Mobile Auth Actions */}
+            <div className="mobile-drawer-footer">
+              {user ? (
+                <div className="mobile-user-profile-bar">
+                  <div className="mobile-user-info">
+                    <span className="mobile-user-name">{user.fullName || user.email}</span>
+                    <span className="mobile-user-role">{user.role}</span>
+                  </div>
+                  <button className="mobile-logout-btn" onClick={() => {
+                    setMobileMenuOpen(false);
+                    handleLogout();
+                  }}>
+                    <LogOut size={18} /> Đăng xuất
+                  </button>
+                </div>
+              ) : (
+                <div className="mobile-auth-cta-grid">
+                  <Link 
+                    to="/login" 
+                    className="mobile-btn-login"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Đăng nhập
+                  </Link>
+                  <Link 
+                    to="/register" 
+                    className="mobile-btn-signup"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Đăng ký tài khoản
+                  </Link>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </nav>
   );
 };

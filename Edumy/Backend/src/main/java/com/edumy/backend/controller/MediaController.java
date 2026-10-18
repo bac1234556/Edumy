@@ -16,7 +16,7 @@ import java.util.UUID;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/Media")
+@RequestMapping({"/api/Media", "/api/media"})
 public class MediaController {
 
     @PostMapping("/upload")
