@@ -16,7 +16,6 @@ import CoursePlayer from './pages/CoursePlayer';
 import AdminDashboard from './pages/AdminDashboard';
 import PaymentSuccess from './pages/PaymentSuccess';
 import PaymentCancel from './pages/PaymentCancel';
-import MockPaymentGateway from './pages/MockPaymentGateway';
 import PaymentQR from './pages/PaymentQR';
 import CertificateView from './pages/CertificateView';
 
@@ -91,7 +90,7 @@ function App() {
             } />
             <Route path="/payment" element={<PaymentQR />} />
             <Route path="/payment/qr" element={<PaymentQR />} />
-            <Route path="/payment/mock" element={<MockPaymentGateway />} />
+            <Route path="/payment/mock" element={<Navigate to="/payment" replace />} />
             <Route path="/payment-success" element={<PaymentSuccess />} />
 
             <Route path="/payment-cancel" element={<PaymentCancel />} />

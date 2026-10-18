@@ -198,6 +198,19 @@ public class OrdersController {
     @GetMapping({"/api/v1/orders/{orderId}/status", "/{orderId}/status", "/status/{orderId}"})
     public ResponseEntity<?> getOrderStatus(@PathVariable Integer orderId) {
         try {
+            Integer currentUserId = getCurrentUserId();
+            Order order = orderRepository.findById(orderId).orElse(null);
+            if (order == null) {
+                return ResponseEntity.status(404).body(Map.of("message", "Không tìm thấy đơn hàng #" + orderId));
+            }
+            if (currentUserId != null && !currentUserId.equals(order.getUserId())) {
+                boolean isAdmin = SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
+                        .anyMatch(a -> a.getAuthority().equalsIgnoreCase("ROLE_Admin") || a.getAuthority().equalsIgnoreCase("Admin"));
+                if (!isAdmin) {
+                    return ResponseEntity.status(403).body(Map.of("message", "Bạn không có quyền xem thông tin đơn hàng này."));
+                }
+            }
+
             OrderStatusResponseDto status = paymentService.getOrderStatus(orderId);
             return ResponseEntity.ok(status);
         } catch (java.util.NoSuchElementException ex) {

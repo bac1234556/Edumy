@@ -1,47 +1,69 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import api from '../api/axiosConfig';
 import CourseCard from '../components/CourseCard';
-import { Search, ChevronLeft, ChevronRight, BookOpen, AlertCircle } from 'lucide-react';
+import EmptyState from '../components/EmptyState';
+import { CourseGridSkeleton, SkeletonBox } from '../components/Skeleton';
+import { Search, ChevronLeft, ChevronRight, BookOpen, AlertTriangle } from 'lucide-react';
 import './CourseList.css';
 
 function CourseList() {
+  const [searchParams] = useSearchParams();
+  const initialCategory = searchParams.get('categoryId');
+  const initialSearch = searchParams.get('search') || '';
+
   const [courses, setCourses] = useState([]);
+  const [categoriesList, setCategoriesList] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('ALL');
+  const [error, setError] = useState('');
+  const [searchTerm, setSearchTerm] = useState(initialSearch);
+  const [selectedCategory, setSelectedCategory] = useState(initialCategory ? String(initialCategory) : 'ALL');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
 
-  useEffect(() => {
-    const fetchCourses = async () => {
-      try {
-        setLoading(true);
-        const response = await api.get('/courses');
-        if (response.data && response.data.items) {
-          setCourses(response.data.items);
-        } else if (Array.isArray(response.data)) {
-          setCourses(response.data);
+  const fetchCoursesAndCategories = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError('');
+      const [coursesRes, catRes] = await Promise.allSettled([
+        api.get('/courses'),
+        api.get('/categories')
+      ]);
+
+      if (coursesRes.status === 'fulfilled') {
+        const data = coursesRes.value.data;
+        if (data && data.items) {
+          setCourses(data.items);
+        } else if (Array.isArray(data)) {
+          setCourses(data);
         } else {
           setCourses([]);
         }
-      } catch (error) {
-        console.error("Error fetching courses", error);
-      } finally {
-        setLoading(false);
+      } else {
+        throw new Error('Không thể tải danh sách khóa học từ máy chủ.');
       }
-    };
-    fetchCourses();
+
+      if (catRes.status === 'fulfilled') {
+        const catData = Array.isArray(catRes.value.data) ? catRes.value.data : (catRes.value.data?.items || []);
+        setCategoriesList(catData);
+      }
+    } catch (err) {
+      console.error("Error fetching courses", err);
+      setError('Đã xảy ra lỗi khi tải dữ liệu. Vui lòng kiểm tra kết nối mạng và thử lại.');
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  // Filter categories
-  const categories = useMemo(() => {
-    const cats = new Set();
-    courses.forEach(c => {
-      if (c.category?.name) cats.add(c.category.name);
-    });
-    return ['Tất cả', ...Array.from(cats)];
-  }, [courses]);
+  useEffect(() => {
+    fetchCoursesAndCategories();
+  }, [fetchCoursesAndCategories]);
+
+  // Sync with searchParams
+  useEffect(() => {
+    if (initialCategory) setSelectedCategory(String(initialCategory));
+    if (initialSearch) setSearchTerm(initialSearch);
+  }, [initialCategory, initialSearch]);
 
   // Filtered courses
   const filteredCourses = useMemo(() => {
@@ -51,6 +73,7 @@ function CourseList() {
         course.description?.toLowerCase().includes(searchTerm.toLowerCase());
       
       const matchCategory = selectedCategory === 'ALL' || selectedCategory === 'Tất cả' ||
+        String(course.categoryId) === selectedCategory ||
         course.category?.name === selectedCategory;
 
       return matchSearch && matchCategory;
@@ -70,17 +93,6 @@ function CourseList() {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
-
-  if (loading) {
-    return (
-      <div className="container py-5 text-center my-5" style={{ minHeight: '60vh' }}>
-        <div className="spinner-border text-primary" style={{ width: '2.5rem', height: '2.5rem' }} role="status">
-          <span className="visually-hidden">Đang tải...</span>
-        </div>
-        <p className="text-secondary mt-3 small">Đang tải danh mục khóa học...</p>
-      </div>
-    );
-  }
 
   return (
     <div className="course-list-page py-4">
@@ -121,46 +133,67 @@ function CourseList() {
           </div>
         </div>
 
-        {/* Category Filter Pills */}
-        {categories.length > 1 && (
+        {/* Category Filter Pills from Real API */}
+        {categoriesList.length > 0 && (
           <div className="category-filters-row d-flex flex-wrap gap-2 mb-4">
-            {categories.map((cat) => {
-              const isActive = (cat === 'Tất cả' && (selectedCategory === 'ALL' || selectedCategory === 'Tất cả')) || selectedCategory === cat;
+            <button
+              onClick={() => {
+                setSelectedCategory('ALL');
+                setCurrentPage(1);
+              }}
+              className={`btn btn-sm ${selectedCategory === 'ALL' ? 'btn-dark' : 'btn-outline-secondary bg-white text-dark'} rounded-pill px-3 py-1 fw-semibold`}
+              style={{ fontSize: '0.825rem' }}
+            >
+              Tất cả danh mục
+            </button>
+            {categoriesList.map((cat) => {
+              const isActive = selectedCategory === String(cat.categoryId) || selectedCategory === cat.name;
               return (
                 <button
-                  key={cat}
+                  key={cat.categoryId}
                   onClick={() => {
-                    setSelectedCategory(cat);
+                    setSelectedCategory(String(cat.categoryId));
                     setCurrentPage(1);
                   }}
                   className={`btn btn-sm ${isActive ? 'btn-dark' : 'btn-outline-secondary bg-white text-dark'} rounded-pill px-3 py-1 fw-semibold`}
                   style={{ fontSize: '0.825rem' }}
                 >
-                  {cat}
+                  {cat.name}
                 </button>
               );
             })}
           </div>
         )}
 
-        {/* Course Grid */}
-        {filteredCourses.length === 0 ? (
-          <div className="text-center py-5 my-5 bg-white border rounded-3 p-5 shadow-sm">
-            <AlertCircle size={44} className="text-muted mx-auto mb-3" />
-            <h4 className="fw-bold text-dark mb-2">Không tìm thấy khóa học nào phù hợp</h4>
-            <p className="text-muted small mb-4">
-              Hãy thử tìm kiếm với từ khóa khác hoặc chuyển sang danh mục khác.
-            </p>
-            <button
-              onClick={() => {
-                setSearchTerm('');
-                setSelectedCategory('ALL');
-              }}
-              className="btn btn-outline-primary btn-sm rounded-pill px-3"
-            >
-              Xem tất cả khóa học
-            </button>
+        {/* Loading State: Skeleton */}
+        {loading ? (
+          <div className="py-2">
+            <CourseGridSkeleton count={6} />
           </div>
+        ) : error ? (
+          <EmptyState
+            icon={AlertTriangle}
+            title="Không thể tải danh sách khóa học"
+            description={error}
+            actionText="Thử lại ngay"
+            onAction={fetchCoursesAndCategories}
+          />
+        ) : filteredCourses.length === 0 ? (
+          <EmptyState
+            icon={BookOpen}
+            title="Chưa có khóa học nào phù hợp"
+            description={
+              searchTerm
+                ? `Không tìm thấy khóa học nào khớp với từ khóa "${searchTerm}". Bạn hãy thử tìm kiếm với cụm từ khác.`
+                : "Danh mục này hiện chưa có khóa học nào được xuất bản. Hãy quay lại sau!"
+            }
+            actionText={searchTerm || selectedCategory !== 'ALL' ? "Xem tất cả khóa học" : "Khám phá danh mục khác"}
+            onAction={() => {
+              setSearchTerm('');
+              setSelectedCategory('ALL');
+              setCurrentPage(1);
+            }}
+          />
         ) : (
           <>
             <div className="row g-4">
@@ -173,7 +206,7 @@ function CourseList() {
 
             {/* Production Pagination */}
             {totalPages > 1 && (
-              <div className="edumy-pagination">
+              <div className="edumy-pagination mt-5">
                 <button
                   onClick={() => handlePageChange(currentPage - 1)}
                   disabled={currentPage === 1}

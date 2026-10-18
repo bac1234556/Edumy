@@ -189,13 +189,20 @@ public class PaymentServiceImpl implements PaymentService {
         }
 
         // 1. Xác thực API Key / Bearer Token từ Header nếu được cấu hình
-        if (webhookApiKey != null && !webhookApiKey.trim().isEmpty() && authHeader != null && !authHeader.trim().isEmpty()) {
+        if (webhookApiKey != null && !webhookApiKey.trim().isEmpty()) {
+            if (authHeader == null || authHeader.trim().isEmpty()) {
+                logger.warn("Webhook Unauthorized: Thiếu Header Authorization / X-Api-Key");
+                return PaymentWebhookResponseDto.builder()
+                        .rspCode("97")
+                        .message("Unauthorized: Yêu cầu Header Authorization hoặc X-Api-Key để xác thực Webhook")
+                        .build();
+            }
             String cleanAuth = authHeader.replace("Bearer ", "").replace("Apikey ", "").trim();
             if (!webhookApiKey.equalsIgnoreCase(cleanAuth)) {
                 logger.warn("Webhook Unauthorized: Sai API Key trong Header: {}", authHeader);
                 return PaymentWebhookResponseDto.builder()
                         .rspCode("97")
-                        .message("Unauthorized: Sai API Key hoặc Token xác thực")
+                        .message("Unauthorized: Sai API Key hoặc Token xác thực Webhook")
                         .build();
             }
         }
@@ -357,19 +364,6 @@ public class PaymentServiceImpl implements PaymentService {
                 .orderStatus("PAID")
                 .message("Xác nhận thanh toán thành công! Khóa học đã được mở khóa tự động.")
                 .build();
-    }
-
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public PaymentWebhookResponseDto simulatePaymentSuccess(Integer orderId) {
-        if (orderId == null) {
-            throw new IllegalArgumentException("Mã đơn hàng (orderId) không được để trống");
-        }
-
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new NoSuchElementException("Không tìm thấy đơn hàng ID: " + orderId));
-
-        return completeOrderAndEnroll(orderId, order.getTotalAmount(), "SIMULATED_TEST", "SIM_TXN_" + System.currentTimeMillis());
     }
 
     // =========================================================================

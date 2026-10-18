@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import api from '../api/axiosConfig';
 import { Award, Download, Share2 } from 'lucide-react';
+import EmptyState from '../components/EmptyState';
+import { SkeletonBox } from '../components/Skeleton';
 import './CertificateView.css';
 
 function CertificateView() {
@@ -25,14 +27,39 @@ function CertificateView() {
   }, [url]);
 
   if (loading) {
-    return <div className="text-center p-5">Đang tải chứng chỉ tốt nghiệp...</div>;
+    return (
+      <div className="container py-5 my-5" style={{ maxWidth: '800px' }}>
+        <div className="card shadow-sm border p-5 text-center">
+          <div className="mx-auto mb-3" style={{ width: '64px' }}>
+            <SkeletonBox width="64px" height="64px" borderRadius="50%" />
+          </div>
+          <div className="mx-auto mb-2" style={{ width: '280px' }}>
+            <SkeletonBox width="280px" height="32px" />
+          </div>
+          <div className="mx-auto mb-4" style={{ width: '180px' }}>
+            <SkeletonBox width="180px" height="20px" />
+          </div>
+          <div className="mx-auto mb-3" style={{ width: '320px' }}>
+            <SkeletonBox width="320px" height="26px" />
+          </div>
+          <div className="mx-auto" style={{ width: '400px' }}>
+            <SkeletonBox width="400px" height="22px" />
+          </div>
+        </div>
+      </div>
+    );
   }
 
   if (error || !cert) {
     return (
-      <div className="text-center p-5">
-        <h2>{error}</h2>
-        <Link to="/" className="btn btn-primary mt-3">Quay lại Trang chủ</Link>
+      <div className="container py-5 my-5">
+        <EmptyState
+          icon={Award}
+          title="Không tìm thấy chứng chỉ"
+          description={error || "Liên kết chứng chỉ không tồn tại hoặc đã bị thu hồi."}
+          actionText="Quay lại Trang chủ"
+          actionLink="/"
+        />
       </div>
     );
   }

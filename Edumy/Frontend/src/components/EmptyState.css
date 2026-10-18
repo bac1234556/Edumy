@@ -1,0 +1,61 @@
+.edumy-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 3rem 1.5rem;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  margin: 1.5rem 0;
+  min-height: 280px;
+}
+
+.empty-state-icon-wrapper {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: #f1f5f9;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+  transition: all 0.2s ease-in-out;
+}
+
+.edumy-empty-state:hover .empty-state-icon-wrapper {
+  background: #e2e8f0;
+  color: #334155;
+}
+
+.empty-state-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 0.5rem;
+}
+
+.empty-state-description {
+  font-size: 0.925rem;
+  color: #64748b;
+  max-width: 460px;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+.empty-state-actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.empty-state-btn {
+  display: inline-flex;
+  align-items: center;
+  box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2);
+}

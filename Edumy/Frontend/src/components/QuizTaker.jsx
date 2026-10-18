@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import api from '../api/axiosConfig';
+import { SkeletonBox } from './Skeleton';
+import EmptyState from './EmptyState';
+import { HelpCircle } from 'lucide-react';
 
 function QuizTaker({ quizId, onComplete }) {
   const [quiz, setQuiz] = useState(null);
@@ -40,9 +43,30 @@ function QuizTaker({ quizId, onComplete }) {
     }
   };
 
-  if (loading) return <div>Đang tải bài kiểm tra...</div>;
-  if (error) return <div className="text-danger">{error}</div>;
-  if (!quiz) return <div>Không tìm thấy bài kiểm tra.</div>;
+  if (loading) {
+    return (
+      <div className="p-4 bg-white rounded shadow-sm">
+        <SkeletonBox width="50%" height="28px" className="mb-2" />
+        <SkeletonBox width="80%" height="16px" className="mb-4" />
+        <div className="card p-3 mb-3 bg-light border-0">
+          <SkeletonBox width="30%" height="20px" className="mb-2" />
+          <SkeletonBox width="70%" height="18px" className="mb-3" />
+          <SkeletonBox width="100%" height="40px" className="mb-2" />
+          <SkeletonBox width="100%" height="40px" />
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !quiz) {
+    return (
+      <EmptyState
+        icon={HelpCircle}
+        title="Không tìm thấy bài kiểm tra"
+        description={error || "Bài trắc nghiệm chưa sẵn sàng hoặc không tồn tại."}
+      />
+    );
+  }
 
   return (
     <div className="quiz-taker p-4 bg-white rounded shadow-sm text-dark h-100 overflow-auto">

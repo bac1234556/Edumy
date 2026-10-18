@@ -130,6 +130,7 @@ public class CourseAiService {
         fallback.setSuggestedTags(tags);
         fallback.setCurriculumOutline(outline);
         fallback.setModelType("Java_RuleBased_Fallback");
+        fallback.setIsFallback(true);
         return fallback;
     }
 
@@ -172,6 +173,7 @@ public class CourseAiService {
         fallback.setScore(score);
         fallback.setConfidence(0.80);
         fallback.setModelVersion("Java_Fallback");
+        fallback.setIsFallback(true);
         return fallback;
     }
 
@@ -214,13 +216,12 @@ public class CourseAiService {
                     }
                 }
             }
-            int positivePercent = totalRevs > 0 ? (int) Math.round((double) posCount * 100 / totalRevs) : 95;
-            if (positivePercent < 70) positivePercent = 88; // Default realistic high satisfaction floor
+            int positivePercent = totalRevs > 0 ? (int) Math.round((double) posCount * 100 / totalRevs) : 100;
 
-            String instName = c.getInstructor() != null ? c.getInstructor().getFullName() : "Chuyên gia Edumy";
-            String catName = c.getCategory() != null ? c.getCategory().getName() : "Công nghệ";
-            double cPrice = c.getPrice() != null ? c.getPrice().doubleValue() : 399000.0;
-            double cOrigPrice = cPrice * 1.8;
+            String instName = c.getInstructor() != null ? c.getInstructor().getFullName() : "Giảng viên Edumy";
+            String catName = c.getCategory() != null ? c.getCategory().getName() : "Chung";
+            double cPrice = c.getPrice() != null ? c.getPrice().doubleValue() : 0.0;
+            double cOrigPrice = cPrice > 0 ? cPrice * 1.5 : 0.0;
             String descSnippet = c.getDescription() != null && c.getDescription().length() > 120
                     ? c.getDescription().substring(0, 120) + "..."
                     : (c.getDescription() != null ? c.getDescription() : "");
@@ -232,14 +233,14 @@ public class CourseAiService {
                     .price(cPrice)
                     .originalPrice(cOrigPrice)
                     .thumbnailUrl(c.getThumbnailUrl())
-                    .averageRating(c.getAverageRating() != null ? c.getAverageRating() : 4.8)
-                    .reviewCount(totalRevs > 0 ? totalRevs : 36)
-                    .enrollmentCount(c.getStudentCount() != null ? c.getStudentCount() : 1240)
+                    .averageRating(c.getAverageRating() != null ? c.getAverageRating() : 5.0)
+                    .reviewCount(totalRevs)
+                    .enrollmentCount(c.getStudentCount() != null ? c.getStudentCount() : 0)
                     .positiveRatingPercent(positivePercent)
                     .instructorName(instName)
-                    .instructorHeadline("Senior Tech Lead")
+                    .instructorHeadline(c.getInstructor() != null && c.getInstructor().getBio() != null ? c.getInstructor().getBio() : "Chuyên gia đào tạo")
                     .categoryName(catName)
-                    .recommendationReason("Cùng lộ trình & " + positivePercent + "% học viên hài lòng")
+                    .recommendationReason(totalRevs > 0 ? ("Cùng lộ trình & " + positivePercent + "% đánh giá hài lòng") : "Cùng danh mục & phù hợp lộ trình học")
                     .build();
 
             result.add(dto);
@@ -275,10 +276,9 @@ public class CourseAiService {
 
         if (bundledCourse == null) return null;
 
-        int price1 = (mainCourse.getPrice() != null && mainCourse.getPrice().compareTo(java.math.BigDecimal.ZERO) > 0)
-                ? mainCourse.getPrice().intValue() : 399000;
-        int price2 = (bundledCourse.getPrice() != null && bundledCourse.getPrice().compareTo(java.math.BigDecimal.ZERO) > 0)
-                ? bundledCourse.getPrice().intValue() : 499000;
+        int price1 = (mainCourse.getPrice() != null) ? mainCourse.getPrice().intValue() : 0;
+        int price2 = (bundledCourse.getPrice() != null) ? bundledCourse.getPrice().intValue() : 0;
+        if (price1 <= 0 && price2 <= 0) return null;
 
         int originalTotal = price1 + price2;
         int discountPercent = 20; // 20% discount on bundle

@@ -17,6 +17,7 @@ import {
   CheckCircle2,
   Play
 } from 'lucide-react';
+import { SkeletonBox } from '../components/Skeleton';
 import './CourseCurriculumEditor.css';
 
 function CourseCurriculumEditor() {
@@ -176,9 +177,16 @@ function CourseCurriculumEditor() {
 
   if (loading) {
     return (
-      <div className="container py-5 text-center">
-        <div className="spinner-border text-primary" role="status"></div>
-        <p className="mt-3 text-muted">Đang tải cấu trúc bài giảng...</p>
+      <div className="curriculum-editor-page py-5">
+        <div className="curriculum-editor-container" style={{ maxWidth: '960px', margin: '0 auto' }}>
+          <SkeletonBox width="260px" height="32px" className="mb-3" />
+          <SkeletonBox width="450px" height="24px" className="mb-4" />
+          <div className="d-flex flex-column gap-3">
+            <SkeletonBox width="100%" height="80px" borderRadius="12px" />
+            <SkeletonBox width="100%" height="80px" borderRadius="12px" />
+            <SkeletonBox width="100%" height="80px" borderRadius="12px" />
+          </div>
+        </div>
       </div>
     );
   }

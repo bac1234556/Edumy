@@ -34,7 +34,6 @@ function PaymentQR() {
   const [checking, setChecking] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [firstCourseId, setFirstCourseId] = useState(null);
-  const [simulating, setSimulating] = useState(false);
 
   const pollingTimerRef = useRef(null);
   const countdownTimerRef = useRef(null);
@@ -169,24 +168,6 @@ function PaymentQR() {
     navigator.clipboard.writeText(String(text));
     setCopiedField(fieldName);
     setTimeout(() => setCopiedField(null), 2000);
-  };
-
-  // Simulation test webhook
-  const handleSimulatePayment = async () => {
-    if (simulating || !orderId) return;
-    setSimulating(true);
-    try {
-      await api.post('/v1/payments/simulate-success', {
-        orderId: parseInt(orderId)
-      });
-      // Will be picked up by next poll or immediate check
-      const res = await api.get(`/v1/orders/${orderId}/status`);
-      handlePaymentSuccess(res.data.firstCourseId);
-    } catch (err) {
-      alert('Lỗi giả lập thanh toán: ' + (err.response?.data?.message || err.message));
-    } finally {
-      setSimulating(false);
-    }
   };
 
   // Format currency
@@ -403,17 +384,6 @@ function PaymentQR() {
               >
                 <RefreshCw size={18} className={checking ? 'spin' : ''} />
                 {checking ? 'Đang kiểm tra giao dịch...' : 'Tôi đã chuyển tiền xong'}
-              </button>
-
-              {/* Developer / Demo Simulator Button */}
-              <button
-                className="btn-simulate-webhook"
-                onClick={handleSimulatePayment}
-                disabled={simulating}
-                title="Dành cho kiểm thử hệ thống: Tự động kích hoạt đơn hàng không cần chuyển khoản thật"
-              >
-                <Sparkles size={16} className="text-warning" />
-                {simulating ? 'Đang xử lý giả lập...' : '⚡ Thử nghiệm: Giả lập chuyển khoản thành công (Demo)'}
               </button>
 
               <button

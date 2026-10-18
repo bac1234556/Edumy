@@ -1,9 +1,11 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect, useContext, useCallback } from 'react';
 import api from '../api/axiosConfig';
 import { AuthContext } from '../context/AuthContext';
-import { Heart, Trash2 } from 'lucide-react';
-import './CourseList.css'; // Reuse course list styles
+import { CourseGridSkeleton } from '../components/Skeleton';
+import EmptyState from '../components/EmptyState';
+import { Heart, Trash2, BookOpen, AlertTriangle } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import './CourseList.css';
 
 const BACKEND_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api').replace('/api', '');
 
@@ -13,26 +15,31 @@ function Wishlist() {
   const [error, setError] = useState('');
   const { user } = useContext(AuthContext);
 
-  useEffect(() => {
-    fetchWishlist();
-  }, []);
-
-  const fetchWishlist = async () => {
+  const fetchWishlist = useCallback(async () => {
     try {
+      setLoading(true);
+      setError('');
       const response = await api.get('/wishlist');
-      setWishlist(response.data);
+      setWishlist(Array.isArray(response.data) ? response.data : []);
     } catch (err) {
-      console.error(err);
-      setError('Không thể tải danh sách khóa học yêu thích.');
+      console.error("Lỗi tải wishlist:", err);
+      setError('Không thể tải danh sách khóa học yêu thích. Vui lòng thử lại sau.');
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    if (user) {
+      fetchWishlist();
+    } else {
+      setLoading(false);
+    }
+  }, [user, fetchWishlist]);
 
   const handleRemove = async (courseId) => {
     try {
       await api.delete(`/wishlist/${courseId}`);
-      // Optimistic update
       setWishlist(prev => prev.filter(item => item.courseId !== courseId));
     } catch (err) {
       console.error(err);
@@ -41,52 +48,93 @@ function Wishlist() {
   };
 
   if (!user) {
-    return <div className="container text-center my-5">Vui lòng đăng nhập để xem danh sách yêu thích.</div>;
+    return (
+      <div className="container my-5">
+        <EmptyState
+          icon={Heart}
+          title="Vui lòng đăng nhập"
+          description="Đăng nhập tài khoản của bạn để xem và quản lý danh sách các khóa học yêu thích."
+          actionText="Đăng nhập ngay"
+          actionLink="/login"
+        />
+      </div>
+    );
   }
-
-  if (loading) return <div className="container text-center my-5">Đang tải danh sách yêu thích...</div>;
-  if (error) return <div className="container text-center my-5 text-danger">{error}</div>;
 
   return (
     <div className="container my-5">
-      <h2 className="mb-4">Khóa học yêu thích <Heart className="text-danger ms-2" /></h2>
-      
-      {wishlist.length === 0 ? (
-        <div className="text-center my-5">
-          <h4 className="text-muted">Danh sách yêu thích của bạn đang trống.</h4>
-          <p>Khám phá kho khóa học phong phú và lưu lại những khóa học bạn quan tâm!</p>
-          <Link to="/courses" className="btn btn-primary mt-3 fw-bold">Khám phá khóa học ngay</Link>
+      <div className="d-flex align-items-center justify-content-between mb-4 pb-2 border-bottom">
+        <div>
+          <h1 className="h3 fw-bold text-dark mb-1">
+            Khóa học yêu thích <Heart size={24} className="text-danger ms-1" fill="#ef4444" />
+          </h1>
+          <p className="text-secondary small mb-0">Các khóa học bạn đã lưu để theo dõi và đăng ký sau</p>
         </div>
+        <span className="badge bg-light text-dark border px-3 py-2 rounded-pill fw-semibold">
+          {wishlist.length} khóa học
+        </span>
+      </div>
+      
+      {loading ? (
+        <CourseGridSkeleton count={3} />
+      ) : error ? (
+        <EmptyState
+          icon={AlertTriangle}
+          title="Không thể tải danh sách"
+          description={error}
+          actionText="Thử lại"
+          onAction={fetchWishlist}
+        />
+      ) : wishlist.length === 0 ? (
+        <EmptyState
+          icon={BookOpen}
+          title="Danh sách yêu thích của bạn đang trống"
+          description="Bạn chưa lưu khóa học nào. Hãy khám phá kho tàng khóa học thực chiến của Edumy và bấm biểu tượng trái tim để lưu lại!"
+          actionText="Khám phá khóa học ngay"
+          actionLink="/courses"
+        />
       ) : (
-        <div className="course-grid">
-          {wishlist.map(item => (
-            <div key={item.id} className="course-card position-relative shadow-sm border-0">
-              <Link to={`/courses/${item.courseId}`}>
-                <img 
-                  src={item.course.thumbnailUrl ? `${BACKEND_URL}${item.course.thumbnailUrl}` : "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=600&q=80"} 
-                  alt={item.course.title} 
-                  className="course-image" 
-                />
-                <div className="course-content">
-                  <h3 className="course-title text-truncate" title={item.course.title}>{item.course.title}</h3>
-                  <p className="course-instructor text-muted small">{item.course.instructor.fullName}</p>
-                  <div className="course-price fw-bold fs-5 mt-2">₫{item.course.price.toLocaleString()}</div>
+        <div className="row g-4">
+          {wishlist.map(item => {
+            const course = item.course || {};
+            const thumb = course.thumbnailUrl 
+              ? (course.thumbnailUrl.startsWith('http') ? course.thumbnailUrl : `${BACKEND_URL}${course.thumbnailUrl}`)
+              : "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=600&q=80";
+
+            return (
+              <div key={item.id || item.courseId} className="col-12 col-md-6 col-lg-4">
+                <div className="course-card position-relative shadow-sm border rounded-3 overflow-hidden bg-white h-100 d-flex flex-column">
+                  <Link to={`/courses/${item.courseId}`}>
+                    <img 
+                      src={thumb} 
+                      alt={course.title || 'Khóa học'} 
+                      className="w-100" 
+                      style={{ height: '180px', objectFit: 'cover' }}
+                    />
+                    <div className="p-3 d-flex flex-column flex-grow-1">
+                      <h4 className="course-title text-truncate fw-bold mb-1" title={course.title}>{course.title}</h4>
+                      <p className="course-instructor text-muted small mb-2">{course.instructor?.fullName || 'Giảng viên Edumy'}</p>
+                      <div className="course-price fw-bold fs-5 mt-auto text-primary">
+                        {course.price ? `₫${Number(course.price).toLocaleString('vi-VN')}` : 'Miễn phí'}
+                      </div>
+                    </div>
+                  </Link>
+                  
+                  <button 
+                    className="btn btn-light position-absolute top-0 end-0 m-2 rounded-circle shadow-sm border"
+                    style={{ width: '38px', height: '38px', padding: '0', zIndex: 10 }}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleRemove(item.courseId);
+                    }}
+                    title="Xóa khỏi danh sách yêu thích"
+                  >
+                    <Trash2 size={16} className="text-danger" />
+                  </button>
                 </div>
-              </Link>
-              
-              <button 
-                className="btn btn-light position-absolute top-0 end-0 m-2 rounded-circle shadow-sm border"
-                style={{ width: '40px', height: '40px', padding: '0', zIndex: 10 }}
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleRemove(item.courseId);
-                }}
-                title="Xóa khỏi danh sách yêu thích"
-              >
-                <Trash2 size={18} className="text-danger" />
-              </button>
-            </div>
-          ))}
+              </div>
+            );
+          })}
         </div>
       )}
     </div>

@@ -17,6 +17,4 @@ public interface PaymentService {
     OrderStatusResponseDto getOrderStatus(Integer orderId);
 
     PaymentWebhookResponseDto processSepayWebhook(SepayWebhookDto webhookData, String authHeader);
-
-    PaymentWebhookResponseDto simulatePaymentSuccess(Integer orderId);
 }

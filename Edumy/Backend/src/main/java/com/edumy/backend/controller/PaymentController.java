@@ -125,33 +125,6 @@ public class PaymentController {
     }
 
     /**
-     * POST /api/v1/payments/simulate-success
-     * Endpoint hỗ trợ kiểm thử / demo tự động giả lập Webhook ngân hàng đã nhận tiền
-     */
-    @PostMapping({"/api/v1/payments/simulate-success", "/api/payments/simulate-success", "/api/payment/simulate-success"})
-    public ResponseEntity<?> simulatePaymentSuccess(@RequestBody Map<String, Object> body) {
-        Integer orderId = null;
-        if (body.containsKey("orderId") && body.get("orderId") != null) {
-            try {
-                orderId = Integer.parseInt(body.get("orderId").toString());
-            } catch (NumberFormatException ignored) {}
-        }
-
-        if (orderId == null) {
-            return ResponseEntity.badRequest().body(Map.of("message", "Thiếu orderId hợp lệ để giả lập thanh toán"));
-        }
-
-        try {
-            PaymentWebhookResponseDto result = paymentService.simulatePaymentSuccess(orderId);
-            return ResponseEntity.ok(result);
-        } catch (NoSuchElementException ex) {
-            return ResponseEntity.status(404).body(Map.of("message", ex.getMessage()));
-        } catch (Exception ex) {
-            return ResponseEntity.internalServerError().body(Map.of("message", "Lỗi giả lập thanh toán: " + ex.getMessage()));
-        }
-    }
-
-    /**
      * POST /api/v1/payments/create-url
      * Tạo đường dẫn thanh toán qua cổng thanh toán VNPay / MoMo / Stripe
      */

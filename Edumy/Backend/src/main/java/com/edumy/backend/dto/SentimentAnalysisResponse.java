@@ -13,4 +13,5 @@ public class SentimentAnalysisResponse {
     private Double score;
     private Double confidence;
     private String modelVersion = "BiLSTM_Hybrid_v2";
+    private Boolean isFallback = false;
 }

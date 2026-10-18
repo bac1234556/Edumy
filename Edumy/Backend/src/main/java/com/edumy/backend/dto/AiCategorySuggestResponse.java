@@ -16,4 +16,5 @@ public class AiCategorySuggestResponse {
     private List<String> suggestedTags = new ArrayList<>();
     private List<SectionOutlineDto> curriculumOutline = new ArrayList<>();
     private String modelType = "MLP_Semantic_Hybrid";
+    private Boolean isFallback = false;
 }

@@ -476,6 +476,7 @@ class SuggestCategoryResponse(BaseModel):
     suggestedTags: List[str]
     curriculumOutline: List[SectionOutline]
     modelType: str = "MLP_Semantic_Hybrid"
+    isFallback: bool = False
 
 @app.post("/api/v1/ai/suggest-category", response_model=SuggestCategoryResponse)
 def suggest_category_and_curriculum(req: SuggestCategoryRequest):
@@ -695,7 +696,8 @@ def suggest_category_and_curriculum(req: SuggestCategoryRequest):
         confidenceScore=round(confidence, 2),
         suggestedTags=suggested_tags,
         curriculumOutline=curriculum_outline,
-        modelType=model_type
+        modelType=model_type,
+        isFallback=(model_type == "Keyword_Semantic_RuleBased")
     )
 
 # ------------------------------------------------------------------------------
@@ -711,6 +713,7 @@ class SentimentAnalysisResponse(BaseModel):
     score: float
     confidence: float
     modelVersion: str = "BiLSTM_Hybrid_v2"
+    isFallback: bool = False
 
 @app.post("/api/v1/ai/sentiment-analysis", response_model=SentimentAnalysisResponse)
 def analyze_review_sentiment(req: SentimentAnalysisRequest):
@@ -724,6 +727,8 @@ def analyze_review_sentiment(req: SentimentAnalysisRequest):
 
     # 1. Base text score
     text_score = 0.5
+    is_fallback = False
+
     pos_keywords = [
         "tuyệt vời", "rất tốt", "xuất sắc", "hay", "dễ hiểu", "chi tiết", "chất lượng", "nhiệt tình",
         "hài lòng", "bổ ích", "cảm ơn", "rất hay", "đáng tiền", "good", "great", "excellent", "love",
@@ -750,9 +755,12 @@ def analyze_review_sentiment(req: SentimentAnalysisRequest):
             model_prob = float(loader.sent_model.predict(padded, verbose=0)[0][0])
             text_score = model_prob
         except Exception as e:
-            logger.error(f"Error in BiLSTM sentiment inference: {e}")
+            logger.warning(f"Error in BiLSTM sentiment inference: {e}. Executing graceful rule-based fallback.")
             text_score = 0.5 + (pos_count - neg_count) * 0.15
+            is_fallback = True
     else:
+        logger.info("BiLSTM model not in memory. Executing deterministic keyword & rating rule-based analysis (fallback).")
+        is_fallback = True
         if pos_count > neg_count:
             text_score = min(0.95, 0.70 + (pos_count - neg_count) * 0.1)
         elif neg_count > pos_count:
@@ -803,7 +811,8 @@ def analyze_review_sentiment(req: SentimentAnalysisRequest):
         label=label,
         score=round(score, 2),
         confidence=confidence,
-        modelVersion="BiLSTM_Hybrid_v2"
+        modelVersion="BiLSTM_Hybrid_v2" if not is_fallback else "Keyword_Rating_RuleBased_v2",
+        isFallback=is_fallback
     )
 
 # ------------------------------------------------------------------------------

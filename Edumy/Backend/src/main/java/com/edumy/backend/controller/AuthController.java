@@ -149,34 +149,44 @@ public class AuthController {
     @PostMapping("/google-login")
     public ResponseEntity<?> googleLogin(@RequestBody GoogleLoginDto googleLoginDto, HttpServletResponse response) {
         try {
-            String email = "google@example.com"; 
-            String name = "Google User"; 
+            if (googleLoginDto == null || googleLoginDto.getToken() == null || !googleLoginDto.getToken().contains(".")) {
+                return ResponseEntity.badRequest().body(Map.of("message", "Thiếu Google OAuth token hợp lệ."));
+            }
+
+            String email = null;
+            String name = null;
             String avatarUrl = null;
 
-            if (googleLoginDto != null && googleLoginDto.getToken() != null && googleLoginDto.getToken().contains(".")) {
-                try {
-                    String[] parts = googleLoginDto.getToken().split("\\.");
-                    if (parts.length >= 2) {
-                        String payload = parts[1];
-                        int rem = payload.length() % 4;
-                        if (rem == 2) payload += "==";
-                        else if (rem == 3) payload += "=";
-                        byte[] decodedBytes = java.util.Base64.getUrlDecoder().decode(payload);
-                        String payloadJson = new String(decodedBytes, java.nio.charset.StandardCharsets.UTF_8);
-                        com.fasterxml.jackson.databind.JsonNode node = new com.fasterxml.jackson.databind.ObjectMapper().readTree(payloadJson);
-                        if (node.has("email") && !node.get("email").asText().isEmpty()) {
-                            email = node.get("email").asText();
-                        }
-                        if (node.has("name") && !node.get("name").asText().isEmpty()) {
-                            name = node.get("name").asText();
-                        }
-                        if (node.has("picture") && !node.get("picture").asText().isEmpty()) {
-                            avatarUrl = node.get("picture").asText();
-                        }
+            try {
+                String[] parts = googleLoginDto.getToken().split("\\.");
+                if (parts.length >= 2) {
+                    String payload = parts[1];
+                    int rem = payload.length() % 4;
+                    if (rem == 2) payload += "==";
+                    else if (rem == 3) payload += "=";
+                    byte[] decodedBytes = java.util.Base64.getUrlDecoder().decode(payload);
+                    String payloadJson = new String(decodedBytes, java.nio.charset.StandardCharsets.UTF_8);
+                    com.fasterxml.jackson.databind.JsonNode node = new com.fasterxml.jackson.databind.ObjectMapper().readTree(payloadJson);
+                    if (node.has("email") && !node.get("email").asText().isEmpty()) {
+                        email = node.get("email").asText();
                     }
-                } catch (Exception ex) {
-                    System.err.println("Google token payload parsing failed: " + ex.getMessage());
+                    if (node.has("name") && !node.get("name").asText().isEmpty()) {
+                        name = node.get("name").asText();
+                    }
+                    if (node.has("picture") && !node.get("picture").asText().isEmpty()) {
+                        avatarUrl = node.get("picture").asText();
+                    }
                 }
+            } catch (Exception ex) {
+                return ResponseEntity.status(401).body(Map.of("message", "Token Google không hợp lệ hoặc giải mã thất bại: " + ex.getMessage()));
+            }
+
+            if (email == null || email.trim().isEmpty()) {
+                return ResponseEntity.status(401).body(Map.of("message", "Không trích xuất được email từ Google token."));
+            }
+
+            if (name == null || name.trim().isEmpty()) {
+                name = email.split("@")[0];
             }
 
             User user = userRepository.findByEmail(email);

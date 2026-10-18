@@ -2,6 +2,8 @@ import React, { useState, useEffect, useContext } from 'react';
 import api from '../api/axiosConfig';
 import { AuthContext } from '../context/AuthContext';
 import { User, Mail, Calendar, Edit3, Check, X } from 'lucide-react';
+import EmptyState from '../components/EmptyState';
+import { SkeletonBox } from '../components/Skeleton';
 import './UserProfile.css';
 
 function UserProfile() {
@@ -66,11 +68,55 @@ function UserProfile() {
   };
 
   if (!user) {
-    return <div className="container text-center my-5">Vui lòng đăng nhập để xem hồ sơ cá nhân.</div>;
+    return (
+      <div className="container my-5">
+        <EmptyState
+          icon={User}
+          title="Vui lòng đăng nhập"
+          description="Đăng nhập tài khoản để xem và cập nhật hồ sơ cá nhân của bạn."
+          actionText="Đăng nhập ngay"
+          actionLink="/login"
+        />
+      </div>
+    );
   }
 
-  if (loading) return <div className="container text-center my-5">Đang tải hồ sơ...</div>;
-  if (error) return <div className="container text-center my-5 text-danger">{error}</div>;
+  if (loading) {
+    return (
+      <div className="container my-5" style={{ maxWidth: '720px' }}>
+        <div className="card shadow-sm border p-4 rounded-3 text-center">
+          <div className="mx-auto mb-3" style={{ width: '90px', height: '90px' }}>
+            <SkeletonBox width="90px" height="90px" borderRadius="50%" />
+          </div>
+          <div className="mx-auto mb-2" style={{ width: '220px' }}>
+            <SkeletonBox width="220px" height="24px" />
+          </div>
+          <div className="mx-auto mb-4" style={{ width: '120px' }}>
+            <SkeletonBox width="120px" height="16px" />
+          </div>
+          <div className="d-flex flex-column gap-3 text-start">
+            <SkeletonBox width="100%" height="45px" />
+            <SkeletonBox width="100%" height="45px" />
+            <SkeletonBox width="100%" height="90px" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container my-5">
+        <EmptyState
+          icon={User}
+          title="Lỗi tải hồ sơ"
+          description={error}
+          actionText="Thử lại"
+          onAction={fetchProfile}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="container my-5 profile-page">

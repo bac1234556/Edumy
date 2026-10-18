@@ -20,6 +20,8 @@ import {
   CheckCircle2,
   Clock
 } from 'lucide-react';
+import EmptyState from '../components/EmptyState';
+import { SkeletonBox } from '../components/Skeleton';
 import './InstructorDashboard.css';
 
 const BACKEND_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api').replace('/api', '');
@@ -430,11 +432,17 @@ function InstructorDashboard() {
             </div>
 
             {loadingRoster ? (
-              <div className="text-center py-5 text-muted">Đang tải danh sách học viên...</div>
-            ) : rosterStudents.length === 0 ? (
-              <div className="text-center py-5 text-muted">
-                Khóa học này hiện chưa có học viên đăng ký ghi danh.
+              <div className="py-4 d-flex flex-column gap-2">
+                <SkeletonBox width="100%" height="48px" />
+                <SkeletonBox width="100%" height="48px" />
+                <SkeletonBox width="100%" height="48px" />
               </div>
+            ) : rosterStudents.length === 0 ? (
+              <EmptyState
+                icon={Users}
+                title="Chưa có học viên ghi danh"
+                description="Khóa học này hiện chưa có học viên nào đăng ký. Khi có lượt đăng ký mới, danh sách và tiến độ sẽ hiển thị tại đây."
+              />
             ) : (
               <div className="table-responsive">
                 <table className="roster-table">
