@@ -1,8 +1,6 @@
 package com.edumy.backend.controller;
 
-import com.edumy.backend.dto.PaymentCreateRequestDto;
-import com.edumy.backend.dto.PaymentUrlResponseDto;
-import com.edumy.backend.dto.PaymentWebhookResponseDto;
+import com.edumy.backend.dto.*;
 import com.edumy.backend.service.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping
@@ -25,6 +24,130 @@ public class PaymentController {
             return (name != null && !name.equalsIgnoreCase("anonymousUser")) ? Integer.parseInt(name) : null;
         } catch (Exception e) {
             return null;
+        }
+    }
+
+    /**
+     * POST /api/v1/payments/create-qr
+     * GET /api/v1/payments/vietqr/{orderId}
+     * Sinh mã QR thanh toán động VietQR LPBank theo chuẩn VietQR API
+     */
+    @PostMapping({"/api/v1/payments/create-qr", "/api/payments/create-qr", "/api/Payment/create-qr", "/api/payment/create-qr"})
+    public ResponseEntity<?> createVietQrPayment(@RequestBody Map<String, Object> body) {
+        Integer orderId = null;
+        if (body.containsKey("orderId") && body.get("orderId") != null) {
+            try {
+                orderId = Integer.parseInt(body.get("orderId").toString());
+            } catch (NumberFormatException ignored) {}
+        }
+
+        if (orderId == null) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Thiếu orderId hợp lệ trong yêu cầu."));
+        }
+
+        Integer currentUserId = getCurrentUserId();
+        try {
+            VietQrGenerateResponseDto res = paymentService.generateVietQrPayment(orderId, currentUserId);
+            return ResponseEntity.ok(res);
+        } catch (NoSuchElementException ex) {
+            return ResponseEntity.status(404).body(Map.of("message", ex.getMessage()));
+        } catch (org.springframework.security.access.AccessDeniedException ex) {
+            return ResponseEntity.status(403).body(Map.of("message", ex.getMessage()));
+        } catch (Exception ex) {
+            return ResponseEntity.internalServerError().body(Map.of("message", "Lỗi tạo mã QR VietQR: " + ex.getMessage()));
+        }
+    }
+
+    @GetMapping({"/api/v1/payments/vietqr/{orderId}", "/api/payments/vietqr/{orderId}", "/api/Payment/vietqr/{orderId}", "/api/payment/vietqr/{orderId}"})
+    public ResponseEntity<?> getVietQrByOrderId(@PathVariable Integer orderId) {
+        Integer currentUserId = getCurrentUserId();
+        try {
+            VietQrGenerateResponseDto res = paymentService.generateVietQrPayment(orderId, currentUserId);
+            return ResponseEntity.ok(res);
+        } catch (NoSuchElementException ex) {
+            return ResponseEntity.status(404).body(Map.of("message", ex.getMessage()));
+        } catch (org.springframework.security.access.AccessDeniedException ex) {
+            return ResponseEntity.status(403).body(Map.of("message", ex.getMessage()));
+        } catch (Exception ex) {
+            return ResponseEntity.internalServerError().body(Map.of("message", "Lỗi lấy thông tin VietQR: " + ex.getMessage()));
+        }
+    }
+
+    /**
+     * GET /api/v1/orders/{orderId}/status
+     * Polling trạng thái đơn hàng thời gian thực
+     */
+    @GetMapping({"/api/v1/orders/{orderId}/status", "/api/orders/{orderId}/status", "/api/v1/payments/orders/{orderId}/status"})
+    public ResponseEntity<?> getOrderStatus(@PathVariable Integer orderId) {
+        try {
+            OrderStatusResponseDto status = paymentService.getOrderStatus(orderId);
+            return ResponseEntity.ok(status);
+        } catch (NoSuchElementException ex) {
+            return ResponseEntity.status(404).body(Map.of("message", ex.getMessage()));
+        } catch (Exception ex) {
+            return ResponseEntity.internalServerError().body(Map.of("message", "Lỗi kiểm tra trạng thái đơn hàng: " + ex.getMessage()));
+        }
+    }
+
+
+    /**
+     * POST /api/v1/payments/webhook/sepay
+     * Webhook tự động kích hoạt khóa học khi học viên chuyển khoản VietQR qua SePay / Casso / VietQR
+     */
+    @PostMapping({
+            "/api/v1/payments/webhook/sepay",
+            "/api/payments/webhook/sepay",
+            "/api/payment/webhook/sepay",
+            "/api/v1/payments/webhook/casso",
+            "/api/v1/payments/webhook/vietqr",
+            "/api/payments/webhook/vietqr"
+    })
+    public ResponseEntity<?> handleSepayWebhook(@RequestBody(required = false) SepayWebhookDto webhookData,
+                                                @RequestHeader(value = "Authorization", required = false) String authHeader,
+                                                @RequestHeader(value = "X-Api-Key", required = false) String apiKeyHeader) {
+        String effectiveAuth = authHeader != null ? authHeader : apiKeyHeader;
+        PaymentWebhookResponseDto result = paymentService.processSepayWebhook(webhookData, effectiveAuth);
+
+        if ("97".equals(result.getRspCode())) {
+            return ResponseEntity.status(401).body(result);
+        }
+        if ("01".equals(result.getRspCode()) || "04".equals(result.getRspCode())) {
+            return ResponseEntity.badRequest().body(result);
+        }
+
+        // SePay và Casso quy định phản hồi HTTP 200 { success: true }
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", "00".equals(result.getRspCode()));
+        response.put("message", result.getMessage());
+        response.put("orderId", result.getOrderId());
+        response.put("status", result.getOrderStatus());
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * POST /api/v1/payments/simulate-success
+     * Endpoint hỗ trợ kiểm thử / demo tự động giả lập Webhook ngân hàng đã nhận tiền
+     */
+    @PostMapping({"/api/v1/payments/simulate-success", "/api/payments/simulate-success", "/api/payment/simulate-success"})
+    public ResponseEntity<?> simulatePaymentSuccess(@RequestBody Map<String, Object> body) {
+        Integer orderId = null;
+        if (body.containsKey("orderId") && body.get("orderId") != null) {
+            try {
+                orderId = Integer.parseInt(body.get("orderId").toString());
+            } catch (NumberFormatException ignored) {}
+        }
+
+        if (orderId == null) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Thiếu orderId hợp lệ để giả lập thanh toán"));
+        }
+
+        try {
+            PaymentWebhookResponseDto result = paymentService.simulatePaymentSuccess(orderId);
+            return ResponseEntity.ok(result);
+        } catch (NoSuchElementException ex) {
+            return ResponseEntity.status(404).body(Map.of("message", ex.getMessage()));
+        } catch (Exception ex) {
+            return ResponseEntity.internalServerError().body(Map.of("message", "Lỗi giả lập thanh toán: " + ex.getMessage()));
         }
     }
 
@@ -53,14 +176,11 @@ public class PaymentController {
 
     /**
      * GET /api/v1/payments/vnpay-ipn
-     * Webhook server-to-server callback chuẩn từ cổng VNPay (IPN)
-     * Xác thực HMAC SHA512 Checksum và phản hồi định dạng chuẩn VNPay (RspCode, Message)
      */
     @GetMapping({"/api/v1/payments/vnpay-ipn", "/api/Payment/ipn", "/api/payment/ipn"})
     public ResponseEntity<?> handleVnPayIpn(@RequestParam Map<String, String> allParams) {
         PaymentWebhookResponseDto result = paymentService.processIpnWebhook(allParams);
 
-        // VNPay IPN bắt buộc trả về JSON { "RspCode": "xx", "Message": "..." }
         Map<String, String> response = new HashMap<>();
         response.put("RspCode", result.getRspCode());
         response.put("Message", result.getMessage());
@@ -70,7 +190,6 @@ public class PaymentController {
 
     /**
      * GET /api/v1/payments/vnpay-return
-     * Callback trả về trên trình duyệt khi người dùng hoàn tất thanh toán trên VNPay
      */
     @GetMapping({"/api/v1/payments/vnpay-return", "/api/Payment/vnpay-return", "/api/payment/vnpay-return"})
     public ResponseEntity<?> handleVnPayReturn(@RequestParam Map<String, String> allParams) {
@@ -80,7 +199,7 @@ public class PaymentController {
 
     /**
      * POST /api/v1/payments/webhook
-     * Webhook chung (MoMo, Stripe hoặc hệ thống thanh toán bên thứ ba)
+     * Webhook chung (MoMo, Stripe, v.v.)
      */
     @PostMapping({"/api/v1/payments/webhook", "/api/Payment/webhook", "/api/payment/webhook"})
     public ResponseEntity<?> handleGenericWebhook(@RequestBody(required = false) Map<String, Object> body,
@@ -105,7 +224,6 @@ public class PaymentController {
 
     /**
      * POST /api/Payment/callback
-     * Legacy callback cho client mock hoặc frontend cũ
      */
     @PostMapping({"/api/Payment/callback", "/api/payment/callback", "/api/v1/payments/callback"})
     public ResponseEntity<?> legacyPaymentCallback(@RequestBody Map<String, Object> payload) {
@@ -114,7 +232,6 @@ public class PaymentController {
             if (v != null) params.put(k, v.toString());
         });
         
-        // Mock fallback hash if testing
         if (!params.containsKey("vnp_SecureHash") && params.containsKey("orderId")) {
             params.put("vnp_TxnRef", params.get("orderId"));
             params.put("vnp_ResponseCode", Boolean.TRUE.equals(payload.get("success")) ? "00" : "99");

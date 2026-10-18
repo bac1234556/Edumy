@@ -100,12 +100,20 @@ function Cart() {
         couponCode: appliedCoupon?.code || null
       });
 
+      if (res.data.isFree) {
+        alert(res.data.message || 'Đăng ký khóa học thành công! (Khóa học miễn phí)');
+        navigate('/my-courses');
+        return;
+      }
+
       if (res.data.paymentUrl) {
-        // External payment gateway (e.g. VNPay sandbox)
-        window.location.href = res.data.paymentUrl;
+        if (res.data.paymentUrl.startsWith('http://') || res.data.paymentUrl.startsWith('https://')) {
+          window.location.href = res.data.paymentUrl;
+        } else {
+          navigate(res.data.paymentUrl);
+        }
       } else {
-        // Internal mock payment gateway
-        navigate(`/payment?orderId=${res.data.orderId}`);
+        navigate(`/payment?orderId=${res.data.orderId}&amount=${res.data.amount || ''}`);
       }
     } catch (err) {
       alert(err.response?.data?.message || 'Khởi tạo đơn hàng thanh toán thất bại.');
@@ -113,6 +121,7 @@ function Cart() {
       setCheckoutLoading(false);
     }
   };
+
 
   const formatPrice = (price) => {
     if (!price && price !== 0) return '0 ₫';

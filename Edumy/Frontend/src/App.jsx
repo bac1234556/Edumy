@@ -17,7 +17,9 @@ import AdminDashboard from './pages/AdminDashboard';
 import PaymentSuccess from './pages/PaymentSuccess';
 import PaymentCancel from './pages/PaymentCancel';
 import MockPaymentGateway from './pages/MockPaymentGateway';
+import PaymentQR from './pages/PaymentQR';
 import CertificateView from './pages/CertificateView';
+
 import CourseCurriculumEditor from './pages/CourseCurriculumEditor';
 import Wishlist from './pages/Wishlist';
 import UserProfile from './pages/UserProfile';
@@ -87,8 +89,11 @@ function App() {
                 <AdminDashboard />
               </ProtectedRoute>
             } />
-            <Route path="/payment" element={<MockPaymentGateway />} />
+            <Route path="/payment" element={<PaymentQR />} />
+            <Route path="/payment/qr" element={<PaymentQR />} />
+            <Route path="/payment/mock" element={<MockPaymentGateway />} />
             <Route path="/payment-success" element={<PaymentSuccess />} />
+
             <Route path="/payment-cancel" element={<PaymentCancel />} />
             <Route path="/certificates/:url" element={<CertificateView />} />
           </Routes>

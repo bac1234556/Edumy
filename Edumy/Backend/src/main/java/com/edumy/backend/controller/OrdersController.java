@@ -44,6 +44,10 @@ public class OrdersController {
     @Autowired
     private CourseRepository courseRepository;
 
+    @Autowired
+    private PaymentService paymentService;
+
+
     private Integer getCurrentUserId() {
         try {
             return Integer.parseInt(SecurityContextHolder.getContext().getAuthentication().getName());
@@ -156,20 +160,51 @@ public class OrdersController {
             return ResponseEntity.ok(response);
         }
 
-        // Nếu đơn hàng có phí -> Lưu trạng thái Pending và chuyển sang cổng thanh toán
+        // Nếu đơn hàng có phí -> Lưu trạng thái Pending và sinh thông tin VietQR
         order.setStatus("Pending");
         Order savedOrder = orderRepository.save(order);
 
         String paymentUrl = "/payment?orderId=" + savedOrder.getOrderId() + "&amount=" + totalAmount;
 
+        VietQrGenerateResponseDto qrData = null;
+        try {
+            qrData = paymentService.generateVietQrPayment(savedOrder.getOrderId(), userId);
+        } catch (Exception ignored) {}
+
         Map<String, Object> response = new HashMap<>();
-        response.put("message", "Đơn hàng đã được tạo. Đang chuyển hướng đến cổng thanh toán...");
+        response.put("message", "Đơn hàng đã được tạo. Vui lòng quét mã VietQR để thanh toán.");
         response.put("orderId", savedOrder.getOrderId());
         response.put("paymentUrl", paymentUrl);
         response.put("isFree", false);
         response.put("status", "Pending");
+        response.put("amount", totalAmount);
+        if (qrData != null) {
+            response.put("qrImageUrl", qrData.getQrImageUrl());
+            response.put("transferContent", qrData.getTransferContent());
+            response.put("accountNo", qrData.getAccountNo());
+            response.put("accountName", qrData.getAccountName());
+            response.put("bankName", qrData.getBankName());
+            response.put("bankId", qrData.getBankId());
+        }
 
         return ResponseEntity.ok(response);
+    }
+
+    /**
+     * GET /api/v1/orders/{orderId}/status
+     * GET /api/orders/{orderId}/status
+     * Endpoint polling trạng thái đơn hàng thời gian thực cho giao diện thanh toán QR
+     */
+    @GetMapping({"/api/v1/orders/{orderId}/status", "/{orderId}/status", "/status/{orderId}"})
+    public ResponseEntity<?> getOrderStatus(@PathVariable Integer orderId) {
+        try {
+            OrderStatusResponseDto status = paymentService.getOrderStatus(orderId);
+            return ResponseEntity.ok(status);
+        } catch (java.util.NoSuchElementException ex) {
+            return ResponseEntity.status(404).body(Map.of("message", ex.getMessage()));
+        } catch (Exception ex) {
+            return ResponseEntity.internalServerError().body(Map.of("message", "Lỗi kiểm tra trạng thái đơn hàng: " + ex.getMessage()));
+        }
     }
 
     @GetMapping("/my-orders")
@@ -185,6 +220,7 @@ public class OrdersController {
         return ResponseEntity.ok(orders);
     }
 }
+
 
 @Data
 class CheckoutRequest {

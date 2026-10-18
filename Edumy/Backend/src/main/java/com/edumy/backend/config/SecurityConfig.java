@@ -39,8 +39,9 @@ public class SecurityConfig {
                 // Lesson access endpoint: allow permitAll so unauthenticated users can access preview lessons;
                 // Secure check is performed in service/controller based on JWT / enrollment.
                 .requestMatchers("/api/v1/lessons/*/access", "/api/v1/lessons/**", "/api/Lessons/**").permitAll()
-                // Payment callbacks & Webhooks: public endpoints called by payment gateways
+                // Payment callbacks, Webhooks & Order Status polling
                 .requestMatchers("/api/v1/payments/**", "/api/payment/**", "/api/Payment/**").permitAll()
+                .requestMatchers("/api/v1/orders/*/status", "/api/orders/*/status", "/api/Orders/*/status").permitAll()
                 .requestMatchers("/api/coupons/validate", "/api/Coupons/validate").permitAll()
                 .requestMatchers("/uploads/**").permitAll()
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
