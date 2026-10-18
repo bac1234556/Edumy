@@ -22,6 +22,7 @@ import {
   Layers,
   GraduationCap
 } from 'lucide-react';
+import LiveCourseSearchBar from '../components/LiveCourseSearchBar';
 import './HomePage.css';
 
 // Dynamic category icon mapper
@@ -116,21 +117,12 @@ function HomePage() {
                 Tiếp cận các khóa học thực chiến từ chuyên gia hàng đầu. Hệ thống gợi ý AI cá nhân hóa giúp bạn xây dựng lộ trình học tập hiệu quả nhất.
               </p>
 
-              {/* Quick Search Bar */}
-              <div className="hero-search-wrapper">
-                <form className="hero-search-form" onSubmit={handleSearchSubmit}>
-                  <Search size={20} className="hero-search-icon" />
-                  <input
-                    type="text"
-                    className="hero-search-input"
-                    placeholder="Bạn muốn làm chủ kỹ năng gì hôm nay? (VD: React, Python, UI/UX...)"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                  />
-                  <button type="submit" className="hero-search-btn">
-                    Khám phá ngay
-                  </button>
-                </form>
+              {/* Quick Search Bar with Live Instant Suggestion */}
+              <div className="hero-search-wrapper" style={{ width: '100%', maxWidth: '640px' }}>
+                <LiveCourseSearchBar 
+                  variant="hero"
+                  placeholder="Bạn muốn làm chủ kỹ năng gì hôm nay? (VD: React, Python, UI/UX...)" 
+                />
               </div>
 
               {/* Trending Tags */}

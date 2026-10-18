@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
 import { CartContext } from '../context/CartContext';
+import LiveCourseSearchBar from './LiveCourseSearchBar';
 import './Navbar.css';
 
 const Navbar = () => {
@@ -67,19 +68,10 @@ const Navbar = () => {
           <BookOpen size={16} /> Khám phá khóa học
         </Link>
 
-        {/* Search Input Bar */}
-        <form className="navbar-search-box" onSubmit={handleSearchSubmit}>
-          <button type="submit" className="search-icon-btn" aria-label="Search">
-            <Search size={18} />
-          </button>
-          <input 
-            type="text" 
-            placeholder="Tìm kiếm khóa học, kỹ năng, giảng viên..." 
-            className="search-input-field"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </form>
+        {/* Live Search Input Bar */}
+        <div className="navbar-search-wrapper hide-on-mobile" style={{ flex: 1, maxWidth: 540 }}>
+          <LiveCourseSearchBar variant="navbar" placeholder="Tìm kiếm khóa học, kỹ năng, giảng viên..." />
+        </div>
 
         {/* Right Navigation Actions */}
         <div className="navbar-nav-right">
@@ -241,22 +233,14 @@ const Navbar = () => {
               </button>
             </div>
 
-            {/* Mobile Search */}
-            <form className="mobile-drawer-search" onSubmit={(e) => {
-              handleSearchSubmit(e);
-              setMobileMenuOpen(false);
-            }}>
-              <input 
-                type="text" 
+            {/* Mobile Live Search */}
+            <div className="mobile-drawer-search-wrap" style={{ margin: '0.75rem 0' }}>
+              <LiveCourseSearchBar 
+                variant="mobile" 
                 placeholder="Tìm khóa học, giảng viên..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="mobile-search-input"
+                onCloseMobile={() => setMobileMenuOpen(false)}
               />
-              <button type="submit" className="mobile-search-btn" aria-label="Search">
-                <Search size={18} />
-              </button>
-            </form>
+            </div>
 
             {/* Mobile Navigation Links */}
             <div className="mobile-drawer-nav-list">

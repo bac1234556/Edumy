@@ -16,8 +16,38 @@ import java.time.LocalDateTime;
 import lombok.Data;
 
 @RestController
-@RequestMapping({"/api/Courses", "/api/courses"})
+@RequestMapping({"/api/Courses", "/api/courses", "/api/v1/courses"})
 public class CoursesController {
+
+    @GetMapping("/instant-search")
+    public ResponseEntity<List<InstantCourseSearchDTO>> instantSearch(@RequestParam(name = "q", defaultValue = "") String keyword) {
+        if (keyword == null || keyword.trim().length() < 2) {
+            return ResponseEntity.ok(Collections.emptyList());
+        }
+
+        String trimmed = keyword.trim();
+        org.springframework.data.domain.Pageable limit = org.springframework.data.domain.PageRequest.of(0, 6);
+        List<Course> courses = courseRepository.searchInstant(trimmed, limit);
+
+        List<InstantCourseSearchDTO> result = courses.stream().map(c -> {
+            String instructorName = "Giảng viên Edumy";
+            try {
+                if (c.getInstructor() != null && c.getInstructor().getFullName() != null && !c.getInstructor().getFullName().isBlank()) {
+                    instructorName = c.getInstructor().getFullName();
+                }
+            } catch (Exception ignored) {
+            }
+            return InstantCourseSearchDTO.builder()
+                    .id(c.getCourseId())
+                    .title(c.getTitle())
+                    .thumbnailUrl(c.getThumbnailUrl())
+                    .instructorName(instructorName)
+                    .price(c.getPrice())
+                    .build();
+        }).collect(Collectors.toList());
+
+        return ResponseEntity.ok(result);
+    }
 
     @Autowired
     private CourseRepository courseRepository;

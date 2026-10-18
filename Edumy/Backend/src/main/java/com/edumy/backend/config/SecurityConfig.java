@@ -30,8 +30,8 @@ public class SecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/**", "/api/Auth/**").permitAll()
-                .requestMatchers("/api/courses", "/api/Courses").permitAll()
-                .requestMatchers("/api/courses/**", "/api/Courses/**").permitAll()
+                .requestMatchers("/api/courses", "/api/Courses", "/api/v1/courses").permitAll()
+                .requestMatchers("/api/courses/**", "/api/Courses/**", "/api/v1/courses/**").permitAll()
                 .requestMatchers("/api/categories/**", "/api/Categories/**").permitAll()
                 .requestMatchers("/api/reviews/course/**", "/api/Reviews/course/**").permitAll()
                 .requestMatchers("/api/quizzes/**", "/api/Quizzes/**").permitAll()
