@@ -337,11 +337,11 @@ function Cart() {
                       {/* Details */}
                       <div className="cart-item-details">
                         <div>
-                          {/* Badge nổi bật nếu khóa học ĐÃ THANH TOÁN / ĐÃ SỞ HỮU */}
+                          {/* Badge nổi bật nếu khóa học ĐÃ SỞ HỮU */}
                           {isEnrolled && (
                             <div className="mb-2">
                               <span className="badge-enrolled">
-                                <CheckCircle2 size={14} /> ✓ Đã thanh toán / Đã sở hữu
+                                <CheckCircle2 size={14} /> ✓ Đã sở hữu
                               </span>
                             </div>
                           )}

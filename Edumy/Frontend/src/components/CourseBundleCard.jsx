@@ -40,11 +40,13 @@ const CourseBundleCard = ({ courseId }) => {
     fetchBundle();
   }, [courseId]);
 
-  if (loading || !bundleData || !bundleData.bundledCourse) {
+  const { mainCourse, bundledCourse, originalTotal, bundlePrice, discountPercent, savings } = bundleData || {};
+  const mainEnrolled = isCourseEnrolled && isCourseEnrolled(courseId);
+  const bundledEnrolled = bundledCourse?.courseId && isCourseEnrolled && isCourseEnrolled(bundledCourse.courseId);
+
+  if (loading || !bundleData || !bundleData.bundledCourse || mainEnrolled || bundledEnrolled) {
     return null;
   }
-
-  const { mainCourse, bundledCourse, originalTotal, bundlePrice, discountPercent, savings } = bundleData;
 
   const formatPrice = (p) => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(p || 0);

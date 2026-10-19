@@ -117,9 +117,9 @@ public class CartServiceImpl implements CartService {
             throw new NoSuchElementException("Khóa học không tồn tại hoặc chưa xuất bản.");
         }
 
-        boolean alreadyEnrolled = enrollmentRepository.existsByUserIdAndCourseId(userId, courseId);
+        boolean alreadyEnrolled = enrollmentRepository.isUserEnrolledActive(userId, courseId);
         if (alreadyEnrolled) {
-            throw new IllegalStateException("Bạn đã đăng ký và sở hữu khóa học này rồi.");
+            throw new IllegalStateException("Bạn đã sở hữu khóa học này rồi. Vui lòng vào phòng học để tiếp tục.");
         }
 
         Cart cart = getOrCreateCart(userId);

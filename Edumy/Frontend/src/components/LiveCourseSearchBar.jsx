@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Loader2, ArrowRight, BookOpen, User, Tag } from 'lucide-react';
+import { Search, Loader2, ArrowRight, BookOpen, User, Tag, CheckCircle2 } from 'lucide-react';
+import { AuthContext } from '../context/AuthContext';
 import api from '../api/axiosConfig';
 import './LiveCourseSearchBar.css';
 
@@ -16,6 +17,7 @@ const LiveCourseSearchBar = ({
   const [isOpen, setIsOpen] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
 
+  const { isCourseEnrolled } = useContext(AuthContext);
   const containerRef = useRef(null);
   const inputRef = useRef(null);
   const navigate = useNavigate();
@@ -207,9 +209,15 @@ const LiveCourseSearchBar = ({
                           <User size={12} style={{ display: 'inline', marginRight: 4, verticalAlign: -1 }} />
                           {course.instructorName || 'Giảng viên Edumy'}
                         </span>
-                        <span className={`live-search-item-price ${!course.price || Number(course.price) === 0 ? 'is-free' : ''}`}>
-                          {formatPrice(course.price)}
-                        </span>
+                        {isCourseEnrolled && isCourseEnrolled(course.id) ? (
+                          <span style={{ color: '#10b981', fontWeight: 700, fontSize: '0.8rem', display: 'inline-flex', alignItems: 'center', gap: '0.2rem' }}>
+                            <CheckCircle2 size={12} /> ✓ Đã sở hữu
+                          </span>
+                        ) : (
+                          <span className={`live-search-item-price ${!course.price || Number(course.price) === 0 ? 'is-free' : ''}`}>
+                            {formatPrice(course.price)}
+                          </span>
+                        )}
                       </div>
                     </div>
                   </div>

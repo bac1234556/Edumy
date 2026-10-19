@@ -40,7 +40,7 @@ const BACKEND_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
 function CourseDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { user } = useContext(AuthContext);
+  const { user, isCourseEnrolled } = useContext(AuthContext);
   const { addToCart } = useContext(CartContext);
 
   const [course, setCourse] = useState(null);
@@ -107,6 +107,10 @@ function CourseDetail() {
       setIsEnrolled(false);
       setIsInstructorOfCourse(false);
       return;
+    }
+
+    if (isCourseEnrolled && isCourseEnrolled(id)) {
+      setIsEnrolled(true);
     }
 
     const checkStatus = async () => {
@@ -414,6 +418,20 @@ function CourseDetail() {
 
               {/* Meta Badges */}
               <div className="course-meta-pills">
+                {isEnrolled && (
+                  <span className="badge-enrolled-solid" style={{
+                    background: '#10b981',
+                    color: '#ffffff',
+                    fontWeight: 700,
+                    padding: '0.35rem 0.85rem',
+                    borderRadius: '6px',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.35rem'
+                  }}>
+                    <Check size={14} /> ✓ Đã sở hữu
+                  </span>
+                )}
                 <span className="badge-bestseller-solid">Bán chạy nhất</span>
                 
                 <div className="rating-stars-group">
@@ -916,12 +934,30 @@ function CourseDetail() {
 
                 <div className="cta-buttons-stack">
                   {isEnrolled ? (
-                    <Link
-                      to={`/my-courses/${course.courseId}/learn`}
-                      className="btn-primary-cta"
-                    >
-                      <PlayCircle size={18} /> Vào học ngay
-                    </Link>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', width: '100%' }}>
+                      <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '0.4rem',
+                        backgroundColor: '#ecfdf5',
+                        color: '#059669',
+                        padding: '0.65rem 1rem',
+                        borderRadius: '8px',
+                        fontWeight: 700,
+                        fontSize: '0.95rem',
+                        border: '1px solid #a7f3d0'
+                      }}>
+                        <Check size={18} /> ✓ Đã sở hữu khóa học
+                      </div>
+                      <Link
+                        to={`/my-courses/${course.courseId}/learn`}
+                        className="btn-primary-cta"
+                        style={{ backgroundColor: '#10b981', borderColor: '#10b981' }}
+                      >
+                        <PlayCircle size={18} /> Vào học ngay
+                      </Link>
+                    </div>
                   ) : isInstructorOfCourse ? (
                     <Link
                       to={`/instructor/courses/${course.courseId}/curriculum`}

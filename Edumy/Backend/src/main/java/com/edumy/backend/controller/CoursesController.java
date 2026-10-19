@@ -235,10 +235,29 @@ public class CoursesController {
     public ResponseEntity<?> getEnrollmentStatus(@PathVariable Integer id) {
         Integer userId = getCurrentUserId();
         if (userId == null) {
-            return ResponseEntity.ok(Map.of("isEnrolled", false));
+            return ResponseEntity.ok(Map.of("isEnrolled", false, "status", "NONE"));
         }
-        boolean isEnrolled = enrollmentRepository.existsByUserIdAndCourseId(userId, id);
-        return ResponseEntity.ok(Map.of("isEnrolled", isEnrolled));
+        boolean isEnrolled = enrollmentRepository.isUserEnrolledActive(userId, id);
+        return ResponseEntity.ok(Map.of(
+            "isEnrolled", isEnrolled,
+            "status", isEnrolled ? "ACTIVE" : "NONE"
+        ));
+    }
+
+    @GetMapping({"/enrolled-ids", "/my-enrolled-ids"})
+    public ResponseEntity<?> getMyEnrolledCourseIds() {
+        Integer userId = getCurrentUserId();
+        if (userId == null) {
+            return ResponseEntity.ok(Collections.emptyList());
+        }
+        List<Enrollment> userEnrollments = enrollmentRepository.findByUserId(userId);
+        List<Integer> enrolledIds = userEnrollments.stream()
+                .filter(e -> e.getStatus() == null || "ACTIVE".equalsIgnoreCase(e.getStatus()) || "Completed".equalsIgnoreCase(e.getStatus()))
+                .map(Enrollment::getCourseId)
+                .filter(Objects::nonNull)
+                .distinct()
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(enrolledIds);
     }
 
     @PostMapping

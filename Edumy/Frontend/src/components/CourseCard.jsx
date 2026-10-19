@@ -1,15 +1,17 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { Star, Clock, BookOpen, PlayCircle, CheckCircle } from 'lucide-react';
+import { AuthContext } from '../context/AuthContext';
 import './CourseCard.css';
 
 const BACKEND_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api').replace('/api', '');
 
 const CourseCard = ({ course }) => {
   if (!course) return null;
+  const { isCourseEnrolled } = useContext(AuthContext);
 
   const courseId = course.courseId || course.id || 1;
-  const isEnrolled = !!(course.isEnrolled || course.isPaid || course.enrolled);
+  const isEnrolled = !!(course.isEnrolled || course.isPaid || course.enrolled || (isCourseEnrolled && isCourseEnrolled(courseId)));
   const ratingScore = Number(course.averageRating || course.rating || 4.8).toFixed(1);
   const reviewCount = course.reviews?.length || course.reviews || course.reviewCount || 124;
   const studentCount = course.studentCount || course.students || 1420;
@@ -49,8 +51,8 @@ const CourseCard = ({ course }) => {
         )}
         {isEnrolled && (
           <div className="card-badge-overlay" style={{ left: '0.75rem', right: 'auto' }}>
-            <span className="badge-bestseller" style={{ background: '#10b981' }}>
-              ✓ Đã mua
+            <span className="badge-bestseller" style={{ background: '#10b981', color: '#ffffff', fontWeight: 700 }}>
+              ✓ Đã sở hữu
             </span>
           </div>
         )}
@@ -103,7 +105,7 @@ const CourseCard = ({ course }) => {
           {isEnrolled ? (
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
               <span className="badge-enrolled-tag" style={{ color: '#10b981', fontWeight: 700, fontSize: '0.85rem' }}>
-                Đã sở hữu
+                ✓ Đã sở hữu
               </span>
               <span
                 onClick={(e) => {

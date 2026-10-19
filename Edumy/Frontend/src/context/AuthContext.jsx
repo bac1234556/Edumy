@@ -108,6 +108,40 @@ export const AuthProvider = ({ children }) => {
     return message;
   };
 
+  const [enrolledCourseIds, setEnrolledCourseIds] = useState([]);
+
+  const refreshEnrolledCourses = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setEnrolledCourseIds([]);
+      return [];
+    }
+    try {
+      const res = await api.get('/courses/enrolled-ids');
+      if (Array.isArray(res.data)) {
+        const ids = res.data.map(id => Number(id)).filter(id => !isNaN(id));
+        setEnrolledCourseIds(ids);
+        return ids;
+      }
+    } catch (err) {
+      console.warn('Could not fetch enrolled course ids:', err);
+    }
+    return [];
+  };
+
+  useEffect(() => {
+    if (user) {
+      refreshEnrolledCourses();
+    } else {
+      setEnrolledCourseIds([]);
+    }
+  }, [user]);
+
+  const isCourseEnrolled = (courseId) => {
+    if (!courseId) return false;
+    return enrolledCourseIds.includes(Number(courseId));
+  };
+
   const updateUserRole = (newRole) => {
     if (!user) return;
     const updated = { ...user, role: newRole };
@@ -120,6 +154,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('user_profile');
     localStorage.removeItem('edumy_token');
     sessionStorage.clear();
+    setEnrolledCourseIds([]);
     try {
       document.cookie.split(';').forEach((c) => {
         document.cookie = c
@@ -133,7 +168,17 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, googleLogin, logout, updateUserRole }}>
+    <AuthContext.Provider value={{ 
+      user, 
+      loading, 
+      login, 
+      googleLogin, 
+      logout, 
+      updateUserRole,
+      enrolledCourseIds,
+      isCourseEnrolled,
+      refreshEnrolledCourses
+    }}>
       {children}
     </AuthContext.Provider>
   );

@@ -57,6 +57,20 @@ public class CartController {
         }
     }
 
+    @PostMapping({"/items", ""})
+    public ResponseEntity<?> addToCartWithBody(@RequestBody Map<String, Object> body) {
+        Integer courseId = null;
+        if (body != null && body.get("courseId") != null) {
+            try {
+                courseId = Integer.parseInt(body.get("courseId").toString());
+            } catch (Exception ignored) {}
+        }
+        if (courseId == null) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Mã khóa học (courseId) không được để trống."));
+        }
+        return addToCart(courseId);
+    }
+
     @DeleteMapping({"/remove/{id}", "/items/{id}", "/courses/{id}"})
     public ResponseEntity<?> removeFromCart(@PathVariable Integer id) {
         Integer userId = getCurrentUserId();

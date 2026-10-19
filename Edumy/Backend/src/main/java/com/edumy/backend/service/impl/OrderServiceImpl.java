@@ -47,13 +47,10 @@ public class OrderServiceImpl implements OrderService {
             throw new IllegalStateException("Khóa học hiện chưa được phát hành để đăng ký.");
         }
 
-        // 1. Kiểm tra nếu học viên đã sở hữu khóa học này rồi
-        boolean alreadyEnrolled = enrollmentRepository.existsByUserIdAndCourseId(userId, courseId);
+        // 1. Kiểm tra nếu học viên đã sở hữu khóa học này rồi (ACTIVE hoặc Completed)
+        boolean alreadyEnrolled = enrollmentRepository.isUserEnrolledActive(userId, courseId);
         if (alreadyEnrolled) {
-            Enrollment existing = enrollmentRepository.findByUserIdAndCourseId(userId, courseId);
-            if (existing != null && (existing.getStatus() == null || "ACTIVE".equalsIgnoreCase(existing.getStatus()) || "Completed".equalsIgnoreCase(existing.getStatus()))) {
-                throw new IllegalStateException("Bạn đã đăng ký và sở hữu khóa học này rồi.");
-            }
+            throw new IllegalStateException("Bạn đã sở hữu khóa học này rồi. Vui lòng vào phòng học để tiếp tục.");
         }
 
         // 2. Tính giá duy nhất cho khóa học này
