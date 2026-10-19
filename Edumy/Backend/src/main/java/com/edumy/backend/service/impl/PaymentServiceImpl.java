@@ -19,6 +19,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class PaymentServiceImpl implements PaymentService {
@@ -362,13 +363,21 @@ public class PaymentServiceImpl implements PaymentService {
             }
         }
 
-        // 3. Dọn dẹp các món hàng đã mua trong Cart của học viên
+        // 3. Dọn dẹp DUY NHẤT các món hàng vừa được thanh toán thành công trong Cart của học viên (nếu có)
         Cart cart = cartRepository.findByUserId(orderUserId);
         if (cart != null && order.getOrderItems() != null) {
-            for (OrderItem item : order.getOrderItems()) {
-                if (item.getCourseId() != null) {
-                    cartItemRepository.deleteByCartIdAndCourseId(cart.getId(), item.getCourseId());
-                }
+            Set<Integer> paidCourseIds = order.getOrderItems().stream()
+                    .map(OrderItem::getCourseId)
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toSet());
+
+            for (Integer pCourseId : paidCourseIds) {
+                cartItemRepository.deleteByCartIdAndCourseOrItemId(cart.getId(), pCourseId);
+            }
+            if (cart.getCartItems() != null) {
+                cart.getCartItems().removeIf(ci -> paidCourseIds.contains(ci.getCourseId()));
+                cart.setUpdatedAt(LocalDateTime.now());
+                cartRepository.save(cart);
             }
         }
 

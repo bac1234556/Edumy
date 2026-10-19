@@ -166,18 +166,43 @@ function CourseDetail() {
     }
   };
 
-  // Buy now & redirect to Cart
+  // Luồng B: Mua ngay trực tiếp (Single Item Checkout - TUYỆT ĐỐI KHÔNG thêm vào Cart)
   const handleBuyNow = async () => {
     if (!user) {
       navigate('/login');
       return;
     }
+
+    if (isEnrolled) {
+      navigate(`/my-courses/${course?.courseId || id}/learn`);
+      return;
+    }
+
+    if (user.role === 'Instructor' && !user.roles?.includes('Student')) {
+      showToast('Tài khoản Giảng viên không thể đăng ký mua khóa học.', 'error');
+      return;
+    }
+
     try {
       setEnrolling(true);
-      await addToCart(id);
-      navigate('/cart');
+      const res = await api.post('/orders/buy-now', {
+        courseId: Number(id),
+        couponCode: null
+      });
+
+      if (res.data.isFree) {
+        showToast(res.data.message || 'Đăng ký khóa học thành công! (Khóa học miễn phí)', 'success');
+        navigate(`/my-courses/${id}/learn`);
+        return;
+      }
+
+      if (res.data.paymentUrl) {
+        navigate(res.data.paymentUrl);
+      } else {
+        navigate(`/payment?orderId=${res.data.orderId}&amount=${res.data.amount || ''}`);
+      }
     } catch (error) {
-      navigate('/cart');
+      showToast(error.response?.data?.message || 'Khởi tạo đơn hàng Mua ngay thất bại. Vui lòng thử lại.', 'error');
     } finally {
       setEnrolling(false);
     }
