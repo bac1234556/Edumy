@@ -129,6 +129,15 @@ function CourseDetail() {
     checkStatus();
   }, [id, user]);
 
+  const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
+
+  const showToast = (message, type = 'success') => {
+    setToast({ show: true, message, type });
+    setTimeout(() => {
+      setToast({ show: false, message: '', type: 'success' });
+    }, 3500);
+  };
+
   // Add to cart via CartContext
   const handleAddToCart = async () => {
     if (!user) {
@@ -136,17 +145,22 @@ function CourseDetail() {
       return;
     }
 
+    if (isEnrolled) {
+      navigate(`/my-courses/${course?.courseId || id}/learn`);
+      return;
+    }
+
     if (user.role === 'Instructor' && !user.roles?.includes('Student')) {
-      alert('Tài khoản Giảng viên không thể đăng ký mua khóa học.');
+      showToast('Tài khoản Giảng viên không thể đăng ký mua khóa học.', 'error');
       return;
     }
 
     try {
       setEnrolling(true);
       await addToCart(id);
-      alert('Đã thêm khóa học vào giỏ hàng thành công!');
+      showToast('Đã thêm khóa học vào giỏ hàng thành công!', 'success');
     } catch (error) {
-      alert(error.response?.data?.message || 'Khóa học đã có trong giỏ hàng hoặc đã đăng ký.');
+      showToast(error.response?.data?.message || 'Khóa học đã có trong giỏ hàng hoặc đã đăng ký.', 'error');
     } finally {
       setEnrolling(false);
     }
@@ -881,7 +895,7 @@ function CourseDetail() {
                       to={`/my-courses/${course.courseId}/learn`}
                       className="btn-primary-cta"
                     >
-                      <PlayCircle size={18} /> Tiếp tục học bài
+                      <PlayCircle size={18} /> Vào học ngay
                     </Link>
                   ) : isInstructorOfCourse ? (
                     <Link
@@ -1011,6 +1025,45 @@ function CourseDetail() {
               )}
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Toast Notification */}
+      {toast.show && (
+        <div
+          style={{
+            position: 'fixed',
+            bottom: '24px',
+            right: '24px',
+            zIndex: 9999,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px',
+            background: toast.type === 'error' ? '#ef4444' : '#10b981',
+            color: '#ffffff',
+            padding: '14px 20px',
+            borderRadius: '12px',
+            boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.25)',
+            fontSize: '0.95rem',
+            fontWeight: 600
+          }}
+        >
+          {toast.type === 'error' ? <AlertCircle size={20} /> : <CheckCircle size={20} />}
+          <span>{toast.message}</span>
+          <button
+            type="button"
+            onClick={() => setToast({ show: false, message: '', type: 'success' })}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              color: '#ffffff',
+              cursor: 'pointer',
+              marginLeft: '8px',
+              padding: 0
+            }}
+          >
+            <X size={16} />
+          </button>
         </div>
       )}
     </div>

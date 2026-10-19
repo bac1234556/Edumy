@@ -1,37 +1,23 @@
 package com.edumy.backend.controller;
 
-import com.edumy.backend.model.*;
-import com.edumy.backend.dto.*;
-import com.edumy.backend.repository.*;
-import com.edumy.backend.service.*;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.edumy.backend.dto.CartResponseDto;
+import com.edumy.backend.service.CartService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.Map;
-import java.util.HashMap;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.util.NoSuchElementException;
 
 @RestController
-@RequestMapping({"/api/Cart", "/api/cart"})
+@RequestMapping({"/api/v1/cart", "/api/Cart", "/api/cart"})
 @PreAuthorize("isAuthenticated()")
+@RequiredArgsConstructor
 public class CartController {
 
-    @Autowired
-    private CartRepository cartRepository;
-    
-    @Autowired
-    private CartItemRepository cartItemRepository;
-
-    @Autowired
-    private CourseRepository courseRepository;
-
-    @Autowired
-    private EnrollmentRepository enrollmentRepository;
+    private final CartService cartService;
 
     private Integer getCurrentUserId() {
         try {
@@ -41,111 +27,48 @@ public class CartController {
         }
     }
 
-    private Cart getOrCreateCart(Integer userId) {
-        Cart cart = cartRepository.findByUserId(userId);
-        if (cart == null) {
-            cart = new Cart();
-            cart.setUserId(userId);
-            cart = cartRepository.save(cart);
-        }
-        return cart;
-    }
-
     @GetMapping
     public ResponseEntity<?> getCart() {
         Integer userId = getCurrentUserId();
-        if (userId == null) return ResponseEntity.status(401).build();
+        if (userId == null) {
+            return ResponseEntity.status(401).body(Map.of("message", "Yêu cầu đăng nhập"));
+        }
 
-        Cart cart = getOrCreateCart(userId);
-        
-        Map<String, Object> response = new HashMap<>();
-        response.put("id", cart.getId());
-        response.put("userId", cart.getUserId());
-        response.put("totalItems", cart.getCartItems().size());
-        
-        BigDecimal totalPrice = cart.getCartItems().stream()
-                .map(ci -> ci.getCourse().getPrice())
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-        response.put("totalPrice", totalPrice);
-        
-        List<Map<String, Object>> items = cart.getCartItems().stream().map(ci -> {
-            Map<String, Object> itemMap = new HashMap<>();
-            itemMap.put("id", ci.getId());
-            itemMap.put("courseId", ci.getCourseId());
-            itemMap.put("addedAt", ci.getAddedAt());
-            
-            Map<String, Object> courseMap = new HashMap<>();
-            courseMap.put("title", ci.getCourse().getTitle());
-            courseMap.put("price", ci.getCourse().getPrice());
-            courseMap.put("thumbnailUrl", ci.getCourse().getThumbnailUrl());
-            courseMap.put("instructorName", ci.getCourse().getInstructor() != null ? ci.getCourse().getInstructor().getFullName() : null);
-            
-            itemMap.put("course", courseMap);
-            return itemMap;
-        }).collect(Collectors.toList());
-        
-        response.put("items", items);
-
+        CartResponseDto response = cartService.getCart(userId);
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/add/{courseId}")
+    @PostMapping({"/add/{courseId}", "/items/{courseId}"})
     public ResponseEntity<?> addToCart(@PathVariable Integer courseId) {
         Integer userId = getCurrentUserId();
-        if (userId == null) return ResponseEntity.status(401).build();
-
-        Course course = courseRepository.findById(courseId).orElse(null);
-        if (course == null || !"Published".equals(course.getStatus())) {
-            return ResponseEntity.status(404).body("Course not found or not published.");
+        if (userId == null) {
+            return ResponseEntity.status(401).body(Map.of("message", "Yêu cầu đăng nhập"));
         }
 
-        boolean alreadyEnrolled = enrollmentRepository.existsByUserIdAndCourseId(userId, courseId);
-        if (alreadyEnrolled) {
-            return ResponseEntity.badRequest().body("You are already enrolled in this course.");
-        }
-
-        Cart cart = getOrCreateCart(userId);
-
-        if (cart.getCartItems().stream().anyMatch(ci -> ci.getCourseId().equals(courseId))) {
-            Map<String, String> res = new HashMap<>();
-            res.put("message", "Course is already in your cart.");
+        try {
+            Map<String, String> res = cartService.addToCart(userId, courseId);
             return ResponseEntity.ok(res);
+        } catch (NoSuchElementException ex) {
+            return ResponseEntity.status(404).body(Map.of("message", ex.getMessage()));
+        } catch (IllegalStateException ex) {
+            return ResponseEntity.badRequest().body(Map.of("message", ex.getMessage()));
+        } catch (Exception ex) {
+            return ResponseEntity.internalServerError().body(Map.of("message", "Lỗi thêm khóa học vào giỏ: " + ex.getMessage()));
         }
-
-        CartItem cartItem = new CartItem();
-        cartItem.setCartId(cart.getId());
-        cartItem.setCourseId(courseId);
-        cartItem.setAddedAt(LocalDateTime.now());
-        
-        cartItemRepository.save(cartItem);
-        
-        cart.setUpdatedAt(LocalDateTime.now());
-        cartRepository.save(cart);
-
-        Map<String, String> res = new HashMap<>();
-        res.put("message", "Course added to cart successfully.");
-        return ResponseEntity.ok(res);
     }
 
-    @DeleteMapping("/remove/{courseId}")
-    public ResponseEntity<?> removeFromCart(@PathVariable Integer courseId) {
+    @DeleteMapping({"/remove/{id}", "/items/{id}", "/courses/{id}"})
+    public ResponseEntity<?> removeFromCart(@PathVariable Integer id) {
         Integer userId = getCurrentUserId();
-        if (userId == null) return ResponseEntity.status(401).build();
-
-        Cart cart = getOrCreateCart(userId);
-        CartItem item = cart.getCartItems().stream()
-                .filter(ci -> ci.getCourseId().equals(courseId))
-                .findFirst()
-                .orElse(null);
-
-        if (item != null) {
-            cartItemRepository.delete(item);
-            cart.setUpdatedAt(LocalDateTime.now());
-            cartRepository.save(cart);
+        if (userId == null) {
+            return ResponseEntity.status(401).body(Map.of("message", "Yêu cầu đăng nhập"));
         }
 
-        Map<String, String> res = new HashMap<>();
-        res.put("message", "Course removed from cart.");
-        return ResponseEntity.ok(res);
+        try {
+            Map<String, String> res = cartService.removeFromCart(userId, id);
+            return ResponseEntity.ok(res);
+        } catch (Exception ex) {
+            return ResponseEntity.internalServerError().body(Map.of("message", "Lỗi xóa khóa học khỏi giỏ: " + ex.getMessage()));
+        }
     }
 }

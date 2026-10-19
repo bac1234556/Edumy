@@ -21,7 +21,7 @@ import './Navbar.css';
 
 const Navbar = () => {
   const { user, logout } = useContext(AuthContext);
-  const { cartCount } = useContext(CartContext);
+  const { cartCount, clearCartState } = useContext(CartContext);
   const [searchTerm, setSearchTerm] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -48,6 +48,10 @@ const Navbar = () => {
 
   const handleLogout = () => {
     setIsDropdownOpen(false);
+    setMobileMenuOpen(false);
+    if (clearCartState) {
+      clearCartState();
+    }
     logout();
     navigate('/');
   };

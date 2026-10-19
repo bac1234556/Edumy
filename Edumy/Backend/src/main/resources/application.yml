@@ -44,9 +44,9 @@ stripe:
 
 payment:
   vietqr:
-    bank-id: ${VIETQR_BANK_ID:LPB}
-    bank-name: ${VIETQR_BANK_NAME:LPBank (Ngân hàng Bưu điện Liên Việt)}
-    account-no: ${VIETQR_ACCOUNT_NO:0398201106}
+    bank-id: ${VIETQR_BANK_ID:BIDV}
+    bank-name: ${VIETQR_BANK_NAME:BIDV (Ngân hàng TMCP Đầu tư và Phát triển Việt Nam)}
+    account-no: ${VIETQR_ACCOUNT_NO:96247BAC206}
     account-name: ${VIETQR_ACCOUNT_NAME:LE VIET BAC}
     template: ${VIETQR_TEMPLATE:compact2}
   webhook:

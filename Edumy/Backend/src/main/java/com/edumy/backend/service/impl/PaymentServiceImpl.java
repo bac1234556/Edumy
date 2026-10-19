@@ -207,9 +207,20 @@ public class PaymentServiceImpl implements PaymentService {
             }
         }
 
-        // 2. Trích xuất Order ID và số tiền thực nhận
+        // 2. Kiểm tra loại giao dịch: bỏ qua tiền ra (transferType == "out")
+        if ("out".equalsIgnoreCase(webhookData.getTransferType())) {
+            logger.info("--> [SePay Webhook] Bỏ qua giao dịch tiền ra (transferType = out)");
+            return PaymentWebhookResponseDto.builder()
+                    .rspCode("00")
+                    .message("Bỏ qua giao dịch tiền ra (tiền rút)")
+                    .build();
+        }
+
+        // 3. Trích xuất Order ID và số tiền thực nhận
         Integer orderId = webhookData.getOrderId();
-        BigDecimal receivedAmount = webhookData.getAmountIn() != null ? webhookData.getAmountIn() : webhookData.getAmount();
+        BigDecimal receivedAmount = webhookData.getTransferAmount() != null
+                ? webhookData.getTransferAmount()
+                : (webhookData.getAmountIn() != null ? webhookData.getAmountIn() : webhookData.getAmount());
 
         // Ghép các chuỗi nội dung chuyển khoản để regex tìm kiếm cú pháp "EDUMY <orderId>"
         StringBuilder contentBuilder = new StringBuilder();
@@ -217,6 +228,7 @@ public class PaymentServiceImpl implements PaymentService {
         if (webhookData.getDescription() != null) contentBuilder.append(" ").append(webhookData.getDescription());
         if (webhookData.getContent() != null) contentBuilder.append(" ").append(webhookData.getContent());
         if (webhookData.getBody() != null) contentBuilder.append(" ").append(webhookData.getBody());
+        if (webhookData.getCode() != null) contentBuilder.append(" ").append(webhookData.getCode());
 
         // Hỗ trợ trường hợp webhook Casso
         if (webhookData.getData() != null && !webhookData.getData().isEmpty()) {
@@ -231,6 +243,15 @@ public class PaymentServiceImpl implements PaymentService {
         }
 
         String fullContent = contentBuilder.toString().trim();
+
+        // Xử lý gói tin kiểm thử từ SePay Webhook Tester
+        if (fullContent.toUpperCase().contains("SEPAY TEST") || fullContent.toUpperCase().contains("SEPAYTEST")) {
+            logger.info("--> [SePay Webhook] Nhận diện và phản hồi thành công gói tin kiểm thử SePay: '{}'", fullContent);
+            return PaymentWebhookResponseDto.builder()
+                    .rspCode("00")
+                    .message("SePay test webhook received successfully")
+                    .build();
+        }
 
         if (orderId == null && !fullContent.isEmpty()) {
             java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("(?i)EDUMY[\\s_-]*([0-9]+)");
@@ -254,7 +275,9 @@ public class PaymentServiceImpl implements PaymentService {
         }
 
         String gateway = webhookData.getGateway() != null ? webhookData.getGateway() : "VietQR_SePay";
-        String ref = webhookData.getReferenceNumber() != null ? webhookData.getReferenceNumber() : String.valueOf(webhookData.getId());
+        String ref = webhookData.getReferenceCode() != null
+                ? webhookData.getReferenceCode()
+                : (webhookData.getReferenceNumber() != null ? webhookData.getReferenceNumber() : String.valueOf(webhookData.getId()));
 
         return completeOrderAndEnroll(orderId, receivedAmount, gateway, ref);
     }

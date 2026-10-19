@@ -61,18 +61,18 @@ function PaymentQR() {
         }
       } catch (err) {
         console.error('Failed to load VietQR info:', err);
-        // Fallback dynamic QR generation based on user requirements (LPBank, LE VIET BAC, 0398201106)
+        // Fallback dynamic QR generation based on user requirements (BIDV, LE VIET BAC, 96247BAC206)
         const amt = parseInt(initialAmount || '0');
         const transferContent = `EDUMY ${orderId}`;
-        const fallbackUrl = `https://img.vietqr.io/image/LPB-0398201106-compact2.png?amount=${amt}&addInfo=EDUMY%20${orderId}&accountName=LE%20VIET%20BAC`;
+        const fallbackUrl = `https://img.vietqr.io/image/BIDV-96247BAC206-compact2.png?amount=${amt}&addInfo=EDUMY%20${orderId}&accountName=LE%20VIET%20BAC`;
         
         setQrData({
           orderId: parseInt(orderId),
           amount: amt,
           transferContent: transferContent,
-          bankId: 'LPB',
-          bankName: 'LPBank (Ngân hàng Bưu điện Liên Việt)',
-          accountNo: '0398201106',
+          bankId: 'BIDV',
+          bankName: 'BIDV (Ngân hàng TMCP Đầu tư và Phát triển Việt Nam)',
+          accountNo: '96247BAC206',
           accountName: 'LE VIET BAC',
           qrImageUrl: fallbackUrl,
           status: 'Pending'
@@ -103,25 +103,35 @@ function PaymentQR() {
     return () => clearInterval(countdownTimerRef.current);
   }, [isSuccess]);
 
-  // 3. Polling Mechanism: Check order status every 3 seconds
+  // 3. Polling Mechanism: Check order status every 2 seconds automatically
   useEffect(() => {
-    if (!orderId || isSuccess || timeLeft <= 0) return;
+    if (!orderId || isSuccess) return;
+
+    let isMounted = true;
 
     const checkOrderStatus = async () => {
       try {
         const res = await api.get(`/v1/orders/${orderId}/status`);
-        if (res.data.isPaid || res.data.status === 'PAID' || res.data.status === 'Completed') {
-          handlePaymentSuccess(res.data.firstCourseId);
+        if (!isMounted) return;
+        if (res.data && (res.data.isPaid || res.data.status === 'PAID' || res.data.status === 'Completed')) {
+          handlePaymentSuccess(res.data.firstCourseId || (res.data.courseIds && res.data.courseIds[0]));
         }
       } catch (err) {
         // Silent poll error
       }
     };
 
-    pollingTimerRef.current = setInterval(checkOrderStatus, 3000);
+    // Kiểm tra ngay lập tức khi vào trang
+    checkOrderStatus();
 
-    return () => clearInterval(pollingTimerRef.current);
-  }, [orderId, isSuccess, timeLeft]);
+    // Tự động kiểm tra liên tục mỗi 2 giây
+    const pollInterval = setInterval(checkOrderStatus, 2000);
+
+    return () => {
+      isMounted = false;
+      clearInterval(pollInterval);
+    };
+  }, [orderId, isSuccess]);
 
   // Handle successful payment
   const handlePaymentSuccess = (courseId) => {
@@ -237,7 +247,7 @@ function PaymentQR() {
         <div className="payment-qr-header">
           <div className="payment-brand-box">
             <div className="bank-logo-badge">
-              <span>LPBank</span>
+              <span>{qrData?.bankId || 'VietQR'}</span>
             </div>
             <div className="payment-title-group">
               <h2>
@@ -308,7 +318,7 @@ function PaymentQR() {
                 <div className="payment-info-item">
                   <span className="info-label">Ngân hàng thụ hưởng</span>
                   <div className="info-value-group">
-                    <span className="info-value">LPBank (LienVietPostBank)</span>
+                    <span className="info-value">{qrData?.bankName || qrData?.bankId || 'Ngân hàng thụ hưởng'}</span>
                   </div>
                 </div>
 

@@ -118,6 +118,17 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user_profile');
+    localStorage.removeItem('edumy_token');
+    sessionStorage.clear();
+    try {
+      document.cookie.split(';').forEach((c) => {
+        document.cookie = c
+          .replace(/^ +/, '')
+          .replace(/=.*/, '=;expires=' + new Date().toUTCString() + ';path=/');
+      });
+    } catch (e) {
+      console.warn('Could not clear cookies:', e);
+    }
     setUser(null);
   };
 

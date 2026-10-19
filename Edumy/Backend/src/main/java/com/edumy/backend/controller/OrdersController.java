@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.stream.Collectors;
@@ -67,7 +68,22 @@ public class OrdersController {
             return ResponseEntity.badRequest().body(Map.of("message", "Giỏ hàng của bạn đang trống."));
         }
 
-        // Tính toán số tiền sau khi áp dụng mã giảm giá (hỗ trợ ràng buộc CourseCoupons)
+        // Lấy danh sách khóa học học viên đã sở hữu để loại trừ
+        List<Enrollment> userEnrollments = enrollmentRepository.findByUserId(userId);
+        Set<Integer> activeEnrolledCourseIds = userEnrollments.stream()
+                .filter(e -> e.getStatus() == null || "ACTIVE".equalsIgnoreCase(e.getStatus()) || "Completed".equalsIgnoreCase(e.getStatus()))
+                .map(Enrollment::getCourseId)
+                .collect(Collectors.toSet());
+
+        List<CartItem> payableCartItems = cart.getCartItems().stream()
+                .filter(ci -> !activeEnrolledCourseIds.contains(ci.getCourseId()))
+                .collect(Collectors.toList());
+
+        if (payableCartItems.isEmpty()) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Tất cả khóa học trong giỏ hàng của bạn đã được thanh toán thành công."));
+        }
+
+        // Tính toán số tiền sau khi áp dụng mã giảm giá (chỉ áp dụng cho các khóa học chưa thanh toán)
         BigDecimal totalAmount = BigDecimal.ZERO;
         Coupon appliedCoupon = null;
 
@@ -78,7 +94,7 @@ public class OrdersController {
             }
         }
 
-        for (CartItem ci : cart.getCartItems()) {
+        for (CartItem ci : payableCartItems) {
             BigDecimal itemPrice = (ci.getCourse() != null && ci.getCourse().getPrice() != null)
                     ? ci.getCourse().getPrice()
                     : BigDecimal.ZERO;
@@ -106,7 +122,7 @@ public class OrdersController {
         order.setTotalAmount(totalAmount);
         order.setCreatedAt(LocalDateTime.now());
 
-        List<OrderItem> items = cart.getCartItems().stream().map(ci -> {
+        List<OrderItem> items = payableCartItems.stream().map(ci -> {
             OrderItem oi = new OrderItem();
             oi.setCourseId(ci.getCourseId());
             oi.setPrice(ci.getCourse() != null && ci.getCourse().getPrice() != null ? ci.getCourse().getPrice() : BigDecimal.ZERO);

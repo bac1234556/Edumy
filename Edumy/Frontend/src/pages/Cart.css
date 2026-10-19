@@ -250,8 +250,31 @@
   color: var(--student-primary);
 }
 
+.btn-item-action:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 .btn-item-action.remove-btn:hover {
   color: var(--color-danger);
+}
+
+.cart-remove-spinner {
+  display: inline-block;
+  width: 13px;
+  height: 13px;
+  border: 2px solid #ef4444;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: cart-spin 0.6s linear infinite;
+  margin-right: 2px;
+}
+
+@keyframes cart-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Price Box */
@@ -516,7 +539,192 @@
 }
 
 /* --------------------------------------------------------------------------
-   6. RESPONSIVE BREAKPOINTS
+   6. ENROLLED ITEMS & ALL-PAID BANNER STYLES
+   -------------------------------------------------------------------------- */
+.badge-enrolled {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: #ecfdf5;
+  color: #10b981;
+  border: 1px solid #a7f3d0;
+  padding: 0.35rem 0.8rem;
+  border-radius: 9999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  box-shadow: 0 1px 3px rgba(16, 185, 129, 0.08);
+}
+
+.is-enrolled-card {
+  background: #fafdfb !important;
+  border-color: #a7f3d0 !important;
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.06) !important;
+}
+
+.enrolled-items-badge-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #10b981;
+  background: #ecfdf5;
+  padding: 0.25rem 0.65rem;
+  border-radius: 9999px;
+  border: 1px solid #a7f3d0;
+}
+
+.btn-enter-learn {
+  background: #ecfdf5 !important;
+  color: #059669 !important;
+  border: 1.5px solid #a7f3d0 !important;
+  font-weight: 700 !important;
+  padding: 0.45rem 1rem !important;
+  border-radius: 8px !important;
+  text-decoration: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.45rem !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.btn-enter-learn:hover {
+  background: #10b981 !important;
+  color: #ffffff !important;
+  border-color: #10b981 !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.25);
+}
+
+.enrolled-price-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.2rem;
+}
+
+.enrolled-status-pill {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #059669;
+  background: #d1fae5;
+  padding: 0.2rem 0.55rem;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.item-price-strikethrough {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #94a3b8;
+  text-decoration: line-through;
+}
+
+/* Banner: Khi tất cả khóa học đều đã thanh toán */
+.all-paid-success-banner {
+  background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 100%);
+  border: 1.5px solid #a7f3d0;
+  border-radius: var(--radius-card);
+  padding: 1.75rem 2rem;
+  margin-bottom: 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  box-shadow: 0 4px 20px rgba(16, 185, 129, 0.08);
+  animation: fadeInDown 0.4s ease-out;
+}
+
+.all-paid-banner-content {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  max-width: 720px;
+}
+
+.all-paid-banner-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  background: #10b981;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+}
+
+.all-paid-banner-title {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #065f46;
+  margin: 0 0 0.35rem 0;
+}
+
+.all-paid-banner-desc {
+  font-size: 0.925rem;
+  color: #047857;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.btn-all-paid-goto {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #10b981;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.95rem;
+  padding: 0.85rem 1.75rem;
+  border-radius: 10px;
+  text-decoration: none;
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.28);
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn-all-paid-goto:hover {
+  background: #059669;
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.35);
+}
+
+.all-paid-layout {
+  display: block;
+}
+
+.all-paid-full-width {
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+/* Thông báo loại trừ khóa học đã sở hữu trong Order Summary */
+.enrolled-exclusion-alert {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #166534;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-size: 0.825rem;
+  line-height: 1.45;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.enrolled-exclusion-alert strong {
+  color: #15803d;
+}
+
+/* --------------------------------------------------------------------------
+   7. RESPONSIVE BREAKPOINTS
    -------------------------------------------------------------------------- */
 @media (max-width: 992px) {
   .cart-layout-grid {
@@ -541,5 +749,19 @@
     padding-left: 0;
     border-top: 1px dashed var(--student-border);
     padding-top: 0.75rem;
+  }
+  .enrolled-price-stack {
+    align-items: flex-start;
+  }
+  .all-paid-success-banner {
+    padding: 1.25rem;
+  }
+  .all-paid-banner-content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .btn-all-paid-goto {
+    width: 100%;
+    justify-content: center;
   }
 }

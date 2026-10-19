@@ -196,13 +196,13 @@ function CoursePlayer() {
     }
   };
 
-  // Toggle Complete / Incomplete Lesson with Instant Optimistic UI Update
+  // Toggle Complete / Incomplete Lesson with Instant Optimistic UI Update & Auto-advance
   const handleToggleComplete = async () => {
     if (!activeLesson || activeLesson.isQuiz) return;
     const lessonId = activeLesson.lessonId;
     const isAlreadyCompleted = completedLessons.includes(lessonId);
 
-    // 1. Optimistic state updates (instant number jump)
+    // 1. Optimistic state updates (instant color change to green and number jump)
     const nextCompleted = isAlreadyCompleted
       ? completedLessons.filter(item => item !== lessonId)
       : [...completedLessons, lessonId];
@@ -217,6 +217,12 @@ function CoursePlayer() {
     try {
       if (!isAlreadyCompleted) {
         await api.post(`/courses/${id}/lessons/${lessonId}/complete`);
+        // Tự động nhảy sang bài học tiếp theo nếu còn bài
+        if (hasNext) {
+          setTimeout(() => {
+            handleNextLesson();
+          }, 450);
+        }
       }
       fetchProgress();
     } catch (err) {

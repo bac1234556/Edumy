@@ -111,9 +111,6 @@ public class PaymentController {
         if ("97".equals(result.getRspCode())) {
             return ResponseEntity.status(401).body(result);
         }
-        if ("01".equals(result.getRspCode()) || "04".equals(result.getRspCode())) {
-            return ResponseEntity.badRequest().body(result);
-        }
 
         // SePay và Casso quy định phản hồi HTTP 200 { success: true }
         Map<String, Object> response = new HashMap<>();

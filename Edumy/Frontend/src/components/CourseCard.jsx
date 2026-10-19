@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Star, Clock, BookOpen } from 'lucide-react';
+import { Star, Clock, BookOpen, PlayCircle, CheckCircle } from 'lucide-react';
 import './CourseCard.css';
 
 const BACKEND_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api').replace('/api', '');
@@ -9,6 +9,7 @@ const CourseCard = ({ course }) => {
   if (!course) return null;
 
   const courseId = course.courseId || course.id || 1;
+  const isEnrolled = !!(course.isEnrolled || course.isPaid || course.enrolled);
   const ratingScore = Number(course.averageRating || course.rating || 4.8).toFixed(1);
   const reviewCount = course.reviews?.length || course.reviews || course.reviewCount || 124;
   const studentCount = course.studentCount || course.students || 1420;
@@ -44,6 +45,13 @@ const CourseCard = ({ course }) => {
         {(course.bestseller || course.isBestseller || studentCount > 500) && (
           <div className="card-badge-overlay">
             <span className="badge-bestseller">Bán chạy nhất</span>
+          </div>
+        )}
+        {isEnrolled && (
+          <div className="card-badge-overlay" style={{ left: '0.75rem', right: 'auto' }}>
+            <span className="badge-bestseller" style={{ background: '#10b981' }}>
+              ✓ Đã mua
+            </span>
           </div>
         )}
       </div>
@@ -92,20 +100,51 @@ const CourseCard = ({ course }) => {
 
         {/* Pricing Area */}
         <div className="card-price-row">
-          <span className="price-main">
-            {price === 0 ? "Miễn phí" : `₫${Number(price).toLocaleString('vi-VN')}`}
-          </span>
+          {isEnrolled ? (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+              <span className="badge-enrolled-tag" style={{ color: '#10b981', fontWeight: 700, fontSize: '0.85rem' }}>
+                Đã sở hữu
+              </span>
+              <span
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  window.location.href = `/my-courses/${courseId}/learn`;
+                }}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.3rem',
+                  backgroundColor: '#10b981',
+                  color: '#ffffff',
+                  fontWeight: 600,
+                  fontSize: '0.8rem',
+                  padding: '0.35rem 0.75rem',
+                  borderRadius: '6px',
+                  cursor: 'pointer'
+                }}
+              >
+                <PlayCircle size={14} /> Vào học ngay
+              </span>
+            </div>
+          ) : (
+            <>
+              <span className="price-main">
+                {price === 0 ? "Miễn phí" : `₫${Number(price).toLocaleString('vi-VN')}`}
+              </span>
 
-          {originalPrice && price > 0 && (
-            <span className="price-strikethrough">
-              ₫{Number(originalPrice).toLocaleString('vi-VN')}
-            </span>
-          )}
+              {originalPrice && price > 0 && (
+                <span className="price-strikethrough">
+                  ₫{Number(originalPrice).toLocaleString('vi-VN')}
+                </span>
+              )}
 
-          {discountPercent && (
-            <span className="badge-discount-percent">
-              -{discountPercent}%
-            </span>
+              {discountPercent && (
+                <span className="badge-discount-percent">
+                  -{discountPercent}%
+                </span>
+              )}
+            </>
           )}
         </div>
       </div>

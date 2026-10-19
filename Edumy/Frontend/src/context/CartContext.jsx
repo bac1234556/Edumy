@@ -44,30 +44,59 @@ export const CartProvider = ({ children }) => {
     return res.data;
   };
 
-  const removeFromCart = async (courseId) => {
-    // Optimistic local update so UI immediately transitions
+  const removeFromCart = async (courseId, itemId) => {
+    // Optimistic local update so UI immediately transitions smoothly
     if (cart && cart.items) {
-      const updatedItems = cart.items.filter(item => item.courseId !== courseId);
+      const updatedItems = cart.items.filter(item => {
+        if (itemId && item.id === itemId) return false;
+        if (courseId && item.courseId === courseId) return false;
+        return true;
+      });
       const updatedCount = updatedItems.length;
-      const updatedTotal = updatedItems.reduce((acc, item) => acc + (item.price || 0), 0);
+      const updatedTotal = updatedItems.reduce((acc, item) => acc + (item.course?.price || item.price || 0), 0);
+      const payableItems = updatedItems.filter(item => !item.isEnrolled && !item.isPaid);
+      const payableTotal = payableItems.reduce((acc, item) => acc + (item.course?.price || item.price || 0), 0);
+      const allPaid = updatedItems.length > 0 && payableItems.length === 0;
+
       setCart({
         ...cart,
         items: updatedItems,
         totalItems: updatedCount,
-        totalPrice: updatedTotal
+        totalPrice: updatedTotal,
+        totalAmount: updatedTotal,
+        payableTotal: payableTotal,
+        payableItemsCount: payableItems.length,
+        allPaid: allPaid
       });
       setCartCount(updatedCount);
     }
 
     try {
-      const res = await api.delete(`/cart/remove/${courseId}`);
+      // Prioritize deleting by cartItemId if available, otherwise courseId
+      const targetEndpoint = itemId ? `/cart/items/${itemId}` : `/cart/remove/${courseId}`;
+      const res = await api.delete(targetEndpoint);
       await fetchCart();
       return res.data;
     } catch (err) {
+      // Fallback try by courseId if itemId failed
+      if (itemId && courseId) {
+        try {
+          const fallbackRes = await api.delete(`/cart/remove/${courseId}`);
+          await fetchCart();
+          return fallbackRes.data;
+        } catch (fallbackErr) {
+          await fetchCart();
+          throw fallbackErr;
+        }
+      }
       // Revert if API failed
-      fetchCart();
+      await fetchCart();
       throw err;
     }
+  };
+
+  const updateCartCount = (count) => {
+    setCartCount(count);
   };
 
   const clearCartState = () => {
@@ -80,6 +109,8 @@ export const CartProvider = ({ children }) => {
       value={{
         cart,
         cartCount,
+        setCartCount,
+        updateCartCount,
         loadingCart,
         fetchCart,
         addToCart,

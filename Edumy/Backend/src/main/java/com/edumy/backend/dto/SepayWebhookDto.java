@@ -29,6 +29,11 @@ public class SepayWebhookDto {
     private String referenceNumber;
     private String body;
 
+    // SePay official payload fields
+    private String transferType;
+    private BigDecimal transferAmount;
+    private String referenceCode;
+
     // Casso standard structure support
     private Integer error;
     private List<CassoTransactionDto> data;
