@@ -36,6 +36,12 @@ public class User {
     @Column(name = "IsActive", nullable = false)
     private boolean active = true;
 
+    @Column(name = "AvatarUrl")
+    private String avatarUrl;
+
+    @Column(name = "Bio", length = 1000)
+    private String bio;
+
     @Column(name = "CreatedAt", nullable = false)
     private Instant createdAt = Instant.now();
 
@@ -79,6 +85,26 @@ public class User {
 
     public boolean isActive() {
         return active;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
+    public String getBio() {
+        return bio;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public void setBio(String bio) {
+        this.bio = bio;
     }
 
     public String getResetToken() {
