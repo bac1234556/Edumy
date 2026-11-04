@@ -1,8 +1,10 @@
 package com.edumy.backend.dto;
 
 import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 @Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class AnswerDto {
     private Integer answerId;
     private String content = "";

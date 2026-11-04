@@ -1,114 +1,120 @@
 package com.edumy.backend.controller;
 
-import com.edumy.backend.model.*;
-import com.edumy.backend.repository.*;
+import com.edumy.backend.dto.LessonAccessResponseDto;
+import com.edumy.backend.model.Lesson;
+import com.edumy.backend.repository.LessonRepository;
+import com.edumy.backend.service.LessonService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import java.util.*;
-import java.util.stream.Collectors;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
 
 @RestController
-@RequestMapping({"/api/Lessons", "/api/lessons"})
+@RequestMapping({"/api/v1/lessons", "/api/Lessons", "/api/lessons"})
 public class LessonsController {
 
     @Autowired
     private LessonRepository lessonRepository;
 
     @Autowired
-    private CourseSectionRepository courseSectionRepository;
-
-    @Autowired
-    private CourseRepository courseRepository;
-
-    @Autowired
-    private EnrollmentRepository enrollmentRepository;
+    private LessonService lessonService;
 
     private Integer getCurrentUserId() {
         try {
-            return Integer.parseInt(SecurityContextHolder.getContext().getAuthentication().getName());
+            String name = SecurityContextHolder.getContext().getAuthentication().getName();
+            return (name != null && !name.equalsIgnoreCase("anonymousUser")) ? Integer.parseInt(name) : null;
         } catch (Exception e) {
             return null;
         }
     }
 
-    private boolean isUserInRole(String role) {
-        return SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
-                .anyMatch(a -> a.getAuthority().equals("ROLE_" + role));
-    }
-
-    private boolean hasCourseAccess(Integer courseId, Integer instructorId) {
-        Integer userId = getCurrentUserId();
-        if (userId == null) return false;
-        if (isUserInRole("Admin")) return true;
-        if (instructorId != null && instructorId.equals(userId)) return true;
-        return enrollmentRepository.existsByUserIdAndCourseId(userId, courseId);
-    }
-
-    @GetMapping("/section/{sectionId}")
-    public ResponseEntity<?> getSectionLessons(@PathVariable Integer sectionId) {
-        CourseSection section = courseSectionRepository.findById(sectionId).orElse(null);
-        if (section == null) return ResponseEntity.notFound().build();
-
-        Course course = courseRepository.findById(section.getCourseId()).orElse(null);
-        Integer instructorId = course != null ? course.getInstructorId() : null;
-        boolean canAccessFull = hasCourseAccess(section.getCourseId(), instructorId);
-
-        List<Lesson> lessons = lessonRepository.findAll().stream()
-                .filter(l -> sectionId.equals(l.getSectionId()))
-                .sorted(Comparator.comparing(Lesson::getOrderIndex))
-                .map(l -> {
-                    Lesson copy = new Lesson();
-                    copy.setLessonId(l.getLessonId());
-                    copy.setSectionId(l.getSectionId());
-                    copy.setTitle(l.getTitle());
-                    copy.setDuration(l.getDuration());
-                    copy.setOrderIndex(l.getOrderIndex());
-                    copy.setIsPreview(l.getIsPreview());
-                    if (canAccessFull || Boolean.TRUE.equals(l.getIsPreview())) {
-                        copy.setVideoUrl(l.getVideoUrl());
-                    } else {
-                        copy.setVideoUrl(null);
-                    }
-                    return copy;
-                })
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(lessons);
-    }
-
-    @GetMapping("/{id}/play")
-    public ResponseEntity<?> getLessonPlayback(@PathVariable Integer id) {
-        Lesson lesson = lessonRepository.findById(id).orElse(null);
-        if (lesson == null) return ResponseEntity.notFound().build();
-
-        CourseSection section = courseSectionRepository.findById(lesson.getSectionId()).orElse(null);
-        if (section == null) return ResponseEntity.status(404).body(Map.of("message", "Section not found"));
-
-        Course course = courseRepository.findById(section.getCourseId()).orElse(null);
-        Integer instructorId = course != null ? course.getInstructorId() : null;
-        boolean canAccess = hasCourseAccess(section.getCourseId(), instructorId);
-
-        if (!canAccess && !Boolean.TRUE.equals(lesson.getIsPreview())) {
-            return ResponseEntity.status(403).body(Map.of(
-                "message", "Bạn cần đăng ký khóa học để xem nội dung bài giảng này.",
-                "isEnrolled", false,
-                "isPreview", false
+    /**
+     * API lấy chi tiết bài học chống IDOR:
+     * GET /api/v1/lessons/{id}
+     * GET /api/lessons/{id}
+     */
+    @GetMapping({"/{id}", "/detail/{id}"})
+    public ResponseEntity<?> getLessonDetail(@PathVariable("id") Integer id) {
+        try {
+            Integer userId = getCurrentUserId();
+            LessonAccessResponseDto accessDto = lessonService.getLessonAccess(id, userId);
+            return ResponseEntity.ok(accessDto);
+        } catch (NoSuchElementException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of(
+                    "status", HttpStatus.NOT_FOUND.value(),
+                    "message", ex.getMessage()
+            ));
+        } catch (AccessDeniedException ex) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of(
+                    "status", HttpStatus.FORBIDDEN.value(),
+                    "error", "Forbidden",
+                    "message", "Bạn chưa đăng ký khóa học này nên không thể xem bài học!"
+            ));
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
+                    "status", HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                    "error", "Internal Server Error",
+                    "message", ex.getMessage()
             ));
         }
+    }
 
-        Map<String, Object> response = new HashMap<>();
-        response.put("lessonId", lesson.getLessonId());
-        response.put("sectionId", lesson.getSectionId());
-        response.put("courseId", section.getCourseId());
-        response.put("title", lesson.getTitle());
-        response.put("videoUrl", lesson.getVideoUrl());
-        response.put("duration", lesson.getDuration());
-        response.put("isPreview", lesson.getIsPreview());
-        response.put("authorized", true);
+    /**
+     * API stream video bài học chống IDOR:
+     * GET /api/v1/lessons/{id}/stream
+     * GET /api/lessons/{id}/play
+     * GET /api/v1/lessons/{id}/play
+     */
+    @GetMapping({"/{id}/stream", "/{id}/play", "/{id}/access"})
+    public ResponseEntity<?> streamLesson(@PathVariable("id") Integer id) {
+        try {
+            Integer userId = getCurrentUserId();
+            LessonAccessResponseDto accessDto = lessonService.getLessonAccess(id, userId);
+            return ResponseEntity.ok(accessDto);
+        } catch (NoSuchElementException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of(
+                    "status", HttpStatus.NOT_FOUND.value(),
+                    "message", ex.getMessage(),
+                    "canPlay", false
+            ));
+        } catch (AccessDeniedException ex) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of(
+                    "status", HttpStatus.FORBIDDEN.value(),
+                    "error", "Forbidden",
+                    "message", "Bạn chưa đăng ký khóa học này nên không thể xem bài học!",
+                    "canPlay", false,
+                    "isPreview", false
+            ));
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
+                    "status", HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                    "error", "Internal Server Error",
+                    "message", ex.getMessage(),
+                    "canPlay", false
+            ));
+        }
+    }
 
-        return ResponseEntity.ok(response);
+    /**
+     * Lấy danh sách bài học theo section, chỉ kèm videoUrl nếu học viên đã đăng ký hoặc bài xem thử
+     */
+    @GetMapping("/section/{sectionId}")
+    public ResponseEntity<?> getSectionLessons(@PathVariable Integer sectionId) {
+        try {
+            Integer userId = getCurrentUserId();
+            List<Lesson> lessons = lessonService.getSectionLessons(sectionId, userId);
+            return ResponseEntity.ok(lessons);
+        } catch (NoSuchElementException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", ex.getMessage()));
+        }
     }
 
     @PostMapping

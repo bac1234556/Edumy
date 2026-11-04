@@ -74,6 +74,12 @@ public class CoursesController {
     private CertificateRepository certificateRepository;
     
     @Autowired
+    private QuizRepository quizRepository;
+
+    @Autowired
+    private QuizAttemptRepository quizAttemptRepository;
+
+    @Autowired
     private ReviewRepository reviewRepository;
     
     @Autowired
@@ -214,12 +220,33 @@ public class CoursesController {
 
         List<Map<String, Object>> result = enrollments.stream().map(e -> {
             Map<String, Object> m = new HashMap<>();
-            m.put("courseId", e.getCourseId());
+            String instructorName = (e.getCourse() != null && e.getCourse().getInstructor() != null) ? e.getCourse().getInstructor().getFullName() : "Giảng viên Edumy";
+            Integer courseId = e.getCourseId();
+
+            // Tính tiến độ thực tế chính xác dựa trên bài học đã học
+            long totalLessons = lessonRepository.countLessonsByCourseId(courseId);
+            long completedLessons = lessonProgressRepository.countCompletedLessonsByUserAndCourse(userId, courseId);
+            long totalQuizzes = quizRepository.countQuizzesByCourseId(courseId);
+            List<Integer> quizIds = quizRepository.findQuizIdsByCourseId(courseId);
+            long completedQuizzes = (quizIds != null && !quizIds.isEmpty()) 
+                    ? quizAttemptRepository.countByUserIdAndIsPassedTrueAndQuizIdIn(userId, quizIds) 
+                    : 0;
+
+            long totalItems = totalLessons + totalQuizzes;
+            long completedItems = completedLessons + completedQuizzes;
+            int actualProgress = totalItems > 0 ? (int) Math.min(100, Math.round((double) completedItems / totalItems * 100)) : 0;
+
+            Certificate cert = certificateRepository.findByUserIdAndCourseId(userId, courseId);
+
+            m.put("courseId", courseId);
             m.put("title", e.getCourse() != null ? e.getCourse().getTitle() : null);
             m.put("thumbnailUrl", e.getCourse() != null ? e.getCourse().getThumbnailUrl() : null);
-            m.put("instructorName", (e.getCourse() != null && e.getCourse().getInstructor() != null) ? e.getCourse().getInstructor().getFullName() : null);
+            m.put("instructorName", instructorName);
+            m.put("fullName", instructorName);
+            m.put("instructor", instructorName);
             m.put("enrolledAt", e.getEnrolledAt());
-            m.put("progressPercentage", e.getProgressPercentage());
+            m.put("progressPercentage", actualProgress);
+            m.put("certificateUrl", cert != null ? cert.getCertificateUrl() : null);
             return m;
         }).collect(Collectors.toList());
 
@@ -391,9 +418,9 @@ public class CoursesController {
         Integer userId = getCurrentUserId();
         if (userId == null) return ResponseEntity.status(401).build();
 
-        boolean isEnrolled = enrollmentRepository.existsByUserIdAndCourseIdAndStatus(userId, courseId, "ACTIVE");
+        boolean isEnrolled = enrollmentRepository.isUserEnrolledActive(userId, courseId);
         if (!isEnrolled) {
-            return ResponseEntity.status(403).body(Map.of("message", "Bạn phải có lượt ghi danh ACTIVE để hoàn thành bài học."));
+            return ResponseEntity.status(403).body(Map.of("message", "Bạn phải có lượt ghi danh để hoàn thành bài học."));
         }
 
         boolean alreadyCompleted = lessonProgressRepository.existsByUserIdAndCourseIdAndLessonId(userId, courseId, lessonId);
@@ -406,32 +433,42 @@ public class CoursesController {
             progress.setCompletedAt(LocalDateTime.now());
             lessonProgressRepository.save(progress);
 
-            // Truy vấn COUNT tối ưu qua CSDL thay vì load toàn bộ bảng vào RAM
+            // Tổng số bài học và bài kiểm tra
             long totalLessons = lessonRepository.countLessonsByCourseId(courseId);
             long completedLessons = lessonProgressRepository.countCompletedLessonsByUserAndCourse(userId, courseId);
+            long totalQuizzes = quizRepository.countQuizzesByCourseId(courseId);
+            List<Integer> quizIds = quizRepository.findQuizIdsByCourseId(courseId);
+            long completedQuizzes = (quizIds != null && !quizIds.isEmpty()) 
+                    ? quizAttemptRepository.countByUserIdAndIsPassedTrueAndQuizIdIn(userId, quizIds) 
+                    : 0;
 
-            int progressPercentage = (totalLessons > 0)
-                    ? (int) Math.min(100, Math.round((double) completedLessons / totalLessons * 100))
+            long totalItems = totalLessons + totalQuizzes;
+            long completedItems = completedLessons + completedQuizzes;
+            int progressPercentage = (totalItems > 0)
+                    ? (int) Math.min(100, Math.round((double) completedItems / totalItems * 100))
                     : 100;
 
             Enrollment enrollment = enrollmentRepository.findByUserIdAndCourseId(userId, courseId);
             if (enrollment != null) {
                 enrollment.setProgressPercentage(progressPercentage);
-                if (progressPercentage >= 100 && enrollment.getCompletedAt() == null) {
-                    enrollment.setCompletedAt(LocalDateTime.now());
+                if (progressPercentage >= 100) {
+                    enrollment.setStatus("COMPLETED");
+                    if (enrollment.getCompletedAt() == null) {
+                        enrollment.setCompletedAt(LocalDateTime.now());
+                    }
                 }
                 enrollmentRepository.save(enrollment);
             }
 
-            // Tự động sinh Certificate khi hoàn thành toàn bộ bài học
-            if (totalLessons > 0 && completedLessons >= totalLessons) {
+            // Chỉ cấp chứng chỉ khi HOÀN THÀNH 100% TẤT CẢ BÀI HỌC VÀ BÀI KIỂM TRA
+            if (totalItems > 0 && completedItems >= totalItems) {
                 boolean hasCert = certificateRepository.existsByUserIdAndCourseId(userId, courseId);
                 if (!hasCert) {
                     Certificate cert = new Certificate();
                     cert.setUserId(userId);
                     cert.setCourseId(courseId);
                     cert.setIssuedAt(LocalDateTime.now());
-                    cert.setCertificateUrl(UUID.randomUUID().toString().replace("-", ""));
+                    cert.setCertificateUrl("EDUMY-" + UUID.randomUUID().toString().replace("-", "").substring(0, 10).toUpperCase());
                     certificateRepository.save(cert);
                 }
             }
@@ -449,15 +486,36 @@ public class CoursesController {
         long totalLessons = lessonRepository.countLessonsByCourseId(courseId);
         List<LessonProgress> progresses = lessonProgressRepository.findByUserIdAndCourseId(userId, courseId);
         List<Integer> completedLessonIds = progresses.stream().map(LessonProgress::getLessonId).collect(Collectors.toList());
+        long completedLessons = completedLessonIds.size();
 
-        double percentage = totalLessons > 0 ? (double) completedLessonIds.size() / totalLessons * 100 : 0;
+        long totalQuizzes = quizRepository.countQuizzesByCourseId(courseId);
+        List<Integer> quizIds = quizRepository.findQuizIdsByCourseId(courseId);
+        List<Integer> completedQuizIds = (quizIds != null && !quizIds.isEmpty())
+                ? quizAttemptRepository.findPassedQuizIdsByUserAndQuizIds(userId, quizIds)
+                : Collections.emptyList();
+        long completedQuizzes = completedQuizIds.size();
 
-        Certificate cert = certificateRepository.findByUserIdAndCourseId(userId, courseId);
+        long totalItems = totalLessons + totalQuizzes;
+        long completedItems = completedLessons + completedQuizzes;
+
+        double percentage = totalItems > 0 ? (double) completedItems / totalItems * 100 : 0;
+        int roundedPercentage = (int) Math.min(100, Math.round(percentage));
+
+        // Chỉ trả về chứng chỉ nếu đạt đúng 100%
+        Certificate cert = null;
+        if (roundedPercentage >= 100) {
+            cert = certificateRepository.findByUserIdAndCourseId(userId, courseId);
+        }
 
         Map<String, Object> res = new HashMap<>();
         res.put("completedLessonIds", completedLessonIds);
+        res.put("completedQuizIds", completedQuizIds);
         res.put("totalLessons", totalLessons);
-        res.put("progressPercentage", Math.round(percentage * 100.0) / 100.0);
+        res.put("totalQuizzes", totalQuizzes);
+        res.put("completedQuizzes", completedQuizzes);
+        res.put("totalItems", totalItems);
+        res.put("completedItems", completedItems);
+        res.put("progressPercentage", roundedPercentage);
         res.put("certificateId", cert != null ? cert.getId() : null);
         res.put("certificateUrl", cert != null ? cert.getCertificateUrl() : null);
 

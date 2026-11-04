@@ -74,6 +74,9 @@ public class PaymentServiceImpl implements PaymentService {
     private CourseRepository courseRepository;
 
     @Autowired
+    private OrderItemRepository orderItemRepository;
+
+    @Autowired
     private UserActivityService userActivityService;
 
     // =========================================================================
@@ -119,8 +122,12 @@ public class PaymentServiceImpl implements PaymentService {
         );
 
         Integer firstCourseId = null;
-        if (order.getOrderItems() != null && !order.getOrderItems().isEmpty()) {
-            firstCourseId = order.getOrderItems().get(0).getCourseId();
+        List<OrderItem> items = order.getOrderItems();
+        if (items == null || items.isEmpty()) {
+            items = orderItemRepository.findByOrderId(order.getOrderId());
+        }
+        if (items != null && !items.isEmpty()) {
+            firstCourseId = items.get(0).getCourseId();
         }
 
         return VietQrGenerateResponseDto.builder()
@@ -153,8 +160,12 @@ public class PaymentServiceImpl implements PaymentService {
 
         List<Integer> courseIds = new ArrayList<>();
         Integer firstCourseId = null;
-        if (order.getOrderItems() != null && !order.getOrderItems().isEmpty()) {
-            for (OrderItem oi : order.getOrderItems()) {
+        List<OrderItem> items = order.getOrderItems();
+        if (items == null || items.isEmpty()) {
+            items = orderItemRepository.findByOrderId(order.getOrderId());
+        }
+        if (items != null && !items.isEmpty()) {
+            for (OrderItem oi : items) {
                 if (oi.getCourseId() != null) {
                     courseIds.add(oi.getCourseId());
                 }
@@ -329,9 +340,14 @@ public class PaymentServiceImpl implements PaymentService {
         orderRepository.save(order);
         Integer orderUserId = order.getUserId();
 
+        List<OrderItem> items = order.getOrderItems();
+        if (items == null || items.isEmpty()) {
+            items = orderItemRepository.findByOrderId(order.getOrderId());
+        }
+
         // 2. Tự động ghi danh (Enrollments) với trạng thái ACTIVE và tăng studentCount
-        if (order.getOrderItems() != null && !order.getOrderItems().isEmpty()) {
-            for (OrderItem item : order.getOrderItems()) {
+        if (items != null && !items.isEmpty()) {
+            for (OrderItem item : items) {
                 Integer courseId = item.getCourseId();
                 if (courseId == null) continue;
 
@@ -365,8 +381,8 @@ public class PaymentServiceImpl implements PaymentService {
 
         // 3. Dọn dẹp DUY NHẤT các món hàng vừa được thanh toán thành công trong Cart của học viên (nếu có)
         Cart cart = cartRepository.findByUserId(orderUserId);
-        if (cart != null && order.getOrderItems() != null) {
-            Set<Integer> paidCourseIds = order.getOrderItems().stream()
+        if (cart != null && items != null) {
+            Set<Integer> paidCourseIds = items.stream()
                     .map(OrderItem::getCourseId)
                     .filter(Objects::nonNull)
                     .collect(Collectors.toSet());

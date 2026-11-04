@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import api from '../api/axiosConfig';
 import './AdminDashboard.css';
+import AdminCategoriesTab from '../components/admin/AdminCategoriesTab';
+import AdminOrdersTab from '../components/admin/AdminOrdersTab';
 
 function AdminDashboard() {
   const [stats, setStats] = useState({ totalUsers: 0, totalCourses: 0, totalRevenue: 0 });
@@ -229,6 +231,28 @@ function AdminDashboard() {
           </li>
           <li className="admin-nav-item">
             <button 
+              className={`admin-nav-btn ${activeTab === 'categories' ? 'active' : ''}`}
+              onClick={() => setActiveTab('categories')}
+            >
+              <span className="admin-nav-label">
+                <i className="bi bi-grid-fill"></i>
+                Quản lý Danh mục
+              </span>
+            </button>
+          </li>
+          <li className="admin-nav-item">
+            <button 
+              className={`admin-nav-btn ${activeTab === 'orders' ? 'active' : ''}`}
+              onClick={() => setActiveTab('orders')}
+            >
+              <span className="admin-nav-label">
+                <i className="bi bi-receipt"></i>
+                Đơn hàng & Doanh thu
+              </span>
+            </button>
+          </li>
+          <li className="admin-nav-item">
+            <button 
               className={`admin-nav-btn ${activeTab === 'users' ? 'active' : ''}`}
               onClick={() => setActiveTab('users')}
             >
@@ -263,6 +287,8 @@ function AdminDashboard() {
           <div>
             <h1 className="admin-title">
               {activeTab === 'courses' && 'Kiểm duyệt & Quản lý Khóa học'}
+              {activeTab === 'categories' && 'Quản trị Danh mục Khóa học'}
+              {activeTab === 'orders' && 'Tra cứu Đơn hàng & Quản lý Doanh thu'}
               {activeTab === 'users' && 'Danh bạ & Phân quyền Người dùng'}
               {activeTab === 'ml' && 'Hệ thống Giám sát & An toàn AI/ML'}
             </h1>
@@ -805,6 +831,16 @@ function AdminDashboard() {
               </div>
             </div>
           </div>
+        )}
+
+        {/* TAB: QUẢN LÝ DANH MỤC */}
+        {activeTab === 'categories' && (
+          <AdminCategoriesTab showNotification={showNotification} />
+        )}
+
+        {/* TAB: QUẢN LÝ ĐƠN HÀNG & DOANH THU */}
+        {activeTab === 'orders' && (
+          <AdminOrdersTab showNotification={showNotification} />
         )}
       </main>
 

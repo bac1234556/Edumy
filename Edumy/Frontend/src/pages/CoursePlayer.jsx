@@ -32,6 +32,7 @@ import {
 } from 'lucide-react';
 import QuizTaker from '../components/QuizTaker';
 import QuizResults from '../components/QuizResults';
+import confetti from 'canvas-confetti';
 import './CoursePlayer.css';
 
 const BACKEND_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api').replace('/api', '');
@@ -52,9 +53,11 @@ function CoursePlayer() {
   
   // Progress States
   const [completedLessons, setCompletedLessons] = useState([]);
+  const [completedQuizzes, setCompletedQuizzes] = useState([]);
   const [progressPercent, setProgressPercent] = useState(0);
   const [certificateUrl, setCertificateUrl] = useState(null);
   const [quizResult, setQuizResult] = useState(null);
+  const [showCongratsModal, setShowCongratsModal] = useState(false);
 
   // UI Interactive States
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -183,13 +186,47 @@ function CoursePlayer() {
     }
   }, [activeLesson]);
 
-  const fetchProgress = async () => {
+  // Kích hoạt pháo hoa hoa giấy và hiển thị Modal chúc mừng
+  const triggerCelebration = (certUrl) => {
+    setShowCongratsModal(true);
+
+    // Bắn pháo hoa rực rỡ
+    const count = 200;
+    const defaults = { origin: { y: 0.7 } };
+
+    function fire(particleRatio, opts) {
+      confetti({
+        ...defaults,
+        ...opts,
+        particleCount: Math.floor(count * particleRatio)
+      });
+    }
+
+    fire(0.25, { spread: 26, startVelocity: 55 });
+    fire(0.2, { spread: 60 });
+    fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
+    fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
+    fire(0.1, { spread: 120, startVelocity: 45 });
+  };
+
+  const fetchProgress = async (isManualAction = false) => {
     try {
       const res = await api.get(`/courses/${id}/progress`);
-      setCompletedLessons(res.data.completedLessonIds || []);
-      setProgressPercent(res.data.progressPercentage || 0);
-      if (res.data.certificateUrl) {
-        setCertificateUrl(res.data.certificateUrl);
+      const newCompletedLessons = res.data.completedLessonIds || [];
+      const newCompletedQuizzes = res.data.completedQuizIds || [];
+      const newPercentage = res.data.progressPercentage || 0;
+      const cert = res.data.certificateUrl || null;
+
+      setCompletedLessons(newCompletedLessons);
+      setCompletedQuizzes(newCompletedQuizzes);
+      setProgressPercent(newPercentage);
+      if (cert) {
+        setCertificateUrl(cert);
+      }
+
+      // Nếu hoàn thành 100% từ hành động bấm hoàn thành bài hoặc nộp quiz
+      if (newPercentage >= 100 && cert && isManualAction) {
+        triggerCelebration(cert);
       }
     } catch (err) {
       console.warn('Failed to fetch progress:', err);
@@ -210,7 +247,7 @@ function CoursePlayer() {
     setCompletedLessons(nextCompleted);
 
     const totalItems = allPlayableItems.length || 1;
-    const optimisticPercent = Math.min(100, Math.round((nextCompleted.length / totalItems) * 100));
+    const optimisticPercent = Math.min(100, Math.round(((nextCompleted.length + completedQuizzes.length) / totalItems) * 100));
     setProgressPercent(optimisticPercent);
 
     // 2. Synchronize with backend in background
@@ -224,12 +261,12 @@ function CoursePlayer() {
           }, 450);
         }
       }
-      fetchProgress();
+      fetchProgress(true);
     } catch (err) {
       console.error('Failed to toggle completion:', err);
       // Revert on failure
       setCompletedLessons(completedLessons);
-      fetchProgress();
+      fetchProgress(false);
     }
   };
 
@@ -470,7 +507,7 @@ function CoursePlayer() {
         </div>
 
         <div className="topbar-right">
-          {certificateUrl && (
+          {certificateUrl && progressPercent >= 100 && (
             <Link 
               to={`/certificates/${certificateUrl}`} 
               target="_blank" 
@@ -527,7 +564,7 @@ function CoursePlayer() {
                       darkMode={true}
                       onComplete={(result) => {
                         setQuizResult(result);
-                        fetchProgress();
+                        fetchProgress(true);
                       }} 
                     />
                   )}
@@ -780,7 +817,7 @@ function CoursePlayer() {
             <div className="sidebar-title-row">
               <h3>Nội dung khóa học</h3>
               <span className="sidebar-completed-count">
-                {completedLessons.length} / {allPlayableItems.length} hoàn thành
+                {completedLessons.length + completedQuizzes.length} / {allPlayableItems.length} hoàn thành
               </span>
             </div>
 
@@ -875,6 +912,7 @@ function CoursePlayer() {
                       {/* Quizzes nếu có */}
                       {section.quizzes?.map((quiz) => {
                         const isActive = activeLesson?.isQuiz && activeLesson?.quizId === quiz.quizId;
+                        const isDone = completedQuizzes.includes(quiz.quizId);
 
                         return (
                           <div 
@@ -887,7 +925,11 @@ function CoursePlayer() {
                             }}
                           >
                             <div className="lesson-status-icon-box">
-                              <HelpCircle size={18} color={isActive ? "#818cf8" : "#f59e0b"} />
+                              {isDone ? (
+                                <CheckCircle size={18} className="status-icon-completed" />
+                              ) : (
+                                <HelpCircle size={18} color={isActive ? "#818cf8" : "#f59e0b"} />
+                              )}
                             </div>
 
                             <div className="lesson-title-meta-col">
@@ -895,7 +937,9 @@ function CoursePlayer() {
                                 Quiz: {quiz.title}
                               </span>
                               <div className="sidebar-lesson-duration-badge">
-                                <span>Kiểm tra trắc nghiệm</span>
+                                <span style={isDone ? { color: '#10b981', fontWeight: 600 } : {}}>
+                                  {isDone ? 'Đã đạt' : 'Kiểm tra trắc nghiệm'}
+                                </span>
                               </div>
                             </div>
                           </div>
@@ -909,6 +953,45 @@ function CoursePlayer() {
           </div>
         </aside>
       </div>
+
+      {/* Modal Chúc Mừng Hoàn Thành Khóa Học & Nhận Chứng Chỉ */}
+      {showCongratsModal && certificateUrl && (
+        <div className="completion-modal-overlay" onClick={() => setShowCongratsModal(false)}>
+          <div className="completion-modal-card" onClick={(e) => e.stopPropagation()}>
+            <button 
+              className="completion-modal-close" 
+              onClick={() => setShowCongratsModal(false)}
+              title="Đóng"
+            >
+              <X size={18} />
+            </button>
+            <div className="completion-trophy-badge">
+              <Award size={48} color="#f59e0b" />
+            </div>
+            <h2 className="completion-modal-title">Chúc mừng bạn đã hoàn thành khóa học!</h2>
+            <p className="completion-course-title">{course?.title}</p>
+            <p className="completion-modal-desc">
+              Bạn đã xuất sắc hoàn thành 100% tất cả các bài giảng video và vượt qua các bài thi trắc nghiệm. Chứng chỉ tốt nghiệp danh giá của bạn đã sẵn sàng!
+            </p>
+            <div className="completion-modal-actions">
+              <Link 
+                to={`/certificates/${certificateUrl}`} 
+                target="_blank" 
+                className="btn-cert-primary"
+                onClick={() => setShowCongratsModal(false)}
+              >
+                <Award size={18} /> Xem Chứng Chỉ Tốt Nghiệp
+              </Link>
+              <button 
+                className="btn-cert-secondary" 
+                onClick={() => setShowCongratsModal(false)}
+              >
+                Đóng và xem lại bài học
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

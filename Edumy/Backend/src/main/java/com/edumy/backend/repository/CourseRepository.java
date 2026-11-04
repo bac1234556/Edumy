@@ -13,6 +13,7 @@ import java.util.List;
 public interface CourseRepository extends JpaRepository<Course, Integer> {
     List<Course> findByInstructorId(Integer instructorId);
     List<Course> findByCategoryId(Integer categoryId);
+    long countByCategoryId(Integer categoryId);
     Course findBySlug(String slug);
 
     @Query("SELECT c FROM Course c WHERE LOWER(c.status) = 'published' AND LOWER(c.title) LIKE LOWER(CONCAT('%', :keyword, '%')) ORDER BY c.title ASC")

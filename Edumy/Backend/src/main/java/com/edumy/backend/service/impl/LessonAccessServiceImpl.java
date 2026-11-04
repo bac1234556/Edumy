@@ -65,10 +65,10 @@ public class LessonAccessServiceImpl implements LessonAccessService {
 
         // Case 2: Bài học yêu cầu bản quyền - Bắt buộc xác thực danh tính
         if (currentUserId == null) {
-            throw new AccessDeniedException("Yêu cầu đăng nhập để truy cập bài học này.");
+            throw new AccessDeniedException("Bạn chưa đăng ký khóa học này nên không thể xem bài học!");
         }
 
-        // Kiểm tra quyền Admin hoặc Instructor của khóa học
+        // Kiểm tra quyền Admin hoặc Instructor sở hữu khóa học
         User currentUser = userRepository.findById(currentUserId).orElse(null);
         if (currentUser != null && "Admin".equalsIgnoreCase(currentUser.getRole())) {
             return LessonAccessResponseDto.builder()
@@ -98,11 +98,11 @@ public class LessonAccessServiceImpl implements LessonAccessService {
                     .build();
         }
 
-        // Case 3: Kiểm tra bảng Enrollments có bản ghi trạng thái ACTIVE không
-        boolean hasActiveEnrollment = enrollmentRepository.existsByUserIdAndCourseIdAndStatus(currentUserId, courseId, "ACTIVE");
+        // Case 3: Kiểm tra học viên đã đăng ký khóa học này chưa (ACTIVE hoặc COMPLETED)
+        boolean hasActiveEnrollment = enrollmentRepository.isUserEnrolledActive(currentUserId, courseId);
 
         if (!hasActiveEnrollment) {
-            throw new AccessDeniedException("Bạn chưa đăng ký khóa học này hoặc lượt đăng ký chưa được kích hoạt.");
+            throw new AccessDeniedException("Bạn chưa đăng ký khóa học này nên không thể xem bài học!");
         }
 
         return LessonAccessResponseDto.builder()

@@ -953,24 +953,161 @@
 }
 
 /* ==========================================================================
-   RESPONSIVE DESIGN (TABLETS & MOBILES)
+   COURSE COMPLETION CELEBRATION MODAL
    ========================================================================== */
-@media (max-width: 1024px) {
-  .player-workspace-2col {
-    flex-direction: column;
-    height: auto;
-    overflow-y: auto;
+.completion-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(11, 15, 25, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  animation: fadeInModal 0.3s ease-out forwards;
+}
+
+@keyframes fadeInModal {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes zoomInCard {
+  from {
+    opacity: 0;
+    transform: scale(0.85) translateY(20px);
   }
-  .player-left-col {
-    overflow-y: visible;
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
   }
-  .player-sidebar-col {
-    width: 100%;
-    height: 480px;
-    border-left: none;
-    border-top: 1px solid var(--player-border);
-  }
-  .player-sidebar-col.collapsed {
-    height: 0;
-  }
+}
+
+.completion-modal-card {
+  position: relative;
+  background: linear-gradient(145deg, #161e31 0%, #0f172a 100%);
+  border: 1px solid rgba(251, 191, 36, 0.3);
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.7), 0 0 50px rgba(245, 158, 11, 0.15);
+  border-radius: 24px;
+  width: 100%;
+  max-width: 520px;
+  padding: 2.75rem 2.25rem;
+  text-align: center;
+  animation: zoomInCard 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  overflow: hidden;
+}
+
+.completion-modal-close {
+  position: absolute;
+  top: 1.25rem;
+  right: 1.25rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #94a3b8;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.completion-modal-close:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+}
+
+.completion-trophy-badge {
+  width: 88px;
+  height: 88px;
+  margin: 0 auto 1.5rem auto;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.25) 0%, rgba(217, 119, 6, 0.08) 70%);
+  border: 2px solid rgba(251, 191, 36, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 35px rgba(245, 158, 11, 0.35);
+  animation: pulseTrophy 2s infinite alternate ease-in-out;
+}
+
+@keyframes pulseTrophy {
+  from { transform: scale(1); }
+  to { transform: scale(1.08); }
+}
+
+.completion-modal-title {
+  font-size: 1.75rem;
+  font-weight: 800;
+  margin-bottom: 0.75rem;
+  background: linear-gradient(135deg, #fef08a 0%, #f59e0b 50%, #fbbf24 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: -0.02em;
+}
+
+.completion-course-title {
+  color: #f1f5f9;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  line-height: 1.5;
+}
+
+.completion-modal-desc {
+  color: #94a3b8;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+}
+
+.completion-modal-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.btn-cert-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #0f172a;
+  font-weight: 700;
+  font-size: 1rem;
+  padding: 0.85rem 1.75rem;
+  border-radius: 12px;
+  text-decoration: none;
+  box-shadow: 0 10px 25px -5px rgba(245, 158, 11, 0.4);
+  transition: all 0.2s;
+}
+
+.btn-cert-primary:hover {
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  transform: translateY(-2px);
+  box-shadow: 0 15px 30px -5px rgba(245, 158, 11, 0.5);
+  color: #0f172a;
+}
+
+.btn-cert-secondary {
+  background: transparent;
+  color: #cbd5e1;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  font-weight: 600;
+  font-size: 0.92rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-cert-secondary:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.2);
 }

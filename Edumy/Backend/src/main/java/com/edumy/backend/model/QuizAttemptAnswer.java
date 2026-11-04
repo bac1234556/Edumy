@@ -37,6 +37,25 @@ public class QuizAttemptAnswer {
     @Column(name = "AnswerId")
     private Integer answerId;
 
+    @Column(name = "IsCorrect")
+    private Boolean isCorrect;
+
+    public Integer getAttemptId() {
+        return quizAttemptId;
+    }
+
+    public void setAttemptId(Integer attemptId) {
+        this.quizAttemptId = attemptId;
+    }
+
+    public Integer getSelectedAnswerId() {
+        return answerId;
+    }
+
+    public void setSelectedAnswerId(Integer selectedAnswerId) {
+        this.answerId = selectedAnswerId;
+    }
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "AnswerId", insertable = false, updatable = false)
     @com.fasterxml.jackson.annotation.JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "question"})

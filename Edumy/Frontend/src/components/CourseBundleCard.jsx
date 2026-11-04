@@ -10,7 +10,7 @@ const BACKEND_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
 
 const CourseBundleCard = ({ courseId }) => {
   const { addToCart } = useContext(CartContext);
-  const { user } = useContext(AuthContext);
+  const { user, isCourseEnrolled } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const [bundleData, setBundleData] = useState(null);

@@ -29,6 +29,17 @@ public class QuizAttempt {
 
     @Column(name = "CompletedAt")
     private LocalDateTime completedAt;
+
+    @Column(name = "IsPassed")
+    private Boolean isPassed;
+
+    public LocalDateTime getAttemptDate() {
+        return startedAt != null ? startedAt : completedAt;
+    }
+
+    public void setAttemptDate(LocalDateTime attemptDate) {
+        this.startedAt = attemptDate;
+    }
     
     @Column(name = "UserId")
     private Integer userId;

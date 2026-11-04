@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useContext } from 'react';
 import { useSearchParams, useNavigate, Link } from 'react-router-dom';
 import api from '../api/axiosConfig';
 import { CartContext } from '../context/CartContext';
+import { AuthContext } from '../context/AuthContext';
 import { 
   CheckCircle2, 
   Copy, 
@@ -22,6 +23,7 @@ function PaymentQR() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { clearCartState } = useContext(CartContext);
+  const { refreshEnrolledCourses } = useContext(AuthContext);
 
   const orderId = searchParams.get('orderId');
   const initialAmount = searchParams.get('amount');
@@ -141,6 +143,10 @@ function PaymentQR() {
 
     if (clearCartState) {
       clearCartState();
+    }
+
+    if (refreshEnrolledCourses) {
+      refreshEnrolledCourses();
     }
 
     const targetCourse = courseId || firstCourseId;

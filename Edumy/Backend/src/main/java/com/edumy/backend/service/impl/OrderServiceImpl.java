@@ -27,6 +27,7 @@ public class OrderServiceImpl implements OrderService {
     private final EnrollmentRepository enrollmentRepository;
     private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
+    private final OrderItemRepository orderItemRepository;
     private final PaymentService paymentService;
 
     @Override
@@ -92,6 +93,8 @@ public class OrderServiceImpl implements OrderService {
         if (itemPrice.compareTo(BigDecimal.ZERO) <= 0) {
             order.setStatus("PAID");
             Order savedOrder = orderRepository.save(order);
+            orderItem.setOrderId(savedOrder.getOrderId());
+            orderItemRepository.save(orderItem);
 
             // Ghi danh học viên
             Enrollment enrollment = Enrollment.builder()
@@ -124,6 +127,8 @@ public class OrderServiceImpl implements OrderService {
         // 5. Trường hợp khóa học có phí -> Tạo đơn hàng trạng thái Pending và sinh thông tin VietQR
         order.setStatus("Pending");
         Order savedOrder = orderRepository.save(order);
+        orderItem.setOrderId(savedOrder.getOrderId());
+        orderItemRepository.save(orderItem);
 
         String paymentUrl = "/payment?orderId=" + savedOrder.getOrderId() + "&amount=" + itemPrice;
 
@@ -233,6 +238,10 @@ public class OrderServiceImpl implements OrderService {
         if (totalAmount.compareTo(BigDecimal.ZERO) <= 0) {
             order.setStatus("PAID");
             Order savedOrder = orderRepository.save(order);
+            for (OrderItem oi : items) {
+                oi.setOrderId(savedOrder.getOrderId());
+            }
+            orderItemRepository.saveAll(items);
 
             for (CartItem ci : payableCartItems) {
                 Integer courseId = ci.getCourseId();
@@ -272,6 +281,10 @@ public class OrderServiceImpl implements OrderService {
         // Đơn hàng có phí
         order.setStatus("Pending");
         Order savedOrder = orderRepository.save(order);
+        for (OrderItem oi : items) {
+            oi.setOrderId(savedOrder.getOrderId());
+        }
+        orderItemRepository.saveAll(items);
 
         String paymentUrl = "/payment?orderId=" + savedOrder.getOrderId() + "&amount=" + totalAmount;
 
