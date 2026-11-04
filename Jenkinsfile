@@ -201,7 +201,7 @@ pipeline {
                     def composeFile = "${projDir}/docker-compose.yml"
                     
                     if (isUnix()) {
-                        sh "docker compose -f ${composeFile} build || docker-compose -f ${composeFile} build || echo '[CANH BAO] Docker build that bai'"
+                        sh "docker compose -p edumy -f ${composeFile} build || docker-compose -f ${composeFile} build || echo '[CANH BAO] Docker build that bai'"
                     } else {
                         bat """
                             @echo off
@@ -210,7 +210,7 @@ pipeline {
                                 echo [CANH BAO] Docker chua duoc cai dat tren agent Windows nay.
                                 exit /b 0
                             )
-                            docker compose -f ${composeFile} build || docker-compose -f ${composeFile} build
+                            docker compose -p edumy -f ${composeFile} build || docker-compose -f ${composeFile} build
                         """
                     }
                 }
@@ -266,13 +266,14 @@ pipeline {
             steps {
                 script {
                     def projDir = env.PROJECT_DIR ?: (fileExists('Edumy/docker-compose.yml') ? 'Edumy' : '.')
-                    echo "--> Đang khởi chạy hệ thống EduMy bằng Docker Compose..."
+                    echo "--> Dang khoi chay he thong EduMy bang Docker Compose..."
                     def composeFile = "${projDir}/docker-compose.yml"
 
                     if (isUnix()) {
-                        sh "docker compose -f ${composeFile} down || docker-compose -f ${composeFile} down || true"
-                        sh "docker compose -f ${composeFile} up -d || docker-compose -f ${composeFile} up -d"
-                        sh "docker compose -f ${composeFile} ps || docker-compose -f ${composeFile} ps"
+                        sh "docker rm -f edumy_sqlserver edumy_backend edumy_frontend edumy_mlservice || true"
+                        sh "docker compose -p edumy -f ${composeFile} down --remove-orphans || docker-compose -p edumy -f ${composeFile} down || true"
+                        sh "docker compose -p edumy -f ${composeFile} up -d || docker-compose -p edumy -f ${composeFile} up -d"
+                        sh "docker compose -p edumy -f ${composeFile} ps || docker-compose -p edumy -f ${composeFile} ps"
                     } else {
                         bat """
                             @echo off
@@ -281,11 +282,23 @@ pipeline {
                                 echo [CANH BAO] Docker chua duoc cai dat tren agent Windows nay.
                                 exit /b 0
                             )
-                            docker compose -f ${composeFile} down && docker compose -f ${composeFile} up -d && docker compose -f ${composeFile} ps
+                            echo [1/3] Don dep container cu tranh xung dot ten hoac port...
+                            docker rm -f edumy_sqlserver edumy_backend edumy_frontend edumy_mlservice 2>nul || ver > nul
+                            docker compose -p edumy -f ${composeFile} down --remove-orphans 2>nul || ver > nul
+
+                            echo [2/3] Khoi dong he thong bang Docker Compose...
+                            docker compose -p edumy -f ${composeFile} up -d
+                            if %ERRORLEVEL% NEQ 0 (
+                                echo [THU LAI] Thuc hien voi docker-compose...
+                                docker-compose -p edumy -f ${composeFile} up -d
+                            )
+
+                            echo [3/3] Kiem tra trang thai dich vu:
+                            docker compose -p edumy -f ${composeFile} ps
                         """
                     }
 
-                    echo "==> Hoàn tất quy trình triển khai!"
+                    echo "==> Hoan tat quy trinh trien khai!"
                 }
             }
         }
