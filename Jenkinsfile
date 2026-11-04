@@ -250,7 +250,8 @@ pipeline {
                                     echo [INFO] Skip docker push do docker khong tim thay
                                     exit /b 0
                                 )
-                                docker tag ${localImg} ${remoteImg} && docker push ${remoteImg}
+                                docker tag ${localImg} ${remoteImg} 2>nul || ver > nul
+                                docker push ${remoteImg} || echo [CANH BAO] Khong the push ${remoteImg} do chua dang nhap Docker Hub.
                             """
                         }
                     }
