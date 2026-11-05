@@ -105,12 +105,12 @@ function HomePage() {
             <div className="hero-text-content">
               <div className="hero-badge-pill">
                 <Sparkles size={16} className="text-warning" />
-                <span>Nền tảng đào tạo công nghệ hàng đầu 2026</span>
+                <span>Nền tảng đào tạo công nghệ hàng đầu </span>
               </div>
 
               <h1 className="hero-title">
                 Khai mở tiềm năng 2026. <br />
-                <span className="gradient-text">Nâng tầm sự nghiệp.</span>
+                <span className="gradient-text">Nâng tầm sự nghiệp2026.</span>
               </h1>
 
               <p className="hero-subtitle">
