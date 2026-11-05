@@ -74,4 +74,5 @@ jenkin.md
 target/
 *.class
 *.jar
-*.war
+*.war
+workspace.xml
