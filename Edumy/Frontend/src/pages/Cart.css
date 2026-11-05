@@ -1,139 +1,767 @@
-.cart-page {
-  padding: 3rem 0;
-  min-height: 60vh;
+/* ==========================================================================
+   EDUMY SHOPPING CART - STUDENT CLEAN SLATE LIGHT THEME
+   Tokens: Canvas #f8fafc | Cards #ffffff (border #e2e8f0, shadow-card)
+   Primary: #4f46e5 | Accent: #f59e0b | Success: #10b981 | Danger: #ef4444
+   ========================================================================== */
+
+.cart-page-wrapper {
+  background-color: var(--student-bg);
+  color: var(--text-body);
+  min-height: calc(100vh - 72px);
+  padding: 3rem 1.5rem 5rem;
 }
 
-.cart-page h1 {
-  font-size: 2rem;
-  color: #1e293b;
+.cart-container {
+  max-width: 1240px;
+  margin: 0 auto;
+}
+
+.cart-header-row {
   margin-bottom: 2rem;
 }
 
-.empty-cart {
-  text-align: center;
-  padding: 4rem 2rem;
-  background: white;
-  border-radius: 8px;
-  border: 1px solid #e2e8f0;
-}
-
-.empty-cart p {
-  font-size: 1.125rem;
-  color: #475569;
-  margin-bottom: 1.5rem;
-}
-
-.cart-content {
+.cart-page-heading {
+  font-size: 2.15rem;
+  font-weight: 800;
+  color: var(--text-heading);
+  letter-spacing: -0.025em;
+  margin: 0 0 0.5rem 0;
   display: flex;
-  gap: 2rem;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.cart-heading-count {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.cart-breadcrumb-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--student-primary);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.cart-breadcrumb-back:hover {
+  color: var(--student-primary-hover);
+}
+
+/* --------------------------------------------------------------------------
+   1. EMPTY & UNAUTHENTICATED STATES
+   -------------------------------------------------------------------------- */
+.cart-empty-box {
+  background: var(--student-card-bg);
+  border: 1px solid var(--student-border);
+  border-radius: var(--radius-card);
+  padding: 4.5rem 2rem;
+  text-align: center;
+  box-shadow: var(--shadow-card);
+  max-width: 620px;
+  margin: 3rem auto;
+}
+
+.cart-empty-icon-wrap {
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  background: rgba(79, 70, 229, 0.08);
+  color: var(--student-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem auto;
+}
+
+.cart-empty-title {
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: var(--text-heading);
+  margin-bottom: 0.5rem;
+}
+
+.cart-empty-subtitle {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+.btn-continue-shopping {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--student-primary);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.95rem;
+  padding: 0.85rem 1.85rem;
+  border-radius: var(--radius-pill);
+  text-decoration: none;
+  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35);
+  transition: all 0.2s ease;
+}
+
+.btn-continue-shopping:hover {
+  background: var(--student-primary-hover);
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(79, 70, 229, 0.45);
+}
+
+/* --------------------------------------------------------------------------
+   2. MAIN 2-COLUMN LAYOUT
+   -------------------------------------------------------------------------- */
+.cart-layout-grid {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 2.5rem;
   align-items: flex-start;
 }
 
-.cart-items {
-  flex: 3;
-}
-
-.cart-items h3 {
-  font-size: 1.25rem;
-  margin-bottom: 1rem;
-  color: #334155;
-}
-
-.cart-item {
+/* --------------------------------------------------------------------------
+   3. CART ITEMS LIST (LEFT COLUMN)
+   -------------------------------------------------------------------------- */
+.cart-items-column {
   display: flex;
-  padding: 1.5rem 0;
-  border-top: 1px solid #e2e8f0;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.cart-items-meta-header {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--student-border);
+}
+
+.cart-item-card {
+  background: var(--student-card-bg);
+  border: 1px solid var(--student-border);
+  border-radius: var(--radius-card);
+  padding: 1.25rem;
+  display: grid;
+  grid-template-columns: 180px 1fr auto;
   gap: 1.5rem;
+  align-items: center;
+  box-shadow: var(--shadow-card);
+  transition: all 0.2s ease;
 }
 
-.cart-item-img {
-  width: 150px;
-  height: 85px;
+.cart-item-card:hover {
+  border-color: #cbd5e1;
+  box-shadow: var(--shadow-md);
+}
+
+.cart-item-thumbnail-wrap {
+  width: 180px;
+  aspect-ratio: 16 / 9;
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+  background: #e2e8f0;
+}
+
+.cart-item-thumbnail {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  border-radius: 4px;
+  transition: transform 0.3s ease;
 }
 
-.cart-item-info {
-  flex: 1;
+.cart-item-card:hover .cart-item-thumbnail {
+  transform: scale(1.05);
 }
 
-.cart-item-info h4 {
-  margin: 0 0 0.5rem 0;
+.cart-item-details {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
 }
 
-.cart-item-info h4 a {
-  color: #0f172a;
+.cart-item-title-link {
+  font-size: 1.08rem;
+  font-weight: 700;
+  color: var(--text-heading);
   text-decoration: none;
+  line-height: 1.4;
+  margin-bottom: 0.35rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  transition: color 0.15s ease;
 }
 
-.cart-item-info h4 a:hover {
-  color: var(--primary);
+.cart-item-title-link:hover {
+  color: var(--student-primary);
 }
 
-.cart-item-info .instructor {
-  font-size: 0.875rem;
-  color: #64748b;
+.cart-item-instructor {
+  font-size: 0.85rem;
+  color: var(--text-muted);
   margin-bottom: 0.5rem;
 }
 
-.remove-btn {
-  background: none;
+.cart-item-rating-row {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+  margin-bottom: 0.75rem;
+}
+
+.cart-rating-score {
+  font-weight: 800;
+  color: var(--student-accent);
+}
+
+.cart-item-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: auto;
+}
+
+.btn-item-action {
+  background: transparent;
   border: none;
-  color: #ef4444;
-  font-size: 0.875rem;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-weight: 600;
   cursor: pointer;
   padding: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  transition: color 0.15s ease;
 }
 
-.remove-btn:hover {
-  text-decoration: underline;
+.btn-item-action:hover {
+  color: var(--student-primary);
 }
 
-.cart-item-price {
+.btn-item-action:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.btn-item-action.remove-btn:hover {
+  color: var(--color-danger);
+}
+
+.cart-remove-spinner {
+  display: inline-block;
+  width: 13px;
+  height: 13px;
+  border: 2px solid #ef4444;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: cart-spin 0.6s linear infinite;
+  margin-right: 2px;
+}
+
+@keyframes cart-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Price Box */
+.cart-item-price-box {
   text-align: right;
-  min-width: 100px;
+  padding-left: 1rem;
 }
 
-.cart-item-price .price {
-  font-weight: bold;
-  color: #a435f0; /* Udemy price color */
-  font-size: 1.125rem;
+.item-current-price {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--text-heading);
+  display: block;
 }
 
-.cart-summary {
-  flex: 1;
-  background: #f8fafc;
-  padding: 1.5rem;
-  border-radius: 8px;
-  border: 1px solid #e2e8f0;
+.item-original-price {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  text-decoration: line-through;
 }
 
-.cart-summary h3 {
-  font-size: 1.125rem;
-  color: #64748b;
-  margin-bottom: 0.5rem;
+/* --------------------------------------------------------------------------
+   4. ORDER SUMMARY CARD (RIGHT STICKY COLUMN)
+   -------------------------------------------------------------------------- */
+.cart-summary-column {
+  position: relative;
 }
 
-.total-price {
-  font-size: 2rem;
-  font-weight: bold;
-  color: #1e293b;
+.order-summary-card {
+  position: sticky;
+  top: 90px;
+  background: var(--student-card-bg);
+  border: 1px solid var(--student-border);
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.08);
+}
+
+.summary-heading {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--text-heading);
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--student-border);
+}
+
+.summary-rows-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
   margin-bottom: 1.5rem;
 }
 
-.checkout-btn {
-  width: 100%;
-  padding: 1rem;
-  font-size: 1.125rem;
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.95rem;
+  color: var(--text-body);
 }
 
-@media (max-width: 768px) {
-  .cart-content {
-    flex-direction: column;
+.summary-row.discount-row {
+  color: var(--color-success);
+  font-weight: 600;
+}
+
+.summary-row.total-row {
+  border-top: 1px dashed var(--student-border);
+  padding-top: 1rem;
+  margin-top: 0.5rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-heading);
+}
+
+.final-price-value {
+  font-size: 1.85rem;
+  font-weight: 800;
+  color: var(--text-heading);
+}
+
+/* Coupon Form Box */
+.coupon-section-box {
+  margin-bottom: 1.75rem;
+  background: #f8fafc;
+  padding: 1.25rem;
+  border-radius: 12px;
+  border: 1px solid var(--student-border);
+}
+
+.coupon-section-label {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-heading);
+  margin-bottom: 0.65rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.coupon-input-group {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.coupon-input {
+  flex-grow: 1;
+  border: 1px solid var(--student-border);
+  border-radius: var(--radius-btn);
+  padding: 0.6rem 0.85rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-heading);
+  text-transform: uppercase;
+  background: #ffffff;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.coupon-input:focus {
+  border-color: var(--student-primary);
+}
+
+.btn-apply-coupon {
+  background: var(--text-heading);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--radius-btn);
+  padding: 0.6rem 1.2rem;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  white-space: nowrap;
+}
+
+.btn-apply-coupon:hover {
+  background: #000000;
+}
+
+.applied-coupon-tag {
+  margin-top: 0.75rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #d1fae5;
+  border: 1px solid #a7f3d0;
+  color: #065f46;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.btn-remove-coupon {
+  background: transparent;
+  border: none;
+  color: #991b1b;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0;
+  font-size: 0.78rem;
+}
+
+.btn-remove-coupon:hover {
+  text-decoration: underline;
+}
+
+.coupon-error-text {
+  color: var(--color-danger);
+  font-size: 0.8rem;
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+/* Checkout CTA Button */
+.btn-checkout-primary {
+  width: 100%;
+  background: var(--student-primary);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--radius-btn);
+  padding: 1rem;
+  font-weight: 800;
+  font-size: 1.05rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35);
+  transition: all 0.2s ease;
+  margin-bottom: 1.5rem;
+}
+
+.btn-checkout-primary:hover:not(:disabled) {
+  background: var(--student-primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(79, 70, 229, 0.45);
+}
+
+.btn-checkout-primary:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* Payment Trust & Badges */
+.payment-trust-box {
+  text-align: center;
+  padding-top: 1rem;
+  border-top: 1px solid var(--student-border);
+}
+
+.trust-badge-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-bottom: 0.75rem;
+}
+
+.payment-methods-strip {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.payment-pill {
+  background: #f1f5f9;
+  border: 1px solid var(--student-border);
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.25rem 0.65rem;
+  border-radius: 6px;
+}
+
+/* --------------------------------------------------------------------------
+   5. SKELETON LOADERS
+   -------------------------------------------------------------------------- */
+.cart-skeleton-item {
+  background: var(--student-card-bg);
+  border: 1px solid var(--student-border);
+  border-radius: var(--radius-card);
+  padding: 1.25rem;
+  display: grid;
+  grid-template-columns: 180px 1fr 100px;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.skeleton-thumb {
+  width: 180px;
+  height: 100px;
+  border-radius: 10px;
+}
+
+/* --------------------------------------------------------------------------
+   6. ENROLLED ITEMS & ALL-PAID BANNER STYLES
+   -------------------------------------------------------------------------- */
+.badge-enrolled {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: #ecfdf5;
+  color: #10b981;
+  border: 1px solid #a7f3d0;
+  padding: 0.35rem 0.8rem;
+  border-radius: 9999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  box-shadow: 0 1px 3px rgba(16, 185, 129, 0.08);
+}
+
+.is-enrolled-card {
+  background: #fafdfb !important;
+  border-color: #a7f3d0 !important;
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.06) !important;
+}
+
+.enrolled-items-badge-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #10b981;
+  background: #ecfdf5;
+  padding: 0.25rem 0.65rem;
+  border-radius: 9999px;
+  border: 1px solid #a7f3d0;
+}
+
+.btn-enter-learn {
+  background: #ecfdf5 !important;
+  color: #059669 !important;
+  border: 1.5px solid #a7f3d0 !important;
+  font-weight: 700 !important;
+  padding: 0.45rem 1rem !important;
+  border-radius: 8px !important;
+  text-decoration: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.45rem !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.btn-enter-learn:hover {
+  background: #10b981 !important;
+  color: #ffffff !important;
+  border-color: #10b981 !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.25);
+}
+
+.enrolled-price-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.2rem;
+}
+
+.enrolled-status-pill {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #059669;
+  background: #d1fae5;
+  padding: 0.2rem 0.55rem;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.item-price-strikethrough {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #94a3b8;
+  text-decoration: line-through;
+}
+
+/* Banner: Khi tất cả khóa học đều đã thanh toán */
+.all-paid-success-banner {
+  background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 100%);
+  border: 1.5px solid #a7f3d0;
+  border-radius: var(--radius-card);
+  padding: 1.75rem 2rem;
+  margin-bottom: 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  box-shadow: 0 4px 20px rgba(16, 185, 129, 0.08);
+  animation: fadeInDown 0.4s ease-out;
+}
+
+.all-paid-banner-content {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  max-width: 720px;
+}
+
+.all-paid-banner-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  background: #10b981;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+}
+
+.all-paid-banner-title {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #065f46;
+  margin: 0 0 0.35rem 0;
+}
+
+.all-paid-banner-desc {
+  font-size: 0.925rem;
+  color: #047857;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.btn-all-paid-goto {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #10b981;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.95rem;
+  padding: 0.85rem 1.75rem;
+  border-radius: 10px;
+  text-decoration: none;
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.28);
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn-all-paid-goto:hover {
+  background: #059669;
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.35);
+}
+
+.all-paid-layout {
+  display: block;
+}
+
+.all-paid-full-width {
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+/* Thông báo loại trừ khóa học đã sở hữu trong Order Summary */
+.enrolled-exclusion-alert {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #166534;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-size: 0.825rem;
+  line-height: 1.45;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.enrolled-exclusion-alert strong {
+  color: #15803d;
+}
+
+/* --------------------------------------------------------------------------
+   7. RESPONSIVE BREAKPOINTS
+   -------------------------------------------------------------------------- */
+@media (max-width: 992px) {
+  .cart-layout-grid {
+    grid-template-columns: 1fr;
   }
-  .cart-summary {
+  .order-summary-card {
+    position: static;
+  }
+}
+
+@media (max-width: 640px) {
+  .cart-item-card {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  .cart-item-thumbnail-wrap {
     width: 100%;
-    order: -1;
-    margin-bottom: 2rem;
+    aspect-ratio: 16 / 9;
+  }
+  .cart-item-price-box {
+    text-align: left;
+    padding-left: 0;
+    border-top: 1px dashed var(--student-border);
+    padding-top: 0.75rem;
+  }
+  .enrolled-price-stack {
+    align-items: flex-start;
+  }
+  .all-paid-success-banner {
+    padding: 1.25rem;
+  }
+  .all-paid-banner-content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .btn-all-paid-goto {
+    width: 100%;
+    justify-content: center;
   }
 }

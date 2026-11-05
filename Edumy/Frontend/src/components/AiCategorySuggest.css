@@ -1,0 +1,233 @@
+/* ==========================================================================
+   AI CATEGORY & CURRICULUM SUGGESTION COMPONENT STYLES
+   Production Slate & Emerald design without neon or gradients.
+   ========================================================================== */
+
+.ai-suggest-box {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-left: 3px solid #2563eb;
+  border-radius: 8px;
+  padding: 0.85rem 1rem;
+  margin-top: 0.5rem;
+  margin-bottom: 1.25rem;
+  transition: all 0.2s ease;
+}
+
+.ai-suggest-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.ai-suggest-title-group {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.ai-icon-pulse {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background-color: #eff6ff;
+  color: #2563eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.ai-suggest-label {
+  display: block;
+  font-size: 0.725rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 700;
+  color: #64748b;
+}
+
+.ai-loading-text {
+  font-size: 0.825rem;
+  color: #64748b;
+  font-style: italic;
+}
+
+.ai-recommend-pill {
+  font-size: 0.875rem;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.confidence-pill {
+  font-size: 0.725rem;
+  font-weight: 700;
+  background-color: #ecfdf5;
+  color: #059669;
+  border: 1px solid #a7f3d0;
+  padding: 0.1rem 0.45rem;
+  border-radius: 4px;
+}
+
+.btn-apply-suggestion {
+  background-color: #2563eb;
+  color: #ffffff;
+  border: none;
+  font-size: 0.825rem;
+  font-weight: 600;
+  padding: 0.35rem 0.85rem;
+  border-radius: 6px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  transition: background-color 0.15s ease, transform 0.08s ease;
+}
+
+.btn-apply-suggestion:hover {
+  background-color: #1d4ed8;
+}
+
+.btn-apply-suggestion:active {
+  transform: scale(0.97);
+}
+
+.btn-apply-suggestion.applied {
+  background-color: #10b981;
+  cursor: default;
+}
+
+.ai-suggest-content {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px dashed #cbd5e1;
+}
+
+/* Tags Row */
+.ai-tags-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.65rem;
+}
+
+.tags-label {
+  font-size: 0.775rem;
+  color: #64748b;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-weight: 600;
+}
+
+.tags-list {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.ai-tag-pill {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #334155;
+  background-color: #ffffff;
+  border: 1px solid #cbd5e1;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+}
+
+/* Curriculum Toggle Box */
+.ai-curriculum-toggle-box {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 0.6rem 0.85rem;
+}
+
+.btn-toggle-outline {
+  background: transparent;
+  border: none;
+  color: #334155;
+  font-size: 0.825rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.btn-toggle-outline:hover {
+  color: #2563eb;
+}
+
+.btn-apply-outline {
+  background-color: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  color: #0f172a;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.65rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-apply-outline:hover {
+  background-color: #e2e8f0;
+}
+
+.btn-apply-outline:active {
+  transform: scale(0.97);
+}
+
+.ai-curriculum-preview-list {
+  margin-top: 0.75rem;
+  padding-top: 0.65rem;
+  border-top: 1px solid #f1f5f9;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.preview-section-item {
+  background-color: #f8fafc;
+  border-radius: 4px;
+  padding: 0.5rem 0.75rem;
+}
+
+.preview-section-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 0.35rem;
+}
+
+.preview-lessons-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.preview-lessons-list li {
+  font-size: 0.775rem;
+  color: #475569;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.preview-duration {
+  font-size: 0.725rem;
+  color: #94a3b8;
+}

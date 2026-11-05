@@ -2,6 +2,8 @@ import React, { useState, useEffect, useContext } from 'react';
 import api from '../api/axiosConfig';
 import { AuthContext } from '../context/AuthContext';
 import { User, Mail, Calendar, Edit3, Check, X } from 'lucide-react';
+import EmptyState from '../components/EmptyState';
+import { SkeletonBox } from '../components/Skeleton';
 import './UserProfile.css';
 
 function UserProfile() {
@@ -12,8 +14,27 @@ function UserProfile() {
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({ fullName: '', bio: '' });
   const [saving, setSaving] = useState(false);
+  const [upgrading, setUpgrading] = useState(false);
+  const [upgradeMessage, setUpgradeMessage] = useState('');
 
-  const { user } = useContext(AuthContext);
+  const { user, updateUserRole } = useContext(AuthContext);
+
+  const handleUpgradeToInstructor = async () => {
+    if (!window.confirm('Bạn có chắc chắn muốn nâng cấp tài khoản thành Giảng viên trên Edumy?')) return;
+    try {
+      setUpgrading(true);
+      const res = await api.post('/users/become-instructor');
+      if (res.data?.token) {
+        localStorage.setItem('token', res.data.token);
+      }
+      updateUserRole('Instructor');
+      setUpgradeMessage(res.data?.message || 'Chúc mừng! Bạn đã nâng cấp tài khoản thành Giảng viên thành công.');
+    } catch (err) {
+      alert(err.response?.data?.message || 'Nâng cấp tài khoản thất bại. Vui lòng thử lại sau.');
+    } finally {
+      setUpgrading(false);
+    }
+  };
 
   useEffect(() => {
     fetchProfile();
@@ -28,7 +49,7 @@ function UserProfile() {
         bio: response.data.bio || ''
       });
     } catch (err) {
-      setError('Could not fetch profile information.');
+      setError('Không thể tải thông tin hồ sơ người dùng.');
     } finally {
       setLoading(false);
     }
@@ -57,20 +78,64 @@ function UserProfile() {
       const response = await api.put('/users/profile', formData);
       setProfile(response.data);
       setIsEditing(false);
-      alert('Profile updated successfully!');
+      alert('Cập nhật hồ sơ cá nhân thành công!');
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to update profile.');
+      alert(err.response?.data?.message || 'Cập nhật hồ sơ thất bại. Vui lòng thử lại.');
     } finally {
       setSaving(false);
     }
   };
 
   if (!user) {
-    return <div className="container text-center my-5">Please login to view your profile.</div>;
+    return (
+      <div className="container my-5">
+        <EmptyState
+          icon={User}
+          title="Vui lòng đăng nhập"
+          description="Đăng nhập tài khoản để xem và cập nhật hồ sơ cá nhân của bạn."
+          actionText="Đăng nhập ngay"
+          actionLink="/login"
+        />
+      </div>
+    );
   }
 
-  if (loading) return <div className="container text-center my-5">Loading profile...</div>;
-  if (error) return <div className="container text-center my-5 text-danger">{error}</div>;
+  if (loading) {
+    return (
+      <div className="container my-5" style={{ maxWidth: '720px' }}>
+        <div className="card shadow-sm border p-4 rounded-3 text-center">
+          <div className="mx-auto mb-3" style={{ width: '90px', height: '90px' }}>
+            <SkeletonBox width="90px" height="90px" borderRadius="50%" />
+          </div>
+          <div className="mx-auto mb-2" style={{ width: '220px' }}>
+            <SkeletonBox width="220px" height="24px" />
+          </div>
+          <div className="mx-auto mb-4" style={{ width: '120px' }}>
+            <SkeletonBox width="120px" height="16px" />
+          </div>
+          <div className="d-flex flex-column gap-3 text-start">
+            <SkeletonBox width="100%" height="45px" />
+            <SkeletonBox width="100%" height="45px" />
+            <SkeletonBox width="100%" height="90px" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container my-5">
+        <EmptyState
+          icon={User}
+          title="Lỗi tải hồ sơ"
+          description={error}
+          actionText="Thử lại"
+          onAction={fetchProfile}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="container my-5 profile-page">
@@ -78,10 +143,10 @@ function UserProfile() {
         <div className="col-md-8">
           <div className="card shadow-sm border-0 profile-card">
             <div className="card-header bg-white border-bottom-0 pt-4 pb-0 d-flex justify-content-between align-items-center">
-              <h3 className="mb-0">Public Profile</h3>
+              <h3 className="mb-0">Hồ sơ cá nhân</h3>
               {!isEditing && (
                 <button className="btn btn-outline-primary btn-sm rounded-pill px-3" onClick={handleEdit}>
-                  <Edit3 size={16} className="me-2" /> Edit Profile
+                  <Edit3 size={16} className="me-2" /> Chỉnh sửa hồ sơ
                 </button>
               )}
             </div>
@@ -92,13 +157,52 @@ function UserProfile() {
                   {profile.fullName ? profile.fullName.charAt(0).toUpperCase() : 'U'}
                 </div>
                 <h4 className="mb-1">{profile.fullName}</h4>
-                <p className="text-muted mb-0"><User size={14} className="me-1"/> {user.role}</p>
+                <p className="text-muted mb-0"><User size={14} className="me-1"/> {user.role === 'Admin' ? 'Quản trị viên' : user.role === 'Instructor' ? 'Giảng viên' : 'Học viên'}</p>
               </div>
+
+              {upgradeMessage && (
+                <div className="alert alert-success d-flex align-items-center mb-4" role="alert">
+                  <Check size={18} className="me-2" />
+                  <div>{upgradeMessage}</div>
+                </div>
+              )}
+
+              {user?.role === 'Student' && (
+                <div 
+                  className="mb-4 p-3 rounded"
+                  style={{
+                    backgroundColor: '#eef2ff',
+                    border: '1px solid #c7d2fe',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    flexWrap: 'wrap',
+                    gap: '12px'
+                  }}
+                >
+                  <div>
+                    <h6 className="mb-1" style={{ color: '#3730a3', fontWeight: 700 }}>
+                      👨‍🏫 Bạn muốn chia sẻ kiến thức trên Edumy?
+                    </h6>
+                    <p className="mb-0" style={{ color: '#4338ca', fontSize: '0.85rem' }}>
+                      Nâng cấp thành Giảng viên để tự tạo khóa học, soạn giáo trình và tiếp cận hàng nghìn học viên.
+                    </p>
+                  </div>
+                  <button 
+                    type="button" 
+                    className="btn btn-primary btn-sm px-3 fw-bold"
+                    onClick={handleUpgradeToInstructor}
+                    disabled={upgrading}
+                  >
+                    {upgrading ? 'Đang kích hoạt...' : 'Nâng cấp Giảng viên'}
+                  </button>
+                </div>
+              )}
 
               {isEditing ? (
                 <form onSubmit={handleSubmit} className="profile-form">
                   <div className="mb-3">
-                    <label className="form-label fw-bold">Full Name</label>
+                    <label className="form-label fw-bold">Họ và tên</label>
                     <input 
                       type="text" 
                       className="form-control" 
@@ -110,50 +214,50 @@ function UserProfile() {
                   </div>
                   
                   <div className="mb-3">
-                    <label className="form-label fw-bold">Bio</label>
+                    <label className="form-label fw-bold">Tiểu sử giới thiệu</label>
                     <textarea 
                       className="form-control" 
                       name="bio" 
                       rows="4" 
                       value={formData.bio} 
-                      onChange={handleChange}
-                      placeholder="Tell us a little bit about yourself..."
+                      onChange={handleChange} 
+                      placeholder="Chia sẻ đôi nét về kinh nghiệm, sở thích hoặc định hướng học tập của bạn..."
                     ></textarea>
                   </div>
 
                   <div className="d-flex gap-2 justify-content-end mt-4">
                     <button type="button" className="btn btn-light px-4" onClick={handleCancel} disabled={saving}>
-                      <X size={18} className="me-1" /> Cancel
+                      <X size={18} className="me-1" /> Hủy bỏ
                     </button>
                     <button type="submit" className="btn btn-primary px-4" disabled={saving}>
-                      {saving ? 'Saving...' : <><Check size={18} className="me-1" /> Save Changes</>}
+                      {saving ? 'Đang lưu...' : <><Check size={18} className="me-1" /> Lưu thay đổi</>}
                     </button>
                   </div>
                 </form>
               ) : (
                 <div className="profile-info">
                   <div className="row mb-3">
-                    <div className="col-sm-3 text-muted"><Mail size={16} className="me-2"/> Email</div>
+                    <div className="col-sm-3 text-muted"><Mail size={16} className="me-2"/> Địa chỉ Email</div>
                     <div className="col-sm-9 fw-medium">{profile.email}</div>
                   </div>
                   
                   <div className="row mb-3">
-                    <div className="col-sm-3 text-muted"><User size={16} className="me-2"/> Full Name</div>
+                    <div className="col-sm-3 text-muted"><User size={16} className="me-2"/> Họ và tên</div>
                     <div className="col-sm-9 fw-medium">{profile.fullName}</div>
                   </div>
 
                   <div className="row mb-3">
-                    <div className="col-sm-3 text-muted"><Calendar size={16} className="me-2"/> Member Since</div>
-                    <div className="col-sm-9 fw-medium">{new Date(profile.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</div>
+                    <div className="col-sm-3 text-muted"><Calendar size={16} className="me-2"/> Ngày gia nhập</div>
+                    <div className="col-sm-9 fw-medium">{new Date(profile.createdAt).toLocaleDateString('vi-VN', { year: 'numeric', month: 'long', day: 'numeric' })}</div>
                   </div>
 
                   <div className="row mt-4 pt-3 border-top">
                     <div className="col-12">
-                      <h6 className="text-muted mb-3">Bio</h6>
+                      <h6 className="text-muted mb-3">Tiểu sử giới thiệu</h6>
                       {profile.bio ? (
                         <p className="mb-0" style={{whiteSpace: 'pre-line'}}>{profile.bio}</p>
                       ) : (
-                        <p className="text-muted fst-italic mb-0">No bio provided yet.</p>
+                        <p className="text-muted fst-italic mb-0">Chưa có thông tin giới thiệu.</p>
                       )}
                     </div>
                   </div>

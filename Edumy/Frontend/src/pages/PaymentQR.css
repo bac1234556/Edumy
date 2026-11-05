@@ -1,0 +1,479 @@
+/* ==============================================================
+   EduMy VietQR Banking Payment Page & Modal Stylesheet
+   ============================================================== */
+
+:root {
+  --vietqr-primary: #1068eb;
+  --vietqr-primary-hover: #0c56c2;
+  --vietqr-dark: #0f172a;
+  --vietqr-accent: #f59e0b;
+  --vietqr-success: #10b981;
+  --vietqr-success-bg: #ecfdf5;
+  --vietqr-card-bg: #ffffff;
+  --vietqr-border: #e2e8f0;
+  --vietqr-text-muted: #64748b;
+  --vietqr-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+}
+
+.payment-qr-container {
+  min-height: calc(100vh - 140px);
+  padding: 2.5rem 1rem;
+  background: linear-gradient(135deg, #f8fafc 0%, #edf2f7 50%, #f1f5f9 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.payment-qr-card {
+  width: 100%;
+  max-width: 980px;
+  background: var(--vietqr-card-bg);
+  border-radius: 24px;
+  box-shadow: var(--vietqr-shadow);
+  border: 1px solid var(--vietqr-border);
+  overflow: hidden;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+/* Header */
+.payment-qr-header {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  color: #ffffff;
+  padding: 1.5rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.payment-brand-box {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.bank-logo-badge {
+  background: #ffffff;
+  color: #b91c1c;
+  padding: 0.35rem 0.85rem;
+  border-radius: 8px;
+  font-weight: 800;
+  font-size: 1.15rem;
+  letter-spacing: -0.5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.payment-title-group h2 {
+  font-size: 1.35rem;
+  font-weight: 700;
+  margin: 0;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.payment-title-group p {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #94a3b8;
+}
+
+.napas-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.12);
+  color: #38bdf8;
+  padding: 0.4rem 0.9rem;
+  border-radius: 9999px;
+  font-size: 0.825rem;
+  font-weight: 600;
+  backdrop-filter: blur(4px);
+}
+
+/* Body Layout */
+.payment-qr-body {
+  display: grid;
+  grid-template-columns: 1fr 1.15fr;
+  padding: 2.25rem;
+  gap: 2.5rem;
+}
+
+@media (max-width: 860px) {
+  .payment-qr-body {
+    grid-template-columns: 1fr;
+    padding: 1.5rem;
+    gap: 2rem;
+  }
+}
+
+/* Left Column: QR Code */
+.payment-qr-preview-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  background: #f8fafc;
+  padding: 1.75rem;
+  border-radius: 20px;
+  border: 1px dashed #cbd5e1;
+}
+
+.qr-image-wrapper {
+  position: relative;
+  background: #ffffff;
+  padding: 1rem;
+  border-radius: 16px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e2e8f0;
+  width: 290px;
+  height: 290px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+  overflow: hidden;
+}
+
+.qr-image-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: transform 0.2s ease;
+}
+
+.qr-image-wrapper:hover img {
+  transform: scale(1.02);
+}
+
+.qr-helper-text {
+  font-size: 0.85rem;
+  color: var(--vietqr-text-muted);
+  line-height: 1.5;
+  margin-bottom: 1rem;
+}
+
+/* Polling Pulse Status */
+.polling-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #eff6ff;
+  color: var(--vietqr-primary);
+  padding: 0.5rem 1.1rem;
+  border-radius: 9999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: 1px solid #bfdbfe;
+}
+
+.radar-dot {
+  width: 10px;
+  height: 10px;
+  background-color: var(--vietqr-primary);
+  border-radius: 50%;
+  position: relative;
+}
+
+.radar-dot::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-color: var(--vietqr-primary);
+  animation: radar-pulse 1.6s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+@keyframes radar-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(3.5);
+    opacity: 0;
+  }
+}
+
+/* Right Column: Transaction Details */
+.payment-details-col {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* Countdown bar */
+.countdown-box {
+  background: #fef3c7;
+  border: 1px solid #fde68a;
+  color: #92400e;
+  padding: 0.75rem 1.25rem;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.countdown-timer-value {
+  font-family: monospace;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #b45309;
+  background: rgba(255, 255, 255, 0.6);
+  padding: 0.2rem 0.6rem;
+  border-radius: 6px;
+}
+
+/* Detail list items */
+.payment-info-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  margin-bottom: 1.5rem;
+}
+
+.payment-info-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.85rem 1.15rem;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  transition: all 0.2s ease;
+}
+
+.payment-info-item:hover {
+  border-color: #cbd5e1;
+  background: #ffffff;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.04);
+}
+
+.payment-info-item.highlight {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+}
+
+.info-label {
+  font-size: 0.875rem;
+  color: var(--vietqr-text-muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.info-value-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.info-value {
+  font-weight: 700;
+  color: var(--vietqr-dark);
+  font-size: 1rem;
+}
+
+.info-value.amount {
+  font-size: 1.35rem;
+  color: var(--vietqr-primary);
+  letter-spacing: -0.5px;
+}
+
+.info-value.content-code {
+  font-family: monospace;
+  font-size: 1.15rem;
+  background: #dbeafe;
+  color: #1e40af;
+  padding: 0.2rem 0.65rem;
+  border-radius: 6px;
+  font-weight: 800;
+}
+
+/* Copy button */
+.btn-copy {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #475569;
+  padding: 0.35rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-copy:hover {
+  background: #f1f5f9;
+  color: var(--vietqr-primary);
+  border-color: var(--vietqr-primary);
+}
+
+.btn-copy.copied {
+  background: var(--vietqr-success-bg);
+  border-color: var(--vietqr-success);
+  color: var(--vietqr-success);
+}
+
+/* Action buttons */
+.payment-actions-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.btn-manual-check {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--vietqr-primary);
+  color: #ffffff;
+  border: none;
+  padding: 0.85rem 1.5rem;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 6px -1px rgba(16, 104, 235, 0.3);
+}
+
+.btn-manual-check:hover:not(:disabled) {
+  background: var(--vietqr-primary-hover);
+  transform: translateY(-1px);
+}
+
+.btn-manual-check:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.btn-simulate-webhook {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: #f1f5f9;
+  color: #334155;
+  border: 1px dashed #94a3b8;
+  padding: 0.65rem 1.25rem;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-simulate-webhook:hover {
+  background: #e2e8f0;
+  border-color: #64748b;
+  color: #0f172a;
+}
+
+.btn-cancel-payment {
+  background: transparent;
+  border: none;
+  color: var(--vietqr-text-muted);
+  font-size: 0.875rem;
+  cursor: pointer;
+  padding: 0.4rem;
+  text-decoration: underline;
+  text-align: center;
+  transition: color 0.2s;
+}
+
+.btn-cancel-payment:hover {
+  color: #ef4444;
+}
+
+/* Success Celebration Modal / State */
+.payment-success-card {
+  padding: 3.5rem 2rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  border-radius: 24px;
+}
+
+.celebration-icon-box {
+  width: 90px;
+  height: 90px;
+  background: #dcfce7;
+  color: #16a34a;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  animation: bounce-in 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes bounce-in {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.success-badge-order {
+  display: inline-block;
+  background: #f1f5f9;
+  color: #475569;
+  padding: 0.35rem 0.85rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.btn-enter-classroom {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #16a34a;
+  color: #ffffff;
+  padding: 0.9rem 2rem;
+  border-radius: 9999px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 10px 15px -3px rgba(22, 163, 74, 0.3);
+  transition: all 0.2s ease;
+  margin-top: 1.25rem;
+}
+
+.btn-enter-classroom:hover {
+  background: #15803d;
+  color: #ffffff;
+  transform: translateY(-2px);
+}

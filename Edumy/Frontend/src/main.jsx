@@ -2,17 +2,26 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './index.css'
+import './design-system.css'
 import App from './App.jsx'
+
 import { AuthProvider } from './context/AuthContext'
+import { CartProvider } from './context/CartContext'
 import { GoogleOAuthProvider } from '@react-oauth/google';
 
-const clientId = 'YOUR_GOOGLE_CLIENT_ID_HERE'; // Replace with real client ID
+// Use environment variable if provided, or a safe default ID to prevent SDK crashes
+const rawClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
+const googleClientId = (rawClientId && rawClientId !== 'YOUR_GOOGLE_CLIENT_ID_HERE') 
+  ? rawClientId 
+  : 'edumy-local-dev-client.apps.googleusercontent.com';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <GoogleOAuthProvider clientId={clientId}>
+    <GoogleOAuthProvider clientId={googleClientId}>
       <AuthProvider>
-        <App />
+        <CartProvider>
+          <App />
+        </CartProvider>
       </AuthProvider>
     </GoogleOAuthProvider>
   </StrictMode>,

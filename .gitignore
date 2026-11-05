@@ -66,3 +66,12 @@ MANIFEST
 .DS_Store
 Thumbs.db
 Desktop.ini
+jenkin.md
+**/jenkin.md
+
+# Java / Maven
+**/target/
+target/
+*.class
+*.jar
+*.war

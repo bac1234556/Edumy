@@ -1,0 +1,302 @@
+/* ==========================================================================
+   EDUMY HUMAN-CRAFTED DESIGN SYSTEM & TOKENS (PRODUCTION-GRADE)
+   Eliminates all AI clichés: No neon gradients, no glow, no glassmorphism.
+   Built with solid neutrals, classic tech blue, warm educational amber.
+   ========================================================================== */
+
+:root {
+  /* 1. Core Brand & Neutral Palette */
+  --color-brand-primary: #2563eb;       /* Classic Tech Blue 600 */
+  --color-brand-primary-hover: #1d4ed8; /* Blue 700 */
+  --color-brand-primary-active: #1e40af;/* Blue 800 */
+  --color-brand-primary-light: #eff6ff; /* Blue 50 */
+  --color-brand-primary-border: #bfdbfe;/* Blue 200 */
+
+  --color-navy-dark: #0f172a;           /* Deep Slate 900 (Main text & Hero) */
+  --color-navy-surface: #1e293b;        /* Slate 800 */
+  --color-navy-muted: #334155;          /* Slate 700 */
+
+  /* 2. Educational Accents (Authoritative & Warm) */
+  --color-accent-amber: #d97706;        /* Amber 600 for ratings/bestsellers */
+  --color-accent-amber-hover: #b45309;  /* Amber 700 */
+  --color-accent-amber-bg: #fef3c7;     /* Amber 100 */
+  --color-accent-amber-text: #92400e;   /* Amber 800 */
+  --color-accent-orange: #ea580c;       /* Education Orange 600 */
+
+  /* 3. Canvas & Surfaces (Clean, Anti-glare Light Theme) */
+  --color-bg-canvas: #f8fafc;           /* Slate 50 clean light background */
+  --color-bg-canvas-alt: #f1f5f9;       /* Slate 100 for section alternating */
+  --color-bg-card: #ffffff;             /* Pure White Card */
+  --color-bg-card-hover: #ffffff;
+  --color-bg-subtle: #f8fafc;
+
+  /* 4. Hairline Borders (Crisp 1px Divider) */
+  --color-border-hairline: #e2e8f0;     /* Slate 200 */
+  --color-border-medium: #cbd5e1;       /* Slate 300 */
+  --color-border-dark: #94a3b8;         /* Slate 400 */
+
+  /* 5. Typography Hierarchy */
+  --color-text-title: #0f172a;          /* Slate 900 */
+  --color-text-body: #334155;           /* Slate 700 (High readability) */
+  --color-text-secondary: #475569;      /* Slate 600 */
+  --color-text-muted: #64748b;          /* Slate 500 */
+  --color-text-disabled: #94a3b8;       /* Slate 400 */
+
+  /* 6. Semantic Alerts (Non-neon) */
+  --color-success: #16a34a;             /* Green 600 */
+  --color-success-bg: #f0fdf4;          /* Green 50 */
+  --color-success-border: #bbf7d0;      /* Green 200 */
+  --color-success-text: #166534;        /* Green 800 */
+
+  --color-error: #dc2626;               /* Red 600 */
+  --color-error-bg: #fef2f2;            /* Red 50 */
+  --color-error-border: #fecaca;        /* Red 200 */
+  --color-error-text: #991b1b;          /* Red 800 */
+
+  /* 7. Elevation & Shadows (Subtle, Realistic & Minimal) */
+  --shadow-hairline: 0 1px 2px 0 rgba(15, 23, 42, 0.05);
+  --shadow-card-subtle: 0 1px 3px 0 rgba(15, 23, 42, 0.06), 0 1px 2px -1px rgba(15, 23, 42, 0.04);
+  --shadow-card-hover: 0 4px 6px -1px rgba(15, 23, 42, 0.07), 0 2px 4px -2px rgba(15, 23, 42, 0.05);
+  --shadow-dropdown: 0 10px 15px -3px rgba(15, 23, 42, 0.08), 0 4px 6px -4px rgba(15, 23, 42, 0.04);
+
+  /* 8. Radii */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+
+  /* 9. Transitions */
+  --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Base resets & typography */
+body {
+  background-color: var(--color-bg-canvas);
+  color: var(--color-text-body);
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+}
+
+/* Micro-interaction: Tactile Buttons */
+.btn-solid-primary {
+  background-color: var(--color-brand-primary);
+  color: #ffffff;
+  border: 1px solid transparent;
+  padding: 0.65rem 1.25rem;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: 0.925rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: background-color var(--transition-fast), border-color var(--transition-fast), transform 0.08s ease;
+  text-decoration: none;
+}
+
+.btn-solid-primary:hover {
+  background-color: var(--color-brand-primary-hover);
+  color: #ffffff;
+}
+
+.btn-solid-primary:active {
+  transform: scale(0.98);
+  background-color: var(--color-brand-primary-active);
+}
+
+.btn-solid-navy {
+  background-color: var(--color-navy-dark);
+  color: #ffffff;
+  border: 1px solid transparent;
+  padding: 0.65rem 1.25rem;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: 0.925rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: background-color var(--transition-fast), transform 0.08s ease;
+  text-decoration: none;
+}
+
+.btn-solid-navy:hover {
+  background-color: var(--color-navy-surface);
+  color: #ffffff;
+}
+
+.btn-solid-navy:active {
+  transform: scale(0.98);
+}
+
+.btn-outline-neutral {
+  background-color: #ffffff;
+  color: var(--color-text-title);
+  border: 1px solid var(--color-border-medium);
+  padding: 0.65rem 1.25rem;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: 0.925rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: background-color var(--transition-fast), border-color var(--transition-fast), transform 0.08s ease;
+  text-decoration: none;
+}
+
+.btn-outline-neutral:hover {
+  background-color: var(--color-bg-canvas-alt);
+  border-color: var(--color-border-dark);
+  color: var(--color-text-title);
+}
+
+.btn-outline-neutral:active {
+  transform: scale(0.98);
+}
+
+/* Breadcrumbs (Production Navigation) */
+.edumy-breadcrumbs {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #94a3b8;
+  margin-bottom: 1rem;
+}
+
+.edumy-breadcrumbs a {
+  color: #94a3b8;
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.edumy-breadcrumbs a:hover {
+  color: #ffffff;
+  text-decoration: underline;
+}
+
+.edumy-breadcrumbs .separator {
+  color: #64748b;
+  font-size: 0.75rem;
+}
+
+.edumy-breadcrumbs .current {
+  color: #e2e8f0;
+  font-weight: 600;
+  max-width: 320px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Meta Badges */
+.badge-bestseller {
+  background-color: var(--color-accent-amber-bg);
+  color: var(--color-accent-amber-text);
+  border: 1px solid #fde68a;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.25rem 0.6rem;
+  border-radius: var(--radius-xs);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.badge-updated {
+  background-color: rgba(255, 255, 255, 0.12);
+  color: #cbd5e1;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 0.25rem 0.65rem;
+  border-radius: var(--radius-xs);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.badge-meta {
+  background-color: var(--color-bg-canvas-alt);
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border-hairline);
+  font-size: 0.775rem;
+  font-weight: 600;
+  padding: 0.2rem 0.55rem;
+  border-radius: var(--radius-xs);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Custom Lean Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg-canvas-alt);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Standard Human-crafted Pagination */
+.edumy-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  margin-top: 2.5rem;
+}
+
+.page-btn {
+  min-width: 38px;
+  height: 38px;
+  padding: 0 0.6rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border-hairline);
+  background: #ffffff;
+  color: var(--color-text-title);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-decoration: none;
+}
+
+.page-btn:hover:not(:disabled):not(.active) {
+  background: var(--color-bg-canvas-alt);
+  border-color: var(--color-border-medium);
+}
+
+.page-btn.active {
+  background: var(--color-navy-dark);
+  color: #ffffff;
+  border-color: var(--color-navy-dark);
+}
+
+.page-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}

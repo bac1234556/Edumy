@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useContext } from 'react';
 import { AuthContext } from './context/AuthContext';
 import HomePage from './pages/HomePage';
@@ -16,8 +16,10 @@ import CoursePlayer from './pages/CoursePlayer';
 import AdminDashboard from './pages/AdminDashboard';
 import PaymentSuccess from './pages/PaymentSuccess';
 import PaymentCancel from './pages/PaymentCancel';
-import MockPaymentGateway from './pages/MockPaymentGateway';
+import PaymentQR from './pages/PaymentQR';
 import CertificateView from './pages/CertificateView';
+
+import CourseCurriculumEditor from './pages/CourseCurriculumEditor';
 import Wishlist from './pages/Wishlist';
 import UserProfile from './pages/UserProfile';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -48,6 +50,7 @@ function App() {
                 <MyLearning />
               </ProtectedRoute>
             } />
+            <Route path="/my-learning" element={<Navigate to="/my-courses" replace />} />
             <Route path="/my-courses/:id/learn" element={
               <ProtectedRoute allowedRoles={['Student', 'Instructor', 'Admin']}>
                 <CoursePlayer />
@@ -75,13 +78,21 @@ function App() {
                 <CourseCreate />
               </ProtectedRoute>
             } />
+            <Route path="/instructor/courses/:id/curriculum" element={
+              <ProtectedRoute allowedRoles={['Instructor', 'Admin']}>
+                <CourseCurriculumEditor />
+              </ProtectedRoute>
+            } />
             <Route path="/admin" element={
               <ProtectedRoute allowedRoles={['Admin']}>
                 <AdminDashboard />
               </ProtectedRoute>
             } />
-            <Route path="/payment" element={<MockPaymentGateway />} />
+            <Route path="/payment" element={<PaymentQR />} />
+            <Route path="/payment/qr" element={<PaymentQR />} />
+            <Route path="/payment/mock" element={<Navigate to="/payment" replace />} />
             <Route path="/payment-success" element={<PaymentSuccess />} />
+
             <Route path="/payment-cancel" element={<PaymentCancel />} />
             <Route path="/certificates/:url" element={<CertificateView />} />
           </Routes>
