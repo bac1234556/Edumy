@@ -109,8 +109,8 @@ function HomePage() {
               </div>
 
               <h1 className="hero-title">
-                Khai mở tiềm năng 2026. <br />
-                <span className="gradient-text">Nâng tầm sự nghiệp2026.</span>
+                Khai mở tiềm năng. <br />
+                <span className="gradient-text">Nâng tầm sự nghiệp.</span>
               </h1>
 
               <p className="hero-subtitle">
