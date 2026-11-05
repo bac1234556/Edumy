@@ -109,7 +109,7 @@ function HomePage() {
               </div>
 
               <h1 className="hero-title">
-                Khai mở tiềm năng. <br />
+                Khai mở tiềm năng 2026. <br />
                 <span className="gradient-text">Nâng tầm sự nghiệp.</span>
               </h1>
 
@@ -119,9 +119,9 @@ function HomePage() {
 
               {/* Quick Search Bar with Live Instant Suggestion */}
               <div className="hero-search-wrapper" style={{ width: '100%', maxWidth: '640px' }}>
-                <LiveCourseSearchBar 
+                <LiveCourseSearchBar
                   variant="hero"
-                  placeholder="Bạn muốn làm chủ kỹ năng gì hôm nay? (VD: React, Python, UI/UX...)" 
+                  placeholder="Bạn muốn làm chủ kỹ năng gì hôm nay? (VD: React, Python, UI/UX...)"
                 />
               </div>
 
