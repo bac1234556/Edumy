@@ -215,54 +215,54 @@ function MyLearning() {
                     </div>
                   </Link>
 
-                  {/* Body */}
-                  <div className="enrolled-card-body">
-                    <Link
-                      to={`/my-courses/${item.courseId}/learn`}
-                      className="text-decoration-none"
-                    >
-                      <h4 className="enrolled-course-title">{item.title}</h4>
-                    </Link>
-                    <p className="enrolled-instructor-name">
-                      {item.fullName || item.instructor || 'Giảng viên Edumy'}
-                    </p>
-
-                    {/* Progress */}
-                    <div className="progress-meta-row">
-                      <span>{isCompleted ? 'Đã hoàn thành' : 'Tiến độ học tập'}</span>
-                      <span className={isCompleted ? 'text-success' : 'text-primary'}>
-                        {progress}%
-                      </span>
-                    </div>
-
-                    <div className="progress-track-bg">
-                      <div
-                        className={`progress-fill-bar ${isCompleted ? 'completed' : ''}`}
-                        style={{ width: `${Math.min(100, Math.max(0, progress))}%` }}
-                      ></div>
-                    </div>
-
-                    {/* Footer Actions */}
-                    <div className="enrolled-card-footer">
+                    {/* Body */}
+                    <div className="enrolled-card-body">
+                      {item.courseStatus && item.courseStatus.toLowerCase() === 'hidden' && (
+                        <div className="mb-2">
+                          <span className="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-2 py-1 small">
+                            Đã ẩn khỏi danh mục công khai (Vẫn tiếp tục học - UC-S08)
+                          </span>
+                        </div>
+                      )}
                       <Link
                         to={`/my-courses/${item.courseId}/learn`}
-                        className="btn-continue-learning"
+                        className="text-decoration-none"
                       >
-                        <PlayCircle size={16} />
-                        {isCompleted ? 'Xem lại bài học' : 'Tiếp tục học'}
+                        <h4 className="enrolled-course-title">{item.title}</h4>
                       </Link>
+                      <p className="enrolled-instructor-name">
+                        {item.fullName || item.instructor || 'Giảng viên Edumy'}
+                      </p>
 
-                      {isCompleted && item.certificateUrl && (
+                      {/* Progress (UC-S11) */}
+                      <div className="progress-meta-row">
+                        <span>
+                          {isCompleted ? 'Đã hoàn thành 100%' : 'Tiến độ học tập (UC-S11)'}
+                          {item.totalLessons !== undefined && ` (${item.completedLessons || 0}/${item.totalLessons} bài)`}
+                        </span>
+                        <span className={isCompleted ? 'text-success' : 'text-primary'}>
+                          {progress}%
+                        </span>
+                      </div>
+
+                      <div className="progress-track-bg">
+                        <div
+                          className={`progress-fill-bar ${isCompleted ? 'completed' : ''}`}
+                          style={{ width: `${Math.min(100, Math.max(0, progress))}%` }}
+                        ></div>
+                      </div>
+
+                      {/* Footer Actions (UC-S08 & UC-S09) */}
+                      <div className="enrolled-card-footer">
                         <Link
-                          to={`/certificates/${item.certificateUrl}`}
-                          className="btn-view-certificate"
-                          title="Xem chứng chỉ tốt nghiệp"
+                          to={`/my-courses/${item.courseId}/learn`}
+                          className="btn-continue-learning w-100 justify-content-center"
                         >
-                          <Award size={16} /> Chứng chỉ
+                          <PlayCircle size={16} />
+                          {isCompleted ? 'Xem lại bài học (UC-S09)' : 'Vào phòng học (UC-S09)'}
                         </Link>
-                      )}
+                      </div>
                     </div>
-                  </div>
                 </div>
               );
             })}

@@ -18,7 +18,8 @@ function AdminDashboard() {
   });
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [activeTab, setActiveTab] = useState('courses'); // 'courses', 'users', 'ml'
+  const [activeTab, setActiveTab] = useState('courses'); // 'courses', 'categories', 'orders', 'users', 'reviews', 'ml'
+  const [adminReviews, setAdminReviews] = useState([]);
   
   // Filter & Search states
   const [courseSearch, setCourseSearch] = useState('');
@@ -72,6 +73,12 @@ function AdminDashboard() {
         sentimentStats: [],
         analysesHistory: []
       });
+      try {
+        const revRes = await api.get('/v1/admin/reviews');
+        setAdminReviews(Array.isArray(revRes.data) ? revRes.data : []);
+      } catch {
+        setAdminReviews([]);
+      }
     } catch (error) {
       console.error('Failed to fetch admin data', error);
       showNotification('Không thể tải dữ liệu quản trị viên. Vui lòng thử lại!', 'error');
@@ -87,14 +94,43 @@ function AdminDashboard() {
 
   const handleUpdateStatus = async (id, targetStatus) => {
     try {
-      await api.put(`/admin/courses/${id}/status`, `"${targetStatus}"`, {
-        headers: { 'Content-Type': 'application/json' }
-      });
-      showNotification(`Đã chuyển trạng thái khóa học sang ${targetStatus}!`);
+      if (targetStatus === 'Published') {
+        await api.post(`/v1/admin/courses/${id}/approve`);
+        showNotification('Đã duyệt khóa học lên trạng thái Công khai (UC-A09)!');
+      } else if (targetStatus === 'Rejected') {
+        const reason = window.prompt('Nhập lý do từ chối xét duyệt khóa học (Bắt buộc theo UC-A10):');
+        if (!reason || !reason.trim()) return;
+        await api.post(`/v1/admin/courses/${id}/reject`, { reviewNote: reason.trim() });
+        showNotification('Đã từ chối khóa học kèm lý do phản hồi (UC-A10)!');
+      } else if (targetStatus === 'Hidden') {
+        await api.post(`/v1/admin/courses/${id}/hide`);
+        showNotification('Đã ẩn khóa học khỏi danh mục công khai (UC-A11)!');
+      } else if (targetStatus === 'Unhide') {
+        await api.post(`/v1/admin/courses/${id}/unhide`);
+        showNotification('Đã mở ẩn khóa học trở lại công khai (UC-A12)!');
+      } else {
+        await api.put(`/admin/courses/${id}/status`, `"${targetStatus}"`, {
+          headers: { 'Content-Type': 'application/json' }
+        });
+        showNotification(`Đã chuyển trạng thái khóa học sang ${targetStatus}!`);
+      }
       fetchDashboardData(true);
     } catch (error) {
       console.error('Failed to update status', error);
-      showNotification('Lỗi khi cập nhật trạng thái khóa học', 'error');
+      showNotification(error.response?.data?.message || 'Lỗi khi cập nhật trạng thái khóa học', 'error');
+    }
+  };
+
+  // UC-A15: Hide violating review
+  const handleHideReview = async (reviewId) => {
+    const reason = window.prompt('Nhập lý do ẩn đánh giá vi phạm (UC-A15):', 'Nội dung vi phạm tiêu chuẩn cộng đồng');
+    if (reason === null) return;
+    try {
+      await api.post(`/v1/admin/reviews/${reviewId}/hide`, { reason: reason.trim() });
+      showNotification('Đã ẩn đánh giá vi phạm thành công (UC-A15)!');
+      fetchDashboardData(true);
+    } catch (err) {
+      showNotification(err.response?.data?.message || 'Không thể ẩn đánh giá', 'error');
     }
   };
 
@@ -258,9 +294,21 @@ function AdminDashboard() {
             >
               <span className="admin-nav-label">
                 <i className="bi bi-people-fill"></i>
-                Quản lý Người dùng
+                Người dùng & Vai trò (UC-A01..05)
               </span>
               <span className="admin-nav-badge">{users.length}</span>
+            </button>
+          </li>
+          <li className="admin-nav-item">
+            <button 
+              className={`admin-nav-btn ${activeTab === 'reviews' ? 'active' : ''}`}
+              onClick={() => setActiveTab('reviews')}
+            >
+              <span className="admin-nav-label">
+                <i className="bi bi-chat-left-quote-fill"></i>
+                Kiểm duyệt Đánh giá (UC-A15)
+              </span>
+              <span className="admin-nav-badge">{adminReviews.length}</span>
             </button>
           </li>
           <li className="admin-nav-item">
@@ -487,28 +535,38 @@ function AdminDashboard() {
                                 <button 
                                   className="btn-admin-action success"
                                   onClick={() => handleUpdateStatus(course.courseId, 'Published')}
-                                  title="Duyệt và phát hành khóa học"
+                                  title="Duyệt và phát hành khóa học (UC-A09)"
                                 >
-                                  <i className="bi bi-check-lg"></i> Duyệt
+                                  <i className="bi bi-check-lg"></i> Duyệt (UC-A09)
                                 </button>
                                 <button 
                                   className="btn-admin-action outline-danger"
-                                  onClick={() => handleUpdateStatus(course.courseId, 'Draft')}
-                                  title="Từ chối và trả về bản nháp"
+                                  onClick={() => handleUpdateStatus(course.courseId, 'Rejected')}
+                                  title="Từ chối kèm lý do bắt buộc (UC-A10)"
                                 >
-                                  <i className="bi bi-x-lg"></i> Từ chối
+                                  <i className="bi bi-x-lg"></i> Từ chối (UC-A10)
                                 </button>
                               </>
+                            ) : course.status === 'Published' ? (
+                              <button 
+                                className="btn-admin-action outline-secondary"
+                                onClick={() => handleUpdateStatus(course.courseId, 'Hidden')}
+                              >
+                                <i className="bi bi-eye-slash"></i> Ẩn khóa học (UC-A11)
+                              </button>
+                            ) : course.status === 'Hidden' ? (
+                              <button 
+                                className="btn-admin-action success"
+                                onClick={() => handleUpdateStatus(course.courseId, 'Unhide')}
+                              >
+                                <i className="bi bi-eye"></i> Mở ẩn (UC-A12)
+                              </button>
                             ) : (
                               <button 
-                                className={`btn-admin-action ${course.status === 'Published' ? 'outline-secondary' : 'success'}`}
-                                onClick={() => handleUpdateStatus(course.courseId, course.status === 'Published' ? 'Draft' : 'Published')}
+                                className="btn-admin-action success"
+                                onClick={() => handleUpdateStatus(course.courseId, 'Published')}
                               >
-                                {course.status === 'Published' ? (
-                                  <><i className="bi bi-eye-slash"></i> Ẩn khóa học</>
-                                ) : (
-                                  <><i className="bi bi-check-circle"></i> Xuất bản</>
-                                )}
+                                <i className="bi bi-check-circle"></i> Duyệt công khai (UC-A09)
                               </button>
                             )}
                           </div>
@@ -841,6 +899,61 @@ function AdminDashboard() {
         {/* TAB: QUẢN LÝ ĐƠN HÀNG & DOANH THU */}
         {activeTab === 'orders' && (
           <AdminOrdersTab showNotification={showNotification} />
+        )}
+
+        {/* TAB: KIỂM DUYỆT ĐÁNH GIÁ (UC-A15) */}
+        {activeTab === 'reviews' && (
+          <div className="admin-card">
+            <div className="admin-card-header">
+              <div>
+                <h3 className="admin-card-title">
+                  <i className="bi bi-chat-left-quote-fill text-primary"></i>
+                  Kiểm duyệt & Ẩn Đánh giá vi phạm (UC-A15)
+                </h3>
+                <p className="admin-card-subtitle">
+                  Quản trị viên rà soát và ẩn các đánh giá vi phạm kèm lý do kiểm duyệt
+                </p>
+              </div>
+            </div>
+            <div className="admin-table-container">
+              {adminReviews.length === 0 ? (
+                <div className="admin-empty-state">
+                  <h4 className="admin-empty-title">Chưa có đánh giá nào</h4>
+                </div>
+              ) : (
+                <table className="admin-table">
+                  <thead>
+                    <tr>
+                      <th>Mã</th>
+                      <th>Học viên</th>
+                      <th>Số sao</th>
+                      <th>Nội dung bình luận</th>
+                      <th style={{ textAlign: 'right' }}>Thao tác (UC-A15)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {adminReviews.map((rev) => (
+                      <tr key={rev.reviewId}>
+                        <td>#{rev.reviewId}</td>
+                        <td>{rev.userName || rev.user?.fullName || `User #${rev.userId}`}</td>
+                        <td style={{ color: '#d97706', fontWeight: 700 }}>{rev.rating} ★</td>
+                        <td>{rev.comment}</td>
+                        <td style={{ textAlign: 'right' }}>
+                          <button
+                            type="button"
+                            className="btn-admin-action outline-danger"
+                            onClick={() => handleHideReview(rev.reviewId)}
+                          >
+                            Ẩn đánh giá (UC-A15)
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
+          </div>
         )}
       </main>
 

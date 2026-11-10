@@ -73,15 +73,12 @@ function CoursePlayer() {
   const videoRef = useRef(null);
   const activeLessonItemRef = useRef(null);
 
-  // Flattened playable list for Prev/Next navigation
+  // Flattened playable list for Prev/Next navigation (Lessons only per 01-scope-decisions.md §5)
   const allPlayableItems = useMemo(() => {
     const items = [];
     curriculum.forEach((section, sIdx) => {
       (section.lessons || []).forEach((lesson) => {
         items.push({ ...lesson, isQuiz: false, sectionTitle: section.title, sectionIndex: sIdx });
-      });
-      (section.quizzes || []).forEach((quiz) => {
-        items.push({ ...quiz, isQuiz: true, sectionTitle: section.title, sectionIndex: sIdx });
       });
     });
     return items;
@@ -233,38 +230,36 @@ function CoursePlayer() {
     }
   };
 
-  // Toggle Complete / Incomplete Lesson with Instant Optimistic UI Update & Auto-advance
+  // UC-S10 & UC-S11: Toggle Complete / Unmark Complete Lesson
   const handleToggleComplete = async () => {
     if (!activeLesson || activeLesson.isQuiz) return;
     const lessonId = activeLesson.lessonId;
     const isAlreadyCompleted = completedLessons.includes(lessonId);
 
-    // 1. Optimistic state updates (instant color change to green and number jump)
     const nextCompleted = isAlreadyCompleted
-      ? completedLessons.filter(item => item !== lessonId)
+      ? completedLessons.filter((item) => item !== lessonId)
       : [...completedLessons, lessonId];
-    
+
     setCompletedLessons(nextCompleted);
 
     const totalItems = allPlayableItems.length || 1;
-    const optimisticPercent = Math.min(100, Math.round(((nextCompleted.length + completedQuizzes.length) / totalItems) * 100));
+    const optimisticPercent = Math.min(100, Math.round((nextCompleted.length / totalItems) * 100));
     setProgressPercent(optimisticPercent);
 
-    // 2. Synchronize with backend in background
     try {
       if (!isAlreadyCompleted) {
         await api.post(`/courses/${id}/lessons/${lessonId}/complete`);
-        // Tự động nhảy sang bài học tiếp theo nếu còn bài
         if (hasNext) {
           setTimeout(() => {
             handleNextLesson();
           }, 450);
         }
+      } else {
+        await api.delete(`/v1/learning/courses/${id}/lessons/${lessonId}/complete`);
       }
-      fetchProgress(true);
+      fetchProgress(false);
     } catch (err) {
       console.error('Failed to toggle completion:', err);
-      // Revert on failure
       setCompletedLessons(completedLessons);
       fetchProgress(false);
     }
@@ -507,28 +502,6 @@ function CoursePlayer() {
         </div>
 
         <div className="topbar-right">
-          {certificateUrl && progressPercent >= 100 && (
-            <Link 
-              to={`/certificates/${certificateUrl}`} 
-              target="_blank" 
-              className="btn-cert-badge"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.4rem',
-                background: 'linear-gradient(135deg, #f59e0b, #d97706)',
-                color: '#1e1b4b',
-                fontWeight: 700,
-                fontSize: '0.8rem',
-                padding: '0.4rem 0.85rem',
-                borderRadius: '9999px',
-                textDecoration: 'none'
-              }}
-            >
-              <Award size={15} /> Nhận Chứng Chỉ
-            </Link>
-          )}
-
           <button 
             className="btn-sidebar-collapse-toggle" 
             onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
@@ -587,6 +560,19 @@ function CoursePlayer() {
                     Đăng ký khóa học ngay
                   </Link>
                 </div>
+              ) : streamData?.videoUrl && getVideoSrc().toLowerCase().endsWith('.pdf') ? (
+                <iframe
+                  src={getVideoSrc()}
+                  title={activeLesson?.title || 'PDF Lesson'}
+                  style={{ width: '100%', height: '100%', border: 'none', background: '#fff' }}
+                />
+              ) : streamData?.videoUrl && (getVideoSrc().includes('youtube.com') || getVideoSrc().includes('youtu.be')) ? (
+                <iframe
+                  src={getVideoSrc().replace('watch?v=', 'embed/')}
+                  title={activeLesson?.title || 'Video Lesson'}
+                  style={{ width: '100%', height: '100%', border: 'none' }}
+                  allowFullScreen
+                />
               ) : streamData?.videoUrl ? (
                 <video 
                   ref={videoRef}
@@ -602,10 +588,14 @@ function CoursePlayer() {
                   Trình duyệt không hỗ trợ phát video HTML5.
                 </video>
               ) : (
-                <div className="video-state-card">
-                  <PlayCircle size={48} color="#64748b" />
-                  <h4>Bài học dạng tài liệu đọc</h4>
-                  <p>Bài học này bao gồm tài liệu hướng dẫn và bài tập thực hành chi tiết ở phần bên dưới.</p>
+                <div className="video-state-card" style={{ padding: '2.5rem', textAlign: 'left', overflowY: 'auto' }}>
+                  <div className="d-flex align-items-center gap-2 mb-3 text-info">
+                    <FileText size={28} />
+                    <h4 className="mb-0">Bài học văn bản (TEXT - UC-S09): {activeLesson?.title}</h4>
+                  </div>
+                  <div style={{ whiteSpace: 'pre-line', lineHeight: 1.75, color: '#e2e8f0', fontSize: '0.98rem' }}>
+                    {activeLesson?.content || 'Nội dung bài đọc chi tiết nằm ở phần Tổng quan bài học bên dưới.'}
+                  </div>
                 </div>
               )}
             </div>
@@ -815,9 +805,9 @@ function CoursePlayer() {
           {/* Header hiển thị thanh tiến độ mượt mà */}
           <div className="sidebar-progress-header">
             <div className="sidebar-title-row">
-              <h3>Nội dung khóa học</h3>
+              <h3>Nội dung khóa học (UC-S09..S11)</h3>
               <span className="sidebar-completed-count">
-                {completedLessons.length + completedQuizzes.length} / {allPlayableItems.length} hoàn thành
+                {completedLessons.length} / {allPlayableItems.length} bài hoàn thành
               </span>
             </div>
 
@@ -908,43 +898,6 @@ function CoursePlayer() {
                           </div>
                         );
                       })}
-
-                      {/* Quizzes nếu có */}
-                      {section.quizzes?.map((quiz) => {
-                        const isActive = activeLesson?.isQuiz && activeLesson?.quizId === quiz.quizId;
-                        const isDone = completedQuizzes.includes(quiz.quizId);
-
-                        return (
-                          <div 
-                            key={`quiz-${quiz.quizId}`}
-                            ref={isActive ? activeLessonItemRef : null}
-                            className={`sidebar-lesson-item ${isActive ? 'is-active' : ''}`}
-                            onClick={() => {
-                              setActiveLesson({ ...quiz, isQuiz: true });
-                              setQuizResult(null);
-                            }}
-                          >
-                            <div className="lesson-status-icon-box">
-                              {isDone ? (
-                                <CheckCircle size={18} className="status-icon-completed" />
-                              ) : (
-                                <HelpCircle size={18} color={isActive ? "#818cf8" : "#f59e0b"} />
-                              )}
-                            </div>
-
-                            <div className="lesson-title-meta-col">
-                              <span className="sidebar-lesson-name" title={quiz.title}>
-                                Quiz: {quiz.title}
-                              </span>
-                              <div className="sidebar-lesson-duration-badge">
-                                <span style={isDone ? { color: '#10b981', fontWeight: 600 } : {}}>
-                                  {isDone ? 'Đã đạt' : 'Kiểm tra trắc nghiệm'}
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      })}
                     </div>
                   )}
                 </div>
@@ -953,45 +906,6 @@ function CoursePlayer() {
           </div>
         </aside>
       </div>
-
-      {/* Modal Chúc Mừng Hoàn Thành Khóa Học & Nhận Chứng Chỉ */}
-      {showCongratsModal && certificateUrl && (
-        <div className="completion-modal-overlay" onClick={() => setShowCongratsModal(false)}>
-          <div className="completion-modal-card" onClick={(e) => e.stopPropagation()}>
-            <button 
-              className="completion-modal-close" 
-              onClick={() => setShowCongratsModal(false)}
-              title="Đóng"
-            >
-              <X size={18} />
-            </button>
-            <div className="completion-trophy-badge">
-              <Award size={48} color="#f59e0b" />
-            </div>
-            <h2 className="completion-modal-title">Chúc mừng bạn đã hoàn thành khóa học!</h2>
-            <p className="completion-course-title">{course?.title}</p>
-            <p className="completion-modal-desc">
-              Bạn đã xuất sắc hoàn thành 100% tất cả các bài giảng video và vượt qua các bài thi trắc nghiệm. Chứng chỉ tốt nghiệp danh giá của bạn đã sẵn sàng!
-            </p>
-            <div className="completion-modal-actions">
-              <Link 
-                to={`/certificates/${certificateUrl}`} 
-                target="_blank" 
-                className="btn-cert-primary"
-                onClick={() => setShowCongratsModal(false)}
-              >
-                <Award size={18} /> Xem Chứng Chỉ Tốt Nghiệp
-              </Link>
-              <button 
-                className="btn-cert-secondary" 
-                onClick={() => setShowCongratsModal(false)}
-              >
-                Đóng và xem lại bài học
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

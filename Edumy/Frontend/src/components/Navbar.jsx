@@ -1,28 +1,26 @@
 import React, { useContext, useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
-  Search, 
   ShoppingCart, 
-  Heart, 
   BookOpen, 
   LayoutDashboard, 
   Shield, 
   User, 
   LogOut, 
   ChevronDown,
-  Sparkles,
+  Receipt,
   Menu,
   X
 } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
 import { CartContext } from '../context/CartContext';
 import LiveCourseSearchBar from './LiveCourseSearchBar';
+import api from '../api/axiosConfig';
 import './Navbar.css';
 
 const Navbar = () => {
   const { user, logout } = useContext(AuthContext);
   const { cartCount, clearCartState } = useContext(CartContext);
-  const [searchTerm, setSearchTerm] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -39,16 +37,14 @@ const Navbar = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleSearchSubmit = (e) => {
-    e.preventDefault();
-    if (searchTerm.trim()) {
-      navigate(`/courses?search=${encodeURIComponent(searchTerm.trim())}`);
-    }
-  };
-
-  const handleLogout = () => {
+  const handleLogout = async () => {
     setIsDropdownOpen(false);
     setMobileMenuOpen(false);
+    try {
+      await api.post('/v1/auth/logout');
+    } catch {
+      // ignore if token already expired
+    }
     if (clearCartState) {
       clearCartState();
     }
@@ -67,50 +63,46 @@ const Navbar = () => {
           </span>
         </Link>
 
-        {/* Explore Courses Button */}
+        {/* Explore Courses Button (UC-G01) */}
         <Link to="/courses" className="nav-explore-btn hide-on-mobile">
-          <BookOpen size={16} /> Khám phá khóa học
+          <BookOpen size={16} /> Danh mục khóa học
         </Link>
 
-        {/* Live Search Input Bar */}
+        {/* Live Search Input Bar (UC-G02) */}
         <div className="navbar-search-wrapper hide-on-mobile" style={{ flex: 1, maxWidth: 540 }}>
-          <LiveCourseSearchBar variant="navbar" placeholder="Tìm kiếm khóa học, kỹ năng, giảng viên..." />
+          <LiveCourseSearchBar variant="navbar" placeholder="Tìm kiếm khóa học theo tên (UC-G02)..." />
         </div>
 
         {/* Right Navigation Actions */}
         <div className="navbar-nav-right">
-          {/* Instructor shortcut */}
-          {user?.role === 'Instructor' ? (
+          {/* Role shortcuts */}
+          {(user?.role === 'Instructor' || user?.role === 'Admin') && (
             <Link to="/instructor" className="nav-text-link hide-on-mobile">
               <LayoutDashboard size={15} style={{ display: 'inline', marginRight: 4, verticalAlign: -1 }} /> 
               Kênh Giảng viên
             </Link>
-          ) : user?.role === 'Admin' ? (
+          )}
+          {user?.role === 'Admin' && (
             <Link to="/admin" className="nav-text-link hide-on-mobile">
               <Shield size={15} style={{ display: 'inline', marginRight: 4, verticalAlign: -1 }} /> 
-              Quản trị viên
-            </Link>
-          ) : (
-            <Link to={user ? "/profile" : "/register?role=instructor"} className="nav-text-link hide-on-mobile">
-              Dạy học trên Edumy
+              Quản trị hệ thống
             </Link>
           )}
 
-          {/* My Learning for logged in user */}
+          {/* My Learning & Orders for logged in user */}
           {user && (
-            <Link to="/my-courses" className="nav-text-link hide-on-mobile">
-              Khóa học của tôi
-            </Link>
+            <>
+              <Link to="/my-courses" className="nav-text-link hide-on-mobile">
+                Khóa học của tôi
+              </Link>
+              <Link to="/orders" className="nav-text-link hide-on-mobile">
+                <Receipt size={15} style={{ display: 'inline', marginRight: 4, verticalAlign: -1 }} />
+                Đơn hàng
+              </Link>
+            </>
           )}
 
-          {/* Wishlist Icon */}
-          {user && (
-            <Link to="/wishlist" className="nav-icon-action-btn" title="Danh sách yêu thích">
-              <Heart size={20} />
-            </Link>
-          )}
-
-          {/* Cart Icon with Dynamic Badge */}
+          {/* Cart Icon with Dynamic Badge (UC-S01..S03) */}
           <Link to="/cart" className="nav-icon-action-btn" title="Giỏ hàng">
             <ShoppingCart size={20} />
             {cartCount > 0 && (
@@ -139,8 +131,8 @@ const Navbar = () => {
                       {user.fullName || user.email?.split('@')[0]}
                     </div>
                     <span className="dropdown-role-badge">
-                      {user.role === 'Admin' ? 'Admin Quản trị' :
-                       user.role === 'Instructor' ? 'Giảng viên' : 'Học viên'}
+                      {user.role === 'Admin' ? 'Quản trị viên (ADMIN)' :
+                       user.role === 'Instructor' ? 'Giảng viên (INSTRUCTOR)' : 'Học viên (STUDENT)'}
                     </span>
                   </div>
 
@@ -149,15 +141,15 @@ const Navbar = () => {
                     className="dropdown-item-link"
                     onClick={() => setIsDropdownOpen(false)}
                   >
-                    <BookOpen size={16} /> Khóa học của tôi
+                    <BookOpen size={16} /> Khóa học đã ghi danh (UC-S08)
                   </Link>
 
                   <Link 
-                    to="/wishlist" 
+                    to="/orders" 
                     className="dropdown-item-link"
                     onClick={() => setIsDropdownOpen(false)}
                   >
-                    <Heart size={16} /> Danh sách yêu thích
+                    <Receipt size={16} /> Lịch sử đơn hàng (UC-S06)
                   </Link>
 
                   <Link 
@@ -165,7 +157,7 @@ const Navbar = () => {
                     className="dropdown-item-link"
                     onClick={() => setIsDropdownOpen(false)}
                   >
-                    <User size={16} /> Hồ sơ cá nhân
+                    <User size={16} /> Hồ sơ cá nhân (UC-G09)
                   </Link>
 
                   {(user.role === 'Instructor' || user.role === 'Admin') && (
@@ -191,7 +183,7 @@ const Navbar = () => {
                   <div className="dropdown-divider"></div>
 
                   <button className="dropdown-logout-btn" onClick={handleLogout}>
-                    <LogOut size={16} /> Đăng xuất
+                    <LogOut size={16} /> Đăng xuất (UC-G10)
                   </button>
                 </div>
               )}
@@ -241,7 +233,7 @@ const Navbar = () => {
             <div className="mobile-drawer-search-wrap" style={{ margin: '0.75rem 0' }}>
               <LiveCourseSearchBar 
                 variant="mobile" 
-                placeholder="Tìm khóa học, giảng viên..."
+                placeholder="Tìm khóa học..."
                 onCloseMobile={() => setMobileMenuOpen(false)}
               />
             </div>
@@ -253,7 +245,7 @@ const Navbar = () => {
                 className="mobile-drawer-link"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                <BookOpen size={20} /> Khám phá khóa học
+                <BookOpen size={20} /> Danh mục khóa học
               </Link>
 
               {user && (
@@ -265,18 +257,17 @@ const Navbar = () => {
                   >
                     <BookOpen size={20} /> Khóa học của tôi
                   </Link>
-
                   <Link 
-                    to="/wishlist" 
+                    to="/orders" 
                     className="mobile-drawer-link"
                     onClick={() => setMobileMenuOpen(false)}
                   >
-                    <Heart size={20} /> Danh sách yêu thích
+                    <Receipt size={20} /> Đơn hàng của tôi
                   </Link>
                 </>
               )}
 
-              {user?.role === 'Instructor' ? (
+              {(user?.role === 'Instructor' || user?.role === 'Admin') && (
                 <Link 
                   to="/instructor" 
                   className="mobile-drawer-link"
@@ -284,21 +275,15 @@ const Navbar = () => {
                 >
                   <LayoutDashboard size={20} /> Kênh Giảng viên
                 </Link>
-              ) : user?.role === 'Admin' ? (
+              )}
+
+              {user?.role === 'Admin' && (
                 <Link 
                   to="/admin" 
                   className="mobile-drawer-link"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   <Shield size={20} /> Bảng điều khiển Quản trị
-                </Link>
-              ) : (
-                <Link 
-                  to={user ? "/profile" : "/register?role=instructor"} 
-                  className="mobile-drawer-link"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  <LayoutDashboard size={20} /> Dạy học trên Edumy
                 </Link>
               )}
 

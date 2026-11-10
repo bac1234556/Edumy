@@ -52,11 +52,13 @@ function CourseDetail() {
   const [isInstructorOfCourse, setIsInstructorOfCourse] = useState(false);
   const [inWishlist, setInWishlist] = useState(false);
 
-  // Review states
+  // Review states (UC-S12, UC-S13, UC-S14)
   const [reviewRating, setReviewRating] = useState(5);
   const [reviewComment, setReviewComment] = useState('');
+  const [editingReviewId, setEditingReviewId] = useState(null);
   const [submittingReview, setSubmittingReview] = useState(false);
   const [filterSentiment, setFilterSentiment] = useState('ALL');
+  const [coInstructors, setCoInstructors] = useState([]);
 
   // Similar courses state (Feature 3)
   const [similarCourses, setSimilarCourses] = useState([]);
@@ -125,10 +127,12 @@ function CourseDetail() {
       }
 
       try {
-        const wishRes = await api.get(`/wishlist/check/${id}`);
-        setInWishlist(!!wishRes.data?.inWishlist);
-      } catch (err) {
-        // Ignored
+        const coRes = await api.get(`/v1/instructor/courses/${id}/co-instructors`);
+        if (Array.isArray(coRes.data)) {
+          setCoInstructors(coRes.data.filter((c) => c.status === 'ACCEPTED' || !c.status));
+        }
+      } catch {
+        // Ignore if none
       }
     };
 
@@ -214,18 +218,46 @@ function CourseDetail() {
     }
   };
 
-  // Submit review
+  // UC-S15: Ghi danh trực tiếp vào khóa học miễn phí (price === 0)
+  const handleEnrollFree = async () => {
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+    try {
+      setEnrolling(true);
+      await api.post('/v1/learning/enrollments/free', { courseId: Number(id) });
+      setIsEnrolled(true);
+      showToast('Ghi danh khóa học miễn phí thành công! (UC-S15)', 'success');
+      navigate(`/my-courses/${id}/learn`);
+    } catch (error) {
+      showToast(error.response?.data?.message || 'Không thể ghi danh khóa học miễn phí.', 'error');
+    } finally {
+      setEnrolling(false);
+    }
+  };
+
+  // Submit or Update review (UC-S12, UC-S13)
   const handleSubmitReview = async (e) => {
     e.preventDefault();
     if (!reviewComment.trim()) return;
 
     try {
       setSubmittingReview(true);
-      await api.post(`/courses/${id}/reviews`, {
-        rating: reviewRating,
-        comment: reviewComment
-      });
-      alert('Đánh giá của bạn đã được ghi nhận và phân tích cảm xúc thành công!');
+      if (editingReviewId) {
+        await api.put(`/v1/reviews/${editingReviewId}`, {
+          rating: reviewRating,
+          comment: reviewComment
+        });
+        showToast('Đã cập nhật đánh giá khóa học thành công! (UC-S13)', 'success');
+        setEditingReviewId(null);
+      } else {
+        await api.post(`/courses/${id}/reviews`, {
+          rating: reviewRating,
+          comment: reviewComment
+        });
+        showToast('Đánh giá của bạn đã được ghi nhận thành công! (UC-S12)', 'success');
+      }
       setReviewComment('');
 
       // Refresh course data
@@ -238,22 +270,16 @@ function CourseDetail() {
     }
   };
 
-  // Toggle wishlist
-  const toggleWishlist = async () => {
-    if (!user) {
-      navigate('/login');
-      return;
-    }
+  // Delete own review (UC-S14)
+  const handleDeleteReview = async (reviewId) => {
+    if (!window.confirm('Bạn có chắc chắn muốn xóa đánh giá của mình không? (UC-S14)')) return;
     try {
-      if (inWishlist) {
-        await api.delete(`/wishlist/remove/${id}`);
-        setInWishlist(false);
-      } else {
-        await api.post(`/wishlist/add/${id}`);
-        setInWishlist(true);
-      }
+      await api.delete(`/v1/reviews/${reviewId}`);
+      showToast('Đã xóa đánh giá của bạn (UC-S14).', 'success');
+      const response = await api.get(`/courses/${id}`);
+      setCourse(response.data);
     } catch (error) {
-      alert(error.response?.data?.message || 'Cập nhật danh sách yêu thích thất bại.');
+      alert(error.response?.data?.message || 'Không thể xóa đánh giá.');
     }
   };
 
@@ -529,7 +555,7 @@ function CourseDetail() {
                 </div>
                 <div className="learn-item">
                   <CheckCircle size={18} />
-                  <span>Nhận chứng chỉ số có mã xác thực độc quyền từ hệ thống Edumy.</span>
+                  <span>Học qua bài giảng Video HTTPS, tài liệu PDF xem trực tiếp và bài đọc TEXT có theo dõi tiến độ.</span>
                 </div>
               </div>
             </div>
@@ -685,6 +711,12 @@ function CourseDetail() {
                     {course.instructor?.bio ||
                       'Hơn 10 năm kinh nghiệm phát triển các hệ thống chịu tải cao và kiến trúc microservices. Đam mê chia sẻ kiến thức thực chiến, giúp học viên tiếp cận công nghệ một cách bài bản, dễ hiểu và tự tin làm việc trong môi trường thực tế.'}
                   </p>
+                  {coInstructors.length > 0 && (
+                    <div className="mt-3 pt-2 border-top small">
+                      <strong>Đồng giảng viên (Co-Instructors - UC-G04):</strong>{' '}
+                      {coInstructors.map((ci) => ci.fullName || ci.email).join(', ')}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -835,6 +867,28 @@ function CourseDetail() {
                       <p className="mb-0 text-body small mt-2" style={{ lineHeight: '1.6' }}>
                         {rev.comment}
                       </p>
+                      {user && (Number(user.userId || user.id) === Number(rev.userId || rev.user?.userId) || user.email === rev.user?.email) && (
+                        <div className="mt-2 d-flex gap-2">
+                          <button
+                            type="button"
+                            className="btn btn-sm btn-outline-primary py-0 px-2"
+                            onClick={() => {
+                              setEditingReviewId(rev.reviewId);
+                              setReviewRating(rev.rating || 5);
+                              setReviewComment(rev.comment || '');
+                            }}
+                          >
+                            Sửa đánh giá (UC-S13)
+                          </button>
+                          <button
+                            type="button"
+                            className="btn btn-sm btn-outline-danger py-0 px-2"
+                            onClick={() => handleDeleteReview(rev.reviewId)}
+                          >
+                            Xóa đánh giá (UC-S14)
+                          </button>
+                        </div>
+                      )}
                     </div>
                   ))
                 )}
@@ -874,13 +928,28 @@ function CourseDetail() {
                       </small>
                     </div>
 
-                    <button
-                      type="submit"
-                      disabled={submittingReview}
-                      className="btn-solid-primary"
-                    >
-                      {submittingReview ? 'Đang gửi...' : 'Đăng đánh giá'}
-                    </button>
+                    <div className="d-flex gap-2">
+                      <button
+                        type="submit"
+                        disabled={submittingReview}
+                        className="btn-solid-primary"
+                      >
+                        {submittingReview ? 'Đang lưu...' : (editingReviewId ? 'Cập nhật đánh giá (UC-S13)' : 'Đăng đánh giá (UC-S12)')}
+                      </button>
+                      {editingReviewId && (
+                        <button
+                          type="button"
+                          className="btn btn-outline-secondary"
+                          onClick={() => {
+                            setEditingReviewId(null);
+                            setReviewComment('');
+                            setReviewRating(5);
+                          }}
+                        >
+                          Hủy sửa
+                        </button>
+                      )}
+                    </div>
                   </form>
                 </div>
               )}
@@ -967,6 +1036,15 @@ function CourseDetail() {
                     >
                       Quản lý bài giảng khóa học
                     </Link>
+                  ) : Number(course.price || 0) === 0 ? (
+                    <button
+                      onClick={handleEnrollFree}
+                      disabled={enrolling}
+                      className="btn-primary-cta"
+                      style={{ backgroundColor: '#10b981', borderColor: '#10b981' }}
+                    >
+                      <CheckCircle size={17} /> {enrolling ? 'Đang ghi danh...' : 'Ghi danh Miễn phí ngay (UC-S15)'}
+                    </button>
                   ) : (
                     <>
                       <button
@@ -974,21 +1052,21 @@ function CourseDetail() {
                         disabled={enrolling}
                         className="btn-primary-cta"
                       >
-                        <ShoppingCart size={17} /> Thêm vào giỏ hàng
+                        <ShoppingCart size={17} /> Thêm vào giỏ hàng (UC-S01)
                       </button>
                       <button
                         onClick={handleBuyNow}
                         disabled={enrolling}
                         className="btn-secondary-cta"
                       >
-                        Mua ngay
+                        Mua ngay & Thanh toán QR (UC-S04)
                       </button>
                     </>
                   )}
                 </div>
 
                 <div className="guarantee-note">
-                  <ShieldCheck size={16} /> Cam kết hoàn tiền 100% trong 30 ngày
+                  <ShieldCheck size={16} /> Kích hoạt quyền học ngay sau khi thanh toán thành công
                 </div>
 
                 {/* Course Includes */}
@@ -996,19 +1074,16 @@ function CourseDetail() {
                   <h4>Khóa học này bao gồm:</h4>
                   <ul className="includes-list">
                     <li>
-                      <Clock size={15} /> {totalDurationHours} video theo yêu cầu chất lượng cao
+                      <Clock size={15} /> {totalDurationHours} bài giảng VIDEO HTTPS theo yêu cầu
                     </li>
                     <li>
-                      <BookOpen size={15} /> {totalLectures} bài giảng thực hành chi tiết
+                      <BookOpen size={15} /> {totalLectures} bài học thực hành chi tiết (VIDEO, PDF, TEXT)
                     </li>
                     <li>
-                      <FileText size={15} /> Tài liệu mã nguồn và bài tập đính kèm
+                      <FileText size={15} /> Tài liệu PDF hiển thị trực tiếp trong phòng học
                     </li>
                     <li>
-                      <Monitor size={15} /> Truy cập trọn đời trên máy tính & điện thoại
-                    </li>
-                    <li>
-                      <Award size={15} /> Chứng chỉ hoàn thành khóa học có mã xác thực
+                      <Monitor size={15} /> Theo dõi tỷ lệ hoàn thành từng bài học (UC-S10, UC-S11)
                     </li>
                   </ul>
                 </div>

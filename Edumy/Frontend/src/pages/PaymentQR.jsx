@@ -392,7 +392,7 @@ function PaymentQR() {
               </div>
             </div>
 
-            {/* Action Buttons */}
+            {/* Action Buttons (UC-S04 & UC-S05) */}
             <div className="payment-actions-group">
               <button
                 className="btn-manual-check"
@@ -400,14 +400,22 @@ function PaymentQR() {
                 disabled={checking}
               >
                 <RefreshCw size={18} className={checking ? 'spin' : ''} />
-                {checking ? 'Đang kiểm tra giao dịch...' : 'Tôi đã chuyển tiền xong'}
+                {checking ? 'Đang kiểm tra giao dịch...' : 'Làm mới trạng thái thanh toán (UC-S05)'}
               </button>
 
               <button
                 className="btn-cancel-payment"
-                onClick={() => navigate('/cart')}
+                onClick={async () => {
+                  if (!window.confirm(`Bạn có muốn hủy đơn hàng #${orderId} đang chờ thanh toán không?`)) return;
+                  try {
+                    await api.post(`/v1/orders/${orderId}/cancel`);
+                  } catch {
+                    // ignore if already cancelled
+                  }
+                  navigate('/orders');
+                }}
               >
-                Hủy và quay lại giỏ hàng
+                Hủy đơn hàng đang chờ thanh toán (UC-S04)
               </button>
             </div>
           </div>

@@ -153,16 +153,26 @@ public class CoursesController {
 
     @GetMapping
     public ResponseEntity<?> getCourses(@ModelAttribute CourseQueryDto queryDto) {
-        if (queryDto.getSearch() != null && !queryDto.getSearch().trim().isEmpty()) {
-            userActivityService.logSearch(getCurrentUserId(), queryDto.getSearch().trim());
+        String keyword = (queryDto.getQ() != null && !queryDto.getQ().trim().isEmpty())
+                ? queryDto.getQ().trim()
+                : (queryDto.getSearch() != null ? queryDto.getSearch().trim() : "");
+        if (!keyword.isEmpty()) {
+            userActivityService.logSearch(getCurrentUserId(), keyword);
         }
 
         List<Course> all = courseRepository.findAll();
         
         List<Course> filtered = all.stream().filter(c -> {
+            // UC-G01: Only display public/published courses in public catalog (exclude Hidden, Draft, Rejected, PendingApproval)
+            String st = c.getStatus();
+            if (st != null && ("Hidden".equalsIgnoreCase(st) || "Draft".equalsIgnoreCase(st)
+                    || "Rejected".equalsIgnoreCase(st) || "PendingApproval".equalsIgnoreCase(st)
+                    || "Analyzing".equalsIgnoreCase(st))) {
+                return false;
+            }
             boolean match = true;
-            if (queryDto.getSearch() != null && !queryDto.getSearch().isEmpty()) {
-                String s = queryDto.getSearch().toLowerCase();
+            if (!keyword.isEmpty()) {
+                String s = keyword.toLowerCase();
                 match = (c.getTitle() != null && c.getTitle().toLowerCase().contains(s)) ||
                         (c.getDescription() != null && c.getDescription().toLowerCase().contains(s));
             }
@@ -171,6 +181,15 @@ public class CoursesController {
             }
             if (match && queryDto.getLevel() != null && !queryDto.getLevel().isEmpty()) {
                 match = queryDto.getLevel().equals(c.getLevel());
+            }
+            // UC-G03: Filter by priceType (FREE / PAID / ALL)
+            if (match && queryDto.getPriceType() != null && !queryDto.getPriceType().isEmpty()) {
+                BigDecimal p = c.getPrice() != null ? c.getPrice() : BigDecimal.ZERO;
+                if ("FREE".equalsIgnoreCase(queryDto.getPriceType())) {
+                    match = p.compareTo(BigDecimal.ZERO) == 0;
+                } else if ("PAID".equalsIgnoreCase(queryDto.getPriceType())) {
+                    match = p.compareTo(BigDecimal.ZERO) > 0;
+                }
             }
             if (match && queryDto.getMinPrice() != null) {
                 match = c.getPrice().compareTo(queryDto.getMinPrice()) >= 0;
@@ -245,30 +264,22 @@ public class CoursesController {
             String instructorName = (e.getCourse() != null && e.getCourse().getInstructor() != null) ? e.getCourse().getInstructor().getFullName() : "Giảng viên Edumy";
             Integer courseId = e.getCourseId();
 
-            // Tính tiến độ thực tế chính xác dựa trên bài học đã học
+            // UC-S11: Tính tiến độ dựa trên số bài học đã hoàn thành trên tổng số bài học của khóa
             long totalLessons = lessonRepository.countLessonsByCourseId(courseId);
             long completedLessons = lessonProgressRepository.countCompletedLessonsByUserAndCourse(userId, courseId);
-            long totalQuizzes = quizRepository.countQuizzesByCourseId(courseId);
-            List<Integer> quizIds = quizRepository.findQuizIdsByCourseId(courseId);
-            long completedQuizzes = (quizIds != null && !quizIds.isEmpty()) 
-                    ? quizAttemptRepository.countByUserIdAndIsPassedTrueAndQuizIdIn(userId, quizIds) 
-                    : 0;
-
-            long totalItems = totalLessons + totalQuizzes;
-            long completedItems = completedLessons + completedQuizzes;
-            int actualProgress = totalItems > 0 ? (int) Math.min(100, Math.round((double) completedItems / totalItems * 100)) : 0;
-
-            Certificate cert = certificateRepository.findByUserIdAndCourseId(userId, courseId);
+            int actualProgress = totalLessons > 0 ? (int) Math.min(100, Math.round((double) completedLessons / totalLessons * 100)) : 0;
 
             m.put("courseId", courseId);
             m.put("title", e.getCourse() != null ? e.getCourse().getTitle() : null);
             m.put("thumbnailUrl", e.getCourse() != null ? e.getCourse().getThumbnailUrl() : null);
+            m.put("courseStatus", e.getCourse() != null ? e.getCourse().getStatus() : "Published");
             m.put("instructorName", instructorName);
             m.put("fullName", instructorName);
             m.put("instructor", instructorName);
             m.put("enrolledAt", e.getEnrolledAt());
+            m.put("completedLessons", completedLessons);
+            m.put("totalLessons", totalLessons);
             m.put("progressPercentage", actualProgress);
-            m.put("certificateUrl", cert != null ? cert.getCertificateUrl() : null);
             return m;
         }).collect(Collectors.toList());
 

@@ -1,13 +1,10 @@
 import { useState } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import api from '../api/axiosConfig';
-import { AlertCircle, GraduationCap, BookOpen } from 'lucide-react';
+import { AlertCircle } from 'lucide-react';
 import './Auth.css';
 
 function Register() {
-  const [searchParams] = useSearchParams();
-  const roleParam = searchParams.get('role');
-  const [role, setRole] = useState(roleParam?.toLowerCase() === 'instructor' ? 'Instructor' : 'Student');
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -43,13 +40,14 @@ function Register() {
     setIsSubmitting(true);
     setError('');
     try {
+      const normalizedEmail = email.trim().toLowerCase();
       await api.post('/auth/register', { 
         fullName: fullName.trim(), 
-        email: email.trim().toLowerCase(), 
+        email: normalizedEmail, 
         password,
-        role
+        role: 'Student'
       });
-      navigate('/login');
+      navigate(`/verify-email?email=${encodeURIComponent(normalizedEmail)}&token=VERIFY-NEW-ACCOUNT`);
     } catch (err) {
       setError(err.response?.data?.message || 'Đăng ký tài khoản thất bại. Email có thể đã được đăng ký trước đó.');
     } finally {
@@ -60,7 +58,10 @@ function Register() {
   return (
     <div className="auth-container">
       <div className="auth-card hover-3d">
-        <h2 className="auth-title">Đăng ký và bắt đầu học tập</h2>
+        <h2 className="auth-title">Đăng ký tài khoản Học viên (UC-G05)</h2>
+        <p className="text-center text-muted small mb-4">
+          Tài khoản đăng ký mới được gán vai trò Học viên (STUDENT). Sau khi đăng ký, bạn sẽ được chuyển tới bước xác thực Email (UC-G06).
+        </p>
 
         {error && (
           <div style={{ 
@@ -80,63 +81,8 @@ function Register() {
             <span>{error}</span>
           </div>
         )}
-        
-        <form className="auth-form" onSubmit={handleRegister} noValidate>
-          <div className="form-group mb-3">
-            <label style={{ fontSize: '13px', color: '#475569', marginBottom: '8px' }}>
-              Vai trò tài khoản bạn muốn đăng ký:
-            </label>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-              <button
-                type="button"
-                onClick={() => setRole('Student')}
-                style={{
-                  padding: '12px 8px',
-                  borderRadius: '8px',
-                  border: role === 'Student' ? '2px solid #4f46e5' : '1px solid #cbd5e1',
-                  backgroundColor: role === 'Student' ? '#eef2ff' : '#ffffff',
-                  color: role === 'Student' ? '#4f46e5' : '#475569',
-                  fontWeight: 600,
-                  fontSize: '0.9rem',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  gap: '4px',
-                  transition: 'all 0.15s ease'
-                }}
-              >
-                <GraduationCap size={20} />
-                <span>Học viên</span>
-                <span style={{ fontSize: '0.725rem', fontWeight: 400, color: '#64748b' }}>Học & nhận chứng chỉ</span>
-              </button>
-              
-              <button
-                type="button"
-                onClick={() => setRole('Instructor')}
-                style={{
-                  padding: '12px 8px',
-                  borderRadius: '8px',
-                  border: role === 'Instructor' ? '2px solid #4f46e5' : '1px solid #cbd5e1',
-                  backgroundColor: role === 'Instructor' ? '#eef2ff' : '#ffffff',
-                  color: role === 'Instructor' ? '#4f46e5' : '#475569',
-                  fontWeight: 600,
-                  fontSize: '0.9rem',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  gap: '4px',
-                  transition: 'all 0.15s ease'
-                }}
-              >
-                <BookOpen size={20} />
-                <span>Giảng viên</span>
-                <span style={{ fontSize: '0.725rem', fontWeight: 400, color: '#64748b' }}>Tạo & bán khóa học</span>
-              </button>
-            </div>
-          </div>
 
+        <form className="auth-form" onSubmit={handleRegister} noValidate>
           <div className="form-group">
             <label>Họ và tên</label>
             <input 
@@ -211,21 +157,10 @@ function Register() {
               cursor: isSubmitting ? 'not-allowed' : 'pointer'
             }}
           >
-            {isSubmitting ? (
-              <>
-                <span className="btn-spinner"></span>
-                Đang tạo tài khoản...
-              </>
-            ) : (
-              'Đăng ký tài khoản'
-            )}
+            {isSubmitting ? 'Đang tạo tài khoản...' : 'Đăng ký tài khoản'}
           </button>
         </form>
-        
-        <div className="auth-footer-text" style={{ fontSize: '12px', marginBottom: '16px' }}>
-          Bằng việc đăng ký, bạn đồng ý với <a href="#">Điều khoản sử dụng</a> và <a href="#">Chính sách bảo mật</a> của chúng tôi.
-        </div>
-        
+
         <div className="auth-divider"></div>
 
         <div className="auth-footer-text">

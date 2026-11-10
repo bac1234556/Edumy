@@ -204,8 +204,8 @@ function HomePage() {
                 <ShieldCheck size={22} />
               </div>
               <div>
-                <div className="trust-text-title">Chứng chỉ xác thực</div>
-                <div className="trust-text-sub">Cấp chứng nhận hoàn thành chuẩn quốc tế</div>
+                <div className="trust-text-title">Thanh toán QR & Học ngay</div>
+                <div className="trust-text-sub">Ghi danh tự động cho khóa Miễn phí & Trả phí</div>
               </div>
             </div>
 
@@ -404,9 +404,9 @@ function HomePage() {
               <div className="feature-icon-box">
                 <Sparkles size={28} />
               </div>
-              <h3>Trải nghiệm học tập thông minh</h3>
+              <h3>Bài giảng Đa định dạng (Video, PDF, Text)</h3>
               <p>
-                Hệ thống video chất lượng cao hỗ trợ ghi chú cá nhân, kiểm tra kiến thức qua Quiz tương tác và theo dõi tiến độ thời gian thực.
+                Hệ thống phòng học trực tuyến hỗ trợ bài giảng Video HTTPS, tài liệu PDF xem trực tiếp và bài đọc chuyên sâu kèm đánh dấu hoàn thành từng bài (UC-S09, UC-S10).
               </p>
             </div>
 
@@ -414,9 +414,9 @@ function HomePage() {
               <div className="feature-icon-box">
                 <Award size={28} />
               </div>
-              <h3>Chứng nhận uy tín tức thì</h3>
+              <h3>Theo dõi Tiến độ & Đánh giá Minh bạch</h3>
               <p>
-                Nhận chứng chỉ số có mã xác thực duy nhất ngay khi hoàn thành 100% bài giảng để bổ sung trực tiếp vào CV hoặc LinkedIn.
+                Theo dõi tỷ lệ hoàn thành khóa học theo thời gian thực (UC-S11) và tham khảo đánh giá 1-5 sao từ học viên đã ghi danh thực tế (UC-S12).
               </p>
             </div>
           </div>
@@ -528,8 +528,8 @@ function HomePage() {
             <Link to="/courses" className="btn-cta-primary">
               Khám phá khóa học <ArrowRight size={18} />
             </Link>
-            <Link to="/instructor" className="btn-cta-secondary">
-              Trở thành Giảng viên
+            <Link to="/courses?priceType=FREE" className="btn-cta-secondary">
+              Khóa học Miễn phí (0đ)
             </Link>
           </div>
         </div>

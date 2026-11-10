@@ -32,8 +32,9 @@ function InstructorDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   
-  // Tabs: 'courses' | 'analytics' | 'students'
+  // Tabs: 'courses' | 'invitations' | 'analytics' | 'students'
   const [activeTab, setActiveTab] = useState('courses');
+  const [invitations, setInvitations] = useState([]);
 
   // Student roster state for selected course
   const [selectedCourseForRoster, setSelectedCourseForRoster] = useState(null);
@@ -43,14 +44,20 @@ function InstructorDashboard() {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const [coursesRes, statsRes] = await Promise.all([
+      const [coursesRes, statsRes, invRes] = await Promise.allSettled([
         api.get('/courses/my-courses'),
-        api.get('/instructor/stats')
+        api.get('/instructor/stats'),
+        api.get('/v1/instructor/invitations')
       ]);
 
-      const courseList = coursesRes.data || [];
+      const courseList = coursesRes.status === 'fulfilled' ? (coursesRes.value.data || []) : [];
       setCourses(courseList);
-      setStats(statsRes.data);
+      if (statsRes.status === 'fulfilled') {
+        setStats(statsRes.value.data);
+      }
+      if (invRes.status === 'fulfilled') {
+        setInvitations(Array.isArray(invRes.value.data) ? invRes.value.data : []);
+      }
 
       if (courseList.length > 0 && !selectedCourseForRoster) {
         setSelectedCourseForRoster(courseList[0].courseId);
@@ -59,6 +66,51 @@ function InstructorDashboard() {
       setError('Lỗi khi tải dữ liệu Bảng điều khiển Giảng viên.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  // UC-I17: Submit course for Admin approval
+  const handleSubmitForReview = async (courseId) => {
+    try {
+      await api.post(`/v1/instructor/courses/${courseId}/submit`);
+      alert('Đã gửi khóa học chờ Admin xét duyệt! (UC-I17)');
+      fetchData();
+    } catch (err) {
+      alert(err.response?.data?.message || 'Không thể gửi duyệt khóa học.');
+    }
+  };
+
+  // UC-I18: Withdraw submission back to Draft
+  const handleWithdrawReview = async (courseId) => {
+    try {
+      await api.post(`/v1/instructor/courses/${courseId}/withdraw`);
+      alert('Đã rút yêu cầu duyệt và chuyển khóa học về Bản nháp (DRAFT)! (UC-I18)');
+      fetchData();
+    } catch (err) {
+      alert(err.response?.data?.message || 'Không thể rút yêu cầu duyệt.');
+    }
+  };
+
+  // UC-I04: Delete Draft course
+  const handleDeleteDraftCourse = async (courseId, title) => {
+    if (!window.confirm(`Bạn có chắc chắn muốn xóa khóa học nháp "${title}" không? (UC-I04)`)) return;
+    try {
+      await api.delete(`/courses/${courseId}`);
+      alert('Đã xóa khóa học ở trạng thái Nháp (UC-I04).');
+      fetchData();
+    } catch (err) {
+      alert(err.response?.data?.message || 'Chỉ có thể xóa khóa học đang ở trạng thái Nháp.');
+    }
+  };
+
+  // UC-I14 & UC-I15: Accept / Decline Co-Instructor Invitation
+  const handleRespondInvitation = async (courseId, action) => {
+    try {
+      await api.post(`/v1/instructor/invitations/${courseId}/${action}`);
+      alert(action === 'accept' ? 'Đã chấp nhận lời mời đồng giảng viên! (UC-I14)' : 'Đã từ chối lời mời đồng giảng viên (UC-I15).');
+      fetchData();
+    } catch (err) {
+      alert(err.response?.data?.message || 'Không thể xử lý lời mời.');
     }
   };
 
@@ -217,7 +269,19 @@ function InstructorDashboard() {
             className={`studio-tab-btn ${activeTab === 'courses' ? 'active' : ''}`}
             onClick={() => setActiveTab('courses')}
           >
-            <BookOpen size={18} /> Khóa học của tôi ({courses.length})
+            <BookOpen size={18} /> Khóa học phụ trách ({courses.length})
+          </button>
+          <button
+            className={`studio-tab-btn ${activeTab === 'invitations' ? 'active' : ''}`}
+            onClick={() => setActiveTab('invitations')}
+          >
+            <Users size={18} /> Lời mời Đồng giảng viên ({invitations.filter(i => i.status === 'PENDING').length})
+          </button>
+          <button
+            className={`studio-tab-btn ${activeTab === 'students' ? 'active' : ''}`}
+            onClick={() => setActiveTab('students')}
+          >
+            <GraduationCap size={18} /> Danh sách Học viên (UC-I19)
           </button>
           <button
             className={`studio-tab-btn ${activeTab === 'analytics' ? 'active' : ''}`}
@@ -225,13 +289,69 @@ function InstructorDashboard() {
           >
             <BarChart3 size={18} /> Thống kê & Phân tích AI
           </button>
-          <button
-            className={`studio-tab-btn ${activeTab === 'students' ? 'active' : ''}`}
-            onClick={() => setActiveTab('students')}
-          >
-            <GraduationCap size={18} /> Danh sách Học viên
-          </button>
         </div>
+
+        {/* TAB: CO-INSTRUCTOR INVITATIONS (UC-I14 & UC-I15) */}
+        {activeTab === 'invitations' && (
+          <div className="roster-card mb-4">
+            <h4 className="analytics-panel-title mb-3">Lời mời Đồng giảng viên (UC-I14 & UC-I15)</h4>
+            {invitations.length === 0 ? (
+              <p className="text-muted py-4 text-center mb-0">
+                Hiện tại bạn chưa có lời mời cộng tác giảng dạy nào.
+              </p>
+            ) : (
+              <div className="table-responsive">
+                <table className="roster-table">
+                  <thead>
+                    <tr>
+                      <th>Mã khóa học</th>
+                      <th>Tên khóa học</th>
+                      <th>Trạng thái lời mời</th>
+                      <th className="text-end">Thao tác (UC-I14 / UC-I15)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {invitations.map((inv, idx) => (
+                      <tr key={idx}>
+                        <td>#{inv.courseId}</td>
+                        <td><strong>{inv.courseTitle || `Khóa học #${inv.courseId}`}</strong></td>
+                        <td>
+                          <span className="badge bg-info-subtle text-info px-2 py-1 rounded-pill">
+                            {inv.status}
+                          </span>
+                        </td>
+                        <td className="text-end">
+                          {inv.status === 'PENDING' ? (
+                            <div className="d-inline-flex gap-2">
+                              <button
+                                type="button"
+                                className="btn btn-sm btn-success"
+                                onClick={() => handleRespondInvitation(inv.courseId, 'accept')}
+                              >
+                                Chấp nhận (UC-I14)
+                              </button>
+                              <button
+                                type="button"
+                                className="btn btn-sm btn-outline-danger"
+                                onClick={() => handleRespondInvitation(inv.courseId, 'decline')}
+                              >
+                                Từ chối (UC-I15)
+                              </button>
+                            </div>
+                          ) : (
+                            <Link to={`/instructor/courses/${inv.courseId}/curriculum`} className="btn btn-sm btn-outline-primary">
+                              Biên soạn nội dung
+                            </Link>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* ------------------------------------------------------------------
             5. TAB 1: COURSES MANAGEMENT
@@ -290,29 +410,42 @@ function InstructorDashboard() {
                           </div>
                         )}
 
-                        {/* Action Buttons */}
-                        <div className="studio-course-actions-row">
+                        {/* Action Buttons (UC-I03, UC-I04, UC-I17, UC-I18) */}
+                        <div className="studio-course-actions-row flex-wrap">
                           <Link
                             to={`/instructor/courses/${course.courseId}/curriculum`}
                             className="btn-studio-action"
                           >
-                            <Layers size={14} /> Quản lý bài giảng
+                            <Layers size={14} /> Đề cương & Đồng giảng viên
                           </Link>
 
-                          <Link
-                            to={`/instructor/courses/${course.courseId}/edit`}
-                            className="btn-studio-action outline-secondary"
-                          >
-                            <Edit size={14} /> Sửa thông tin
-                          </Link>
-
-                          {course.needsReanalysis && (
+                          {(statusKey === 'draft' || statusKey === 'rejected') && (
                             <button
                               type="button"
-                              onClick={() => handleTriggerAnalysis(course.courseId)}
+                              onClick={() => handleSubmitForReview(course.courseId)}
                               className="btn-studio-action ai-btn"
                             >
-                              <Sparkles size={14} /> Phân tích AI
+                              <CheckCircle2 size={14} /> Gửi duyệt (UC-I17)
+                            </button>
+                          )}
+
+                          {statusKey === 'pendingapproval' && (
+                            <button
+                              type="button"
+                              onClick={() => handleWithdrawReview(course.courseId)}
+                              className="btn-studio-action outline-secondary"
+                            >
+                              <Clock size={14} /> Rút duyệt (UC-I18)
+                            </button>
+                          )}
+
+                          {statusKey === 'draft' && (
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteDraftCourse(course.courseId, course.title)}
+                              className="btn-studio-action outline-secondary text-danger"
+                            >
+                              Xóa nháp (UC-I04)
                             </button>
                           )}
                         </div>

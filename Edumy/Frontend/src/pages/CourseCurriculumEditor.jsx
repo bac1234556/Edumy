@@ -34,14 +34,20 @@ function CourseCurriculumEditor() {
   const [selectedSectionId, setSelectedSectionId] = useState(null);
   const [expandedSections, setExpandedSections] = useState({});
 
-  // New Lesson form state
+  // New Lesson form state (UC-I09: VIDEO, PDF, TEXT)
   const [lessonForm, setLessonForm] = useState({
     title: '',
+    contentType: 'VIDEO',
     videoUrl: '',
+    content: '',
     durationMinutes: 10,
     isPreview: false
   });
   const [activeLessonModalSection, setActiveLessonModalSection] = useState(null);
+
+  // Co-Instructors state (UC-I13 & UC-I16)
+  const [coInstructors, setCoInstructors] = useState([]);
+  const [coEmail, setCoEmail] = useState('');
 
   // Video preview modal
   const [previewVideoUrl, setPreviewVideoUrl] = useState(null);
@@ -57,6 +63,14 @@ function CourseCurriculumEditor() {
       // Fetch curriculum
       const curRes = await api.get(`/courses/${id}/curriculum`);
       setSections(curRes.data || []);
+
+      // Fetch co-instructors (UC-I13)
+      try {
+        const coRes = await api.get(`/v1/instructor/courses/${id}/co-instructors`);
+        setCoInstructors(Array.isArray(coRes.data) ? coRes.data : []);
+      } catch {
+        setCoInstructors([]);
+      }
 
       // Expand all sections by default
       const expands = {};
@@ -124,10 +138,74 @@ function CourseCurriculumEditor() {
     setActiveLessonModalSection(sectionId);
     setLessonForm({
       title: '',
+      contentType: 'VIDEO',
       videoUrl: '',
+      content: '',
       durationMinutes: 10,
       isPreview: false
     });
+  };
+
+  // UC-I08: Reorder chapters
+  const handleMoveSection = async (index, direction) => {
+    const targetIdx = index + direction;
+    if (targetIdx < 0 || targetIdx >= sections.length) return;
+    const reordered = [...sections];
+    const [moved] = reordered.splice(index, 1);
+    reordered.splice(targetIdx, 0, moved);
+    setSections(reordered);
+    try {
+      await api.put(`/v1/instructor/courses/${id}/chapter-order`, {
+        chapterIds: reordered.map((s) => s.sectionId)
+      });
+      showNotification('Đã cập nhật thứ tự chương học (UC-I08)!');
+    } catch {
+      fetchCurriculum();
+    }
+  };
+
+  // UC-I12: Reorder lessons within chapter
+  const handleMoveLesson = async (sectionId, lessonsList, index, direction) => {
+    const targetIdx = index + direction;
+    if (targetIdx < 0 || targetIdx >= lessonsList.length) return;
+    const reordered = [...lessonsList];
+    const [moved] = reordered.splice(index, 1);
+    reordered.splice(targetIdx, 0, moved);
+    try {
+      await api.put(`/v1/instructor/chapters/${sectionId}/lesson-order`, {
+        lessonIds: reordered.map((l) => l.lessonId)
+      });
+      showNotification('Đã cập nhật thứ tự bài học (UC-I12)!');
+      fetchCurriculum();
+    } catch {
+      fetchCurriculum();
+    }
+  };
+
+  // UC-I13: Invite co-instructor
+  const handleInviteCoInstructor = async (e) => {
+    e.preventDefault();
+    if (!coEmail.trim()) return;
+    try {
+      await api.post(`/v1/instructor/courses/${id}/co-instructors`, { email: coEmail.trim() });
+      setCoEmail('');
+      showNotification('Đã gửi lời mời Đồng giảng viên thành công (UC-I13)!');
+      fetchCurriculum();
+    } catch (err) {
+      alert(err.response?.data?.message || 'Không thể mời đồng giảng viên.');
+    }
+  };
+
+  // UC-I16: Remove co-instructor
+  const handleRemoveCoInstructor = async (instructorId) => {
+    if (!window.confirm('Bạn có chắc chắn muốn gỡ đồng giảng viên này khỏi khóa học? (UC-I16)')) return;
+    try {
+      await api.delete(`/v1/instructor/courses/${id}/co-instructors/${instructorId}`);
+      showNotification('Đã gỡ đồng giảng viên khỏi khóa học (UC-I16).');
+      fetchCurriculum();
+    } catch (err) {
+      alert(err.response?.data?.message || 'Không thể gỡ đồng giảng viên.');
+    }
   };
 
   const handleCreateLesson = async (e) => {
@@ -138,17 +216,25 @@ function CourseCurriculumEditor() {
       const section = sections.find(s => s.sectionId === activeLessonModalSection);
       const currentLessonsCount = section?.lessons?.length || 0;
 
+      let resolvedVideoUrl = '';
+      if (lessonForm.contentType === 'VIDEO') {
+        resolvedVideoUrl = lessonForm.videoUrl.trim() || 'https://www.w3schools.com/html/mov_bbb.mp4';
+      } else if (lessonForm.contentType === 'PDF') {
+        resolvedVideoUrl = lessonForm.videoUrl.trim() || 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf';
+      }
+
       const payload = {
         title: lessonForm.title.trim(),
-        videoUrl: lessonForm.videoUrl.trim() || 'https://www.w3schools.com/html/mov_bbb.mp4',
-        duration: Math.max(1, parseInt(lessonForm.durationMinutes, 10) || 5) * 60, // in seconds
+        videoUrl: resolvedVideoUrl,
+        content: lessonForm.content?.trim() || `[${lessonForm.contentType}] ${lessonForm.title.trim()}`,
+        duration: Math.max(1, parseInt(lessonForm.durationMinutes, 10) || 5) * 60,
         isPreview: Boolean(lessonForm.isPreview),
         orderIndex: currentLessonsCount + 1
       };
 
       await api.post(`/sections/${activeLessonModalSection}/lessons`, payload);
       setActiveLessonModalSection(null);
-      showNotification('Đã thêm bài giảng mới thành công!');
+      showNotification(`Đã thêm bài học loại ${lessonForm.contentType} thành công (UC-I09)!`);
       fetchCurriculum();
     } catch (err) {
       alert('Lỗi khi thêm bài học: ' + (err.response?.data?.message || err.message));
@@ -235,6 +321,54 @@ function CourseCurriculumEditor() {
         </div>
       )}
 
+      {/* Co-Instructor Collaboration Panel (UC-I13 & UC-I16) */}
+      <div className="card shadow-sm border-0 mb-4 rounded-3 p-4 bg-white">
+        <div className="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
+          <div>
+            <h5 className="fw-bold mb-1 text-dark">Cộng tác Đồng giảng viên (UC-I13 & UC-I16)</h5>
+            <p className="text-muted small mb-0">
+              Giảng viên chính có thể mời Giảng viên khác cộng tác biên soạn chương & bài học hoặc gỡ khỏi khóa học.
+            </p>
+          </div>
+          <form onSubmit={handleInviteCoInstructor} className="d-flex gap-2">
+            <input
+              type="email"
+              className="form-control form-control-sm"
+              style={{ minWidth: 240 }}
+              placeholder="Nhập email Giảng viên cần mời..."
+              value={coEmail}
+              onChange={(e) => setCoEmail(e.target.value)}
+              required
+            />
+            <button type="submit" className="btn btn-sm btn-primary px-3 rounded-pill text-nowrap">
+              + Mời Đồng giảng viên (UC-I13)
+            </button>
+          </form>
+        </div>
+
+        {coInstructors.length > 0 && (
+          <div className="d-flex flex-wrap gap-2 pt-2 border-top">
+            {coInstructors.map((ci, idx) => (
+              <div
+                key={idx}
+                className="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill border bg-light small"
+              >
+                <strong>{ci.fullName || ci.email}</strong>
+                <span className="badge bg-secondary-subtle text-secondary">{ci.status || 'PENDING'}</span>
+                <button
+                  type="button"
+                  onClick={() => handleRemoveCoInstructor(ci.instructorId)}
+                  className="btn btn-sm text-danger p-0 ms-1 border-0 bg-transparent"
+                  title="Gỡ đồng giảng viên (UC-I16)"
+                >
+                  ✕
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
       {/* Add Section Form Modal/Card */}
       {showAddSection && (
         <div className="card shadow-sm border-primary mb-4 rounded-3 p-4 bg-light">
@@ -299,15 +433,33 @@ function CourseCurriculumEditor() {
 
                   <div className="d-flex align-items-center gap-2" onClick={(e) => e.stopPropagation()}>
                     <button
+                      type="button"
+                      disabled={sIndex === 0}
+                      onClick={() => handleMoveSection(sIndex, -1)}
+                      className="btn btn-sm btn-outline-secondary rounded-circle px-2 py-1"
+                      title="Đưa chương lên (UC-I08)"
+                    >
+                      ↑
+                    </button>
+                    <button
+                      type="button"
+                      disabled={sIndex === sections.length - 1}
+                      onClick={() => handleMoveSection(sIndex, 1)}
+                      className="btn btn-sm btn-outline-secondary rounded-circle px-2 py-1"
+                      title="Đưa chương xuống (UC-I08)"
+                    >
+                      ↓
+                    </button>
+                    <button
                       onClick={() => handleOpenAddLesson(section.sectionId)}
                       className="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-1 rounded-pill px-3"
                     >
-                      <Plus size={14} /> Thêm bài giảng
+                      <Plus size={14} /> Thêm bài học (UC-I09)
                     </button>
                     <button
                       onClick={() => handleDeleteSection(section.sectionId, section.title)}
                       className="btn btn-sm btn-outline-danger rounded-circle p-2"
-                      title="Xóa chương này"
+                      title="Xóa chương này (UC-I07)"
                     >
                       <Trash2 size={16} />
                     </button>
@@ -369,6 +521,24 @@ function CourseCurriculumEditor() {
                             </div>
 
                             <div className="d-flex align-items-center gap-2">
+                              <button
+                                type="button"
+                                disabled={lIndex === 0}
+                                onClick={() => handleMoveLesson(section.sectionId, lessonsList, lIndex, -1)}
+                                className="btn btn-sm btn-outline-secondary rounded-circle px-2 py-1"
+                                title="Đưa bài học lên (UC-I12)"
+                              >
+                                ↑
+                              </button>
+                              <button
+                                type="button"
+                                disabled={lIndex === lessonsList.length - 1}
+                                onClick={() => handleMoveLesson(section.sectionId, lessonsList, lIndex, 1)}
+                                className="btn btn-sm btn-outline-secondary rounded-circle px-2 py-1"
+                                title="Đưa bài học xuống (UC-I12)"
+                              >
+                                ↓
+                              </button>
                               {lesson.videoUrl && (
                                 <button
                                   onClick={() => setPreviewVideoUrl(lesson.videoUrl)}
@@ -380,7 +550,7 @@ function CourseCurriculumEditor() {
                               <button
                                 onClick={() => handleDeleteLesson(lesson.lessonId, lesson.title)}
                                 className="btn btn-sm btn-outline-danger rounded-circle p-2"
-                                title="Xóa bài học"
+                                title="Xóa bài học (UC-I11)"
                               >
                                 <Trash2 size={16} />
                               </button>
@@ -428,16 +598,44 @@ function CourseCurriculumEditor() {
                   </div>
 
                   <div className="mb-3">
-                    <label className="form-label fw-semibold">URL Video bài giảng</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      placeholder="VD: https://www.youtube.com/watch?v=... hoặc link video mp4"
-                      value={lessonForm.videoUrl}
-                      onChange={(e) => setLessonForm({ ...lessonForm, videoUrl: e.target.value })}
-                    />
-                    <small className="text-muted">Hỗ trợ link video MP4 trực tiếp hoặc nhúng YouTube/HLS.</small>
+                    <label className="form-label fw-semibold">Loại nội dung bài học (UC-I09)</label>
+                    <select
+                      className="form-select"
+                      value={lessonForm.contentType}
+                      onChange={(e) => setLessonForm({ ...lessonForm, contentType: e.target.value })}
+                    >
+                      <option value="VIDEO">VIDEO (Liên kết Video HTTPS)</option>
+                      <option value="PDF">PDF (Tài liệu PDF hiển thị trực tiếp)</option>
+                      <option value="TEXT">TEXT (Bài đọc văn bản)</option>
+                    </select>
                   </div>
+
+                  {lessonForm.contentType === 'TEXT' ? (
+                    <div className="mb-3">
+                      <label className="form-label fw-semibold">Nội dung bài đọc (TEXT)</label>
+                      <textarea
+                        className="form-control"
+                        rows="4"
+                        placeholder="Nhập nội dung bài giảng văn bản..."
+                        value={lessonForm.content}
+                        onChange={(e) => setLessonForm({ ...lessonForm, content: e.target.value })}
+                        required
+                      />
+                    </div>
+                  ) : (
+                    <div className="mb-3">
+                      <label className="form-label fw-semibold">
+                        {lessonForm.contentType === 'PDF' ? 'URL Tài liệu PDF (.pdf)' : 'URL Video bài giảng (HTTPS)'}
+                      </label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        placeholder={lessonForm.contentType === 'PDF' ? 'https://.../tai-lieu.pdf' : 'https://www.youtube.com/watch?v=... hoặc link mp4'}
+                        value={lessonForm.videoUrl}
+                        onChange={(e) => setLessonForm({ ...lessonForm, videoUrl: e.target.value })}
+                      />
+                    </div>
+                  )}
 
                   <div className="row g-3 mb-3">
                     <div className="col-6">
