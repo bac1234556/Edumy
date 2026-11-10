@@ -29,9 +29,13 @@ pipeline {
         )
         booleanParam(
             name: 'DEPLOY_APPLICATION', 
-            defaultValue: false, 
+            defaultValue: true, 
             description: 'Triển khai dịch vụ bằng Docker Compose sau khi build'
         )
+    }
+
+    triggers {
+        githubPush()
     }
 
     options {
