@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useContext, useMemo } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import api from '../api/axiosConfig';
+import { courseApi } from '../api/modules/courseApi';
+import { mlApi } from '../api/modules/mlApi';
 import { AuthContext } from '../context/AuthContext';
 import { CartContext } from '../context/CartContext';
 import {
@@ -71,7 +73,7 @@ function CourseDetail() {
     const fetchCourseData = async () => {
       try {
         setLoading(true);
-        const response = await api.get(`/courses/${id}`);
+        const response = await courseApi.getCourseById(id);
         setCourse(response.data);
 
         // Expand first section by default
@@ -90,7 +92,7 @@ function CourseDetail() {
     // Fetch similar courses (Feature 3)
     const fetchSimilarCourses = async () => {
       try {
-        const res = await api.get(`/courses/${id}/similar?limit=4`);
+        const res = await mlApi.getSimilarCourses(id, 4);
         if (Array.isArray(res.data)) {
           setSimilarCourses(res.data);
         }

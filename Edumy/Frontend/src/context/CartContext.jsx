@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect, useContext, useCallback } from 'react';
 import api from '../api/axiosConfig';
+import { orderApi } from '../api/modules/orderApi';
 import { AuthContext } from './AuthContext';
 
 export const CartContext = createContext();
@@ -19,7 +20,7 @@ export const CartProvider = ({ children }) => {
 
     try {
       setLoadingCart(true);
-      const res = await api.get('/cart');
+      const res = await orderApi.getCart();
       setCart(res.data);
       setCartCount(res.data?.totalItems || res.data?.items?.length || 0);
     } catch (err) {
@@ -39,7 +40,7 @@ export const CartProvider = ({ children }) => {
     if (!user) {
       throw new Error('AUTH_REQUIRED');
     }
-    const res = await api.post(`/cart/add/${courseId}`);
+    const res = await orderApi.addToCart(courseId);
     await fetchCart();
     return res.data;
   };

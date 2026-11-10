@@ -58,7 +58,7 @@ payment:
     return-url: ${VNPAY_RETURN_URL:http://localhost:5173/payment/vnpay-return}
 
 machine-learning:
-  base-url: ${ML_SERVICE_URL:http://localhost:8000}
+  base-url: ${MACHINE_LEARNING_BASE_URL:${ML_SERVICE_URL:http://localhost:8000}}
 
 logging:
   level:

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../api/axiosConfig';
+import { orderApi } from '../api/modules/orderApi';
 import { AuthContext } from '../context/AuthContext';
 import { CartContext } from '../context/CartContext';
 import {
@@ -115,7 +116,7 @@ function Cart() {
     setCouponLoading(true);
     setCouponError('');
     try {
-      const res = await api.post('/coupons/validate', { code: couponCode.trim() });
+      const res = await orderApi.validateCoupon(couponCode.trim());
       setAppliedCoupon({
         code: res.data.code,
         discountPercentage: res.data.discountPercentage,
@@ -139,9 +140,7 @@ function Cart() {
   const handleCheckout = async () => {
     try {
       setCheckoutLoading(true);
-      const res = await api.post('/orders/checkout', {
-        couponCode: appliedCoupon?.code || null
-      });
+      const res = await orderApi.checkout(appliedCoupon?.code || null);
 
       if (res.data.isFree) {
         alert(res.data.message || 'Đăng ký khóa học thành công! (Khóa học miễn phí)');

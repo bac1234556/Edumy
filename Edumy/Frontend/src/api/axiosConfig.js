@@ -1,90 +1,114 @@
 import axios from 'axios';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
+/**
+ * Helper to unwrap Spring Boot Modular Monolith ApiResponse<T> envelope:
+ * {
+ *   "success": true,
+ *   "message": "...",
+ *   "data": { ... },
+ *   "errors": null
+ * }
+ */
+export const unwrapApiResponse = (body) => {
+  if (
+    body &&
+    typeof body === 'object' &&
+    !Array.isArray(body) &&
+    'success' in body &&
+    'data' in body &&
+    ('errors' in body || 'message' in body)
+  ) {
+    const payload = body.data;
+    if (payload !== undefined && payload !== null) {
+      if (typeof payload === 'object' && !Array.isArray(payload) && body.message && !('message' in payload)) {
+        return { ...payload, message: body.message };
+      }
+      return payload;
+    }
+    return {
+      success: body.success,
+      message: body.message,
+      errors: body.errors
+    };
+  }
+  return body;
+};
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
+  baseURL: API_BASE_URL,
+  withCredentials: true,
   headers: {
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
   },
-  withCredentials: true
 });
 
-// Request interceptor to add the JWT token to requests
+// Request Interceptor: Attach JWT Bearer token
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+      config.headers['Authorization'] = `Bearer ${token}`;
     }
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
-// Response interceptor to handle token refresh on 401
-let isRefreshing = false;
-let failedQueue = [];
-
-const processQueue = (error, token = null) => {
-  failedQueue.forEach((prom) => {
-    if (error) {
-      prom.reject(error);
-    } else {
-      prom.resolve(token);
-    }
-  });
-  failedQueue = [];
-};
-
+// Response Interceptor: Unwrap ApiResponse Envelope & Handle Token Refresh
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    if (response && response.data !== undefined) {
+      response.envelope = response.data;
+      response.data = unwrapApiResponse(response.data);
+    }
+    return response;
+  },
   async (error) => {
-    const originalRequest = error.config;
+    // Normalize standardized error envelope from GlobalExceptionHandler
+    if (error.response && error.response.data && typeof error.response.data === 'object') {
+      const errBody = error.response.data;
+      if ('success' in errBody && errBody.success === false) {
+        error.response.envelope = errBody;
+        error.response.data = {
+          ...errBody,
+          message: errBody.message || 'Đã xảy ra lỗi từ máy chủ.',
+          errors: errBody.errors || null,
+        };
+      }
+    }
 
+    const originalRequest = error.config;
     if (
       error.response?.status === 401 &&
+      originalRequest &&
       !originalRequest._retry &&
-      !originalRequest.url?.includes('/auth/login') &&
-      !originalRequest.url?.includes('/auth/refresh-token')
+      originalRequest.url !== '/auth/login' &&
+      originalRequest.url !== '/auth/refresh-token'
     ) {
-      if (isRefreshing) {
-        return new Promise((resolve, reject) => {
-          failedQueue.push({ resolve, reject });
-        })
-          .then((token) => {
-            originalRequest.headers.Authorization = `Bearer ${token}`;
-            return api(originalRequest);
-          })
-          .catch((err) => Promise.reject(err));
-      }
-
       originalRequest._retry = true;
-      isRefreshing = true;
-
       try {
-        const response = await axios.post(
-          `${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/auth/refresh-token`,
+        const res = await axios.post(
+          `${API_BASE_URL}/auth/refresh-token`,
           {},
           { withCredentials: true }
         );
-        const { token } = response.data;
-        if (token) {
-          localStorage.setItem('token', token);
-          api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-          originalRequest.headers['Authorization'] = `Bearer ${token}`;
-          processQueue(null, token);
+        const unwrapped = unwrapApiResponse(res.data);
+        const newToken = unwrapped?.token;
+        if (newToken) {
+          localStorage.setItem('token', newToken);
+          api.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
+          originalRequest.headers['Authorization'] = `Bearer ${newToken}`;
           return api(originalRequest);
         }
       } catch (refreshError) {
-        processQueue(refreshError, null);
         localStorage.removeItem('token');
+        localStorage.removeItem('user_profile');
+        window.location.href = '/login';
         return Promise.reject(refreshError);
-      } finally {
-        isRefreshing = false;
       }
     }
-
     return Promise.reject(error);
   }
 );

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import api from '../api/axiosConfig';
+import { courseApi } from '../api/modules/courseApi';
 import CourseCard from '../components/CourseCard';
 import EmptyState from '../components/EmptyState';
 import { CourseGridSkeleton, SkeletonBox } from '../components/Skeleton';
@@ -26,8 +27,8 @@ function CourseList() {
       setLoading(true);
       setError('');
       const [coursesRes, catRes] = await Promise.allSettled([
-        api.get('/courses'),
-        api.get('/categories')
+        courseApi.getCourses(),
+        courseApi.getCategories()
       ]);
 
       if (coursesRes.status === 'fulfilled') {

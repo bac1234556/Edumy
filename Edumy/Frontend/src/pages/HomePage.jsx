@@ -2,6 +2,8 @@ import React, { useState, useEffect, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import api from '../api/axiosConfig';
+import { courseApi } from '../api/modules/courseApi';
+import { mlApi } from '../api/modules/mlApi';
 import CourseCard from '../components/CourseCard';
 import {
   Search,
@@ -51,24 +53,24 @@ function HomePage() {
       setLoading(true);
       try {
         // 1. Fetch Categories
-        const catRes = await api.get('/categories');
+        const catRes = await courseApi.getCategories();
         const catData = Array.isArray(catRes.data) ? catRes.data : (catRes.data?.items || []);
         setCategories(Array.isArray(catData) ? catData.slice(0, 8) : []);
 
         // 2. Fetch Popular Courses
-        const popularRes = await api.get('/courses?pageSize=8&sortBy=rating&sortOrder=desc');
+        const popularRes = await courseApi.getCourses({ pageSize: 8, sortBy: 'rating', sortOrder: 'desc' });
         const popularData = Array.isArray(popularRes.data?.items) ? popularRes.data.items : (Array.isArray(popularRes.data) ? popularRes.data : []);
         setPopularCourses(popularData);
 
         // 3. Fetch Newest Courses
-        const newestRes = await api.get('/courses?pageSize=4&sortBy=newest&sortOrder=desc');
+        const newestRes = await courseApi.getCourses({ pageSize: 4, sortBy: 'newest', sortOrder: 'desc' });
         const newestData = Array.isArray(newestRes.data?.items) ? newestRes.data.items : (Array.isArray(newestRes.data) ? newestRes.data : []);
         setNewestCourses(newestData);
 
         // 4. Fetch AI Recommendations if Student is logged in
         if (user && user.role === 'Student') {
           try {
-            const recRes = await api.get('/courses/recommend');
+            const recRes = await mlApi.getStudentRecommendations();
             const recData = Array.isArray(recRes.data) ? recRes.data : (recRes.data?.items || []);
             setRecommendedCourses(Array.isArray(recData) ? recData : []);
           } catch (recErr) {

@@ -1,5 +1,7 @@
 import { createContext, useState, useEffect } from 'react';
 import api from '../api/axiosConfig';
+import { authApi } from '../api/modules/authApi';
+import { courseApi } from '../api/modules/courseApi';
 
 export const AuthContext = createContext();
 
@@ -38,7 +40,7 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (email, password) => {
-    const response = await api.post('/auth/login', { email, password });
+    const response = await authApi.login(email, password);
     const { token, fullName, role, message } = response.data;
     
     localStorage.setItem('token', token);
@@ -83,7 +85,7 @@ export const AuthProvider = ({ children }) => {
       console.warn('Client Google token decoding fallback:', e);
     }
 
-    const response = await api.post('/auth/google-login', { token: googleToken });
+    const response = await authApi.googleLogin(googleToken);
     const { token, fullName, role, message } = response.data;
     
     localStorage.setItem('token', token);
@@ -117,7 +119,7 @@ export const AuthProvider = ({ children }) => {
       return [];
     }
     try {
-      const res = await api.get('/courses/enrolled-ids');
+      const res = await courseApi.getEnrolledIds();
       if (Array.isArray(res.data)) {
         const ids = res.data.map(id => Number(id)).filter(id => !isNaN(id));
         setEnrolledCourseIds(ids);

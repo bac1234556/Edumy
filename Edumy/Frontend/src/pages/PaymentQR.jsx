@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import { useSearchParams, useNavigate, Link } from 'react-router-dom';
 import api from '../api/axiosConfig';
+import { paymentApi } from '../api/modules/paymentApi';
 import { CartContext } from '../context/CartContext';
 import { AuthContext } from '../context/AuthContext';
 import { 
@@ -51,7 +52,7 @@ function PaymentQR() {
       try {
         setLoading(true);
         // Call backend VietQR generation endpoint
-        const res = await api.get(`/v1/payments/vietqr/${orderId}`);
+        const res = await paymentApi.getVietQrByOrderId(orderId);
         setQrData(res.data);
         if (res.data.firstCourseId) {
           setFirstCourseId(res.data.firstCourseId);
@@ -113,7 +114,7 @@ function PaymentQR() {
 
     const checkOrderStatus = async () => {
       try {
-        const res = await api.get(`/v1/orders/${orderId}/status`);
+        const res = await paymentApi.getOrderStatus(orderId);
         if (!isMounted) return;
         if (res.data && (res.data.isPaid || res.data.status === 'PAID' || res.data.status === 'Completed')) {
           handlePaymentSuccess(res.data.firstCourseId || (res.data.courseIds && res.data.courseIds[0]));
@@ -165,7 +166,7 @@ function PaymentQR() {
     if (checking || !orderId) return;
     setChecking(true);
     try {
-      const res = await api.get(`/v1/orders/${orderId}/status`);
+      const res = await paymentApi.getOrderStatus(orderId);
       if (res.data.isPaid || res.data.status === 'PAID' || res.data.status === 'Completed') {
         handlePaymentSuccess(res.data.firstCourseId);
       } else {

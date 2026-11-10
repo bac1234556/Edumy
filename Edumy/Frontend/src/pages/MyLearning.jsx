@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../api/axiosConfig';
+import { courseApi } from '../api/modules/courseApi';
 import { AuthContext } from '../context/AuthContext';
 import {
   BookOpen,
@@ -31,8 +32,8 @@ function MyLearning() {
     const fetchEnrolledCourses = async () => {
       try {
         setLoading(true);
-        const response = await api.get('/courses/enrolled');
-        setEnrolledCourses(response.data || []);
+        const response = await courseApi.getEnrolledCourses();
+        setEnrolledCourses(Array.isArray(response.data) ? response.data : []);
       } catch (err) {
         setError('Không thể tải danh sách khóa học của bạn.');
       } finally {
