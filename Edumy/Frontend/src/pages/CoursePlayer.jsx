@@ -2,30 +2,30 @@ import React, { useState, useEffect, useContext, useRef, useMemo } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import api from '../api/axiosConfig';
 import { AuthContext } from '../context/AuthContext';
-import { 
-  PlayCircle, 
-  CheckCircle, 
-  Circle, 
-  ArrowLeft, 
-  HelpCircle, 
-  ChevronLeft, 
-  ChevronRight, 
-  ChevronDown, 
-  ChevronUp, 
-  Lock, 
-  Award, 
-  Menu, 
-  X, 
-  Clock, 
-  FileText, 
-  Download, 
-  StickyNote, 
-  BookOpen, 
-  FileCode, 
-  FileArchive, 
-  Plus, 
-  Trash2, 
-  Check, 
+import {
+  PlayCircle,
+  CheckCircle,
+  Circle,
+  ArrowLeft,
+  HelpCircle,
+  ChevronLeft,
+  ChevronRight,
+  ChevronDown,
+  ChevronUp,
+  Lock,
+  Award,
+  Menu,
+  X,
+  Clock,
+  FileText,
+  Download,
+  StickyNote,
+  BookOpen,
+  FileCode,
+  FileArchive,
+  Plus,
+  Trash2,
+  Check,
   Inbox,
   Share2,
   Paperclip
@@ -50,7 +50,7 @@ function CoursePlayer() {
   const [loading, setLoading] = useState(true);
   const [streamLoading, setStreamLoading] = useState(false);
   const [error, setError] = useState('');
-  
+
   // Progress States
   const [completedLessons, setCompletedLessons] = useState([]);
   const [completedQuizzes, setCompletedQuizzes] = useState([]);
@@ -63,7 +63,7 @@ function CoursePlayer() {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'notes' | 'attachments'
   const [expandedSections, setExpandedSections] = useState({});
-  
+
   // Personal Notes States
   const [noteInput, setNoteInput] = useState('');
   const [currentVideoTime, setCurrentVideoTime] = useState(0);
@@ -266,7 +266,7 @@ function CoursePlayer() {
   };
 
   // Navigation Logic
-  const currentIndex = allPlayableItems.findIndex(item => 
+  const currentIndex = allPlayableItems.findIndex(item =>
     activeLesson?.isQuiz
       ? (item.isQuiz && item.quizId === activeLesson.quizId)
       : (!item.isQuiz && item.lessonId === activeLesson?.lessonId)
@@ -341,7 +341,7 @@ function CoursePlayer() {
 
   const handleExportNotes = () => {
     if (notesList.length === 0) return;
-    const content = notesList.map(n => 
+    const content = notesList.map(n =>
       `[${formatDuration(n.time)}] ${n.lessonTitle}\n${n.text}\n(${new Date(n.createdAt).toLocaleString('vi-VN')})\n----------------------`
     ).join('\n\n');
 
@@ -502,8 +502,8 @@ function CoursePlayer() {
         </div>
 
         <div className="topbar-right">
-          <button 
-            className="btn-sidebar-collapse-toggle" 
+          <button
+            className="btn-sidebar-collapse-toggle"
             onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
             title={isSidebarCollapsed ? "Mở danh sách bài học" : "Thu gọn danh sách bài học"}
           >
@@ -525,20 +525,20 @@ function CoursePlayer() {
               {activeLesson?.isQuiz ? (
                 <div style={{ width: '100%', height: '100%', overflowY: 'auto', padding: '2rem' }}>
                   {quizResult ? (
-                    <QuizResults 
-                      result={quizResult} 
-                      quizTitle={activeLesson.title} 
-                      onRetry={() => setQuizResult(null)} 
+                    <QuizResults
+                      result={quizResult}
+                      quizTitle={activeLesson.title}
+                      onRetry={() => setQuizResult(null)}
                       darkMode={true}
                     />
                   ) : (
-                    <QuizTaker 
-                      quizId={activeLesson.quizId} 
+                    <QuizTaker
+                      quizId={activeLesson.quizId}
                       darkMode={true}
                       onComplete={(result) => {
                         setQuizResult(result);
                         fetchProgress(true);
-                      }} 
+                      }}
                     />
                   )}
                 </div>
@@ -552,9 +552,9 @@ function CoursePlayer() {
                   <Lock size={48} color="#ef4444" />
                   <h4>Nội dung được bảo vệ</h4>
                   <p>{streamData.message || 'Bạn cần đăng ký khóa học để xem nội dung bài giảng này.'}</p>
-                  <Link 
-                    to={`/courses/${id}`} 
-                    className="btn-ctrl-nav" 
+                  <Link
+                    to={`/courses/${id}`}
+                    className="btn-ctrl-nav"
                     style={{ background: '#4f46e5', color: '#fff', border: 'none', padding: '0.6rem 1.25rem' }}
                   >
                     Đăng ký khóa học ngay
@@ -574,12 +574,12 @@ function CoursePlayer() {
                   allowFullScreen
                 />
               ) : streamData?.videoUrl ? (
-                <video 
+                <video
                   ref={videoRef}
                   key={streamData.videoUrl}
-                  controls 
+                  controls
                   controlsList="nodownload"
-                  src={getVideoSrc()} 
+                  src={getVideoSrc()}
                   className="html5-main-video"
                   autoPlay
                   onEnded={handleVideoEnded}
@@ -604,16 +604,16 @@ function CoursePlayer() {
           {/* Action Bar Beneath Video */}
           <div className="video-action-bar">
             <div className="nav-lessons-btn-group">
-              <button 
-                className="btn-ctrl-nav" 
+              <button
+                className="btn-ctrl-nav"
                 onClick={handlePrevLesson}
                 disabled={!hasPrevious}
                 title="Quay lại bài giảng trước"
               >
                 <ChevronLeft size={16} /> Bài trước
               </button>
-              <button 
-                className="btn-ctrl-nav" 
+              <button
+                className="btn-ctrl-nav"
                 onClick={handleNextLesson}
                 disabled={!hasNext}
                 title="Chuyển tới bài giảng tiếp theo"
@@ -623,7 +623,7 @@ function CoursePlayer() {
             </div>
 
             {!activeLesson?.isQuiz && (
-              <button 
+              <button
                 className={`btn-toggle-complete ${isCurrentCompleted ? 'is-completed' : 'not-completed'}`}
                 onClick={handleToggleComplete}
               >
@@ -660,14 +660,14 @@ function CoursePlayer() {
 
             {/* 3 Tabs Navigation Header */}
             <nav className="player-tabs-header">
-              <button 
+              <button
                 className={`player-tab-button ${activeTab === 'overview' ? 'active' : ''}`}
                 onClick={() => setActiveTab('overview')}
               >
                 <BookOpen size={16} /> Tổng quan bài học
               </button>
 
-              <button 
+              <button
                 className={`player-tab-button ${activeTab === 'notes' ? 'active' : ''}`}
                 onClick={() => setActiveTab('notes')}
               >
@@ -677,7 +677,7 @@ function CoursePlayer() {
                 )}
               </button>
 
-              <button 
+              <button
                 className={`player-tab-button ${activeTab === 'attachments' ? 'active' : ''}`}
                 onClick={() => setActiveTab('attachments')}
               >
@@ -691,7 +691,7 @@ function CoursePlayer() {
               <div className="tab-overview-body">
                 <h4>Mục tiêu & Hướng dẫn bài học</h4>
                 <p>
-                  {activeLesson?.content || 
+                  {activeLesson?.content ||
                     'Bài giảng này cung cấp các nguyên lý lập trình then chốt, mô hình thiết kế thực tiễn và bài tập thực hành. Học viên nên thực hành trực tiếp theo hướng dẫn để đạt hiệu quả cao nhất.'}
                 </p>
 
@@ -708,15 +708,15 @@ function CoursePlayer() {
             {activeTab === 'notes' && (
               <div>
                 <form className="notes-creation-box" onSubmit={handleAddNote}>
-                  <textarea 
+                  <textarea
                     className="notes-input-textarea"
                     value={noteInput}
                     onChange={(e) => setNoteInput(e.target.value)}
                     placeholder="Ghi chép nhanh kiến thức quan trọng tại đây..."
                   />
                   <div className="notes-actions-row">
-                    <button 
-                      type="submit" 
+                    <button
+                      type="submit"
                       className="btn-add-note"
                       disabled={!noteInput.trim()}
                     >
@@ -724,8 +724,8 @@ function CoursePlayer() {
                     </button>
 
                     {notesList.length > 0 && (
-                      <button 
-                        type="button" 
+                      <button
+                        type="button"
                         className="btn-export-notes"
                         onClick={handleExportNotes}
                       >
@@ -744,8 +744,8 @@ function CoursePlayer() {
                     notesList.map((note) => (
                       <div key={note.id} className="note-item-card">
                         <div className="note-content-col">
-                          <span 
-                            className="note-timestamp-badge" 
+                          <span
+                            className="note-timestamp-badge"
                             onClick={() => handleJumpToTime(note.time)}
                             title="Nhấn để tua video tới thời điểm này"
                           >
@@ -753,8 +753,8 @@ function CoursePlayer() {
                           </span>
                           <p className="note-text-body">{note.text}</p>
                         </div>
-                        <button 
-                          className="btn-delete-note" 
+                        <button
+                          className="btn-delete-note"
                           onClick={() => handleDeleteNote(note.id)}
                           title="Xóa ghi chú"
                         >
@@ -786,8 +786,8 @@ function CoursePlayer() {
                       </div>
                     </div>
 
-                    <button 
-                      className="btn-download-file" 
+                    <button
+                      className="btn-download-file"
                       onClick={() => handleDownloadAttachment(file)}
                       title={`Tải xuống ${file.name}`}
                     >
@@ -813,8 +813,8 @@ function CoursePlayer() {
 
             {/* Smooth Progress Bar */}
             <div className="curriculum-progress-track" title={`Tiến độ hoàn thành: ${progressPercent}%`}>
-              <div 
-                className="curriculum-progress-fill" 
+              <div
+                className="curriculum-progress-fill"
                 style={{ width: `${progressPercent}%` }}
               ></div>
             </div>
@@ -834,7 +834,7 @@ function CoursePlayer() {
               return (
                 <div className="curriculum-section-block" key={section.sectionId}>
                   {/* Header chương học */}
-                  <div 
+                  <div
                     className="section-accordion-header"
                     onClick={() => toggleSectionAccordion(section.sectionId)}
                   >
@@ -862,7 +862,7 @@ function CoursePlayer() {
                         const isDone = completedLessons.includes(lesson.lessonId);
 
                         return (
-                          <div 
+                          <div
                             key={lesson.lessonId}
                             ref={isActive ? activeLessonItemRef : null}
                             className={`sidebar-lesson-item ${isActive ? 'is-active' : ''}`}

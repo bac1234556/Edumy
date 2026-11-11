@@ -4,14 +4,14 @@ import api from '../api/axiosConfig';
 import { paymentApi } from '../api/modules/paymentApi';
 import { CartContext } from '../context/CartContext';
 import { AuthContext } from '../context/AuthContext';
-import { 
-  CheckCircle2, 
-  Copy, 
-  Check, 
-  Clock, 
-  ArrowRight, 
-  ShieldCheck, 
-  RefreshCw, 
+import {
+  CheckCircle2,
+  Copy,
+  Check,
+  Clock,
+  ArrowRight,
+  ShieldCheck,
+  RefreshCw,
   AlertTriangle,
   QrCode,
   BookOpen,
@@ -69,7 +69,7 @@ function PaymentQR() {
         const amt = parseInt(initialAmount || '0');
         const transferContent = `EDUMY ${orderId}`;
         const fallbackUrl = `https://img.vietqr.io/image/BIDV-96247BAC206-compact2.png?amount=${amt}&addInfo=EDUMY%20${orderId}&accountName=LE%20VIET%20BAC`;
-        
+
         setQrData({
           orderId: parseInt(orderId),
           amount: amt,
@@ -278,9 +278,9 @@ function PaymentQR() {
           <div className="payment-qr-preview-col">
             <div className="qr-image-wrapper">
               {qrData?.qrImageUrl ? (
-                <img 
-                  src={qrData.qrImageUrl} 
-                  alt="Mã QR Thanh Toán VietQR LPBank" 
+                <img
+                  src={qrData.qrImageUrl}
+                  alt="Mã QR Thanh Toán VietQR LPBank"
                   title="Quét mã bằng app ngân hàng của bạn"
                 />
               ) : (

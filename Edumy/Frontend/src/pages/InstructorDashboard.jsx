@@ -186,7 +186,7 @@ function InstructorDashboard() {
           </div>
 
           <div className="instructor-header-actions">
-            <Link to="/instructor/courses/new" className="btn-create-course">
+            <Link to="/instructor/courses/new" className="btn-create-course btn-solid-primary">
               <Plus size={18} /> Tạo Khóa học mới
             </Link>
           </div>
@@ -300,54 +300,56 @@ function InstructorDashboard() {
                 Hiện tại bạn chưa có lời mời cộng tác giảng dạy nào.
               </p>
             ) : (
-              <div className="table-responsive">
-                <table className="roster-table">
-                  <thead>
-                    <tr>
-                      <th>Mã khóa học</th>
-                      <th>Tên khóa học</th>
-                      <th>Trạng thái lời mời</th>
-                      <th className="text-end">Thao tác</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {invitations.map((inv, idx) => (
-                      <tr key={idx}>
-                        <td>#{inv.courseId}</td>
-                        <td><strong>{inv.courseTitle || `Khóa học #${inv.courseId}`}</strong></td>
-                        <td>
-                          <span className="badge bg-info-subtle text-info px-2 py-1 rounded-pill">
-                            {inv.status}
-                          </span>
-                        </td>
-                        <td className="text-end">
-                          {inv.status === 'PENDING' ? (
-                            <div className="d-inline-flex gap-2">
-                              <button
-                                type="button"
-                                className="btn btn-sm btn-success"
-                                onClick={() => handleRespondInvitation(inv.courseId, 'accept')}
-                              >
-                                Chấp nhận
-                              </button>
-                              <button
-                                type="button"
-                                className="btn btn-sm btn-outline-danger"
-                                onClick={() => handleRespondInvitation(inv.courseId, 'decline')}
-                              >
-                                Từ chối
-                              </button>
-                            </div>
-                          ) : (
-                            <Link to={`/instructor/courses/${inv.courseId}/curriculum`} className="btn btn-sm btn-outline-primary">
-                              Biên soạn nội dung
-                            </Link>
-                          )}
-                        </td>
+              <div className="studio-table-scroll-container">
+                <div className="table-responsive">
+                  <table className="roster-table">
+                    <thead>
+                      <tr>
+                        <th>Mã khóa học</th>
+                        <th>Tên khóa học</th>
+                        <th>Trạng thái lời mời</th>
+                        <th className="text-end">Thao tác</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {invitations.map((inv, idx) => (
+                        <tr key={idx}>
+                          <td>#{inv.courseId}</td>
+                          <td><strong>{inv.courseTitle || `Khóa học #${inv.courseId}`}</strong></td>
+                          <td>
+                            <span className="badge bg-info-subtle text-info px-2 py-1 rounded-pill">
+                              {inv.status}
+                            </span>
+                          </td>
+                          <td className="text-end">
+                            {inv.status === 'PENDING' ? (
+                              <div className="d-inline-flex gap-2">
+                                <button
+                                  type="button"
+                                  className="btn btn-sm btn-success"
+                                  onClick={() => handleRespondInvitation(inv.courseId, 'accept')}
+                                >
+                                  Chấp nhận
+                                </button>
+                                <button
+                                  type="button"
+                                  className="btn btn-sm btn-outline-danger"
+                                  onClick={() => handleRespondInvitation(inv.courseId, 'decline')}
+                                >
+                                  Từ chối
+                                </button>
+                              </div>
+                            ) : (
+                              <Link to={`/instructor/courses/${inv.courseId}/curriculum`} className="btn btn-sm btn-outline-primary">
+                                Biên soạn nội dung
+                              </Link>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             )}
           </div>
@@ -370,89 +372,91 @@ function InstructorDashboard() {
                 </Link>
               </div>
             ) : (
-              <div className="studio-courses-grid">
-                {courses.map((course) => {
-                  const statusKey = (course.status || 'Draft').toLowerCase();
-                  return (
-                    <div key={course.courseId} className="studio-course-card">
-                      {/* Thumbnail */}
-                      <div className="studio-course-thumb-box">
-                        <img
-                          src={
-                            course.thumbnailUrl
-                              ? course.thumbnailUrl.startsWith('http')
-                                ? course.thumbnailUrl
-                                : `${BACKEND_URL}${course.thumbnailUrl}`
-                              : 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600&q=80'
-                          }
-                          alt={course.title}
-                          className="studio-course-thumb"
-                        />
-                        <span className={`status-badge-pill ${statusKey}`}>
-                          {course.status}
-                        </span>
-                      </div>
-
-                      {/* Content */}
-                      <div className="studio-course-body">
-                        <h4 className="studio-course-title">{course.title}</h4>
-
-                        <div className="studio-course-meta">
-                          <span className="studio-course-price">
-                            {formatPrice(course.price)}
+              <div className="studio-courses-scroll-container">
+                <div className="studio-courses-grid">
+                  {courses.map((course) => {
+                    const statusKey = (course.status || 'Draft').toLowerCase();
+                    return (
+                      <div key={course.courseId} className="studio-course-card">
+                        {/* Thumbnail */}
+                        <div className="studio-course-thumb-box">
+                          <img
+                            src={
+                              course.thumbnailUrl
+                                ? course.thumbnailUrl.startsWith('http')
+                                  ? course.thumbnailUrl
+                                  : `${BACKEND_URL}${course.thumbnailUrl}`
+                                : 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600&q=80'
+                            }
+                            alt={course.title}
+                            className="studio-course-thumb"
+                          />
+                          <span className={`status-badge-pill ${statusKey}`}>
+                            {course.status}
                           </span>
-                          <span>{course.enrollmentCount || 0} học viên</span>
                         </div>
 
-                        {course.needsReanalysis && (
-                          <div className="alert alert-warning py-1 px-2 small mb-3 d-flex align-items-center gap-1">
-                            <AlertTriangle size={14} /> Nội dung bài học vừa thay đổi
+                        {/* Content */}
+                        <div className="studio-course-body">
+                          <h4 className="studio-course-title">{course.title}</h4>
+
+                          <div className="studio-course-meta">
+                            <span className="studio-course-price">
+                              {formatPrice(course.price)}
+                            </span>
+                            <span>{course.enrollmentCount || 0} học viên</span>
                           </div>
-                        )}
 
-                        {/* Action Buttons */}
-                        <div className="studio-course-actions-row flex-wrap">
-                          <Link
-                            to={`/instructor/courses/${course.courseId}/curriculum`}
-                            className="btn-studio-action"
-                          >
-                            <Layers size={14} /> Đề cương & Đồng giảng viên
-                          </Link>
-
-                          {(statusKey === 'draft' || statusKey === 'rejected') && (
-                            <button
-                              type="button"
-                              onClick={() => handleSubmitForReview(course.courseId)}
-                              className="btn-studio-action ai-btn"
-                            >
-                              <CheckCircle2 size={14} /> Gửi duyệt
-                            </button>
+                          {course.needsReanalysis && (
+                            <div className="alert alert-warning py-1 px-2 small mb-3 d-flex align-items-center gap-1">
+                              <AlertTriangle size={14} /> Nội dung bài học vừa thay đổi
+                            </div>
                           )}
 
-                          {statusKey === 'pendingapproval' && (
-                            <button
-                              type="button"
-                              onClick={() => handleWithdrawReview(course.courseId)}
-                              className="btn-studio-action outline-secondary"
+                          {/* Action Buttons */}
+                          <div className="studio-course-actions-row flex-wrap">
+                            <Link
+                              to={`/instructor/courses/${course.courseId}/curriculum`}
+                              className="btn-studio-action"
                             >
-                              <Clock size={14} /> Rút duyệt
-                            </button>
-                          )}
+                              <Layers size={14} /> Đề cương & Đồng giảng viên
+                            </Link>
 
-                          {statusKey === 'draft' && (
-                            <button
-                              type="button"
-                              onClick={() => handleDeleteDraftCourse(course.courseId, course.title)}
-                              className="btn-studio-action outline-secondary text-danger"
-                            >
-                              Xóa nháp
-                            </button>
-                          )}
+                            {(statusKey === 'draft' || statusKey === 'rejected') && (
+                              <button
+                                type="button"
+                                onClick={() => handleSubmitForReview(course.courseId)}
+                                className="btn-studio-action ai-btn"
+                              >
+                                <CheckCircle2 size={14} /> Gửi duyệt
+                              </button>
+                            )}
+
+                            {statusKey === 'pendingapproval' && (
+                              <button
+                                type="button"
+                                onClick={() => handleWithdrawReview(course.courseId)}
+                                className="btn-studio-action outline-secondary"
+                              >
+                                <Clock size={14} /> Rút duyệt
+                              </button>
+                            )}
+
+                            {statusKey === 'draft' && (
+                              <button
+                                type="button"
+                                onClick={() => handleDeleteDraftCourse(course.courseId, course.title)}
+                                className="btn-studio-action outline-secondary text-danger"
+                              >
+                                Xóa nháp
+                              </button>
+                            )}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </div>
               </div>
             )}
           </div>
@@ -576,47 +580,49 @@ function InstructorDashboard() {
                 description="Khóa học này hiện chưa có học viên nào đăng ký. Khi có lượt đăng ký mới, danh sách và tiến độ sẽ hiển thị tại đây."
               />
             ) : (
-              <div className="table-responsive">
-                <table className="roster-table">
-                  <thead>
-                    <tr>
-                      <th>#</th>
-                      <th>Học viên</th>
-                      <th>Email</th>
-                      <th>Ngày ghi danh</th>
-                      <th>Tiến độ</th>
-                      <th>Trạng thái</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {rosterStudents.map((st, idx) => (
-                      <tr key={st.userId || idx}>
-                        <td>#{idx + 1}</td>
-                        <td>
-                          <strong>{st.fullName || 'Học viên'}</strong>
-                        </td>
-                        <td className="text-muted">{st.email}</td>
-                        <td>{st.enrolledAt ? new Date(st.enrolledAt).toLocaleDateString('vi-VN') : 'Gần đây'}</td>
-                        <td>
-                          <div className="d-flex align-items-center gap-2">
-                            <div className="progress-track-bg" style={{ width: '80px', height: '6px', margin: 0 }}>
-                              <div
-                                className="progress-fill-bar"
-                                style={{ width: `${st.progressPercentage || 0}%` }}
-                              ></div>
-                            </div>
-                            <span className="small fw-bold">{st.progressPercentage || 0}%</span>
-                          </div>
-                        </td>
-                        <td>
-                          <span className="badge bg-success bg-opacity-10 text-success rounded-pill px-2 py-1">
-                            {st.status || 'Active'}
-                          </span>
-                        </td>
+              <div className="studio-table-scroll-container">
+                <div className="table-responsive">
+                  <table className="roster-table">
+                    <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>Học viên</th>
+                        <th>Email</th>
+                        <th>Ngày ghi danh</th>
+                        <th>Tiến độ</th>
+                        <th>Trạng thái</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {rosterStudents.map((st, idx) => (
+                        <tr key={st.userId || idx}>
+                          <td>#{idx + 1}</td>
+                          <td>
+                            <strong>{st.fullName || 'Học viên'}</strong>
+                          </td>
+                          <td className="text-muted">{st.email}</td>
+                          <td>{st.enrolledAt ? new Date(st.enrolledAt).toLocaleDateString('vi-VN') : 'Gần đây'}</td>
+                          <td>
+                            <div className="d-flex align-items-center gap-2">
+                              <div className="progress-track-bg" style={{ width: '80px', height: '6px', margin: 0 }}>
+                                <div
+                                  className="progress-fill-bar"
+                                  style={{ width: `${st.progressPercentage || 0}%` }}
+                                ></div>
+                              </div>
+                              <span className="small fw-bold">{st.progressPercentage || 0}%</span>
+                            </div>
+                          </td>
+                          <td>
+                            <span className="badge bg-success bg-opacity-10 text-success rounded-pill px-2 py-1">
+                              {st.status || 'Active'}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             )}
           </div>

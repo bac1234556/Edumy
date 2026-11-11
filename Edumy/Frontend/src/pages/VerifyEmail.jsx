@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useSearchParams, useNavigate } from 'react-router-dom';
-import { CheckCircle2, MailCheck, RefreshCw, AlertCircle, ArrowRight } from 'lucide-react';
+import { CheckCircle2, MailCheck, RefreshCw, AlertCircle, ArrowRight, Mail, KeyRound } from 'lucide-react';
 import api from '../api/axiosConfig';
 import './Auth.css';
 
@@ -71,118 +71,100 @@ const VerifyEmail = () => {
   };
 
   return (
-    <div className="auth-wrapper">
-      <div className="auth-card" style={{ maxWidth: 480 }}>
+    <div className="auth-container">
+      <div className="auth-card" style={{ maxWidth: 460 }}>
+        {/* Brand Header */}
         <div className="auth-brand-header">
           <Link to="/" className="auth-logo">
             <div className="auth-logo-box">E</div>
             <span className="auth-logo-text">Edu<span>my</span></span>
           </Link>
-          <h1 className="auth-title">Xác thực Email</h1>
+          <h2 className="auth-title">Xác thực Email</h2>
           <p className="auth-subtitle">
             Kích hoạt tài khoản Học viên của bạn để bắt đầu đăng nhập và học tập trên Edumy
           </p>
         </div>
 
         {error && (
-          <div className="auth-error-alert" role="alert">
+          <div className="auth-alert-error" role="alert">
             <AlertCircle size={18} style={{ flexShrink: 0 }} />
             <span>{error}</span>
           </div>
         )}
 
         {message && (
-          <div
-            style={{
-              background: 'rgba(16, 185, 129, 0.12)',
-              border: '1px solid rgba(16, 185, 129, 0.35)',
-              color: '#34d399',
-              padding: '0.85rem 1rem',
-              borderRadius: '0.75rem',
-              marginBottom: '1.25rem',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.6rem',
-              fontSize: '0.9rem'
-            }}
-          >
+          <div className="auth-alert-success" role="alert">
             <CheckCircle2 size={18} style={{ flexShrink: 0 }} />
             <span>{message}</span>
           </div>
         )}
 
         {verified ? (
-          <div style={{ textAlign: 'center', padding: '1rem 0' }}>
+          <div style={{ textAlign: 'center', padding: '1.25rem 0' }}>
             <button
               type="button"
-              className="btn-auth-submit"
+              className="auth-submit-btn"
               onClick={() => navigate('/login')}
-              style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}
             >
-              Chuyển đến trang Đăng nhập <ArrowRight size={18} />
+              <span>Chuyển đến trang Đăng nhập</span>
+              <ArrowRight size={18} />
             </button>
           </div>
         ) : (
-          <form onSubmit={handleVerify} className="auth-form">
-            <div className="auth-field-group">
-              <label htmlFor="verify-email" className="auth-label">Địa chỉ Email đã đăng ký</label>
-              <input
-                id="verify-email"
-                type="email"
-                className="auth-input"
-                placeholder="name@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
+          <form onSubmit={handleVerify} className="auth-form" noValidate>
+            <div className="form-group">
+              <label htmlFor="verify-email" className="form-label">Địa chỉ Email đã đăng ký</label>
+              <div className="input-with-icon">
+                <Mail size={18} className="input-icon-left" />
+                <input
+                  id="verify-email"
+                  type="email"
+                  className="auth-input"
+                  placeholder="name@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  autoComplete="email"
+                />
+              </div>
             </div>
 
-            <div className="auth-field-group">
-              <label htmlFor="verify-token" className="auth-label">Mã xác thực (Token từ email)</label>
-              <input
-                id="verify-token"
-                type="text"
-                className="auth-input"
-                placeholder="Nhập mã xác thực hoặc bấm Xác thực ngay"
-                value={token}
-                onChange={(e) => setToken(e.target.value)}
-              />
+            <div className="form-group">
+              <label htmlFor="verify-token" className="form-label">Mã xác thực (Token từ email)</label>
+              <div className="input-with-icon">
+                <KeyRound size={18} className="input-icon-left" />
+                <input
+                  id="verify-token"
+                  type="text"
+                  className="auth-input"
+                  placeholder="Nhập mã xác thực hoặc bấm Xác thực ngay"
+                  value={token}
+                  onChange={(e) => setToken(e.target.value)}
+                />
+              </div>
             </div>
 
-            <button type="submit" className="btn-auth-submit" disabled={loading}>
-              <MailCheck size={18} style={{ display: 'inline', marginRight: 6, verticalAlign: -3 }} />
-              {loading ? 'Đang kiểm tra...' : 'Xác thực tài khoản'}
+            <button type="submit" className="auth-submit-btn" disabled={loading}>
+              <MailCheck size={18} />
+              <span>{loading ? 'Đang kiểm tra...' : 'Xác thực tài khoản'}</span>
             </button>
 
             <button
               type="button"
               onClick={handleResend}
               disabled={resending}
-              style={{
-                marginTop: '0.75rem',
-                width: '100%',
-                padding: '0.75rem 1rem',
-                borderRadius: '0.75rem',
-                border: '1px solid rgba(148, 163, 184, 0.25)',
-                background: 'rgba(30, 41, 59, 0.6)',
-                color: '#cbd5e1',
-                cursor: 'pointer',
-                fontWeight: 600,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 8
-              }}
+              className="google-custom-btn"
+              style={{ width: '100%', marginTop: '0.5rem' }}
             >
               <RefreshCw size={16} />
-              {resending ? 'Đang gửi lại...' : 'Gửi lại email xác thực'}
+              <span>{resending ? 'Đang gửi lại...' : 'Gửi lại email xác thực'}</span>
             </button>
           </form>
         )}
 
-        <div className="auth-footer-prompt">
+        <div className="auth-footer-text">
           Đã xác thực tài khoản?{' '}
-          <Link to="/login" className="auth-footer-link">Đăng nhập ngay</Link>
+          <Link to="/login">Đăng nhập ngay</Link>
         </div>
       </div>
     </div>
@@ -190,4 +172,3 @@ const VerifyEmail = () => {
 };
 
 export default VerifyEmail;
-

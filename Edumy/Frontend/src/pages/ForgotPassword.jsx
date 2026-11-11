@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../api/axiosConfig';
+import { Mail, AlertCircle, CheckCircle2, ArrowRight, KeyRound, Wrench } from 'lucide-react';
 import './Auth.css';
 
 const ForgotPassword = () => {
@@ -19,13 +20,13 @@ const ForgotPassword = () => {
     setDevToken('');
 
     try {
-      const response = await api.post('/auth/forgot-password', { email });
-      setMessage(response.data.message || 'Mã xác thực khôi phục mật khẩu đã được tạo thành công.');
-      if (response.data.resetToken) {
+      const response = await api.post('/auth/forgot-password', { email: email.trim().toLowerCase() });
+      setMessage(response.data?.message || 'Mã xác thực khôi phục mật khẩu đã được tạo thành công.');
+      if (response.data?.resetToken) {
         setDevToken(response.data.resetToken);
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'Có lỗi xảy ra. Vui lòng thử lại sau.');
+      setError(err.response?.data?.message || 'Có lỗi xảy ra. Vui lòng kiểm tra lại email hoặc thử lại sau.');
     } finally {
       setLoading(false);
     }
@@ -34,39 +35,80 @@ const ForgotPassword = () => {
   return (
     <div className="auth-container">
       <div className="auth-card">
-        <h2>Quên mật khẩu</h2>
-        <p className="auth-subtitle">Nhập địa chỉ email của bạn để nhận mã xác thực đặt lại mật khẩu.</p>
-        
-        {message && <div className="alert alert-success">{message}</div>}
-        {error && <div className="alert alert-danger">{error}</div>}
+        {/* Brand Header */}
+        <div className="auth-brand-header">
+          <Link to="/" className="auth-logo">
+            <div className="auth-logo-box">E</div>
+            <span className="auth-logo-text">Edu<span>my</span></span>
+          </Link>
+          <h2 className="auth-title">Quên mật khẩu</h2>
+          <p className="auth-subtitle">
+            Nhập email của bạn để nhận mã xác thực và đặt lại mật khẩu mới an toàn
+          </p>
+        </div>
 
-        <form onSubmit={handleSubmit}>
+        {/* Message / Error alerts */}
+        {message && (
+          <div className="auth-alert-success" role="alert">
+            <CheckCircle2 size={18} style={{ flexShrink: 0 }} />
+            <span>{message}</span>
+          </div>
+        )}
+
+        {error && (
+          <div className="auth-alert-error" role="alert">
+            <AlertCircle size={18} style={{ flexShrink: 0 }} />
+            <span>{error}</span>
+          </div>
+        )}
+
+        <form className="auth-form" onSubmit={handleSubmit} noValidate>
           <div className="form-group">
-            <label htmlFor="email">Địa chỉ Email</label>
-            <input
-              type="email"
-              id="email"
-              placeholder="ví dụ: student@edumy.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
+            <label className="form-label" htmlFor="forgot-email">Địa chỉ Email</label>
+            <div className="input-with-icon">
+              <Mail size={18} className="input-icon-left" />
+              <input
+                type="email"
+                id="forgot-email"
+                placeholder="ví dụ: student@edumy.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="auth-input"
+                required
+                autoComplete="email"
+              />
+            </div>
           </div>
 
-          <button type="submit" className="btn-edumy-primary w-100" disabled={loading}>
-            {loading ? 'Đang xử lý...' : 'Gửi mã xác thực'}
+          <button 
+            type="submit" 
+            className="auth-submit-btn" 
+            disabled={loading}
+          >
+            {loading ? (
+              'Đang xử lý...'
+            ) : (
+              <>
+                <span>Gửi mã xác thực</span>
+                <ArrowRight size={18} />
+              </>
+            )}
           </button>
         </form>
 
+        {/* Dev Token Box */}
         {devToken && (
-          <div className="dev-token-box mt-3 p-3 bg-light border rounded">
-            <h6 className="text-warning fw-bold">🔧 Chế độ thử nghiệm (Demo):</h6>
-            <p className="small mb-2">Hệ thống gửi mã xác thực khôi phục mật khẩu mẫu:</p>
-            <div className="d-flex justify-content-between align-items-center bg-white p-2 border rounded">
-              <code className="fw-bold">{devToken}</code>
+          <div className="dev-token-box">
+            <div className="d-flex align-items-center gap-2 mb-2" style={{ color: '#b45309', fontWeight: 700, fontSize: '0.85rem' }}>
+              <Wrench size={16} /> Chế độ thử nghiệm (Demo Token):
+            </div>
+            <p className="small text-muted mb-2">Hệ thống tạo mã xác thực khôi phục mật khẩu mẫu:</p>
+            <div className="d-flex justify-content-between align-items-center bg-white p-2 border rounded-3">
+              <code className="dev-token-badge">{devToken}</code>
               <button 
                 onClick={() => navigate(`/reset-password?email=${encodeURIComponent(email)}&token=${devToken}`)}
-                className="btn btn-sm btn-outline-primary"
+                className="btn btn-sm btn-outline-primary fw-semibold"
+                style={{ borderRadius: '8px', fontSize: '0.82rem' }}
               >
                 Đặt lại mật khẩu ngay
               </button>
@@ -74,8 +116,8 @@ const ForgotPassword = () => {
           </div>
         )}
 
-        <div className="auth-footer">
-          Đã nhớ mật khẩu? <Link to="/login">Đăng nhập</Link>
+        <div className="auth-footer-text">
+          Đã nhớ mật khẩu? <Link to="/login">Quay lại đăng nhập</Link>
         </div>
       </div>
     </div>

@@ -237,17 +237,17 @@ function MyLearning() {
                       {/* Progress */}
                       <div className="progress-meta-row">
                         <span>
-                          {isCompleted ? 'Đã hoàn thành 100%' : 'Tiến độ học tập'}
+                          {isCompleted ? 'Đã hoàn thành' : 'Tiến độ học tập'}
                           {item.totalLessons !== undefined && ` (${item.completedLessons || 0}/${item.totalLessons} bài)`}
                         </span>
-                        <span className={isCompleted ? 'text-success' : 'text-primary'}>
-                          {progress}%
+                        <span className="text-success fw-bold">
+                          {progress}% hoàn thành
                         </span>
                       </div>
 
                       <div className="progress-track-bg">
                         <div
-                          className={`progress-fill-bar ${isCompleted ? 'completed' : ''}`}
+                          className="progress-fill-bar"
                           style={{ width: `${Math.min(100, Math.max(0, progress))}%` }}
                         ></div>
                       </div>
@@ -259,7 +259,7 @@ function MyLearning() {
                           className="btn-continue-learning w-100 justify-content-center"
                         >
                           <PlayCircle size={16} />
-                          {isCompleted ? 'Xem lại bài học' : 'Vào phòng học'}
+                          {isCompleted ? 'Xem lại bài học' : 'Vào học tiếp'}
                         </Link>
                       </div>
                     </div>
