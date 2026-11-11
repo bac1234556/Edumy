@@ -42,9 +42,9 @@ function Register() {
     setError('');
     try {
       const normalizedEmail = email.trim().toLowerCase();
-      await api.post('/auth/register', { 
-        fullName: fullName.trim(), 
-        email: normalizedEmail, 
+      await api.post('/auth/register', {
+        fullName: fullName.trim(),
+        email: normalizedEmail,
         password,
         role: 'Student'
       });
@@ -189,8 +189,8 @@ function Register() {
           </div>
 
           {/* Submit */}
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             className="auth-submit-btn"
             disabled={isSubmitting}
           >
