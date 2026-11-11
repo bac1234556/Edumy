@@ -1,3 +1,10 @@
+/* ==========================================================================
+   CATEGORY SLIDER COMPONENT STYLES (UI/UX PRO MAX)
+   Tokens from design-system.css:
+   Surface: var(--color-bg-card, #ffffff), Border: var(--color-border-hairline, #e2e8f0)
+   Accent: var(--color-brand-primary, #2563eb)
+   ========================================================================== */
+
 .category-slider-wrapper {
   position: relative;
   display: flex;
@@ -13,6 +20,7 @@
   -ms-overflow-style: none;
   scrollbar-width: none;
   padding: 0.5rem 0.25rem;
+  width: 100%;
 }
 
 .category-slider::-webkit-scrollbar {
@@ -26,31 +34,36 @@
   white-space: nowrap;
   font-weight: 600;
   font-size: 0.875rem;
-  color: #334155;
+  color: var(--color-text-body, #334155);
   cursor: pointer;
   padding: 0.6rem 1.15rem;
-  border-radius: 0.75rem;
-  background-color: #ffffff;
-  border: 1px solid rgba(226, 232, 240, 0.9);
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: var(--radius-lg, 12px);
+  background-color: var(--color-bg-card, #ffffff);
+  border: 1px solid var(--color-border-hairline, #e2e8f0);
+  box-shadow: var(--shadow-hairline, 0 1px 2px 0 rgba(15, 23, 42, 0.05));
+  transition: all var(--transition-fast, 0.15s ease);
 }
 
 .category-item-icon {
-  color: #64748b;
+  color: var(--color-text-muted, #64748b);
   flex-shrink: 0;
-  transition: color 0.2s ease;
+  transition: color var(--transition-fast, 0.15s ease);
 }
 
 .category-item:hover {
-  background-color: #f8fafc;
-  color: #4f46e5;
-  border-color: #c7d2fe;
-  box-shadow: 0 4px 12px -2px rgba(79, 70, 229, 0.1);
+  background-color: var(--color-brand-primary-light, #eff6ff);
+  color: var(--color-brand-primary, #2563eb);
+  border-color: var(--color-brand-primary-border, #bfdbfe);
+  box-shadow: 0 4px 12px -2px rgba(37, 99, 235, 0.12);
+  transform: translateY(-2px);
 }
 
 .category-item:hover .category-item-icon {
-  color: #4f46e5;
+  color: var(--color-brand-primary, #2563eb);
+}
+
+.category-item:active {
+  transform: scale(0.96);
 }
 
 .slider-btn {
@@ -58,32 +71,37 @@
   top: 50%;
   transform: translateY(-50%);
   z-index: 10;
-  background-color: #ffffff;
-  color: #334155;
-  border: 1px solid rgba(226, 232, 240, 0.95);
-  border-radius: 9999px;
+  background-color: var(--color-bg-card, #ffffff);
+  color: var(--color-text-body, #334155);
+  border: 1px solid var(--color-border-medium, #cbd5e1);
+  border-radius: var(--radius-full, 9999px);
   width: 38px;
   height: 38px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.08);
-  transition: all 0.2s ease;
+  box-shadow: var(--shadow-dropdown, 0 4px 10px rgba(15, 23, 42, 0.08));
+  transition: all var(--transition-fast, 0.15s ease);
 }
 
 .slider-btn:hover {
-  color: #4f46e5;
-  border-color: #c7d2fe;
+  color: var(--color-brand-primary, #2563eb);
+  border-color: var(--color-brand-primary-border, #bfdbfe);
   box-shadow: 0 6px 16px rgba(15, 23, 42, 0.12);
+  transform: translateY(-50%) scale(1.06);
+}
+
+.slider-btn:active {
+  transform: translateY(-50%) scale(0.94);
 }
 
 .slider-btn.left {
-  left: -12px;
+  left: -14px;
 }
 
 .slider-btn.right {
-  right: -12px;
+  right: -14px;
 }
 
 @media (max-width: 900px) {

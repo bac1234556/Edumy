@@ -59,7 +59,7 @@ const CategorySlider = () => {
       <div className="category-slider-wrapper container py-2">
         <div className="d-flex gap-3 overflow-hidden">
           {[1, 2, 3, 4, 5, 6].map((i) => (
-            <div key={i} className="skeleton-shimmer-box rounded-full" style={{ width: '148px', height: '42px', flexShrink: 0 }} />
+            <div key={i} className="skeleton-box rounded-full" style={{ width: '148px', height: '42px', flexShrink: 0 }} />
           ))}
         </div>
       </div>
@@ -75,7 +75,7 @@ const CategorySlider = () => {
       {showLeft && (
         <button
           type="button"
-          className="slider-btn left cursor-pointer transition-all duration-200 active:scale-95"
+          className="slider-btn left"
           onClick={scrollLeft}
           aria-label="Cuộn sang trái"
         >
@@ -92,7 +92,7 @@ const CategorySlider = () => {
           <button
             type="button"
             key={cat.categoryId || cat.name}
-            className="category-item cursor-pointer transition-all duration-200 active:scale-95"
+            className="category-item"
             onClick={() => handleCategoryClick(cat)}
           >
             <Layers size={15} strokeWidth={1.75} className="category-item-icon" aria-hidden="true" />
@@ -103,7 +103,7 @@ const CategorySlider = () => {
       
       <button
         type="button"
-        className="slider-btn right cursor-pointer transition-all duration-200 active:scale-95"
+        className="slider-btn right"
         onClick={scrollRight}
         aria-label="Cuộn sang phải"
       >

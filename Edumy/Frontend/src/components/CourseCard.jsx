@@ -100,8 +100,8 @@ const CourseCard = ({ course }) => {
                 size={13} 
                 strokeWidth={1.75}
                 className={star <= Math.round(Number(ratingScore)) ? "star-solid" : "star-muted"}
-                fill={star <= Math.round(Number(ratingScore)) ? "#f59e0b" : "none"}
-                color={star <= Math.round(Number(ratingScore)) ? "#f59e0b" : "#cbd5e1"}
+                fill={star <= Math.round(Number(ratingScore)) ? "#d97706" : "none"}
+                color={star <= Math.round(Number(ratingScore)) ? "#d97706" : "#cbd5e1"}
                 aria-hidden="true"
               />
             ))}

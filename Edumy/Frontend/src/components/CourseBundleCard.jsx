@@ -99,25 +99,25 @@ const CourseBundleCard = ({ courseId }) => {
   };
 
   return (
-    <div className="course-bundle-card rounded-2xl shadow-sm hover:shadow-md transition-all duration-200">
+    <div className="course-bundle-card">
       <div className="bundle-header">
-        <div className="d-flex align-items-center gap-2">
+        <div className="bundle-header-left">
           <div className="bundle-sparkle-icon">
             <Sparkles size={16} strokeWidth={1.75} aria-hidden="true" />
           </div>
-          <h4 className="bundle-title mb-0 text-slate-900">Thường được mua cùng nhau</h4>
+          <h4 className="bundle-title">Thường được mua cùng nhau</h4>
         </div>
         <span className="bundle-save-pill pill-badge">
           Tiết kiệm {discountPercent || 20}% khi mua Combo
         </span>
       </div>
 
-      <p className="bundle-subtitle text-slate-600">
+      <p className="bundle-subtitle">
         Ghép cặp khóa học cùng lộ trình thực chiến để làm chủ kỹ năng từ cơ bản đến nâng cao.
       </p>
 
       {/* Course Thumbnails Row */}
-      <div className="bundle-items-flow rounded-xl">
+      <div className="bundle-items-flow">
         {/* Course 1 */}
         <div className={`bundle-course-item ${!includeMain ? 'item-disabled' : ''}`}>
           <div className="bundle-thumb-wrap">
@@ -171,7 +171,7 @@ const CourseBundleCard = ({ courseId }) => {
       {/* Pricing & CTA Action */}
       <div className="bundle-action-bar">
         <div className="bundle-pricing-summary">
-          <div className="d-flex align-items-baseline gap-2">
+          <div className="bundle-pricing-row">
             <span className="label-total">Tổng combo:</span>
             <span className="bundle-final-price">{formatPrice(currentTotal)}</span>
             {includeMain && includeBundled && (
@@ -189,7 +189,7 @@ const CourseBundleCard = ({ courseId }) => {
           type="button"
           onClick={handleAddBundleToCart}
           disabled={addingToCart || (!includeMain && !includeBundled)}
-          className={`btn-add-bundle-cta cursor-pointer transition-all duration-200 active:scale-95 hover:opacity-90 ${addedSuccess ? 'btn-success-state' : ''}`}
+          className={`btn-add-bundle-cta ${addedSuccess ? 'btn-success-state' : ''}`}
         >
           {addedSuccess ? (
             <>
