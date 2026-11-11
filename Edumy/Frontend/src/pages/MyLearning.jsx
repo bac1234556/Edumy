@@ -220,7 +220,7 @@ function MyLearning() {
                       {item.courseStatus && item.courseStatus.toLowerCase() === 'hidden' && (
                         <div className="mb-2">
                           <span className="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-2 py-1 small">
-                            Đã ẩn khỏi danh mục công khai (Vẫn tiếp tục học - UC-S08)
+                            Đã ẩn khỏi danh mục công khai (Vẫn tiếp tục học)
                           </span>
                         </div>
                       )}
@@ -234,10 +234,10 @@ function MyLearning() {
                         {item.fullName || item.instructor || 'Giảng viên Edumy'}
                       </p>
 
-                      {/* Progress (UC-S11) */}
+                      {/* Progress */}
                       <div className="progress-meta-row">
                         <span>
-                          {isCompleted ? 'Đã hoàn thành 100%' : 'Tiến độ học tập (UC-S11)'}
+                          {isCompleted ? 'Đã hoàn thành 100%' : 'Tiến độ học tập'}
                           {item.totalLessons !== undefined && ` (${item.completedLessons || 0}/${item.totalLessons} bài)`}
                         </span>
                         <span className={isCompleted ? 'text-success' : 'text-primary'}>
@@ -252,14 +252,14 @@ function MyLearning() {
                         ></div>
                       </div>
 
-                      {/* Footer Actions (UC-S08 & UC-S09) */}
+                      {/* Footer Actions */}
                       <div className="enrolled-card-footer">
                         <Link
                           to={`/my-courses/${item.courseId}/learn`}
                           className="btn-continue-learning w-100 justify-content-center"
                         >
                           <PlayCircle size={16} />
-                          {isCompleted ? 'Xem lại bài học (UC-S09)' : 'Vào phòng học (UC-S09)'}
+                          {isCompleted ? 'Xem lại bài học' : 'Vào phòng học'}
                         </Link>
                       </div>
                     </div>

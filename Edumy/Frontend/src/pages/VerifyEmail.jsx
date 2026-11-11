@@ -78,7 +78,7 @@ const VerifyEmail = () => {
             <div className="auth-logo-box">E</div>
             <span className="auth-logo-text">Edu<span>my</span></span>
           </Link>
-          <h1 className="auth-title">Xác thực Email (UC-G06)</h1>
+          <h1 className="auth-title">Xác thực Email</h1>
           <p className="auth-subtitle">
             Kích hoạt tài khoản Học viên của bạn để bắt đầu đăng nhập và học tập trên Edumy
           </p>
@@ -190,3 +190,4 @@ const VerifyEmail = () => {
 };
 
 export default VerifyEmail;
+

@@ -591,7 +591,7 @@ function CoursePlayer() {
                 <div className="video-state-card" style={{ padding: '2.5rem', textAlign: 'left', overflowY: 'auto' }}>
                   <div className="d-flex align-items-center gap-2 mb-3 text-info">
                     <FileText size={28} />
-                    <h4 className="mb-0">Bài học văn bản (TEXT - UC-S09): {activeLesson?.title}</h4>
+                    <h4 className="mb-0">Bài học văn bản: {activeLesson?.title}</h4>
                   </div>
                   <div style={{ whiteSpace: 'pre-line', lineHeight: 1.75, color: '#e2e8f0', fontSize: '0.98rem' }}>
                     {activeLesson?.content || 'Nội dung bài đọc chi tiết nằm ở phần Tổng quan bài học bên dưới.'}
@@ -805,7 +805,7 @@ function CoursePlayer() {
           {/* Header hiển thị thanh tiến độ mượt mà */}
           <div className="sidebar-progress-header">
             <div className="sidebar-title-row">
-              <h3>Nội dung khóa học (UC-S09..S11)</h3>
+              <h3>Nội dung khóa học</h3>
               <span className="sidebar-completed-count">
                 {completedLessons.length} / {allPlayableItems.length} bài hoàn thành
               </span>

@@ -58,9 +58,9 @@ function Register() {
   return (
     <div className="auth-container">
       <div className="auth-card hover-3d">
-        <h2 className="auth-title">Đăng ký tài khoản Học viên (UC-G05)</h2>
+        <h2 className="auth-title">Đăng ký tài khoản Học viên</h2>
         <p className="text-center text-muted small mb-4">
-          Tài khoản đăng ký mới được gán vai trò Học viên (STUDENT). Sau khi đăng ký, bạn sẽ được chuyển tới bước xác thực Email (UC-G06).
+          Tài khoản đăng ký mới được gán vai trò Học viên (STUDENT). Sau khi đăng ký, bạn sẽ được chuyển tới bước xác thực Email.
         </p>
 
         {error && (

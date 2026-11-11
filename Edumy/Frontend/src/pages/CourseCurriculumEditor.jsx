@@ -146,7 +146,7 @@ function CourseCurriculumEditor() {
     });
   };
 
-  // UC-I08: Reorder chapters
+  // Reorder chapters
   const handleMoveSection = async (index, direction) => {
     const targetIdx = index + direction;
     if (targetIdx < 0 || targetIdx >= sections.length) return;
@@ -158,13 +158,13 @@ function CourseCurriculumEditor() {
       await api.put(`/v1/instructor/courses/${id}/chapter-order`, {
         chapterIds: reordered.map((s) => s.sectionId)
       });
-      showNotification('Đã cập nhật thứ tự chương học (UC-I08)!');
+      showNotification('Đã cập nhật thứ tự chương học!');
     } catch {
       fetchCurriculum();
     }
   };
 
-  // UC-I12: Reorder lessons within chapter
+  // Reorder lessons within chapter
   const handleMoveLesson = async (sectionId, lessonsList, index, direction) => {
     const targetIdx = index + direction;
     if (targetIdx < 0 || targetIdx >= lessonsList.length) return;
@@ -175,33 +175,33 @@ function CourseCurriculumEditor() {
       await api.put(`/v1/instructor/chapters/${sectionId}/lesson-order`, {
         lessonIds: reordered.map((l) => l.lessonId)
       });
-      showNotification('Đã cập nhật thứ tự bài học (UC-I12)!');
+      showNotification('Đã cập nhật thứ tự bài học!');
       fetchCurriculum();
     } catch {
       fetchCurriculum();
     }
   };
 
-  // UC-I13: Invite co-instructor
+  // Invite co-instructor
   const handleInviteCoInstructor = async (e) => {
     e.preventDefault();
     if (!coEmail.trim()) return;
     try {
       await api.post(`/v1/instructor/courses/${id}/co-instructors`, { email: coEmail.trim() });
       setCoEmail('');
-      showNotification('Đã gửi lời mời Đồng giảng viên thành công (UC-I13)!');
+      showNotification('Đã gửi lời mời Đồng giảng viên thành công!');
       fetchCurriculum();
     } catch (err) {
       alert(err.response?.data?.message || 'Không thể mời đồng giảng viên.');
     }
   };
 
-  // UC-I16: Remove co-instructor
+  // Remove co-instructor
   const handleRemoveCoInstructor = async (instructorId) => {
-    if (!window.confirm('Bạn có chắc chắn muốn gỡ đồng giảng viên này khỏi khóa học? (UC-I16)')) return;
+    if (!window.confirm('Bạn có chắc chắn muốn gỡ đồng giảng viên này khỏi khóa học?')) return;
     try {
       await api.delete(`/v1/instructor/courses/${id}/co-instructors/${instructorId}`);
-      showNotification('Đã gỡ đồng giảng viên khỏi khóa học (UC-I16).');
+      showNotification('Đã gỡ đồng giảng viên khỏi khóa học.');
       fetchCurriculum();
     } catch (err) {
       alert(err.response?.data?.message || 'Không thể gỡ đồng giảng viên.');
@@ -234,7 +234,7 @@ function CourseCurriculumEditor() {
 
       await api.post(`/sections/${activeLessonModalSection}/lessons`, payload);
       setActiveLessonModalSection(null);
-      showNotification(`Đã thêm bài học loại ${lessonForm.contentType} thành công (UC-I09)!`);
+      showNotification(`Đã thêm bài học loại ${lessonForm.contentType} thành công!`);
       fetchCurriculum();
     } catch (err) {
       alert('Lỗi khi thêm bài học: ' + (err.response?.data?.message || err.message));
@@ -321,11 +321,11 @@ function CourseCurriculumEditor() {
         </div>
       )}
 
-      {/* Co-Instructor Collaboration Panel (UC-I13 & UC-I16) */}
+      {/* Co-Instructor Collaboration Panel */}
       <div className="card shadow-sm border-0 mb-4 rounded-3 p-4 bg-white">
         <div className="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
           <div>
-            <h5 className="fw-bold mb-1 text-dark">Cộng tác Đồng giảng viên (UC-I13 & UC-I16)</h5>
+            <h5 className="fw-bold mb-1 text-dark">Cộng tác Đồng giảng viên</h5>
             <p className="text-muted small mb-0">
               Giảng viên chính có thể mời Giảng viên khác cộng tác biên soạn chương & bài học hoặc gỡ khỏi khóa học.
             </p>
@@ -341,7 +341,7 @@ function CourseCurriculumEditor() {
               required
             />
             <button type="submit" className="btn btn-sm btn-primary px-3 rounded-pill text-nowrap">
-              + Mời Đồng giảng viên (UC-I13)
+              + Mời Đồng giảng viên
             </button>
           </form>
         </div>
@@ -359,7 +359,7 @@ function CourseCurriculumEditor() {
                   type="button"
                   onClick={() => handleRemoveCoInstructor(ci.instructorId)}
                   className="btn btn-sm text-danger p-0 ms-1 border-0 bg-transparent"
-                  title="Gỡ đồng giảng viên (UC-I16)"
+                  title="Gỡ đồng giảng viên"
                 >
                   ✕
                 </button>
@@ -437,7 +437,7 @@ function CourseCurriculumEditor() {
                       disabled={sIndex === 0}
                       onClick={() => handleMoveSection(sIndex, -1)}
                       className="btn btn-sm btn-outline-secondary rounded-circle px-2 py-1"
-                      title="Đưa chương lên (UC-I08)"
+                      title="Đưa chương lên"
                     >
                       ↑
                     </button>
@@ -446,7 +446,7 @@ function CourseCurriculumEditor() {
                       disabled={sIndex === sections.length - 1}
                       onClick={() => handleMoveSection(sIndex, 1)}
                       className="btn btn-sm btn-outline-secondary rounded-circle px-2 py-1"
-                      title="Đưa chương xuống (UC-I08)"
+                      title="Đưa chương xuống"
                     >
                       ↓
                     </button>
@@ -454,12 +454,12 @@ function CourseCurriculumEditor() {
                       onClick={() => handleOpenAddLesson(section.sectionId)}
                       className="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-1 rounded-pill px-3"
                     >
-                      <Plus size={14} /> Thêm bài học (UC-I09)
+                      <Plus size={14} /> Thêm bài học
                     </button>
                     <button
                       onClick={() => handleDeleteSection(section.sectionId, section.title)}
                       className="btn btn-sm btn-outline-danger rounded-circle p-2"
-                      title="Xóa chương này (UC-I07)"
+                      title="Xóa chương này"
                     >
                       <Trash2 size={16} />
                     </button>
@@ -526,7 +526,7 @@ function CourseCurriculumEditor() {
                                 disabled={lIndex === 0}
                                 onClick={() => handleMoveLesson(section.sectionId, lessonsList, lIndex, -1)}
                                 className="btn btn-sm btn-outline-secondary rounded-circle px-2 py-1"
-                                title="Đưa bài học lên (UC-I12)"
+                                title="Đưa bài học lên"
                               >
                                 ↑
                               </button>
@@ -535,7 +535,7 @@ function CourseCurriculumEditor() {
                                 disabled={lIndex === lessonsList.length - 1}
                                 onClick={() => handleMoveLesson(section.sectionId, lessonsList, lIndex, 1)}
                                 className="btn btn-sm btn-outline-secondary rounded-circle px-2 py-1"
-                                title="Đưa bài học xuống (UC-I12)"
+                                title="Đưa bài học xuống"
                               >
                                 ↓
                               </button>
@@ -550,7 +550,7 @@ function CourseCurriculumEditor() {
                               <button
                                 onClick={() => handleDeleteLesson(lesson.lessonId, lesson.title)}
                                 className="btn btn-sm btn-outline-danger rounded-circle p-2"
-                                title="Xóa bài học (UC-I11)"
+                                title="Xóa bài học"
                               >
                                 <Trash2 size={16} />
                               </button>
@@ -598,7 +598,7 @@ function CourseCurriculumEditor() {
                   </div>
 
                   <div className="mb-3">
-                    <label className="form-label fw-semibold">Loại nội dung bài học (UC-I09)</label>
+                    <label className="form-label fw-semibold">Loại nội dung bài học</label>
                     <select
                       className="form-select"
                       value={lessonForm.contentType}

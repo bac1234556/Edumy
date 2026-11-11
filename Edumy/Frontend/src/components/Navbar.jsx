@@ -63,14 +63,14 @@ const Navbar = () => {
           </span>
         </Link>
 
-        {/* Explore Courses Button (UC-G01) */}
+        {/* Explore Courses Button */}
         <Link to="/courses" className="nav-explore-btn hide-on-mobile">
           <BookOpen size={16} /> Danh mục khóa học
         </Link>
 
-        {/* Live Search Input Bar (UC-G02) */}
+        {/* Live Search Input Bar */}
         <div className="navbar-search-wrapper hide-on-mobile" style={{ flex: 1, maxWidth: 540 }}>
-          <LiveCourseSearchBar variant="navbar" placeholder="Tìm kiếm khóa học theo tên (UC-G02)..." />
+          <LiveCourseSearchBar variant="navbar" placeholder="Tìm kiếm khóa học theo tên..." />
         </div>
 
         {/* Right Navigation Actions */}
@@ -141,7 +141,7 @@ const Navbar = () => {
                     className="dropdown-item-link"
                     onClick={() => setIsDropdownOpen(false)}
                   >
-                    <BookOpen size={16} /> Khóa học đã ghi danh (UC-S08)
+                    <BookOpen size={16} /> Khóa học đã ghi danh
                   </Link>
 
                   <Link 
@@ -149,7 +149,7 @@ const Navbar = () => {
                     className="dropdown-item-link"
                     onClick={() => setIsDropdownOpen(false)}
                   >
-                    <Receipt size={16} /> Lịch sử đơn hàng (UC-S06)
+                    <Receipt size={16} /> Lịch sử đơn hàng
                   </Link>
 
                   <Link 
@@ -157,7 +157,7 @@ const Navbar = () => {
                     className="dropdown-item-link"
                     onClick={() => setIsDropdownOpen(false)}
                   >
-                    <User size={16} /> Hồ sơ cá nhân (UC-G09)
+                    <User size={16} /> Hồ sơ cá nhân
                   </Link>
 
                   {(user.role === 'Instructor' || user.role === 'Admin') && (
@@ -183,7 +183,7 @@ const Navbar = () => {
                   <div className="dropdown-divider"></div>
 
                   <button className="dropdown-logout-btn" onClick={handleLogout}>
-                    <LogOut size={16} /> Đăng xuất (UC-G10)
+                    <LogOut size={16} /> Đăng xuất
                   </button>
                 </div>
               )}

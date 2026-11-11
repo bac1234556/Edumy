@@ -218,7 +218,7 @@ function CourseDetail() {
     }
   };
 
-  // UC-S15: Ghi danh trực tiếp vào khóa học miễn phí (price === 0)
+  // Ghi danh trực tiếp vào khóa học miễn phí (price === 0)
   const handleEnrollFree = async () => {
     if (!user) {
       navigate('/login');
@@ -228,7 +228,7 @@ function CourseDetail() {
       setEnrolling(true);
       await api.post('/v1/learning/enrollments/free', { courseId: Number(id) });
       setIsEnrolled(true);
-      showToast('Ghi danh khóa học miễn phí thành công! (UC-S15)', 'success');
+      showToast('Ghi danh khóa học miễn phí thành công!', 'success');
       navigate(`/my-courses/${id}/learn`);
     } catch (error) {
       showToast(error.response?.data?.message || 'Không thể ghi danh khóa học miễn phí.', 'error');
@@ -237,7 +237,7 @@ function CourseDetail() {
     }
   };
 
-  // Submit or Update review (UC-S12, UC-S13)
+  // Submit or Update review
   const handleSubmitReview = async (e) => {
     e.preventDefault();
     if (!reviewComment.trim()) return;
@@ -249,14 +249,14 @@ function CourseDetail() {
           rating: reviewRating,
           comment: reviewComment
         });
-        showToast('Đã cập nhật đánh giá khóa học thành công! (UC-S13)', 'success');
+        showToast('Đã cập nhật đánh giá khóa học thành công!', 'success');
         setEditingReviewId(null);
       } else {
         await api.post(`/courses/${id}/reviews`, {
           rating: reviewRating,
           comment: reviewComment
         });
-        showToast('Đánh giá của bạn đã được ghi nhận thành công! (UC-S12)', 'success');
+        showToast('Đánh giá của bạn đã được ghi nhận thành công!', 'success');
       }
       setReviewComment('');
 
@@ -270,12 +270,12 @@ function CourseDetail() {
     }
   };
 
-  // Delete own review (UC-S14)
+  // Delete own review
   const handleDeleteReview = async (reviewId) => {
-    if (!window.confirm('Bạn có chắc chắn muốn xóa đánh giá của mình không? (UC-S14)')) return;
+    if (!window.confirm('Bạn có chắc chắn muốn xóa đánh giá của mình không?')) return;
     try {
       await api.delete(`/v1/reviews/${reviewId}`);
-      showToast('Đã xóa đánh giá của bạn (UC-S14).', 'success');
+      showToast('Đã xóa đánh giá của bạn.', 'success');
       const response = await api.get(`/courses/${id}`);
       setCourse(response.data);
     } catch (error) {
@@ -713,7 +713,7 @@ function CourseDetail() {
                   </p>
                   {coInstructors.length > 0 && (
                     <div className="mt-3 pt-2 border-top small">
-                      <strong>Đồng giảng viên (Co-Instructors - UC-G04):</strong>{' '}
+                      <strong>Đồng giảng viên:</strong>{' '}
                       {coInstructors.map((ci) => ci.fullName || ci.email).join(', ')}
                     </div>
                   )}
@@ -878,14 +878,14 @@ function CourseDetail() {
                               setReviewComment(rev.comment || '');
                             }}
                           >
-                            Sửa đánh giá (UC-S13)
+                            Sửa đánh giá
                           </button>
                           <button
                             type="button"
                             className="btn btn-sm btn-outline-danger py-0 px-2"
                             onClick={() => handleDeleteReview(rev.reviewId)}
                           >
-                            Xóa đánh giá (UC-S14)
+                            Xóa đánh giá
                           </button>
                         </div>
                       )}
@@ -934,7 +934,7 @@ function CourseDetail() {
                         disabled={submittingReview}
                         className="btn-solid-primary"
                       >
-                        {submittingReview ? 'Đang lưu...' : (editingReviewId ? 'Cập nhật đánh giá (UC-S13)' : 'Đăng đánh giá (UC-S12)')}
+                        {submittingReview ? 'Đang lưu...' : (editingReviewId ? 'Cập nhật đánh giá' : 'Đăng đánh giá')}
                       </button>
                       {editingReviewId && (
                         <button
@@ -1043,7 +1043,7 @@ function CourseDetail() {
                       className="btn-primary-cta"
                       style={{ backgroundColor: '#10b981', borderColor: '#10b981' }}
                     >
-                      <CheckCircle size={17} /> {enrolling ? 'Đang ghi danh...' : 'Ghi danh Miễn phí ngay (UC-S15)'}
+                      <CheckCircle size={17} /> {enrolling ? 'Đang ghi danh...' : 'Ghi danh Miễn phí ngay'}
                     </button>
                   ) : (
                     <>
@@ -1052,14 +1052,14 @@ function CourseDetail() {
                         disabled={enrolling}
                         className="btn-primary-cta"
                       >
-                        <ShoppingCart size={17} /> Thêm vào giỏ hàng (UC-S01)
+                        <ShoppingCart size={17} /> Thêm vào giỏ hàng
                       </button>
                       <button
                         onClick={handleBuyNow}
                         disabled={enrolling}
                         className="btn-secondary-cta"
                       >
-                        Mua ngay & Thanh toán QR (UC-S04)
+                        Mua ngay & Thanh toán QR
                       </button>
                     </>
                   )}
@@ -1083,7 +1083,7 @@ function CourseDetail() {
                       <FileText size={15} /> Tài liệu PDF hiển thị trực tiếp trong phòng học
                     </li>
                     <li>
-                      <Monitor size={15} /> Theo dõi tỷ lệ hoàn thành từng bài học (UC-S10, UC-S11)
+                      <Monitor size={15} /> Theo dõi tỷ lệ hoàn thành từng bài học
                     </li>
                   </ul>
                 </div>

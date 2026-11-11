@@ -119,7 +119,7 @@ function Cart() {
             <div className="cart-empty-icon-wrap">
               <ShoppingCart size={40} />
             </div>
-            <h2 className="cart-empty-title">Vui lòng đăng nhập để xem giỏ hàng (UC-S02)</h2>
+            <h2 className="cart-empty-title">Vui lòng đăng nhập để xem giỏ hàng</h2>
             <p className="cart-empty-subtitle">
               Đăng nhập tài khoản học viên để quản lý giỏ hàng và tạo đơn thanh toán QR.
             </p>
@@ -157,7 +157,7 @@ function Cart() {
         <div className="cart-header-row d-flex justify-content-between align-items-center">
           <div>
             <h1 className="cart-page-heading">
-              Giỏ hàng của bạn (UC-S02 & UC-S03)
+              Giỏ hàng của bạn
               {items.length > 0 && (
                 <span className="cart-heading-count">({items.length} khóa học)</span>
               )}
@@ -167,18 +167,18 @@ function Cart() {
             </Link>
           </div>
           <Link to="/orders" className="btn btn-outline-primary btn-sm rounded-pill px-3">
-            Xem lịch sử đơn hàng (UC-S06)
+            Xem lịch sử đơn hàng
           </Link>
         </div>
 
-        {/* Empty Cart State + Suggested Public Courses (UC-S02) */}
+        {/* Empty Cart State + Suggested Public Courses */}
         {items.length === 0 ? (
           <div>
             <div className="cart-empty-box mb-5">
               <div className="cart-empty-icon-wrap">
                 <ShoppingCart size={40} />
               </div>
-              <h3 className="cart-empty-title">Giỏ hàng của bạn đang trống (UC-S02)</h3>
+              <h3 className="cart-empty-title">Giỏ hàng của bạn đang trống</h3>
               <p className="cart-empty-subtitle">
                 Bạn chưa thêm khóa học trả phí nào vào giỏ hàng. Hãy tham khảo các khóa học công khai gợi ý bên dưới!
               </p>
@@ -189,7 +189,7 @@ function Cart() {
 
             {suggestedCourses.length > 0 && (
               <div className="mt-4">
-                <h4 className="fw-bold mb-3">Khóa học công khai gợi ý cho bạn (UC-S02)</h4>
+                <h4 className="fw-bold mb-3">Khóa học công khai gợi ý cho bạn</h4>
                 <div className="row g-4">
                   {suggestedCourses.map((c) => (
                     <div className="col-12 col-md-6 col-lg-3" key={c.courseId}>
@@ -305,10 +305,10 @@ function Cart() {
                             onClick={(e) => handleRemoveFromCart(e, item)}
                             disabled={deletingId === (item.id || item.courseId)}
                             className="btn-item-action remove-btn"
-                            title="Xóa khỏi giỏ hàng (UC-S03)"
+                            title="Xóa khỏi giỏ hàng"
                           >
                             <Trash2 size={15} />{' '}
-                            {deletingId === (item.id || item.courseId) ? 'Đang xóa...' : 'Xóa khỏi giỏ (UC-S03)'}
+                            {deletingId === (item.id || item.courseId) ? 'Đang xóa...' : 'Xóa khỏi giỏ'}
                           </button>
                         </div>
                       </div>
@@ -332,11 +332,11 @@ function Cart() {
                 })}
               </div>
 
-              {/* Right Column: Order Summary (UC-S02 & UC-S04) */}
+              {/* Right Column: Order Summary */}
               {!allPaid && (
                 <div className="cart-summary-column">
                   <div className="order-summary-card">
-                    <h3 className="summary-heading">Tóm tắt đơn hàng (UC-S04)</h3>
+                    <h3 className="summary-heading">Tóm tắt đơn hàng</h3>
 
                     {enrolledItems.length > 0 && (
                       <div className="enrolled-exclusion-alert">
@@ -375,7 +375,7 @@ function Cart() {
 
                     <div className="payment-trust-box">
                       <div className="trust-badge-row">
-                        <Lock size={14} /> Chốt giá khóa học tại thời điểm tạo đơn (UC-S04)
+                        <Lock size={14} /> Chốt giá khóa học tại thời điểm tạo đơn
                       </div>
                       <div className="trust-badge-row mb-3">
                         <ShieldCheck size={14} /> Tự động ghi danh ngay khi VietQR xác nhận

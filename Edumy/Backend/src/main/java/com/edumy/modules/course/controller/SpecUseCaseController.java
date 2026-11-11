@@ -233,7 +233,7 @@ public class SpecUseCaseController {
                 .mapToLong(s -> s.getLessons() != null ? s.getLessons().size() : 0)
                 .sum();
         if (sections.isEmpty() || lessonCount == 0) {
-            throw new BusinessException(ErrorCode.BAD_REQUEST, "Khóa học phải có ít nhất 1 chương và 1 bài học hợp lệ trước khi gửi duyệt (UC-I17).");
+            throw new BusinessException(ErrorCode.BAD_REQUEST, "Khóa học phải có ít nhất 1 chương và 1 bài học hợp lệ trước khi gửi duyệt.");
         }
         course.setStatus("PendingApproval");
         course.setUpdatedAt(LocalDateTime.now());
@@ -358,7 +358,7 @@ public class SpecUseCaseController {
         if (target == null || !Boolean.TRUE.equals(target.getIsActive())
                 || (!"Instructor".equalsIgnoreCase(target.getRole()) && !"Admin".equalsIgnoreCase(target.getRole()))
                 || Objects.equals(target.getUserId(), currentUserId)) {
-            throw new BusinessException(ErrorCode.NOT_FOUND, "Không tìm thấy giảng viên hợp lệ với email đã nhập (UC-I13).");
+            throw new BusinessException(ErrorCode.NOT_FOUND, "Không tìm thấy giảng viên hợp lệ với email đã nhập.");
         }
 
         List<Map<String, Object>> list = COURSE_CO_INSTRUCTORS.computeIfAbsent(courseId, k -> new ArrayList<>());
@@ -446,7 +446,7 @@ public class SpecUseCaseController {
         return ResponseEntity.ok(Map.of(
                 "courseId", courseId,
                 "status", "Published",
-                "message", "Đã phê duyệt và xuất bản khóa học công khai (UC-A10)."
+                "message", "Đã phê duyệt và xuất bản khóa học công khai."
         ));
     }
 
@@ -457,7 +457,7 @@ public class SpecUseCaseController {
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "Không tìm thấy khóa học."));
         String reviewNote = body != null ? body.get("reviewNote") : null;
         if (reviewNote == null || reviewNote.trim().isEmpty()) {
-            throw new BusinessException(ErrorCode.BAD_REQUEST, "Vui lòng nhập lý do từ chối xét duyệt để giảng viên chỉnh sửa (UC-A11).");
+            throw new BusinessException(ErrorCode.BAD_REQUEST, "Vui lòng nhập lý do từ chối xét duyệt để giảng viên chỉnh sửa.");
         }
         course.setStatus("NeedsReview");
         course.setUpdatedAt(LocalDateTime.now());
@@ -467,7 +467,7 @@ public class SpecUseCaseController {
                 "courseId", courseId,
                 "status", "NeedsReview",
                 "reviewNote", reviewNote.trim(),
-                "message", "Đã từ chối khóa học và gửi phản hồi cho giảng viên (UC-A11)."
+                "message", "Đã từ chối khóa học và gửi phản hồi cho giảng viên."
         ));
     }
 
@@ -482,7 +482,7 @@ public class SpecUseCaseController {
         return ResponseEntity.ok(Map.of(
                 "courseId", courseId,
                 "status", "Hidden",
-                "message", "Đã ẩn khóa học khỏi danh sách công khai. Học viên đã ghi danh vẫn tiếp tục học bình thường (UC-A12)."
+                "message", "Đã ẩn khóa học khỏi danh sách công khai. Học viên đã ghi danh vẫn tiếp tục học bình thường."
         ));
     }
 
@@ -497,7 +497,7 @@ public class SpecUseCaseController {
         return ResponseEntity.ok(Map.of(
                 "courseId", courseId,
                 "status", "Published",
-                "message", "Đã hiện lại khóa học công khai (UC-A12)."
+                "message", "Đã hiện lại khóa học công khai."
         ));
     }
 
@@ -557,7 +557,7 @@ public class SpecUseCaseController {
                 "orderId", orderId,
                 "orderCode", "EDUMY" + orderId,
                 "status", "CANCELLED",
-                "message", "Đã hủy đơn hàng chờ thanh toán thành công (UC-S04/D3)."
+                "message", "Đã hủy đơn hàng chờ thanh toán thành công."
         ));
     }
 
@@ -633,7 +633,7 @@ public class SpecUseCaseController {
         Course course = courseRepository.findById(targetCourseId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "Không tìm thấy khóa học."));
         if (course.getPrice() != null && course.getPrice().compareTo(BigDecimal.ZERO) > 0) {
-            throw new BusinessException(ErrorCode.BAD_REQUEST, "Khóa học này là khóa trả phí, vui lòng thêm vào giỏ hàng để thanh toán (UC-S15).");
+            throw new BusinessException(ErrorCode.BAD_REQUEST, "Khóa học này là khóa trả phí, vui lòng thêm vào giỏ hàng để thanh toán.");
         }
         Enrollment existing = enrollmentRepository.findByUserIdAndCourseId(userId, targetCourseId);
         if (existing != null) {
@@ -658,7 +658,7 @@ public class SpecUseCaseController {
                 "courseId", targetCourseId,
                 "status", "ACTIVE",
                 "source", "FREE",
-                "message", "Ghi danh khóa học miễn phí thành công! Bạn có thể vào học ngay (UC-S15)."
+                "message", "Ghi danh khóa học miễn phí thành công! Bạn có thể vào học ngay."
         ));
     }
 
@@ -679,7 +679,7 @@ public class SpecUseCaseController {
         return ResponseEntity.ok(Map.of(
                 "lessonId", lessonId,
                 "completed", false,
-                "message", "Đã bỏ đánh dấu hoàn thành bài học (UC-S10)."
+                "message", "Đã bỏ đánh dấu hoàn thành bài học."
         ));
     }
 
@@ -750,7 +750,8 @@ public class SpecUseCaseController {
                 "reviewId", reviewId,
                 "visibility", "HIDDEN_BY_ADMIN",
                 "moderationReason", reason,
-                "message", "Đã ẩn đánh giá vi phạm thành công (UC-A15)."
+                "message", "Đã ẩn đánh giá vi phạm thành công."
         ));
     }
 }
+

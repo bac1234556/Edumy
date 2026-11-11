@@ -59,7 +59,7 @@ function UserProfile() {
       const response = await api.patch('/v1/me', { fullName: fullName.trim() });
       setProfile((prev) => ({ ...prev, ...response.data, fullName: fullName.trim() }));
       setIsEditing(false);
-      alert('Cập nhật họ tên cá nhân thành công! (UC-G09)');
+      alert('Cập nhật họ tên cá nhân thành công!');
     } catch (err) {
       alert(err.response?.data?.message || 'Cập nhật hồ sơ thất bại. Vui lòng thử lại.');
     } finally {
@@ -124,7 +124,7 @@ function UserProfile() {
         <div className="col-md-8">
           <div className="card shadow-sm border-0 profile-card">
             <div className="card-header bg-white border-bottom-0 pt-4 pb-0 d-flex justify-content-between align-items-center">
-              <h3 className="mb-0">Hồ sơ cá nhân (UC-G09)</h3>
+              <h3 className="mb-0">Hồ sơ cá nhân</h3>
               {!isEditing && (
                 <button className="btn btn-outline-primary btn-sm rounded-pill px-3" onClick={handleEdit}>
                   <Edit3 size={16} className="me-2" /> Cập nhật Họ tên
@@ -152,7 +152,7 @@ function UserProfile() {
               {isEditing ? (
                 <form onSubmit={handleSubmit} className="profile-form">
                   <div className="mb-3">
-                    <label className="form-label fw-bold">Họ và tên (Trường cho phép chỉnh sửa theo UC-G09)</label>
+                    <label className="form-label fw-bold">Họ và tên</label>
                     <input
                       type="text"
                       className="form-control"

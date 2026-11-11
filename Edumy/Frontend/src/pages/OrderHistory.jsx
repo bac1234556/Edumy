@@ -114,7 +114,7 @@ const OrderHistory = () => {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
           <span style={{ fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#818cf8', fontWeight: 700 }}>
-            Lịch sử giao dịch • UC-S06 & UC-S07
+            Lịch sử giao dịch
           </span>
           <h1 style={{ fontSize: '1.85rem', fontWeight: 800, marginTop: '0.35rem', display: 'flex', alignItems: 'center', gap: 10 }}>
             <Receipt size={28} color="#818cf8" /> Đơn hàng của tôi
@@ -260,7 +260,7 @@ const OrderHistory = () => {
             </table>
           </div>
 
-          {/* Order Detail Panel (UC-S07) */}
+          {/* Order Detail Panel */}
           {selectedOrder && (
             <div style={{
               background: 'rgba(15, 23, 42, 0.9)',
@@ -270,7 +270,7 @@ const OrderHistory = () => {
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
                 <h3 style={{ fontSize: '1.15rem', fontWeight: 700 }}>
-                  Chi tiết Đơn hàng #{selectedOrder.orderId} (UC-S07)
+                  Chi tiết Đơn hàng #{selectedOrder.orderId}
                 </h3>
                 <button
                   type="button"

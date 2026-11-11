@@ -46,7 +46,7 @@ function Login() {
   return (
     <div className="auth-container">
       <div className="auth-card hover-3d">
-        <h2 className="auth-title">Đăng nhập hệ thống (UC-G07)</h2>
+        <h2 className="auth-title">Đăng nhập hệ thống</h2>
         <p className="text-center text-muted small mb-4">
           Đăng nhập bằng Email và Mật khẩu để truy cập khóa học và đơn hàng của bạn
         </p>
@@ -93,7 +93,7 @@ function Login() {
           <div className="form-group">
             <div className="d-flex justify-content-between align-items-center">
               <label>Mật khẩu</label>
-              <Link to="/forgot-password" style={{ fontSize: '12px', color: '#6366f1' }}>Quên mật khẩu? (UC-G08)</Link>
+              <Link to="/forgot-password" style={{ fontSize: '12px', color: '#6366f1' }}>Quên mật khẩu?</Link>
             </div>
             <input 
               type="password" 
@@ -131,10 +131,10 @@ function Login() {
         </form>
 
         <div className="auth-footer-text" style={{ marginTop: 14 }}>
-          Chưa xác thực email? <Link to="/verify-email">Xác thực tài khoản (UC-G06)</Link>
+          Chưa xác thực email? <Link to="/verify-email">Xác thực tài khoản</Link>
         </div>
         <div className="auth-footer-text">
-          Chưa có tài khoản? <Link to="/register">Đăng ký Học viên (UC-G05)</Link>
+          Chưa có tài khoản? <Link to="/register">Đăng ký Học viên</Link>
         </div>
       </div>
     </div>

@@ -31,7 +31,7 @@ function InstructorDashboard() {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  
+
   // Tabs: 'courses' | 'invitations' | 'analytics' | 'students'
   const [activeTab, setActiveTab] = useState('courses');
   const [invitations, setInvitations] = useState([]);
@@ -69,45 +69,45 @@ function InstructorDashboard() {
     }
   };
 
-  // UC-I17: Submit course for Admin approval
+  // Submit course for Admin approval
   const handleSubmitForReview = async (courseId) => {
     try {
       await api.post(`/v1/instructor/courses/${courseId}/submit`);
-      alert('Đã gửi khóa học chờ Admin xét duyệt! (UC-I17)');
+      alert('Đã gửi khóa học chờ Admin xét duyệt!');
       fetchData();
     } catch (err) {
       alert(err.response?.data?.message || 'Không thể gửi duyệt khóa học.');
     }
   };
 
-  // UC-I18: Withdraw submission back to Draft
+  // Withdraw submission back to Draft
   const handleWithdrawReview = async (courseId) => {
     try {
       await api.post(`/v1/instructor/courses/${courseId}/withdraw`);
-      alert('Đã rút yêu cầu duyệt và chuyển khóa học về Bản nháp (DRAFT)! (UC-I18)');
+      alert('Đã rút yêu cầu duyệt và chuyển khóa học về Bản nháp (DRAFT)!');
       fetchData();
     } catch (err) {
       alert(err.response?.data?.message || 'Không thể rút yêu cầu duyệt.');
     }
   };
 
-  // UC-I04: Delete Draft course
+  // Delete Draft course
   const handleDeleteDraftCourse = async (courseId, title) => {
-    if (!window.confirm(`Bạn có chắc chắn muốn xóa khóa học nháp "${title}" không? (UC-I04)`)) return;
+    if (!window.confirm(`Bạn có chắc chắn muốn xóa khóa học nháp "${title}" không?`)) return;
     try {
       await api.delete(`/courses/${courseId}`);
-      alert('Đã xóa khóa học ở trạng thái Nháp (UC-I04).');
+      alert('Đã xóa khóa học ở trạng thái Nháp.');
       fetchData();
     } catch (err) {
       alert(err.response?.data?.message || 'Chỉ có thể xóa khóa học đang ở trạng thái Nháp.');
     }
   };
 
-  // UC-I14 & UC-I15: Accept / Decline Co-Instructor Invitation
+  // Accept / Decline Co-Instructor Invitation
   const handleRespondInvitation = async (courseId, action) => {
     try {
       await api.post(`/v1/instructor/invitations/${courseId}/${action}`);
-      alert(action === 'accept' ? 'Đã chấp nhận lời mời đồng giảng viên! (UC-I14)' : 'Đã từ chối lời mời đồng giảng viên (UC-I15).');
+      alert(action === 'accept' ? 'Đã chấp nhận lời mời đồng giảng viên!' : 'Đã từ chối lời mời đồng giảng viên.');
       fetchData();
     } catch (err) {
       alert(err.response?.data?.message || 'Không thể xử lý lời mời.');
@@ -281,7 +281,7 @@ function InstructorDashboard() {
             className={`studio-tab-btn ${activeTab === 'students' ? 'active' : ''}`}
             onClick={() => setActiveTab('students')}
           >
-            <GraduationCap size={18} /> Danh sách Học viên (UC-I19)
+            <GraduationCap size={18} /> Danh sách Học viên
           </button>
           <button
             className={`studio-tab-btn ${activeTab === 'analytics' ? 'active' : ''}`}
@@ -291,10 +291,10 @@ function InstructorDashboard() {
           </button>
         </div>
 
-        {/* TAB: CO-INSTRUCTOR INVITATIONS (UC-I14 & UC-I15) */}
+        {/* TAB: CO-INSTRUCTOR INVITATIONS */}
         {activeTab === 'invitations' && (
           <div className="roster-card mb-4">
-            <h4 className="analytics-panel-title mb-3">Lời mời Đồng giảng viên (UC-I14 & UC-I15)</h4>
+            <h4 className="analytics-panel-title mb-3">Lời mời Đồng giảng viên</h4>
             {invitations.length === 0 ? (
               <p className="text-muted py-4 text-center mb-0">
                 Hiện tại bạn chưa có lời mời cộng tác giảng dạy nào.
@@ -307,7 +307,7 @@ function InstructorDashboard() {
                       <th>Mã khóa học</th>
                       <th>Tên khóa học</th>
                       <th>Trạng thái lời mời</th>
-                      <th className="text-end">Thao tác (UC-I14 / UC-I15)</th>
+                      <th className="text-end">Thao tác</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -328,14 +328,14 @@ function InstructorDashboard() {
                                 className="btn btn-sm btn-success"
                                 onClick={() => handleRespondInvitation(inv.courseId, 'accept')}
                               >
-                                Chấp nhận (UC-I14)
+                                Chấp nhận
                               </button>
                               <button
                                 type="button"
                                 className="btn btn-sm btn-outline-danger"
                                 onClick={() => handleRespondInvitation(inv.courseId, 'decline')}
                               >
-                                Từ chối (UC-I15)
+                                Từ chối
                               </button>
                             </div>
                           ) : (
@@ -410,7 +410,7 @@ function InstructorDashboard() {
                           </div>
                         )}
 
-                        {/* Action Buttons (UC-I03, UC-I04, UC-I17, UC-I18) */}
+                        {/* Action Buttons */}
                         <div className="studio-course-actions-row flex-wrap">
                           <Link
                             to={`/instructor/courses/${course.courseId}/curriculum`}
@@ -425,7 +425,7 @@ function InstructorDashboard() {
                               onClick={() => handleSubmitForReview(course.courseId)}
                               className="btn-studio-action ai-btn"
                             >
-                              <CheckCircle2 size={14} /> Gửi duyệt (UC-I17)
+                              <CheckCircle2 size={14} /> Gửi duyệt
                             </button>
                           )}
 
@@ -435,7 +435,7 @@ function InstructorDashboard() {
                               onClick={() => handleWithdrawReview(course.courseId)}
                               className="btn-studio-action outline-secondary"
                             >
-                              <Clock size={14} /> Rút duyệt (UC-I18)
+                              <Clock size={14} /> Rút duyệt
                             </button>
                           )}
 
@@ -445,7 +445,7 @@ function InstructorDashboard() {
                               onClick={() => handleDeleteDraftCourse(course.courseId, course.title)}
                               className="btn-studio-action outline-secondary text-danger"
                             >
-                              Xóa nháp (UC-I04)
+                              Xóa nháp
                             </button>
                           )}
                         </div>
@@ -495,13 +495,12 @@ function InstructorDashboard() {
                     <div key={sent.label} className="sentiment-row">
                       <span className="fw-semibold small">{sent.label}</span>
                       <span
-                        className={`sentiment-badge-pill ${
-                          sent.label === 'Positive'
+                        className={`sentiment-badge-pill ${sent.label === 'Positive'
                             ? 'positive'
                             : sent.label === 'Negative'
-                            ? 'negative'
-                            : 'neutral'
-                        }`}
+                              ? 'negative'
+                              : 'neutral'
+                          }`}
                       >
                         {sent.count} phản hồi
                       </span>

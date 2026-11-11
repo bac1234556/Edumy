@@ -406,7 +406,7 @@ function HomePage() {
               </div>
               <h3>Bài giảng Đa định dạng (Video, PDF, Text)</h3>
               <p>
-                Hệ thống phòng học trực tuyến hỗ trợ bài giảng Video HTTPS, tài liệu PDF xem trực tiếp và bài đọc chuyên sâu kèm đánh dấu hoàn thành từng bài (UC-S09, UC-S10).
+                Hệ thống phòng học trực tuyến hỗ trợ bài giảng Video HTTPS, tài liệu PDF xem trực tiếp và bài đọc chuyên sâu kèm đánh dấu hoàn thành từng bài.
               </p>
             </div>
 
@@ -416,7 +416,7 @@ function HomePage() {
               </div>
               <h3>Theo dõi Tiến độ & Đánh giá Minh bạch</h3>
               <p>
-                Theo dõi tỷ lệ hoàn thành khóa học theo thời gian thực (UC-S11) và tham khảo đánh giá 1-5 sao từ học viên đã ghi danh thực tế (UC-S12).
+                Theo dõi tỷ lệ hoàn thành khóa học theo thời gian thực và tham khảo đánh giá 1-5 sao từ học viên đã ghi danh thực tế.
               </p>
             </div>
           </div>

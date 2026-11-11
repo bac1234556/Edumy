@@ -392,7 +392,7 @@ function PaymentQR() {
               </div>
             </div>
 
-            {/* Action Buttons (UC-S04 & UC-S05) */}
+            {/* Action Buttons */}
             <div className="payment-actions-group">
               <button
                 className="btn-manual-check"
@@ -400,7 +400,7 @@ function PaymentQR() {
                 disabled={checking}
               >
                 <RefreshCw size={18} className={checking ? 'spin' : ''} />
-                {checking ? 'Đang kiểm tra giao dịch...' : 'Làm mới trạng thái thanh toán (UC-S05)'}
+                {checking ? 'Đang kiểm tra giao dịch...' : 'Làm mới trạng thái thanh toán'}
               </button>
 
               <button
@@ -415,7 +415,7 @@ function PaymentQR() {
                   navigate('/orders');
                 }}
               >
-                Hủy đơn hàng đang chờ thanh toán (UC-S04)
+                Hủy đơn hàng đang chờ thanh toán
               </button>
             </div>
           </div>

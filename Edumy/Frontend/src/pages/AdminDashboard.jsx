@@ -96,18 +96,18 @@ function AdminDashboard() {
     try {
       if (targetStatus === 'Published') {
         await api.post(`/v1/admin/courses/${id}/approve`);
-        showNotification('Đã duyệt khóa học lên trạng thái Công khai (UC-A09)!');
+        showNotification('Đã duyệt khóa học lên trạng thái Công khai!');
       } else if (targetStatus === 'Rejected') {
-        const reason = window.prompt('Nhập lý do từ chối xét duyệt khóa học (Bắt buộc theo UC-A10):');
+        const reason = window.prompt('Nhập lý do từ chối xét duyệt khóa học:');
         if (!reason || !reason.trim()) return;
         await api.post(`/v1/admin/courses/${id}/reject`, { reviewNote: reason.trim() });
-        showNotification('Đã từ chối khóa học kèm lý do phản hồi (UC-A10)!');
+        showNotification('Đã từ chối khóa học kèm lý do phản hồi!');
       } else if (targetStatus === 'Hidden') {
         await api.post(`/v1/admin/courses/${id}/hide`);
-        showNotification('Đã ẩn khóa học khỏi danh mục công khai (UC-A11)!');
+        showNotification('Đã ẩn khóa học khỏi danh mục công khai!');
       } else if (targetStatus === 'Unhide') {
         await api.post(`/v1/admin/courses/${id}/unhide`);
-        showNotification('Đã mở ẩn khóa học trở lại công khai (UC-A12)!');
+        showNotification('Đã mở ẩn khóa học trở lại công khai!');
       } else {
         await api.put(`/admin/courses/${id}/status`, `"${targetStatus}"`, {
           headers: { 'Content-Type': 'application/json' }
@@ -121,13 +121,13 @@ function AdminDashboard() {
     }
   };
 
-  // UC-A15: Hide violating review
+  // Hide violating review
   const handleHideReview = async (reviewId) => {
-    const reason = window.prompt('Nhập lý do ẩn đánh giá vi phạm (UC-A15):', 'Nội dung vi phạm tiêu chuẩn cộng đồng');
+    const reason = window.prompt('Nhập lý do ẩn đánh giá vi phạm:', 'Nội dung vi phạm tiêu chuẩn cộng đồng');
     if (reason === null) return;
     try {
       await api.post(`/v1/admin/reviews/${reviewId}/hide`, { reason: reason.trim() });
-      showNotification('Đã ẩn đánh giá vi phạm thành công (UC-A15)!');
+      showNotification('Đã ẩn đánh giá vi phạm thành công!');
       fetchDashboardData(true);
     } catch (err) {
       showNotification(err.response?.data?.message || 'Không thể ẩn đánh giá', 'error');
@@ -294,7 +294,7 @@ function AdminDashboard() {
             >
               <span className="admin-nav-label">
                 <i className="bi bi-people-fill"></i>
-                Người dùng & Vai trò (UC-A01..05)
+                Người dùng & Vai trò
               </span>
               <span className="admin-nav-badge">{users.length}</span>
             </button>
@@ -306,7 +306,7 @@ function AdminDashboard() {
             >
               <span className="admin-nav-label">
                 <i className="bi bi-chat-left-quote-fill"></i>
-                Kiểm duyệt Đánh giá (UC-A15)
+                Kiểm duyệt Đánh giá
               </span>
               <span className="admin-nav-badge">{adminReviews.length}</span>
             </button>
@@ -535,16 +535,16 @@ function AdminDashboard() {
                                 <button 
                                   className="btn-admin-action success"
                                   onClick={() => handleUpdateStatus(course.courseId, 'Published')}
-                                  title="Duyệt và phát hành khóa học (UC-A09)"
+                                  title="Duyệt và phát hành khóa học"
                                 >
-                                  <i className="bi bi-check-lg"></i> Duyệt (UC-A09)
+                                  <i className="bi bi-check-lg"></i> Duyệt
                                 </button>
                                 <button 
                                   className="btn-admin-action outline-danger"
                                   onClick={() => handleUpdateStatus(course.courseId, 'Rejected')}
-                                  title="Từ chối kèm lý do bắt buộc (UC-A10)"
+                                  title="Từ chối kèm lý do bắt buộc"
                                 >
-                                  <i className="bi bi-x-lg"></i> Từ chối (UC-A10)
+                                  <i className="bi bi-x-lg"></i> Từ chối
                                 </button>
                               </>
                             ) : course.status === 'Published' ? (
@@ -552,21 +552,21 @@ function AdminDashboard() {
                                 className="btn-admin-action outline-secondary"
                                 onClick={() => handleUpdateStatus(course.courseId, 'Hidden')}
                               >
-                                <i className="bi bi-eye-slash"></i> Ẩn khóa học (UC-A11)
+                                <i className="bi bi-eye-slash"></i> Ẩn khóa học
                               </button>
                             ) : course.status === 'Hidden' ? (
                               <button 
                                 className="btn-admin-action success"
                                 onClick={() => handleUpdateStatus(course.courseId, 'Unhide')}
                               >
-                                <i className="bi bi-eye"></i> Mở ẩn (UC-A12)
+                                <i className="bi bi-eye"></i> Mở ẩn
                               </button>
                             ) : (
                               <button 
                                 className="btn-admin-action success"
                                 onClick={() => handleUpdateStatus(course.courseId, 'Published')}
                               >
-                                <i className="bi bi-check-circle"></i> Duyệt công khai (UC-A09)
+                                <i className="bi bi-check-circle"></i> Duyệt công khai
                               </button>
                             )}
                           </div>
@@ -901,14 +901,14 @@ function AdminDashboard() {
           <AdminOrdersTab showNotification={showNotification} />
         )}
 
-        {/* TAB: KIỂM DUYỆT ĐÁNH GIÁ (UC-A15) */}
+        {/* TAB: KIỂM DUYỆT ĐÁNH GIÁ */}
         {activeTab === 'reviews' && (
           <div className="admin-card">
             <div className="admin-card-header">
               <div>
                 <h3 className="admin-card-title">
                   <i className="bi bi-chat-left-quote-fill text-primary"></i>
-                  Kiểm duyệt & Ẩn Đánh giá vi phạm (UC-A15)
+                  Kiểm duyệt & Ẩn Đánh giá vi phạm
                 </h3>
                 <p className="admin-card-subtitle">
                   Quản trị viên rà soát và ẩn các đánh giá vi phạm kèm lý do kiểm duyệt
@@ -928,7 +928,7 @@ function AdminDashboard() {
                       <th>Học viên</th>
                       <th>Số sao</th>
                       <th>Nội dung bình luận</th>
-                      <th style={{ textAlign: 'right' }}>Thao tác (UC-A15)</th>
+                      <th style={{ textAlign: 'right' }}>Thao tác</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -944,7 +944,7 @@ function AdminDashboard() {
                             className="btn-admin-action outline-danger"
                             onClick={() => handleHideReview(rev.reviewId)}
                           >
-                            Ẩn đánh giá (UC-A15)
+                            Ẩn đánh giá
                           </button>
                         </td>
                       </tr>

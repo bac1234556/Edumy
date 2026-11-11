@@ -129,7 +129,7 @@ function CourseList() {
         <nav aria-label="breadcrumb" className="edumy-breadcrumbs">
           <Link to="/">Trang chủ</Link>
           <span className="separator">/</span>
-          <span className="current">Danh mục Khóa học công khai (UC-G01..G03)</span>
+          <span className="current">Danh mục Khóa học công khai</span>
         </nav>
 
         {/* Page Header */}
@@ -137,7 +137,7 @@ function CourseList() {
           <div>
             <h1 className="h3 fw-bold text-dark mb-1">Danh mục Khóa học Công khai</h1>
             <p className="text-secondary mb-0 small">
-              Tìm kiếm theo tên khóa học (UC-G02) và kết hợp lọc theo Danh mục & Loại giá Miễn phí / Trả phí (UC-G03).
+              Tìm kiếm theo tên khóa học và kết hợp lọc theo Danh mục & Loại giá Miễn phí / Trả phí.
             </p>
           </div>
 
@@ -178,11 +178,10 @@ function CourseList() {
           </div>
         </div>
 
-        {/* UC-G03: Price Type Filter (ALL / FREE / PAID) */}
         <div className="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
           <div className="d-flex align-items-center gap-2 flex-wrap">
             <span className="small fw-semibold text-secondary d-flex align-items-center gap-1">
-              <Filter size={14} /> Loại học phí (UC-G03):
+              <Filter size={14} /> Loại học phí:
             </span>
             {[
               { key: 'ALL', label: 'Tất cả khóa học' },
