@@ -464,7 +464,7 @@ function AdminDashboard() {
               </div>
             </div>
 
-            <div className="admin-table-container admin-courses-table-scroll max-h-[calc(100vh-420px)] overflow-y-auto scrollbar-thin scrollbar-thumb-slate-200 hover:scrollbar-thumb-slate-300">
+            <div className="admin-table-container admin-courses-table-scroll">
               {loading ? (
                 <div style={{ padding: '1.5rem' }}>
                   <div className="admin-skeleton-row"></div>
@@ -479,7 +479,7 @@ function AdminDashboard() {
                 </div>
               ) : (
                 <table className="admin-table">
-                  <thead className="admin-sticky-thead sticky top-0 z-10 bg-white/95 backdrop-blur-sm border-b border-slate-100">
+                  <thead>
                     <tr>
                       <th>Khóa học</th>
                       <th>Giảng viên</th>
@@ -598,19 +598,19 @@ function AdminDashboard() {
 
             {/* Pagination Footer */}
             {!loading && filteredCourses.length > 0 && (
-              <div className="admin-pagination-footer">
+              <div className="admin-card-footer">
                 <div className="admin-pagination-info">
                   Hiển thị <strong>{startCourseIdx + 1}–{Math.min(startCourseIdx + COURSES_PER_PAGE, filteredCourses.length)}</strong> trên tổng số <strong>{filteredCourses.length}</strong> khóa học (Trang {currentCoursePage}/{totalCoursePages})
                 </div>
-                <div className="admin-pagination-controls">
+                <div className="edumy-pagination">
                   <button
                     type="button"
-                    className="admin-page-btn"
+                    className="page-btn"
                     onClick={() => setCoursePage(p => Math.max(1, p - 1))}
                     disabled={currentCoursePage === 1}
                     aria-label="Trang trước"
                   >
-                    <ChevronLeft size={15} strokeWidth={2} />
+                    <ChevronLeft size={16} strokeWidth={2} />
                     <span>Trước</span>
                   </button>
 
@@ -618,7 +618,7 @@ function AdminDashboard() {
                     <button
                       type="button"
                       key={pageNum}
-                      className={`admin-page-number ${currentCoursePage === pageNum ? 'active' : ''}`}
+                      className={`page-btn ${currentCoursePage === pageNum ? 'active' : ''}`}
                       onClick={() => setCoursePage(pageNum)}
                     >
                       {pageNum}
@@ -627,13 +627,13 @@ function AdminDashboard() {
 
                   <button
                     type="button"
-                    className="admin-page-btn"
+                    className="page-btn"
                     onClick={() => setCoursePage(p => Math.min(totalCoursePages, p + 1))}
                     disabled={currentCoursePage === totalCoursePages}
                     aria-label="Trang sau"
                   >
-                    <span>Sau</span>
-                    <ChevronRight size={15} strokeWidth={2} />
+                    <span>Tiếp theo</span>
+                    <ChevronRight size={16} strokeWidth={2} />
                   </button>
                 </div>
               </div>
