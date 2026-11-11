@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import api from '../api/axiosConfig';
 import './AdminDashboard.css';
 import AdminCategoriesTab from '../components/admin/AdminCategoriesTab';
@@ -24,6 +25,8 @@ function AdminDashboard() {
   // Filter & Search states
   const [courseSearch, setCourseSearch] = useState('');
   const [courseStatusFilter, setCourseStatusFilter] = useState('ALL');
+  const [coursePage, setCoursePage] = useState(1);
+  const COURSES_PER_PAGE = 10;
   
   const [userSearch, setUserSearch] = useState('');
   const [userRoleFilter, setUserRoleFilter] = useState('ALL');
@@ -193,6 +196,15 @@ function AdminDashboard() {
     const matchesStatus = courseStatusFilter === 'ALL' || c.status === courseStatusFilter;
     return matchesSearch && matchesStatus;
   });
+
+  const totalCoursePages = Math.max(1, Math.ceil(filteredCourses.length / COURSES_PER_PAGE));
+  const currentCoursePage = Math.min(coursePage, totalCoursePages);
+  const startCourseIdx = (currentCoursePage - 1) * COURSES_PER_PAGE;
+  const paginatedCourses = filteredCourses.slice(startCourseIdx, startCourseIdx + COURSES_PER_PAGE);
+
+  useEffect(() => {
+    setCoursePage(1);
+  }, [courseSearch, courseStatusFilter]);
 
   // Filtered users
   const filteredUsers = users.filter(u => {
@@ -415,7 +427,7 @@ function AdminDashboard() {
 
         {/* TAB 1: COURSES MANAGEMENT */}
         {activeTab === 'courses' && (
-          <div className="admin-card">
+          <div className="admin-card admin-courses-card">
             <div className="admin-card-header">
               <div>
                 <h3 className="admin-card-title">
@@ -423,7 +435,7 @@ function AdminDashboard() {
                   Danh sách Khóa học
                 </h3>
                 <p className="admin-card-subtitle">
-                  Hiển thị {filteredCourses.length} / {courses.length} khóa học trên hệ thống
+                  Hiển thị {filteredCourses.length === 0 ? 0 : startCourseIdx + 1}–{Math.min(startCourseIdx + COURSES_PER_PAGE, filteredCourses.length)} trong tổng số {filteredCourses.length} khóa học ({courses.length} toàn hệ thống)
                 </p>
               </div>
 
@@ -452,7 +464,7 @@ function AdminDashboard() {
               </div>
             </div>
 
-            <div className="admin-table-container">
+            <div className="admin-table-container admin-courses-table-scroll max-h-[calc(100vh-420px)] overflow-y-auto scrollbar-thin scrollbar-thumb-slate-200 hover:scrollbar-thumb-slate-300">
               {loading ? (
                 <div style={{ padding: '1.5rem' }}>
                   <div className="admin-skeleton-row"></div>
@@ -467,7 +479,7 @@ function AdminDashboard() {
                 </div>
               ) : (
                 <table className="admin-table">
-                  <thead>
+                  <thead className="admin-sticky-thead sticky top-0 z-10 bg-white/95 backdrop-blur-sm border-b border-slate-100">
                     <tr>
                       <th>Khóa học</th>
                       <th>Giảng viên</th>
@@ -479,7 +491,7 @@ function AdminDashboard() {
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredCourses.map(course => (
+                    {paginatedCourses.map(course => (
                       <tr key={course.courseId}>
                         <td style={{ fontWeight: 600, color: '#0f172a' }}>
                           {course.title}
@@ -525,6 +537,12 @@ function AdminDashboard() {
                             <span className="admin-badge draft">
                               <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#64748b' }}></span>
                               Bản nháp
+                            </span>
+                          )}
+                          {course.status === 'Hidden' && (
+                            <span className="admin-badge draft">
+                              <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#64748b' }}></span>
+                              Đã ẩn
                             </span>
                           )}
                         </td>
@@ -577,6 +595,49 @@ function AdminDashboard() {
                 </table>
               )}
             </div>
+
+            {/* Pagination Footer */}
+            {!loading && filteredCourses.length > 0 && (
+              <div className="admin-pagination-footer">
+                <div className="admin-pagination-info">
+                  Hiển thị <strong>{startCourseIdx + 1}–{Math.min(startCourseIdx + COURSES_PER_PAGE, filteredCourses.length)}</strong> trên tổng số <strong>{filteredCourses.length}</strong> khóa học (Trang {currentCoursePage}/{totalCoursePages})
+                </div>
+                <div className="admin-pagination-controls">
+                  <button
+                    type="button"
+                    className="admin-page-btn"
+                    onClick={() => setCoursePage(p => Math.max(1, p - 1))}
+                    disabled={currentCoursePage === 1}
+                    aria-label="Trang trước"
+                  >
+                    <ChevronLeft size={15} strokeWidth={2} />
+                    <span>Trước</span>
+                  </button>
+
+                  {Array.from({ length: totalCoursePages }, (_, idx) => idx + 1).map(pageNum => (
+                    <button
+                      type="button"
+                      key={pageNum}
+                      className={`admin-page-number ${currentCoursePage === pageNum ? 'active' : ''}`}
+                      onClick={() => setCoursePage(pageNum)}
+                    >
+                      {pageNum}
+                    </button>
+                  ))}
+
+                  <button
+                    type="button"
+                    className="admin-page-btn"
+                    onClick={() => setCoursePage(p => Math.min(totalCoursePages, p + 1))}
+                    disabled={currentCoursePage === totalCoursePages}
+                    aria-label="Trang sau"
+                  >
+                    <span>Sau</span>
+                    <ChevronRight size={15} strokeWidth={2} />
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
