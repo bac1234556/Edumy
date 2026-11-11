@@ -30,7 +30,8 @@ import {
   Eye,
   Check,
   MessageSquare,
-  Flame
+  Flame,
+  Zap
 } from 'lucide-react';
 import SentimentBadge from '../components/SentimentBadge';
 import CourseBundleCard from '../components/CourseBundleCard';
@@ -428,15 +429,15 @@ function CourseDetail() {
         <div className="container">
           <div className="hero-inner-container">
             <div className="hero-content-col">
-              {/* Breadcrumbs */}
-              <nav aria-label="breadcrumb" className="hero-breadcrumbs">
+              {/* Breadcrumbs using .edumy-breadcrumbs design token standard */}
+              <nav aria-label="breadcrumb" className="edumy-breadcrumbs">
                 <Link to="/">Trang chủ</Link>
-                <ChevronRight size={13} className="breadcrumb-separator" />
+                <ChevronRight size={13} className="separator" />
                 <Link to="/courses">Khóa học</Link>
-                <ChevronRight size={13} className="breadcrumb-separator" />
+                <ChevronRight size={13} className="separator" />
                 <span>{course.category?.name || 'Lập trình & Công nghệ'}</span>
-                <ChevronRight size={13} className="breadcrumb-separator" />
-                <span className="breadcrumb-current">{course.title}</span>
+                <ChevronRight size={13} className="separator" />
+                <span className="current">{course.title}</span>
               </nav>
 
               <h1 className="course-main-title">{course.title}</h1>
@@ -447,24 +448,23 @@ function CourseDetail() {
               {/* Meta Badges */}
               <div className="course-meta-pills">
                 {isEnrolled && (
-                  <span className="badge-enrolled-solid" style={{
-                    background: '#10b981',
-                    color: '#ffffff',
-                    fontWeight: 700,
-                    padding: '0.35rem 0.85rem',
-                    borderRadius: '6px',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '0.35rem'
-                  }}>
-                    <Check size={14} /> ✓ Đã sở hữu
+                  <span className="badge-enrolled-solid">
+                    <Check size={14} /> Đã sở hữu
                   </span>
                 )}
-                <span className="badge-bestseller-solid">Bán chạy nhất</span>
-                
+                <span className="badge-bestseller">
+                  <Flame size={13} /> Bán chạy nhất
+                </span>
+                <span className="badge-updated">
+                  <Calendar size={13} /> Cập nhật {course.updatedAt ? new Date(course.updatedAt).toLocaleDateString('vi-VN', { month: '2-digit', year: 'numeric' }) : 'tháng 10/2026'}
+                </span>
+              </div>
+
+              {/* Unified horizontal meta row: rating stars, student count, instructor */}
+              <div className="hero-stats-row">
                 <div className="rating-stars-group">
-                  <span className="rating-number">{course.averageRating || '4.8'}</span>
-                  <div className="d-flex align-items-center">
+                  <span className="rating-number">{course.averageRating ? Number(course.averageRating).toFixed(1) : '4.8'}</span>
+                  <div className="stars-cluster">
                     {[...Array(5)].map((_, i) => (
                       <Star
                         key={i}
@@ -477,49 +477,36 @@ function CourseDetail() {
                   <span className="rating-count">({(course.reviews?.length || 24).toLocaleString()} đánh giá)</span>
                 </div>
 
+                <span className="hero-meta-divider">•</span>
+
                 <div className="meta-students-count">
                   <Users size={15} />
                   <span>{(course.enrollmentCount || 1280).toLocaleString()} học viên</span>
                 </div>
 
-                <span className="badge-updated-hero">
-                  <Calendar size={13} /> Cập nhật tháng 10/2026
-                </span>
-              </div>
+                <span className="hero-meta-divider">•</span>
 
-              {/* Instructor Headline & Meta Row */}
-              <div className="instructor-meta-row">
-                <img
-                  src={
-                    course.instructor?.avatarUrl
-                      ? course.instructor.avatarUrl.startsWith('http')
-                        ? course.instructor.avatarUrl
-                        : `${BACKEND_URL}${course.instructor.avatarUrl}`
-                      : 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&q=80'
-                  }
-                  alt={course.instructor?.fullName || 'Giảng viên'}
-                  className="instructor-avatar-sm"
-                />
-                <div>
-                  Giảng dạy bởi{' '}
-                  <span className="instructor-name-link">
-                    {course.instructor?.fullName || 'Trần Quang Huy'}
-                  </span>
-                  <span className="ms-2 instructor-headline-tag">
-                    (Senior Principal Engineer)
+                <div className="hero-instructor-meta">
+                  <img
+                    src={
+                      course.instructor?.avatarUrl
+                        ? course.instructor.avatarUrl.startsWith('http')
+                          ? course.instructor.avatarUrl
+                          : `${BACKEND_URL}${course.instructor.avatarUrl}`
+                        : 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&q=80'
+                    }
+                    alt={course.instructor?.fullName || 'Giảng viên'}
+                    className="instructor-avatar-sm"
+                  />
+                  <span>
+                    Giảng dạy bởi <strong className="instructor-name-link">{course.instructor?.fullName || 'Trần Quang Huy'}</strong>
                   </span>
                 </div>
 
-                <span className="text-secondary d-none d-md-inline">•</span>
-                <div className="d-flex align-items-center gap-1">
+                <span className="hero-meta-divider d-none d-md-inline">•</span>
+                <div className="d-none d-md-flex align-items-center gap-1" style={{ color: '#cbd5e1' }}>
                   <Globe size={14} />
                   <span>Tiếng Việt</span>
-                </div>
-
-                <span className="text-secondary d-none d-md-inline">•</span>
-                <div className="d-flex align-items-center gap-1">
-                  <FileText size={14} />
-                  <span>Có phụ đề</span>
                 </div>
               </div>
             </div>
@@ -610,8 +597,10 @@ function CourseDetail() {
                           onClick={() => toggleSection(section.sectionId)}
                         >
                           <div className="accordion-header-left">
-                            {isExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-                            <span>
+                            <span className="accordion-toggle-icon">
+                              {isExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                            </span>
+                            <span className="accordion-section-title">
                               Chương {sIdx + 1}: {section.title}
                             </span>
                           </div>
@@ -1006,25 +995,13 @@ function CourseDetail() {
                 <div className="cta-buttons-stack">
                   {isEnrolled ? (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', width: '100%' }}>
-                      <div style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: '0.4rem',
-                        backgroundColor: '#ecfdf5',
-                        color: '#059669',
-                        padding: '0.65rem 1rem',
-                        borderRadius: '8px',
-                        fontWeight: 700,
-                        fontSize: '0.95rem',
-                        border: '1px solid #a7f3d0'
-                      }}>
-                        <Check size={18} /> ✓ Đã sở hữu khóa học
+                      <div className="owned-status-badge">
+                        <Check size={18} /> Đã sở hữu khóa học
                       </div>
                       <Link
                         to={`/my-courses/${course.courseId}/learn`}
-                        className="btn-primary-cta"
-                        style={{ backgroundColor: '#10b981', borderColor: '#10b981' }}
+                        className="btn-solid-primary w-100"
+                        style={{ backgroundColor: 'var(--color-success, #16a34a)', borderColor: 'var(--color-success, #16a34a)' }}
                       >
                         <PlayCircle size={18} /> Vào học ngay
                       </Link>
@@ -1032,7 +1009,7 @@ function CourseDetail() {
                   ) : isInstructorOfCourse ? (
                     <Link
                       to={`/instructor/courses/${course.courseId}/curriculum`}
-                      className="btn-primary-cta"
+                      className="btn-solid-primary w-100"
                     >
                       Quản lý bài giảng khóa học
                     </Link>
@@ -1040,26 +1017,26 @@ function CourseDetail() {
                     <button
                       onClick={handleEnrollFree}
                       disabled={enrolling}
-                      className="btn-primary-cta"
-                      style={{ backgroundColor: '#10b981', borderColor: '#10b981' }}
+                      className="btn-solid-primary w-100"
+                      style={{ backgroundColor: 'var(--color-success, #16a34a)', borderColor: 'var(--color-success, #16a34a)' }}
                     >
                       <CheckCircle size={17} /> {enrolling ? 'Đang ghi danh...' : 'Ghi danh Miễn phí ngay'}
                     </button>
                   ) : (
                     <>
                       <button
-                        onClick={handleAddToCart}
-                        disabled={enrolling}
-                        className="btn-primary-cta"
-                      >
-                        <ShoppingCart size={17} /> Thêm vào giỏ hàng
-                      </button>
-                      <button
                         onClick={handleBuyNow}
                         disabled={enrolling}
-                        className="btn-secondary-cta"
+                        className="btn-solid-primary w-100"
                       >
-                        Mua ngay & Thanh toán QR
+                        <Zap size={17} /> Mua ngay & Thanh toán QR
+                      </button>
+                      <button
+                        onClick={handleAddToCart}
+                        disabled={enrolling}
+                        className="btn-outline-neutral w-100"
+                      >
+                        <ShoppingCart size={17} /> Thêm vào giỏ hàng
                       </button>
                     </>
                   )}
