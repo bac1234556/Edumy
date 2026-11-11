@@ -1,12 +1,12 @@
 import React, { useContext, useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { 
-  ShoppingCart, 
-  BookOpen, 
-  LayoutDashboard, 
-  Shield, 
-  User, 
-  LogOut, 
+import {
+  ShoppingCart,
+  BookOpen,
+  LayoutDashboard,
+  Shield,
+  User,
+  LogOut,
   ChevronDown,
   Receipt,
   Menu,
@@ -79,13 +79,13 @@ const Navbar = () => {
           {/* Role shortcuts */}
           {(user?.role === 'Instructor' || user?.role === 'Admin') && (
             <Link to="/instructor" className="nav-text-link hide-on-mobile">
-              <LayoutDashboard size={15} strokeWidth={1.75} aria-hidden="true" /> 
+              <LayoutDashboard size={15} strokeWidth={1.75} aria-hidden="true" />
               <span>Kênh Giảng viên</span>
             </Link>
           )}
           {user?.role === 'Admin' && (
             <Link to="/admin" className="nav-text-link hide-on-mobile">
-              <Shield size={15} strokeWidth={1.75} aria-hidden="true" /> 
+              <Shield size={15} strokeWidth={1.75} aria-hidden="true" />
               <span>Quản trị hệ thống</span>
             </Link>
           )}
@@ -114,7 +114,7 @@ const Navbar = () => {
           {/* User Auth Section */}
           {user ? (
             <div className="user-menu-wrapper" ref={dropdownRef}>
-              <button 
+              <button
                 type="button"
                 className="user-avatar-trigger"
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
@@ -135,28 +135,28 @@ const Navbar = () => {
                     </div>
                     <span className="dropdown-role-badge pill-badge">
                       {user.role === 'Admin' ? 'Quản trị viên (ADMIN)' :
-                       user.role === 'Instructor' ? 'Giảng viên (INSTRUCTOR)' : 'Học viên (STUDENT)'}
+                        user.role === 'Instructor' ? 'Giảng viên (INSTRUCTOR)' : 'Học viên (STUDENT)'}
                     </span>
                   </div>
 
-                  <Link 
-                    to="/my-courses" 
+                  <Link
+                    to="/my-courses"
                     className="dropdown-item-link"
                     onClick={() => setIsDropdownOpen(false)}
                   >
                     <BookOpen size={16} strokeWidth={1.75} aria-hidden="true" /> Khóa học đã ghi danh
                   </Link>
 
-                  <Link 
-                    to="/orders" 
+                  <Link
+                    to="/orders"
                     className="dropdown-item-link"
                     onClick={() => setIsDropdownOpen(false)}
                   >
                     <Receipt size={16} strokeWidth={1.75} aria-hidden="true" /> Lịch sử đơn hàng
                   </Link>
 
-                  <Link 
-                    to="/profile" 
+                  <Link
+                    to="/profile"
                     className="dropdown-item-link"
                     onClick={() => setIsDropdownOpen(false)}
                   >
@@ -164,8 +164,8 @@ const Navbar = () => {
                   </Link>
 
                   {(user.role === 'Instructor' || user.role === 'Admin') && (
-                    <Link 
-                      to="/instructor" 
+                    <Link
+                      to="/instructor"
                       className="dropdown-item-link"
                       onClick={() => setIsDropdownOpen(false)}
                     >
@@ -174,8 +174,8 @@ const Navbar = () => {
                   )}
 
                   {user.role === 'Admin' && (
-                    <Link 
-                      to="/admin" 
+                    <Link
+                      to="/admin"
                       className="dropdown-item-link"
                       onClick={() => setIsDropdownOpen(false)}
                     >
@@ -203,7 +203,7 @@ const Navbar = () => {
           )}
 
           {/* Mobile Hamburger Toggle Button */}
-          <button 
+          <button
             type="button"
             className="navbar-mobile-toggle-btn"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -223,7 +223,7 @@ const Navbar = () => {
               <div className="brand-name-text">
                 Edu<span>my</span>
               </div>
-              <button 
+              <button
                 type="button"
                 className="mobile-drawer-close-btn cursor-pointer transition-all duration-200 active:scale-95"
                 onClick={() => setMobileMenuOpen(false)}
@@ -235,8 +235,8 @@ const Navbar = () => {
 
             {/* Mobile Live Search */}
             <div className="mobile-drawer-search-wrap" style={{ margin: '0.75rem 0 1.25rem' }}>
-              <LiveCourseSearchBar 
-                variant="mobile" 
+              <LiveCourseSearchBar
+                variant="mobile"
                 placeholder="Tìm khóa học..."
                 onCloseMobile={() => setMobileMenuOpen(false)}
               />
@@ -244,8 +244,8 @@ const Navbar = () => {
 
             {/* Mobile Navigation Links */}
             <div className="mobile-drawer-nav-list">
-              <Link 
-                to="/courses" 
+              <Link
+                to="/courses"
                 className="mobile-drawer-link"
                 onClick={() => setMobileMenuOpen(false)}
               >
@@ -254,15 +254,15 @@ const Navbar = () => {
 
               {user && (
                 <>
-                  <Link 
-                    to="/my-courses" 
+                  <Link
+                    to="/my-courses"
                     className="mobile-drawer-link"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     <BookOpen size={20} strokeWidth={1.75} aria-hidden="true" /> Khóa học của tôi
                   </Link>
-                  <Link 
-                    to="/orders" 
+                  <Link
+                    to="/orders"
                     className="mobile-drawer-link"
                     onClick={() => setMobileMenuOpen(false)}
                   >
@@ -272,8 +272,8 @@ const Navbar = () => {
               )}
 
               {(user?.role === 'Instructor' || user?.role === 'Admin') && (
-                <Link 
-                  to="/instructor" 
+                <Link
+                  to="/instructor"
                   className="mobile-drawer-link"
                   onClick={() => setMobileMenuOpen(false)}
                 >
@@ -282,8 +282,8 @@ const Navbar = () => {
               )}
 
               {user?.role === 'Admin' && (
-                <Link 
-                  to="/admin" 
+                <Link
+                  to="/admin"
                   className="mobile-drawer-link"
                   onClick={() => setMobileMenuOpen(false)}
                 >
@@ -292,8 +292,8 @@ const Navbar = () => {
               )}
 
               {user && (
-                <Link 
-                  to="/profile" 
+                <Link
+                  to="/profile"
                   className="mobile-drawer-link"
                   onClick={() => setMobileMenuOpen(false)}
                 >
@@ -323,15 +323,15 @@ const Navbar = () => {
                 </div>
               ) : (
                 <div className="mobile-auth-cta-grid">
-                  <Link 
-                    to="/login" 
+                  <Link
+                    to="/login"
                     className="mobile-btn-login"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     Đăng nhập
                   </Link>
-                  <Link 
-                    to="/register" 
+                  <Link
+                    to="/register"
                     className="mobile-btn-signup"
                     onClick={() => setMobileMenuOpen(false)}
                   >

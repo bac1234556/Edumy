@@ -15,18 +15,18 @@ const EmptyState = ({
   className = ""
 }) => {
   return (
-    <div className={`edumy-empty-state rounded-2xl shadow-sm ${className}`}>
+    <div className={`edumy-empty-state ${className}`}>
       <div className="empty-state-icon-wrapper" aria-hidden="true">
-        <Icon size={38} strokeWidth={1.75} className="empty-state-icon" />
+        <Icon size={38} strokeWidth={1.5} className="empty-state-icon" />
       </div>
-      <h3 className="empty-state-title text-slate-900">{title}</h3>
-      <p className="empty-state-description text-slate-500">{description}</p>
+      <h3 className="empty-state-title">{title}</h3>
+      <p className="empty-state-description">{description}</p>
       
       <div className="empty-state-actions">
         {actionText && actionLink && (
           <Link
             to={actionLink}
-            className="empty-state-btn cursor-pointer transition-all duration-200 active:scale-95 hover:opacity-90"
+            className="empty-state-btn btn-solid-primary"
           >
             <span>{actionText}</span>
             <ArrowRight size={16} strokeWidth={1.75} aria-hidden="true" />
@@ -36,7 +36,7 @@ const EmptyState = ({
           <button
             type="button"
             onClick={onAction}
-            className="empty-state-btn cursor-pointer transition-all duration-200 active:scale-95 hover:opacity-90"
+            className="empty-state-btn btn-solid-primary"
           >
             <span>{actionText}</span>
             <RefreshCw size={16} strokeWidth={1.75} aria-hidden="true" />
@@ -46,7 +46,7 @@ const EmptyState = ({
           <button
             type="button"
             onClick={onSecondaryAction}
-            className="empty-state-secondary-btn cursor-pointer transition-all duration-200 active:scale-95"
+            className="empty-state-secondary-btn btn-outline-neutral"
           >
             {secondaryActionText}
           </button>

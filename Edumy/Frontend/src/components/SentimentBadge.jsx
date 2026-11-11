@@ -1,5 +1,5 @@
 import React from 'react';
-import { ThumbsUp, MessageCircle, AlertTriangle } from 'lucide-react';
+import { Smile, Frown, Meh } from 'lucide-react';
 import './SentimentBadge.css';
 
 const SentimentBadge = ({ sentiment, label, score }) => {
@@ -7,18 +7,20 @@ const SentimentBadge = ({ sentiment, label, score }) => {
 
   let type = 'neutral';
   let text = 'Trung tính';
-  let IconComponent = MessageCircle;
+  let IconComponent = Meh;
 
   if (
     normalized === 'POSITIVE' ||
+    normalized === 'POS' ||
     normalized === 'TÍCH CỰC' ||
     normalized === 'TICH CUC'
   ) {
     type = 'positive';
     text = 'Tích cực';
-    IconComponent = ThumbsUp;
+    IconComponent = Smile;
   } else if (
     normalized === 'NEGATIVE' ||
+    normalized === 'NEG' ||
     normalized === 'TIÊU CỰC' ||
     normalized === 'TIEU CUC' ||
     normalized === 'CẦN CẢI THIỆN' ||
@@ -26,7 +28,7 @@ const SentimentBadge = ({ sentiment, label, score }) => {
   ) {
     type = 'negative';
     text = 'Cần cải thiện';
-    IconComponent = AlertTriangle;
+    IconComponent = Frown;
   }
 
   return (
@@ -34,7 +36,7 @@ const SentimentBadge = ({ sentiment, label, score }) => {
       className={`sentiment-badge sentiment-${type} pill-badge`}
       title={score ? `Điểm AI đánh giá: ${Math.round(score * 100)}%` : 'AI phân tích cảm xúc'}
     >
-      <IconComponent size={12} strokeWidth={2} aria-hidden="true" />
+      <IconComponent size={13} strokeWidth={2} aria-hidden="true" />
       <span>{text}</span>
     </span>
   );

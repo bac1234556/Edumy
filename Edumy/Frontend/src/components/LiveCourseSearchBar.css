@@ -1,5 +1,10 @@
 /* ==============================================================
    LIVE COURSE SEARCH BAR - EDTECH LIGHT & SLATE HIERARCHY
+   Tokens from design-system.css:
+   Background: var(--color-bg-canvas-alt, #f1f5f9)
+   Border: var(--color-border-hairline, #e2e8f0)
+   Brand: var(--color-brand-primary, #2563eb)
+   Radius: var(--radius-full, 9999px) & var(--radius-lg, 12px)
    ============================================================== */
 
 .live-search-container {
@@ -22,32 +27,33 @@
   width: 100%;
 }
 
-/* --- Input Wrapper (Unified height & focus ring) --- */
+/* --- Input Wrapper (Standard 44px touch target, pill radius, hairline border) --- */
 .live-search-input-wrap {
   position: relative;
   display: flex;
   align-items: center;
-  background-color: #f8fafc;
-  border: 1px solid rgba(226, 232, 240, 0.95);
-  border-radius: 9999px;
+  background-color: var(--color-bg-canvas-alt, #f1f5f9);
+  border: 1px solid var(--color-border-hairline, #e2e8f0);
+  border-radius: var(--radius-full, 9999px);
   padding: 0 16px;
   height: 44px;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+  transition: all var(--transition-fast, 0.15s ease);
+  box-shadow: var(--shadow-hairline, 0 1px 2px rgba(15, 23, 42, 0.03));
 }
 
 .live-search-hero .live-search-input-wrap {
-  height: 54px;
+  height: 52px;
   padding: 0 8px 0 20px;
   background-color: #ffffff;
-  border: 1.5px solid #e2e8f0;
+  border: 1.5px solid var(--color-border-medium, #cbd5e1);
   box-shadow: 0 8px 24px -4px rgba(15, 23, 42, 0.08);
 }
 
+/* Focus State: White surface, Brand border, 3px focus ring */
 .live-search-input-wrap:focus-within {
-  border-color: #4f46e5;
+  border-color: var(--color-brand-primary, #2563eb);
   background-color: #ffffff;
-  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.16), 0 4px 12px rgba(79, 70, 229, 0.06);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
 /* --- Search Icon & Buttons --- */
@@ -56,17 +62,17 @@
   border: none;
   padding: 0;
   margin-right: 10px;
-  color: #64748b;
+  color: var(--color-text-muted, #64748b);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: color 0.15s ease;
+  transition: color var(--transition-fast, 0.15s ease);
   flex-shrink: 0;
 }
 
 .live-search-input-wrap:focus-within .live-search-icon-btn {
-  color: #4f46e5;
+  color: var(--color-brand-primary, #2563eb);
 }
 
 .live-search-input {
@@ -76,7 +82,7 @@
   outline: none;
   font-size: 0.9rem;
   font-weight: 500;
-  color: #0f172a;
+  color: var(--color-text-title, #0f172a);
   padding: 0;
   width: 100%;
   line-height: 1.5;
@@ -87,7 +93,7 @@
 }
 
 .live-search-input::placeholder {
-  color: #64748b;
+  color: var(--color-text-muted, #64748b);
   font-weight: 400;
 }
 
@@ -95,28 +101,33 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #4f46e5;
+  color: var(--color-brand-primary, #2563eb);
   margin-left: 8px;
   flex-shrink: 0;
 }
 
 .live-search-hero-submit-btn {
-  background: #4f46e5;
+  background: var(--color-brand-primary, #2563eb);
   color: #ffffff;
   border: none;
-  border-radius: 9999px;
+  border-radius: var(--radius-full, 9999px);
   padding: 10px 22px;
   font-weight: 600;
   font-size: 0.925rem;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all var(--transition-fast, 0.15s ease);
   white-space: nowrap;
-  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
   margin-left: 8px;
 }
 
 .live-search-hero-submit-btn:hover {
-  background: #4338ca;
+  background: var(--color-brand-primary-hover, #1d4ed8);
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.35);
+}
+
+.live-search-hero-submit-btn:active {
+  transform: scale(0.97);
 }
 
 /* --- Dropdown Results --- */
@@ -125,13 +136,13 @@
   top: calc(100% + 8px);
   left: 0;
   right: 0;
-  background: #ffffff;
-  border: 1px solid rgba(226, 232, 240, 0.9);
-  border-radius: 1rem;
-  box-shadow: 0 16px 36px -8px rgba(15, 23, 42, 0.14), 0 6px 14px -4px rgba(15, 23, 42, 0.06);
+  background: var(--color-bg-card, #ffffff);
+  border: 1px solid var(--color-border-hairline, #e2e8f0);
+  border-radius: var(--radius-lg, 12px);
+  box-shadow: var(--shadow-dropdown, 0 10px 15px -3px rgba(15, 23, 42, 0.08), 0 4px 6px -4px rgba(15, 23, 42, 0.04));
   z-index: 1050;
   overflow: hidden;
-  animation: slideDownFade 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: slideDownFade 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 @keyframes slideDownFade {
@@ -151,8 +162,8 @@
   align-items: center;
   justify-content: space-between;
   padding: 0.65rem 1rem;
-  background: #f8fafc;
-  border-bottom: 1px solid #f1f5f9;
+  background: var(--color-bg-canvas, #f8fafc);
+  border-bottom: 1px solid var(--color-border-hairline, #e2e8f0);
 }
 
 .live-search-header-title {
@@ -160,17 +171,17 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: #64748b;
+  color: var(--color-text-muted, #64748b);
 }
 
 .live-search-header-badge {
   font-size: 0.7rem;
   font-weight: 600;
   padding: 0.15rem 0.6rem;
-  border-radius: 9999px;
-  background: #eef2ff;
-  color: #4f46e5;
-  border: 1px solid #e0e7ff;
+  border-radius: var(--radius-full, 9999px);
+  background: var(--color-brand-primary-light, #eff6ff);
+  color: var(--color-brand-primary, #2563eb);
+  border: 1px solid var(--color-brand-primary-border, #bfdbfe);
 }
 
 /* List Items */
@@ -186,8 +197,8 @@
   gap: 0.85rem;
   padding: 0.75rem 1rem;
   cursor: pointer;
-  border-bottom: 1px solid #f8fafc;
-  transition: all 0.15s ease;
+  border-bottom: 1px solid var(--color-border-hairline, #e2e8f0);
+  transition: all var(--transition-fast, 0.15s ease);
   outline: none;
 }
 
@@ -197,22 +208,22 @@
 
 .live-search-item:hover,
 .live-search-item:focus {
-  background-color: #f8fafc;
+  background-color: var(--color-bg-canvas, #f8fafc);
 }
 
 /* Thumbnail */
 .live-search-thumb-box {
   width: 60px;
   height: 42px;
-  border-radius: 0.5rem;
+  border-radius: var(--radius-sm, 6px);
   overflow: hidden;
-  background-color: #f1f5f9;
+  background-color: var(--color-bg-canvas-alt, #f1f5f9);
   flex-shrink: 0;
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(226, 232, 240, 0.8);
+  border: 1px solid var(--color-border-hairline, #e2e8f0);
 }
 
 .live-search-thumb-img {
@@ -227,8 +238,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #eef2ff;
-  color: #4f46e5;
+  background: var(--color-brand-primary-light, #eff6ff);
+  color: var(--color-brand-primary, #2563eb);
 }
 
 /* Item Info */
@@ -243,14 +254,14 @@
 .live-search-item-title {
   font-size: 0.875rem;
   font-weight: 600;
-  color: #0f172a;
+  color: var(--color-text-title, #0f172a);
   margin: 0;
   line-height: 1.35;
-  transition: color 0.15s ease;
+  transition: color var(--transition-fast, 0.15s ease);
 }
 
 .live-search-item:hover .live-search-item-title {
-  color: #4f46e5;
+  color: var(--color-brand-primary, #2563eb);
 }
 
 .live-search-item-meta {
@@ -262,18 +273,18 @@
 }
 
 .live-search-item-instructor {
-  color: #64748b;
+  color: var(--color-text-muted, #64748b);
   max-width: 180px;
 }
 
 .live-search-item-price {
   font-weight: 700;
-  color: #0f172a;
+  color: var(--color-brand-primary, #2563eb);
   white-space: nowrap;
 }
 
 .live-search-item-price.is-free {
-  color: #059669;
+  color: var(--color-success, #16a34a);
   font-weight: 700;
 }
 
@@ -283,17 +294,18 @@
   align-items: center;
   justify-content: space-between;
   padding: 0.75rem 1rem;
-  background-color: #f8fafc;
-  border-top: 1px solid #f1f5f9;
+  background-color: var(--color-bg-canvas, #f8fafc);
+  border-top: 1px solid var(--color-border-hairline, #e2e8f0);
   cursor: pointer;
   font-size: 0.85rem;
-  color: #4f46e5;
+  color: var(--color-brand-primary, #2563eb);
   font-weight: 600;
+  transition: background-color var(--transition-fast, 0.15s ease), color var(--transition-fast, 0.15s ease);
 }
 
 .live-search-footer:hover {
-  background-color: #eef2ff;
-  color: #4338ca;
+  background-color: var(--color-brand-primary-light, #eff6ff);
+  color: var(--color-brand-primary-hover, #1d4ed8);
 }
 
 /* Empty State */
@@ -302,30 +314,41 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding: 1.5rem 1.25rem;
+  padding: 1.75rem 1.25rem;
+}
+
+.empty-search-icon {
+  color: var(--color-text-muted, #64748b);
+  margin-bottom: 0.5rem;
 }
 
 .live-search-empty-state .empty-text {
   font-size: 0.875rem;
-  color: #475569;
+  color: var(--color-text-body, #334155);
   margin: 0.25rem 0 0.85rem 0;
   line-height: 1.5;
 }
 
 .empty-view-all-btn {
-  background-color: #f8fafc;
-  border: 1px solid #cbd5e1;
-  color: #334155;
+  background-color: #ffffff;
+  border: 1px solid var(--color-border-medium, #cbd5e1);
+  color: var(--color-text-body, #334155);
   font-size: 0.825rem;
   font-weight: 600;
   padding: 0.5rem 1rem;
-  border-radius: 0.75rem;
+  border-radius: var(--radius-md, 8px);
   cursor: pointer;
+  transition: all var(--transition-fast, 0.15s ease);
 }
 
 .empty-view-all-btn:hover {
-  background-color: #f1f5f9;
-  color: #0f172a;
+  background-color: var(--color-bg-canvas, #f8fafc);
+  color: var(--color-text-title, #0f172a);
+  border-color: var(--color-border-dark, #94a3b8);
+}
+
+.empty-view-all-btn:active {
+  transform: scale(0.97);
 }
 
 /* Loading State */
@@ -334,8 +357,8 @@
   align-items: center;
   justify-content: center;
   gap: 0.65rem;
-  padding: 1.5rem 1.25rem;
-  color: #64748b;
+  padding: 1.75rem 1.25rem;
+  color: var(--color-text-muted, #64748b);
   font-size: 0.875rem;
 }
 
@@ -344,7 +367,7 @@
   width: 6px;
 }
 .live-search-list::-webkit-scrollbar-track {
-  background: #f8fafc;
+  background: var(--color-bg-canvas, #f8fafc);
 }
 .live-search-list::-webkit-scrollbar-thumb {
   background: #cbd5e1;
@@ -357,7 +380,7 @@
 @media (max-width: 768px) {
   .live-search-dropdown {
     max-height: 70vh;
-    border-radius: 0.875rem;
+    border-radius: var(--radius-md, 8px);
   }
   .live-search-thumb-box {
     width: 48px;

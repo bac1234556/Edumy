@@ -108,14 +108,14 @@ const LiveCourseSearchBar = ({
   };
 
   return (
-    <div 
-      className={`live-search-container live-search-${variant} ${className}`} 
+    <div
+      className={`live-search-container live-search-${variant} ${className}`}
       ref={containerRef}
     >
       <form className="live-search-input-wrap" onSubmit={handleSubmit}>
         <button 
           type="submit" 
-          className="live-search-icon-btn cursor-pointer transition-all duration-200 active:scale-95" 
+          className="live-search-icon-btn" 
           aria-label="Tìm kiếm"
         >
           <Search size={variant === 'hero' ? 20 : 18} strokeWidth={1.75} aria-hidden="true" />
@@ -145,7 +145,7 @@ const LiveCourseSearchBar = ({
         )}
 
         {variant === 'hero' && (
-          <button type="submit" className="live-search-hero-submit-btn cursor-pointer transition-all duration-200 active:scale-95 hover:opacity-90">
+          <button type="submit" className="live-search-hero-submit-btn">
             Tìm kiếm
           </button>
         )}
@@ -153,7 +153,7 @@ const LiveCourseSearchBar = ({
 
       {/* Instant Suggestion Dropdown */}
       {isOpen && searchTerm.trim().length >= 2 && (
-        <div className="live-search-dropdown rounded-2xl shadow-sm">
+        <div className="live-search-dropdown">
           {isLoading && results.length === 0 ? (
             <div className="live-search-loading-state">
               <Loader2 size={20} strokeWidth={1.75} className="animate-spin text-primary" />
@@ -172,7 +172,7 @@ const LiveCourseSearchBar = ({
                 {results.map((course) => (
                   <div
                     key={course.id}
-                    className="live-search-item cursor-pointer transition-all duration-200"
+                    className="live-search-item"
                     role="option"
                     tabIndex={0}
                     onClick={() => handleSelectCourse(course.id)}
@@ -192,7 +192,7 @@ const LiveCourseSearchBar = ({
                           }}
                         />
                       ) : null}
-                      <div 
+                      <div
                         className="live-search-thumb-fallback"
                         style={{ display: course.thumbnailUrl ? 'none' : 'flex' }}
                       >
@@ -224,8 +224,8 @@ const LiveCourseSearchBar = ({
                 ))}
               </div>
 
-              <div 
-                className="live-search-footer cursor-pointer transition-all duration-200"
+              <div
+                className="live-search-footer"
                 onClick={handleSubmit}
               >
                 <span>Xem tất cả kết quả cho "<strong>{searchTerm.trim()}</strong>"</span>
@@ -234,13 +234,13 @@ const LiveCourseSearchBar = ({
             </>
           ) : hasSearched ? (
             <div className="live-search-empty-state">
-              <Search size={24} strokeWidth={1.75} className="text-slate-500 mb-2" aria-hidden="true" />
+              <Search size={24} strokeWidth={1.75} className="empty-search-icon" aria-hidden="true" />
               <p className="empty-text">
                 Không tìm thấy khóa học nào phù hợp với "<strong>{searchTerm.trim()}</strong>"
               </p>
-              <button 
-                type="button" 
-                className="empty-view-all-btn cursor-pointer transition-all duration-200 active:scale-95"
+              <button
+                type="button"
+                className="empty-view-all-btn"
                 onClick={handleSubmit}
               >
                 Tìm kiếm trong toàn bộ thư viện khóa học
