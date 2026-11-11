@@ -230,7 +230,7 @@ function CoursePlayer() {
     }
   };
 
-  // UC-S10 & UC-S11: Toggle Complete / Unmark Complete Lesson
+  // Toggle Complete / Unmark Complete Lesson
   const handleToggleComplete = async () => {
     if (!activeLesson || activeLesson.isQuiz) return;
     const lessonId = activeLesson.lessonId;

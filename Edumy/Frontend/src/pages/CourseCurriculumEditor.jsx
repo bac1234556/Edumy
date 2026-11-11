@@ -34,7 +34,7 @@ function CourseCurriculumEditor() {
   const [selectedSectionId, setSelectedSectionId] = useState(null);
   const [expandedSections, setExpandedSections] = useState({});
 
-  // New Lesson form state (UC-I09: VIDEO, PDF, TEXT)
+  // New Lesson form state (VIDEO, PDF, TEXT)
   const [lessonForm, setLessonForm] = useState({
     title: '',
     contentType: 'VIDEO',
@@ -45,7 +45,7 @@ function CourseCurriculumEditor() {
   });
   const [activeLessonModalSection, setActiveLessonModalSection] = useState(null);
 
-  // Co-Instructors state (UC-I13 & UC-I16)
+  // Co-Instructors state
   const [coInstructors, setCoInstructors] = useState([]);
   const [coEmail, setCoEmail] = useState('');
 
@@ -64,7 +64,7 @@ function CourseCurriculumEditor() {
       const curRes = await api.get(`/courses/${id}/curriculum`);
       setSections(curRes.data || []);
 
-      // Fetch co-instructors (UC-I13)
+      // Fetch co-instructors
       try {
         const coRes = await api.get(`/v1/instructor/courses/${id}/co-instructors`);
         setCoInstructors(Array.isArray(coRes.data) ? coRes.data : []);

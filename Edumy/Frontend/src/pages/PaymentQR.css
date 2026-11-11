@@ -3,22 +3,22 @@
    ============================================================== */
 
 :root {
-  --vietqr-primary: #1068eb;
-  --vietqr-primary-hover: #0c56c2;
-  --vietqr-dark: #0f172a;
-  --vietqr-accent: #f59e0b;
-  --vietqr-success: #10b981;
-  --vietqr-success-bg: #ecfdf5;
-  --vietqr-card-bg: #ffffff;
-  --vietqr-border: #e2e8f0;
-  --vietqr-text-muted: #64748b;
-  --vietqr-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+  --vietqr-primary: var(--color-brand-primary, #2563eb);
+  --vietqr-primary-hover: var(--color-brand-primary-hover, #1d4ed8);
+  --vietqr-dark: var(--color-text-title, #0f172a);
+  --vietqr-accent: var(--color-accent-amber, #d97706);
+  --vietqr-success: var(--color-success, #16a34a);
+  --vietqr-success-bg: var(--color-success-bg, #f0fdf4);
+  --vietqr-card-bg: var(--color-bg-card, #ffffff);
+  --vietqr-border: var(--color-border-hairline, #e2e8f0);
+  --vietqr-text-muted: var(--color-text-muted, #64748b);
+  --vietqr-shadow: 0 20px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
 }
 
 .payment-qr-container {
   min-height: calc(100vh - 140px);
-  padding: 2.5rem 1rem;
-  background: linear-gradient(135deg, #f8fafc 0%, #edf2f7 50%, #f1f5f9 100%);
+  padding: 3rem 1.5rem;
+  background-color: var(--color-bg-canvas, #f8fafc);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -28,12 +28,12 @@
   width: 100%;
   max-width: 980px;
   background: var(--vietqr-card-bg);
-  border-radius: 24px;
+  border-radius: var(--radius-xl, 16px);
   box-shadow: var(--vietqr-shadow);
   border: 1px solid var(--vietqr-border);
   overflow: hidden;
   position: relative;
-  transition: all 0.3s ease;
+  transition: all var(--transition-normal, 0.2s ease);
 }
 
 /* Header */
@@ -120,21 +120,21 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  background: #f8fafc;
+  background: var(--color-bg-canvas, #f8fafc);
   padding: 1.75rem;
-  border-radius: 20px;
-  border: 1px dashed #cbd5e1;
+  border-radius: var(--radius-lg, 12px);
+  border: 1px dashed var(--color-border-medium, #cbd5e1);
 }
 
 .qr-image-wrapper {
   position: relative;
   background: #ffffff;
-  padding: 1rem;
-  border-radius: 16px;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
-  border: 1px solid #e2e8f0;
-  width: 290px;
-  height: 290px;
+  padding: 1.25rem;
+  border-radius: var(--radius-lg, 12px);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--vietqr-border);
+  width: 280px;
+  height: 280px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -146,7 +146,7 @@
   width: 100%;
   height: 100%;
   object-fit: contain;
-  transition: transform 0.2s ease;
+  transition: transform var(--transition-fast, 0.15s ease);
 }
 
 .qr-image-wrapper:hover img {
@@ -165,44 +165,66 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: #eff6ff;
+  background: var(--color-brand-primary-light, #eff6ff);
   color: var(--vietqr-primary);
   padding: 0.5rem 1.1rem;
-  border-radius: 9999px;
+  border-radius: var(--radius-pill, 9999px);
   font-size: 0.85rem;
   font-weight: 600;
-  border: 1px solid #bfdbfe;
+  border: 1px solid var(--color-brand-primary-border, #bfdbfe);
+  margin-bottom: 0.75rem;
 }
 
-.radar-dot {
-  width: 10px;
-  height: 10px;
-  background-color: var(--vietqr-primary);
+.btn-spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--vietqr-primary);
+  border-top-color: transparent;
   border-radius: 50%;
-  position: relative;
+  animation: qr-spin 0.7s linear infinite;
+  flex-shrink: 0;
 }
 
-.radar-dot::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
+@keyframes qr-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Quick 3-Step Guide Box */
+.payment-guide-box {
+  background: #ffffff;
+  border: 1px solid var(--vietqr-border);
+  border-radius: var(--radius-md, 8px);
+  padding: 1rem 1.15rem;
+  text-align: left;
   width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  background-color: var(--vietqr-primary);
-  animation: radar-pulse 1.6s cubic-bezier(0, 0, 0.2, 1) infinite;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
 }
 
-@keyframes radar-pulse {
-  0% {
-    transform: scale(1);
-    opacity: 1;
-  }
-  100% {
-    transform: scale(3.5);
-    opacity: 0;
-  }
+.guide-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--vietqr-dark);
+  margin-bottom: 0.45rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.guide-steps {
+  margin: 0;
+  padding-left: 1.15rem;
+  font-size: 0.8rem;
+  color: var(--color-text-body, #334155);
+  line-height: 1.55;
+}
+
+.guide-steps li {
+  margin-bottom: 0.25rem;
+}
+
+.guide-steps li:last-child {
+  margin-bottom: 0;
 }
 
 /* Right Column: Transaction Details */

@@ -16,7 +16,10 @@ import {
   Star,
   Lock,
   Sparkles,
-  PlayCircle
+  PlayCircle,
+  Tag,
+  AlertCircle,
+  Check
 } from 'lucide-react';
 import './Cart.css';
 
@@ -32,9 +35,15 @@ function Cart() {
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [suggestedCourses, setSuggestedCourses] = useState([]);
 
+  // Coupon / Voucher state
+  const [couponInput, setCouponInput] = useState('');
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
+  const [couponLoading, setCouponLoading] = useState(false);
+  const [couponError, setCouponError] = useState('');
+
   useEffect(() => {
     fetchCart();
-    // UC-S02: Load suggested public courses for empty cart state
+    // Load suggested public courses for empty cart state
     courseApi.getCourses({ pageSize: 4, sortBy: 'rating', sortOrder: 'desc' })
       .then((res) => {
         const list = Array.isArray(res.data?.items) ? res.data.items : (Array.isArray(res.data) ? res.data : []);
@@ -51,7 +60,32 @@ function Cart() {
     }
   }, [cart]);
 
-  // UC-S03: Remove item from cart
+  // Apply Coupon Handler
+  const handleApplyCoupon = async (e) => {
+    e.preventDefault();
+    if (!couponInput.trim()) return;
+    setCouponLoading(true);
+    setCouponError('');
+    try {
+      const res = await orderApi.validateCoupon(couponInput.trim());
+      setAppliedCoupon(res.data);
+      setCouponError('');
+    } catch (err) {
+      setCouponError(err.response?.data?.message || 'Mã giảm giá không hợp lệ hoặc đã hết hạn.');
+      setAppliedCoupon(null);
+    } finally {
+      setCouponLoading(false);
+    }
+  };
+
+  // Remove Coupon Handler
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponInput('');
+    setCouponError('');
+  };
+
+  // Remove item from cart
   const handleRemoveFromCart = async (e, item) => {
     if (e) {
       e.preventDefault();
@@ -78,11 +112,11 @@ function Cart() {
     }
   };
 
-  // UC-S04: Checkout Handler (Paid courses only, no coupon)
+  // Checkout Handler
   const handleCheckout = async () => {
     try {
       setCheckoutLoading(true);
-      const res = await orderApi.checkout(null);
+      const res = await orderApi.checkout(appliedCoupon ? appliedCoupon.code : null);
 
       if (res.data.isFree) {
         alert(res.data.message || 'Ghi danh khóa học thành công!');
@@ -149,6 +183,10 @@ function Cart() {
   const enrolledItems = items.filter((item) => item.isEnrolled || item.isPaid);
   const allPaid = items.length > 0 && payableItems.length === 0;
   const payableRawTotal = payableItems.reduce((acc, item) => acc + (item.course?.price || 0), 0);
+
+  const discountPercent = appliedCoupon?.discountPercentage ? Number(appliedCoupon.discountPercentage) : 0;
+  const discountAmount = discountPercent > 0 ? Math.round((payableRawTotal * discountPercent) / 100) : 0;
+  const finalTotal = Math.max(0, payableRawTotal - discountAmount);
 
   return (
     <div className="cart-page-wrapper">
@@ -269,7 +307,7 @@ function Cart() {
 
                           <Link
                             to={`/courses/${item.courseId}`}
-                            className="cart-item-title-link"
+                            className="cart-item-title-link line-clamp-2"
                           >
                             {item.course?.title || 'Khóa học Edumy'}
                           </Link>
@@ -304,11 +342,11 @@ function Cart() {
                             type="button"
                             onClick={(e) => handleRemoveFromCart(e, item)}
                             disabled={deletingId === (item.id || item.courseId)}
-                            className="btn-item-action remove-btn"
+                            className="btn-cart-remove"
                             title="Xóa khỏi giỏ hàng"
                           >
-                            <Trash2 size={15} />{' '}
-                            {deletingId === (item.id || item.courseId) ? 'Đang xóa...' : 'Xóa khỏi giỏ'}
+                            <Trash2 size={14} />{' '}
+                            <span>{deletingId === (item.id || item.courseId) ? 'Đang xóa...' : 'Xóa'}</span>
                           </button>
                         </div>
                       </div>
@@ -350,25 +388,84 @@ function Cart() {
                     <div className="summary-rows-stack">
                       <div className="summary-row">
                         <span>Số khóa học thanh toán:</span>
-                        <span>{payableItems.length} khóa học</span>
+                        <span className="fw-semibold">{payableItems.length} khóa học</span>
                       </div>
+
+                      <div className="summary-row">
+                        <span>Tạm tính:</span>
+                        <span>{formatPrice(payableRawTotal)}</span>
+                      </div>
+
+                      {appliedCoupon && (
+                        <div className="summary-row discount-row">
+                          <span className="d-flex align-items-center gap-1">
+                            <Tag size={15} /> Giảm giá voucher ({discountPercent}%):
+                          </span>
+                          <span className="discount-value">-{formatPrice(discountAmount)}</span>
+                        </div>
+                      )}
 
                       <div className="summary-row total-row">
                         <span>Tổng tiền thanh toán:</span>
-                        <span className="final-price-value">{formatPrice(payableRawTotal)}</span>
+                        <span className="final-price-value">{formatPrice(finalTotal)}</span>
                       </div>
+                    </div>
+
+                    {/* Ô nhập mã giảm giá (Coupon/Voucher) cùng hàng với nút Áp dụng */}
+                    <div className="coupon-section-box">
+                      <div className="coupon-section-label">
+                        <Tag size={15} /> Mã giảm giá (Voucher)
+                      </div>
+                      {!appliedCoupon ? (
+                        <form onSubmit={handleApplyCoupon} className="coupon-input-group">
+                          <input
+                            type="text"
+                            className="coupon-input"
+                            placeholder="Nhập mã voucher..."
+                            value={couponInput}
+                            onChange={(e) => {
+                              setCouponInput(e.target.value);
+                              if (couponError) setCouponError('');
+                            }}
+                            disabled={couponLoading || payableItems.length === 0}
+                          />
+                          <button
+                            type="submit"
+                            className="btn-apply-coupon"
+                            disabled={couponLoading || !couponInput.trim() || payableItems.length === 0}
+                          >
+                            {couponLoading ? 'Đang kiểm tra...' : 'Áp dụng'}
+                          </button>
+                        </form>
+                      ) : (
+                        <div className="applied-coupon-tag">
+                          <div className="d-flex align-items-center gap-2">
+                            <CheckCircle2 size={16} />
+                            <span>Mã <strong>{appliedCoupon.code}</strong> (Giảm {discountPercent}%)</span>
+                          </div>
+                          <button type="button" onClick={handleRemoveCoupon} className="btn-remove-coupon">
+                            Gỡ bỏ
+                          </button>
+                        </div>
+                      )}
+                      {couponError && (
+                        <div className="coupon-error-text">
+                          <AlertCircle size={14} /> {couponError}
+                        </div>
+                      )}
                     </div>
 
                     <button
                       onClick={handleCheckout}
                       disabled={checkoutLoading || payableItems.length === 0}
-                      className="btn-checkout-primary mt-3"
+                      className="btn-solid-primary w-100"
+                      style={{ padding: '0.85rem 1.25rem', fontSize: '1rem', fontWeight: 700 }}
                     >
                       {checkoutLoading ? (
                         'Đang khởi tạo đơn...'
                       ) : (
                         <>
-                          Tạo đơn & Thanh toán QR ({payableItems.length}) <ArrowRight size={18} />
+                          Tiến hành thanh toán ({payableItems.length}) <ArrowRight size={18} />
                         </>
                       )}
                     </button>

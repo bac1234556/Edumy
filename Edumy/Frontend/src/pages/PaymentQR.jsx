@@ -16,7 +16,8 @@ import {
   QrCode,
   BookOpen,
   Sparkles,
-  ExternalLink
+  ExternalLink,
+  Smartphone
 } from 'lucide-react';
 import './PaymentQR.css';
 
@@ -291,10 +292,22 @@ function PaymentQR() {
               Sử dụng <strong>App Ngân hàng</strong> hoặc ví điện tử để quét mã QR thanh toán nhanh chóng, an toàn.
             </p>
 
-            {/* Radar Pulsing Status Indicator */}
+            {/* Polling / Loading Status Indicator */}
             <div className="polling-status-pill">
-              <span className="radar-dot"></span>
-              Đang chờ thanh toán tự động...
+              <span className="btn-spinner"></span>
+              <span>Đang kiểm tra giao dịch tự động...</span>
+            </div>
+
+            {/* Quick 3-Step Guide */}
+            <div className="payment-guide-box">
+              <h5 className="guide-title">
+                <Smartphone size={16} /> 3 Bước quét mã nhanh:
+              </h5>
+              <ol className="guide-steps">
+                <li>Mở app Ngân hàng trên điện thoại của bạn.</li>
+                <li>Chọn <strong>Quét mã QR</strong> và hướng camera vào mã trên.</li>
+                <li>Xác nhận chuyển khoản. Hệ thống kích hoạt khóa học tự động ngay!</li>
+              </ol>
             </div>
           </div>
 
@@ -326,6 +339,14 @@ function PaymentQR() {
                   <span className="info-label">Ngân hàng thụ hưởng</span>
                   <div className="info-value-group">
                     <span className="info-value">{qrData?.bankName || qrData?.bankId || 'Ngân hàng thụ hưởng'}</span>
+                    <button
+                      className={`btn-copy ${copiedField === 'bank' ? 'copied' : ''}`}
+                      onClick={() => handleCopy(qrData?.bankName || qrData?.bankId || 'BIDV', 'bank')}
+                      title="Sao chép tên ngân hàng"
+                    >
+                      {copiedField === 'bank' ? <Check size={14} /> : <Copy size={14} />}
+                      {copiedField === 'bank' ? 'Đã chép' : 'Sao chép'}
+                    </button>
                   </div>
                 </div>
 

@@ -31,7 +31,7 @@ function App() {
 
         <main className="main-content">
           <Routes>
-            {/* Public / Guest Use Cases (UC-G01..G10) */}
+            {/* Public / Guest Routes */}
             <Route path="/" element={<HomePage />} />
             <Route path="/courses" element={<CourseList />} />
             <Route path="/courses/:id" element={<CourseDetail />} />
@@ -41,7 +41,7 @@ function App() {
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
 
-            {/* Sales & Payment Use Cases (UC-S01..S07) */}
+            {/* Sales & Payment Routes */}
             <Route path="/cart" element={<Cart />} />
             <Route path="/orders" element={
               <ProtectedRoute allowedRoles={['Student', 'Instructor', 'Admin']}>
@@ -54,7 +54,7 @@ function App() {
             <Route path="/payment-success" element={<PaymentSuccess />} />
             <Route path="/payment-cancel" element={<PaymentCancel />} />
 
-            {/* Learning Use Cases (UC-S08..S15) */}
+            {/* Learning Routes */}
             <Route path="/my-courses" element={
               <ProtectedRoute allowedRoles={['Student', 'Instructor', 'Admin']}>
                 <MyLearning />
@@ -67,14 +67,14 @@ function App() {
               </ProtectedRoute>
             } />
 
-            {/* Personal Profile (UC-G09) */}
+            {/* Personal Profile */}
             <Route path="/profile" element={
               <ProtectedRoute allowedRoles={['Student', 'Instructor', 'Admin']}>
                 <UserProfile />
               </ProtectedRoute>
             } />
 
-            {/* Instructor Use Cases (UC-I01..I19) */}
+            {/* Instructor Routes */}
             <Route path="/instructor" element={
               <ProtectedRoute allowedRoles={['Instructor', 'Admin']}>
                 <InstructorDashboard />
@@ -91,7 +91,7 @@ function App() {
               </ProtectedRoute>
             } />
 
-            {/* Admin Use Cases (UC-A01..A15) */}
+            {/* Admin Routes */}
             <Route path="/admin" element={
               <ProtectedRoute allowedRoles={['Admin']}>
                 <AdminDashboard />

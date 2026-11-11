@@ -53,7 +53,7 @@ function CourseDetail() {
   const [isInstructorOfCourse, setIsInstructorOfCourse] = useState(false);
   const [inWishlist, setInWishlist] = useState(false);
 
-  // Review states (UC-S12, UC-S13, UC-S14)
+  // Review states
   const [reviewRating, setReviewRating] = useState(5);
   const [reviewComment, setReviewComment] = useState('');
   const [editingReviewId, setEditingReviewId] = useState(null);

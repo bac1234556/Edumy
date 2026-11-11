@@ -19,7 +19,7 @@ function CourseList() {
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState(initialSearch);
   const [selectedCategory, setSelectedCategory] = useState(initialCategory ? String(initialCategory) : 'ALL');
-  const [priceType, setPriceType] = useState(initialPriceType.toUpperCase()); // ALL, FREE, PAID (UC-G03)
+  const [priceType, setPriceType] = useState(initialPriceType.toUpperCase()); // ALL, FREE, PAID
   const [sortBy, setSortBy] = useState('NEWEST');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
@@ -68,23 +68,23 @@ function CourseList() {
     if (initialPriceType) setPriceType(initialPriceType.toUpperCase());
   }, [initialCategory, initialSearch, initialPriceType]);
 
-  // Filtered & sorted courses (UC-G01, UC-G02, UC-G03)
+  // Filtered & sorted courses
   const filteredCourses = useMemo(() => {
     const list = courses.filter((course) => {
-      // UC-G02: Search by course title
+      // Search by course title
       const matchSearch =
         searchTerm === '' ||
         course.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         course.description?.toLowerCase().includes(searchTerm.toLowerCase());
 
-      // UC-G03: Filter by category
+      // Filter by category
       const matchCategory =
         selectedCategory === 'ALL' ||
         selectedCategory === 'Tất cả' ||
         String(course.categoryId) === selectedCategory ||
         course.category?.name === selectedCategory;
 
-      // UC-G03: Filter by priceType (ALL / FREE / PAID)
+      // Filter by priceType (ALL / FREE / PAID)
       const numericPrice = Number(course.price || 0);
       let matchPrice = true;
       if (priceType === 'FREE') {
@@ -209,7 +209,7 @@ function CourseList() {
           </div>
         </div>
 
-        {/* Category Filter Pills (UC-G03) */}
+        {/* Category Filter Pills */}
         {categoriesList.length > 0 && (
           <div className="category-filters-row d-flex flex-wrap gap-2 mb-4">
             <button
