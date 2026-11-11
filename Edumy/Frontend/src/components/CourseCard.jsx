@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
-import { Star, Clock, BookOpen, PlayCircle, CheckCircle } from 'lucide-react';
+import { Star, Clock, BookOpen, PlayCircle, CheckCircle2, Award } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
 import './CourseCard.css';
 
@@ -35,7 +35,10 @@ const CourseCard = ({ course }) => {
     : null;
 
   return (
-    <Link to={`/courses/${courseId}`} className="edumy-course-card">
+    <Link
+      to={`/courses/${courseId}`}
+      className="edumy-course-card cursor-pointer transition-all duration-200"
+    >
       {/* 1. Thumbnail Box */}
       <div className="card-thumbnail-wrap">
         <img 
@@ -43,16 +46,20 @@ const CourseCard = ({ course }) => {
           alt={course.title} 
           loading="lazy"
         />
-        {/* Authoritative Bestseller Badge */}
-        {(course.bestseller || course.isBestseller || studentCount > 500) && (
+        {/* Authoritative Bestseller Pill Badge */}
+        {(course.bestseller || course.isBestseller || studentCount > 500) && !isEnrolled && (
           <div className="card-badge-overlay">
-            <span className="badge-bestseller">Bán chạy nhất</span>
+            <span className="badge-bestseller pill-badge">
+              <Award size={12} strokeWidth={2} aria-hidden="true" />
+              Bán chạy nhất
+            </span>
           </div>
         )}
         {isEnrolled && (
-          <div className="card-badge-overlay" style={{ left: '0.75rem', right: 'auto' }}>
-            <span className="badge-bestseller" style={{ background: '#10b981', color: '#ffffff', fontWeight: 700 }}>
-              ✓ Đã sở hữu
+          <div className="card-badge-overlay">
+            <span className="badge-owned pill-badge">
+              <CheckCircle2 size={12} strokeWidth={2} aria-hidden="true" />
+              Đã sở hữu
             </span>
           </div>
         )}
@@ -60,25 +67,25 @@ const CourseCard = ({ course }) => {
 
       {/* 2. Course Details */}
       <div className="card-body-content">
-        <h3 className="card-course-title" title={course.title}>
+        <h3 className="card-course-title line-clamp-2" title={course.title}>
           {course.title || "Khóa học Lập trình Fullstack Web"}
         </h3>
 
-        <p className="card-instructor-meta">
+        <p className="card-instructor-meta line-clamp-1">
           <span className="instructor-name">{instructorName}</span>
-          <span className="dot-divider">•</span>
+          <span className="dot-divider" aria-hidden="true">•</span>
           <span className="instructor-title">{instructorTitle}</span>
         </p>
 
         {/* Real-world curriculum summary (Hours & lectures) */}
         <div className="card-curriculum-meta">
           <span className="meta-item">
-            <Clock size={13} className="text-muted" />
+            <Clock size={13} strokeWidth={1.75} className="text-slate-500" aria-hidden="true" />
             {duration} giờ học
           </span>
-          <span className="dot-divider">•</span>
+          <span className="dot-divider" aria-hidden="true">•</span>
           <span className="meta-item">
-            <BookOpen size={13} className="text-muted" />
+            <BookOpen size={13} strokeWidth={1.75} className="text-slate-500" aria-hidden="true" />
             {lectureCount} bài giảng
           </span>
         </div>
@@ -91,9 +98,11 @@ const CourseCard = ({ course }) => {
               <Star 
                 key={star} 
                 size={13} 
+                strokeWidth={1.75}
                 className={star <= Math.round(Number(ratingScore)) ? "star-solid" : "star-muted"}
-                fill={star <= Math.round(Number(ratingScore)) ? "#d97706" : "none"}
-                color={star <= Math.round(Number(ratingScore)) ? "#d97706" : "#cbd5e1"}
+                fill={star <= Math.round(Number(ratingScore)) ? "#f59e0b" : "none"}
+                color={star <= Math.round(Number(ratingScore)) ? "#f59e0b" : "#cbd5e1"}
+                aria-hidden="true"
               />
             ))}
           </div>
@@ -103,9 +112,10 @@ const CourseCard = ({ course }) => {
         {/* Pricing Area */}
         <div className="card-price-row">
           {isEnrolled ? (
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-              <span className="badge-enrolled-tag" style={{ color: '#10b981', fontWeight: 700, fontSize: '0.85rem' }}>
-                ✓ Đã sở hữu
+            <div className="card-enrolled-footer">
+              <span className="badge-enrolled-pill pill-badge">
+                <CheckCircle2 size={13} strokeWidth={2} aria-hidden="true" />
+                Đã sở hữu
               </span>
               <span
                 onClick={(e) => {
@@ -113,25 +123,14 @@ const CourseCard = ({ course }) => {
                   e.stopPropagation();
                   window.location.href = `/my-courses/${courseId}/learn`;
                 }}
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.3rem',
-                  backgroundColor: '#10b981',
-                  color: '#ffffff',
-                  fontWeight: 600,
-                  fontSize: '0.8rem',
-                  padding: '0.35rem 0.75rem',
-                  borderRadius: '6px',
-                  cursor: 'pointer'
-                }}
+                className="btn-card-learn cursor-pointer transition-all duration-200 active:scale-95 hover:opacity-90"
               >
-                <PlayCircle size={14} /> Vào học ngay
+                <PlayCircle size={14} strokeWidth={1.75} aria-hidden="true" /> Vào học ngay
               </span>
             </div>
           ) : (
             <>
-              <span className="price-main">
+              <span className={`price-main ${price === 0 ? 'price-free' : ''}`}>
                 {price === 0 ? "Miễn phí" : `₫${Number(price).toLocaleString('vi-VN')}`}
               </span>
 
@@ -142,7 +141,7 @@ const CourseCard = ({ course }) => {
               )}
 
               {discountPercent && (
-                <span className="badge-discount-percent">
+                <span className="badge-discount-percent pill-badge">
                   -{discountPercent}%
                 </span>
               )}

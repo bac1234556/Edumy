@@ -56,16 +56,17 @@ const Navbar = () => {
     <nav className="edumy-navbar">
       <div className="navbar-inner-wrapper">
         {/* Brand Logo */}
-        <Link to="/" className="navbar-brand-link">
-          <div className="brand-icon-box">E</div>
+        <Link to="/" className="navbar-brand-link cursor-pointer transition-all duration-200 active:scale-95">
+          <div className="brand-icon-box" aria-hidden="true">E</div>
           <span className="brand-name-text">
             Edu<span>my</span>
           </span>
         </Link>
 
         {/* Explore Courses Button */}
-        <Link to="/courses" className="nav-explore-btn hide-on-mobile">
-          <BookOpen size={16} /> Danh mục khóa học
+        <Link to="/courses" className="nav-explore-btn hide-on-mobile cursor-pointer transition-all duration-200 active:scale-95">
+          <BookOpen size={16} strokeWidth={1.75} aria-hidden="true" />
+          <span>Danh mục khóa học</span>
         </Link>
 
         {/* Live Search Input Bar */}
@@ -77,34 +78,34 @@ const Navbar = () => {
         <div className="navbar-nav-right">
           {/* Role shortcuts */}
           {(user?.role === 'Instructor' || user?.role === 'Admin') && (
-            <Link to="/instructor" className="nav-text-link hide-on-mobile">
-              <LayoutDashboard size={15} style={{ display: 'inline', marginRight: 4, verticalAlign: -1 }} /> 
-              Kênh Giảng viên
+            <Link to="/instructor" className="nav-text-link hide-on-mobile cursor-pointer transition-all duration-200 active:scale-95">
+              <LayoutDashboard size={15} strokeWidth={1.75} aria-hidden="true" /> 
+              <span>Kênh Giảng viên</span>
             </Link>
           )}
           {user?.role === 'Admin' && (
-            <Link to="/admin" className="nav-text-link hide-on-mobile">
-              <Shield size={15} style={{ display: 'inline', marginRight: 4, verticalAlign: -1 }} /> 
-              Quản trị hệ thống
+            <Link to="/admin" className="nav-text-link hide-on-mobile cursor-pointer transition-all duration-200 active:scale-95">
+              <Shield size={15} strokeWidth={1.75} aria-hidden="true" /> 
+              <span>Quản trị hệ thống</span>
             </Link>
           )}
 
           {/* My Learning & Orders for logged in user */}
           {user && (
             <>
-              <Link to="/my-courses" className="nav-text-link hide-on-mobile">
-                Khóa học của tôi
+              <Link to="/my-courses" className="nav-text-link hide-on-mobile cursor-pointer transition-all duration-200 active:scale-95">
+                <span>Khóa học của tôi</span>
               </Link>
-              <Link to="/orders" className="nav-text-link hide-on-mobile">
-                <Receipt size={15} style={{ display: 'inline', marginRight: 4, verticalAlign: -1 }} />
-                Đơn hàng
+              <Link to="/orders" className="nav-text-link hide-on-mobile cursor-pointer transition-all duration-200 active:scale-95">
+                <Receipt size={15} strokeWidth={1.75} aria-hidden="true" />
+                <span>Đơn hàng</span>
               </Link>
             </>
           )}
 
-          {/* Cart Icon with Dynamic Badge (UC-S01..S03) */}
-          <Link to="/cart" className="nav-icon-action-btn" title="Giỏ hàng">
-            <ShoppingCart size={20} />
+          {/* Cart Icon with Dynamic Badge */}
+          <Link to="/cart" className="nav-icon-action-btn cursor-pointer transition-all duration-200 active:scale-95" title="Giỏ hàng" aria-label="Giỏ hàng">
+            <ShoppingCart size={20} strokeWidth={1.75} aria-hidden="true" />
             {cartCount > 0 && (
               <span className="nav-cart-badge">{cartCount > 9 ? '9+' : cartCount}</span>
             )}
@@ -114,23 +115,25 @@ const Navbar = () => {
           {user ? (
             <div className="user-menu-wrapper" ref={dropdownRef}>
               <button 
-                className="user-avatar-trigger"
+                type="button"
+                className="user-avatar-trigger cursor-pointer transition-all duration-200 active:scale-95"
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                 aria-expanded={isDropdownOpen}
+                aria-label="Menu tài khoản"
               >
-                <div className="user-initial-badge">
+                <div className="user-initial-badge" aria-hidden="true">
                   {(user.fullName || user.email || 'U')[0].toUpperCase()}
                 </div>
-                <ChevronDown size={14} color="#94a3b8" />
+                <ChevronDown size={14} strokeWidth={2} color="#64748b" aria-hidden="true" />
               </button>
 
               {isDropdownOpen && (
-                <div className="user-dropdown-card">
+                <div className="user-dropdown-card rounded-2xl shadow-sm">
                   <div className="dropdown-user-header">
-                    <div className="dropdown-user-name">
+                    <div className="dropdown-user-name line-clamp-1">
                       {user.fullName || user.email?.split('@')[0]}
                     </div>
-                    <span className="dropdown-role-badge">
+                    <span className="dropdown-role-badge pill-badge">
                       {user.role === 'Admin' ? 'Quản trị viên (ADMIN)' :
                        user.role === 'Instructor' ? 'Giảng viên (INSTRUCTOR)' : 'Học viên (STUDENT)'}
                     </span>
@@ -138,62 +141,62 @@ const Navbar = () => {
 
                   <Link 
                     to="/my-courses" 
-                    className="dropdown-item-link"
+                    className="dropdown-item-link cursor-pointer transition-all duration-200"
                     onClick={() => setIsDropdownOpen(false)}
                   >
-                    <BookOpen size={16} /> Khóa học đã ghi danh
+                    <BookOpen size={16} strokeWidth={1.75} aria-hidden="true" /> Khóa học đã ghi danh
                   </Link>
 
                   <Link 
                     to="/orders" 
-                    className="dropdown-item-link"
+                    className="dropdown-item-link cursor-pointer transition-all duration-200"
                     onClick={() => setIsDropdownOpen(false)}
                   >
-                    <Receipt size={16} /> Lịch sử đơn hàng
+                    <Receipt size={16} strokeWidth={1.75} aria-hidden="true" /> Lịch sử đơn hàng
                   </Link>
 
                   <Link 
                     to="/profile" 
-                    className="dropdown-item-link"
+                    className="dropdown-item-link cursor-pointer transition-all duration-200"
                     onClick={() => setIsDropdownOpen(false)}
                   >
-                    <User size={16} /> Hồ sơ cá nhân
+                    <User size={16} strokeWidth={1.75} aria-hidden="true" /> Hồ sơ cá nhân
                   </Link>
 
                   {(user.role === 'Instructor' || user.role === 'Admin') && (
                     <Link 
                       to="/instructor" 
-                      className="dropdown-item-link"
+                      className="dropdown-item-link cursor-pointer transition-all duration-200"
                       onClick={() => setIsDropdownOpen(false)}
                     >
-                      <LayoutDashboard size={16} /> Quản lý khóa giảng dạy
+                      <LayoutDashboard size={16} strokeWidth={1.75} aria-hidden="true" /> Quản lý khóa giảng dạy
                     </Link>
                   )}
 
                   {user.role === 'Admin' && (
                     <Link 
                       to="/admin" 
-                      className="dropdown-item-link"
+                      className="dropdown-item-link cursor-pointer transition-all duration-200"
                       onClick={() => setIsDropdownOpen(false)}
                     >
-                      <Shield size={16} /> Bảng điều khiển Quản trị
+                      <Shield size={16} strokeWidth={1.75} aria-hidden="true" /> Bảng điều khiển Quản trị
                     </Link>
                   )}
 
                   <div className="dropdown-divider"></div>
 
-                  <button className="dropdown-logout-btn" onClick={handleLogout}>
-                    <LogOut size={16} /> Đăng xuất
+                  <button type="button" className="dropdown-logout-btn cursor-pointer transition-all duration-200" onClick={handleLogout}>
+                    <LogOut size={16} strokeWidth={1.75} aria-hidden="true" /> Đăng xuất
                   </button>
                 </div>
               )}
             </div>
           ) : (
             <div className="auth-buttons-group">
-              <Link to="/login" className="btn-nav-login">
+              <Link to="/login" className="btn-nav-login cursor-pointer transition-all duration-200 active:scale-95">
                 Đăng nhập
               </Link>
-              <Link to="/register" className="btn-nav-signup">
+              <Link to="/register" className="btn-nav-signup cursor-pointer transition-all duration-200 active:scale-95 hover:opacity-90">
                 Đăng ký
               </Link>
             </div>
@@ -202,12 +205,12 @@ const Navbar = () => {
           {/* Mobile Hamburger Toggle Button */}
           <button 
             type="button"
-            className="navbar-mobile-toggle-btn"
+            className="navbar-mobile-toggle-btn cursor-pointer transition-all duration-200 active:scale-95"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            aria-label="Toggle navigation menu"
+            aria-label="Mở menu điều hướng"
             aria-expanded={mobileMenuOpen}
           >
-            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            {mobileMenuOpen ? <X size={24} strokeWidth={1.75} /> : <Menu size={24} strokeWidth={1.75} />}
           </button>
         </div>
       </div>
@@ -221,16 +224,17 @@ const Navbar = () => {
                 Edu<span>my</span>
               </div>
               <button 
-                className="mobile-drawer-close-btn"
+                type="button"
+                className="mobile-drawer-close-btn cursor-pointer transition-all duration-200 active:scale-95"
                 onClick={() => setMobileMenuOpen(false)}
-                aria-label="Close menu"
+                aria-label="Đóng menu"
               >
-                <X size={22} />
+                <X size={22} strokeWidth={1.75} />
               </button>
             </div>
 
             {/* Mobile Live Search */}
-            <div className="mobile-drawer-search-wrap" style={{ margin: '0.75rem 0' }}>
+            <div className="mobile-drawer-search-wrap" style={{ margin: '0.75rem 0 1.25rem' }}>
               <LiveCourseSearchBar 
                 variant="mobile" 
                 placeholder="Tìm khóa học..."
@@ -242,27 +246,27 @@ const Navbar = () => {
             <div className="mobile-drawer-nav-list">
               <Link 
                 to="/courses" 
-                className="mobile-drawer-link"
+                className="mobile-drawer-link cursor-pointer transition-all duration-200"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                <BookOpen size={20} /> Danh mục khóa học
+                <BookOpen size={20} strokeWidth={1.75} aria-hidden="true" /> Danh mục khóa học
               </Link>
 
               {user && (
                 <>
                   <Link 
                     to="/my-courses" 
-                    className="mobile-drawer-link"
+                    className="mobile-drawer-link cursor-pointer transition-all duration-200"
                     onClick={() => setMobileMenuOpen(false)}
                   >
-                    <BookOpen size={20} /> Khóa học của tôi
+                    <BookOpen size={20} strokeWidth={1.75} aria-hidden="true" /> Khóa học của tôi
                   </Link>
                   <Link 
                     to="/orders" 
-                    className="mobile-drawer-link"
+                    className="mobile-drawer-link cursor-pointer transition-all duration-200"
                     onClick={() => setMobileMenuOpen(false)}
                   >
-                    <Receipt size={20} /> Đơn hàng của tôi
+                    <Receipt size={20} strokeWidth={1.75} aria-hidden="true" /> Đơn hàng của tôi
                   </Link>
                 </>
               )}
@@ -270,30 +274,30 @@ const Navbar = () => {
               {(user?.role === 'Instructor' || user?.role === 'Admin') && (
                 <Link 
                   to="/instructor" 
-                  className="mobile-drawer-link"
+                  className="mobile-drawer-link cursor-pointer transition-all duration-200"
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  <LayoutDashboard size={20} /> Kênh Giảng viên
+                  <LayoutDashboard size={20} strokeWidth={1.75} aria-hidden="true" /> Kênh Giảng viên
                 </Link>
               )}
 
               {user?.role === 'Admin' && (
                 <Link 
                   to="/admin" 
-                  className="mobile-drawer-link"
+                  className="mobile-drawer-link cursor-pointer transition-all duration-200"
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  <Shield size={20} /> Bảng điều khiển Quản trị
+                  <Shield size={20} strokeWidth={1.75} aria-hidden="true" /> Bảng điều khiển Quản trị
                 </Link>
               )}
 
               {user && (
                 <Link 
                   to="/profile" 
-                  className="mobile-drawer-link"
+                  className="mobile-drawer-link cursor-pointer transition-all duration-200"
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  <User size={20} /> Hồ sơ cá nhân
+                  <User size={20} strokeWidth={1.75} aria-hidden="true" /> Hồ sơ cá nhân
                 </Link>
               )}
             </div>
@@ -303,28 +307,32 @@ const Navbar = () => {
               {user ? (
                 <div className="mobile-user-profile-bar">
                   <div className="mobile-user-info">
-                    <span className="mobile-user-name">{user.fullName || user.email}</span>
-                    <span className="mobile-user-role">{user.role}</span>
+                    <span className="mobile-user-name line-clamp-1">{user.fullName || user.email}</span>
+                    <span className="mobile-user-role pill-badge">{user.role}</span>
                   </div>
-                  <button className="mobile-logout-btn" onClick={() => {
-                    setMobileMenuOpen(false);
-                    handleLogout();
-                  }}>
-                    <LogOut size={18} /> Đăng xuất
+                  <button
+                    type="button"
+                    className="mobile-logout-btn cursor-pointer transition-all duration-200 active:scale-95"
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      handleLogout();
+                    }}
+                  >
+                    <LogOut size={18} strokeWidth={1.75} aria-hidden="true" /> Đăng xuất
                   </button>
                 </div>
               ) : (
                 <div className="mobile-auth-cta-grid">
                   <Link 
                     to="/login" 
-                    className="mobile-btn-login"
+                    className="mobile-btn-login cursor-pointer transition-all duration-200 active:scale-95"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     Đăng nhập
                   </Link>
                   <Link 
                     to="/register" 
-                    className="mobile-btn-signup"
+                    className="mobile-btn-signup cursor-pointer transition-all duration-200 active:scale-95 hover:opacity-90"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     Đăng ký tài khoản

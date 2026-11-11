@@ -1,38 +1,37 @@
 /* ==========================================================================
-   SMART SENTIMENT BADGE STYLES (HUMAN-CRAFTED COMMERCIAL DESIGN)
+   SMART SENTIMENT BADGE STYLES (PILL BADGE PASTEL TONES)
    ========================================================================== */
 
 .sentiment-badge {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  font-size: 0.725rem;
-  font-weight: 700;
-  padding: 0.2rem 0.55rem;
-  border-radius: 4px;
-  line-height: 1.2;
-  letter-spacing: 0.02em;
-  transition: all 0.15s ease;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.2rem 0.65rem;
+  border-radius: 9999px;
+  line-height: 1.25;
+  transition: all 0.2s ease;
   user-select: none;
 }
 
-/* 1. Tích cực (Positive) - Emerald */
+/* 1. Tích cực (Positive) - Emerald Pastel */
 .sentiment-badge.sentiment-positive {
-  color: #059669; /* Emerald 600 */
-  background-color: #ecfdf5; /* Emerald 50 */
-  border: 1px solid #a7f3d0; /* Emerald 200 */
+  color: #047857;
+  background-color: #ecfdf5;
+  border: 1px solid #a7f3d0;
 }
 
-/* 2. Trung tính (Neutral) - Amber */
+/* 2. Trung tính (Neutral) - Amber Pastel */
 .sentiment-badge.sentiment-neutral {
-  color: #d97706; /* Amber 600 */
-  background-color: #fffbeb; /* Amber 50 */
-  border: 1px solid #fde68a; /* Amber 200 */
+  color: #b45309;
+  background-color: #fffbeb;
+  border: 1px solid #fde68a;
 }
 
-/* 3. Cần cải thiện (Negative) - Red */
+/* 3. Cần cải thiện (Negative) - Rose/Red Pastel */
 .sentiment-badge.sentiment-negative {
-  color: #dc2626; /* Red 600 */
-  background-color: #fef2f2; /* Red 50 */
-  border: 1px solid #fecaca; /* Red 200 */
+  color: #b91c1c;
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
 }

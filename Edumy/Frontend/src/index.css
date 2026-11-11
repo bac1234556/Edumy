@@ -105,6 +105,41 @@ body {
 /* ==========================================================================
    GLOBAL UTILITIES: LINE CLAMP, BUTTON SPINNERS & FORM VALIDATION
    ========================================================================== */
+.bg-slate-50 { background-color: #f8fafc !important; }
+.bg-slate-100 { background-color: #f1f5f9 !important; }
+.bg-white { background-color: #ffffff !important; }
+.text-slate-900 { color: #0f172a !important; }
+.text-slate-700 { color: #334155 !important; }
+.text-slate-600 { color: #475569 !important; }
+.text-slate-500 { color: #64748b !important; }
+.border-slate-200\/80, .border-slate-200 { border-color: rgba(226, 232, 240, 0.85) !important; }
+.rounded-xl { border-radius: 0.75rem !important; }
+.rounded-2xl { border-radius: 1rem !important; }
+.rounded-full { border-radius: 9999px !important; }
+.shadow-sm { box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.06), 0 1px 2px -1px rgba(15, 23, 42, 0.06) !important; }
+.hover\:shadow-md:hover { box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 4px 10px -2px rgba(15, 23, 42, 0.05) !important; }
+.cursor-pointer { cursor: pointer !important; }
+.transition-all { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important; }
+.duration-200 { transition-duration: 200ms !important; }
+.active\:scale-95:active { transform: scale(0.95) !important; }
+.hover\:opacity-90:hover { opacity: 0.92 !important; }
+.focus-ring-primary:focus,
+.focus\:ring-primary:focus {
+  outline: none !important;
+  border-color: #4f46e5 !important;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2) !important;
+}
+.pill-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border-radius: 9999px;
+  padding: 0.2rem 0.65rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
 .line-clamp-1 {
   display: -webkit-box;
   -webkit-line-clamp: 1;

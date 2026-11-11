@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import api from '../api/axiosConfig';
 import { CartContext } from '../context/CartContext';
 import { AuthContext } from '../context/AuthContext';
-import { Plus, Check, ShoppingCart, Sparkles, Star } from 'lucide-react';
+import { Plus, Check, ShoppingCart, Sparkles } from 'lucide-react';
 import './CourseBundleCard.css';
 
 const BACKEND_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api').replace('/api', '');
@@ -99,39 +99,39 @@ const CourseBundleCard = ({ courseId }) => {
   };
 
   return (
-    <div className="course-bundle-card">
+    <div className="course-bundle-card rounded-2xl shadow-sm hover:shadow-md transition-all duration-200">
       <div className="bundle-header">
         <div className="d-flex align-items-center gap-2">
           <div className="bundle-sparkle-icon">
-            <Sparkles size={16} />
+            <Sparkles size={16} strokeWidth={1.75} aria-hidden="true" />
           </div>
-          <h4 className="bundle-title mb-0">Thường được mua cùng nhau</h4>
+          <h4 className="bundle-title mb-0 text-slate-900">Thường được mua cùng nhau</h4>
         </div>
-        <span className="bundle-save-pill">
+        <span className="bundle-save-pill pill-badge">
           Tiết kiệm {discountPercent || 20}% khi mua Combo
         </span>
       </div>
 
-      <p className="bundle-subtitle">
+      <p className="bundle-subtitle text-slate-600">
         Ghép cặp khóa học cùng lộ trình thực chiến để làm chủ kỹ năng từ cơ bản đến nâng cao.
       </p>
 
       {/* Course Thumbnails Row */}
-      <div className="bundle-items-flow">
+      <div className="bundle-items-flow rounded-xl">
         {/* Course 1 */}
         <div className={`bundle-course-item ${!includeMain ? 'item-disabled' : ''}`}>
           <div className="bundle-thumb-wrap">
             <img src={resolveImage(mainCourse.thumbnailUrl)} alt={mainCourse.title} />
-            <span className="bundle-course-tag">Khóa học này</span>
+            <span className="bundle-course-tag pill-badge">Khóa học này</span>
           </div>
           <div className="bundle-course-meta">
-            <label className="bundle-checkbox-label">
+            <label className="bundle-checkbox-label cursor-pointer">
               <input
                 type="checkbox"
                 checked={includeMain}
                 onChange={(e) => setIncludeMain(e.target.checked)}
               />
-              <span className="course-title-text" title={mainCourse.title}>
+              <span className="course-title-text line-clamp-2" title={mainCourse.title}>
                 {mainCourse.title}
               </span>
             </label>
@@ -140,9 +140,9 @@ const CourseBundleCard = ({ courseId }) => {
         </div>
 
         {/* Plus Divider */}
-        <div className="bundle-plus-divider">
+        <div className="bundle-plus-divider" aria-hidden="true">
           <div className="plus-circle">
-            <Plus size={18} />
+            <Plus size={18} strokeWidth={1.75} />
           </div>
         </div>
 
@@ -150,16 +150,16 @@ const CourseBundleCard = ({ courseId }) => {
         <div className={`bundle-course-item ${!includeBundled ? 'item-disabled' : ''}`}>
           <div className="bundle-thumb-wrap">
             <img src={resolveImage(bundledCourse.thumbnailUrl)} alt={bundledCourse.title} />
-            <span className="bundle-course-tag next-tag">Khóa học đề xuất</span>
+            <span className="bundle-course-tag next-tag pill-badge">Khóa học đề xuất</span>
           </div>
           <div className="bundle-course-meta">
-            <label className="bundle-checkbox-label">
+            <label className="bundle-checkbox-label cursor-pointer">
               <input
                 type="checkbox"
                 checked={includeBundled}
                 onChange={(e) => setIncludeBundled(e.target.checked)}
               />
-              <span className="course-title-text" title={bundledCourse.title}>
+              <span className="course-title-text line-clamp-2" title={bundledCourse.title}>
                 {bundledCourse.title}
               </span>
             </label>
@@ -189,15 +189,15 @@ const CourseBundleCard = ({ courseId }) => {
           type="button"
           onClick={handleAddBundleToCart}
           disabled={addingToCart || (!includeMain && !includeBundled)}
-          className={`btn-add-bundle-cta ${addedSuccess ? 'btn-success-state' : ''}`}
+          className={`btn-add-bundle-cta cursor-pointer transition-all duration-200 active:scale-95 hover:opacity-90 ${addedSuccess ? 'btn-success-state' : ''}`}
         >
           {addedSuccess ? (
             <>
-              <Check size={18} /> Đã thêm combo vào giỏ hàng
+              <Check size={18} strokeWidth={2} aria-hidden="true" /> Đã thêm combo vào giỏ hàng
             </>
           ) : (
             <>
-              <ShoppingCart size={18} />
+              <ShoppingCart size={18} strokeWidth={1.75} aria-hidden="true" />
               {includeMain && includeBundled
                 ? `Thêm cả combo vào giỏ - Tiết kiệm ${formatPrice(savings)}`
                 : 'Thêm khóa học đã chọn vào giỏ'}

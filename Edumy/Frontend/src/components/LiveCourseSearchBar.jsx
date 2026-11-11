@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Loader2, ArrowRight, BookOpen, User, Tag, CheckCircle2 } from 'lucide-react';
+import { Search, Loader2, ArrowRight, BookOpen, User, CheckCircle2 } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
 import api from '../api/axiosConfig';
 import './LiveCourseSearchBar.css';
@@ -115,10 +115,10 @@ const LiveCourseSearchBar = ({
       <form className="live-search-input-wrap" onSubmit={handleSubmit}>
         <button 
           type="submit" 
-          className="live-search-icon-btn" 
+          className="live-search-icon-btn cursor-pointer transition-all duration-200 active:scale-95" 
           aria-label="Tìm kiếm"
         >
-          <Search size={variant === 'hero' ? 20 : 18} />
+          <Search size={variant === 'hero' ? 20 : 18} strokeWidth={1.75} aria-hidden="true" />
         </button>
 
         <input
@@ -140,12 +140,12 @@ const LiveCourseSearchBar = ({
 
         {isLoading && (
           <div className="live-search-spinner" aria-label="Đang tìm kiếm...">
-            <Loader2 size={16} className="animate-spin" />
+            <Loader2 size={16} strokeWidth={1.75} className="animate-spin" />
           </div>
         )}
 
         {variant === 'hero' && (
-          <button type="submit" className="live-search-hero-submit-btn">
+          <button type="submit" className="live-search-hero-submit-btn cursor-pointer transition-all duration-200 active:scale-95 hover:opacity-90">
             Tìm kiếm
           </button>
         )}
@@ -153,10 +153,10 @@ const LiveCourseSearchBar = ({
 
       {/* Instant Suggestion Dropdown */}
       {isOpen && searchTerm.trim().length >= 2 && (
-        <div className="live-search-dropdown shadow-2xl animate-fade-in">
+        <div className="live-search-dropdown rounded-2xl shadow-sm">
           {isLoading && results.length === 0 ? (
             <div className="live-search-loading-state">
-              <Loader2 size={20} className="animate-spin text-primary" />
+              <Loader2 size={20} strokeWidth={1.75} className="animate-spin text-primary" />
               <span>Đang tìm kiếm khóa học phù hợp...</span>
             </div>
           ) : results.length > 0 ? (
@@ -165,14 +165,14 @@ const LiveCourseSearchBar = ({
                 <span className="live-search-header-title">
                   Khóa học gợi ý ({results.length})
                 </span>
-                <span className="live-search-header-badge">Instant</span>
+                <span className="live-search-header-badge pill-badge">Instant</span>
               </div>
 
               <div className="live-search-list" role="listbox">
                 {results.map((course) => (
                   <div
                     key={course.id}
-                    className="live-search-item"
+                    className="live-search-item cursor-pointer transition-all duration-200"
                     role="option"
                     tabIndex={0}
                     onClick={() => handleSelectCourse(course.id)}
@@ -196,22 +196,22 @@ const LiveCourseSearchBar = ({
                         className="live-search-thumb-fallback"
                         style={{ display: course.thumbnailUrl ? 'none' : 'flex' }}
                       >
-                        <BookOpen size={16} />
+                        <BookOpen size={16} strokeWidth={1.75} aria-hidden="true" />
                       </div>
                     </div>
 
                     <div className="live-search-info">
-                      <h4 className="live-search-item-title" title={course.title}>
+                      <h4 className="live-search-item-title line-clamp-1" title={course.title}>
                         {course.title}
                       </h4>
                       <div className="live-search-item-meta">
-                        <span className="live-search-item-instructor">
-                          <User size={12} style={{ display: 'inline', marginRight: 4, verticalAlign: -1 }} />
+                        <span className="live-search-item-instructor line-clamp-1">
+                          <User size={12} strokeWidth={1.75} style={{ display: 'inline', marginRight: 4, verticalAlign: -1 }} aria-hidden="true" />
                           {course.instructorName || 'Giảng viên Edumy'}
                         </span>
                         {isCourseEnrolled && isCourseEnrolled(course.id) ? (
-                          <span style={{ color: '#10b981', fontWeight: 700, fontSize: '0.8rem', display: 'inline-flex', alignItems: 'center', gap: '0.2rem' }}>
-                            <CheckCircle2 size={12} /> ✓ Đã sở hữu
+                          <span className="pill-badge" style={{ background: '#ecfdf5', color: '#059669', border: '1px solid #a7f3d0' }}>
+                            <CheckCircle2 size={12} strokeWidth={2} aria-hidden="true" /> Đã sở hữu
                           </span>
                         ) : (
                           <span className={`live-search-item-price ${!course.price || Number(course.price) === 0 ? 'is-free' : ''}`}>
@@ -225,22 +225,22 @@ const LiveCourseSearchBar = ({
               </div>
 
               <div 
-                className="live-search-footer"
+                className="live-search-footer cursor-pointer transition-all duration-200"
                 onClick={handleSubmit}
               >
                 <span>Xem tất cả kết quả cho "<strong>{searchTerm.trim()}</strong>"</span>
-                <ArrowRight size={15} />
+                <ArrowRight size={15} strokeWidth={1.75} aria-hidden="true" />
               </div>
             </>
           ) : hasSearched ? (
             <div className="live-search-empty-state">
-              <Search size={24} className="text-muted-foreground mb-2" />
+              <Search size={24} strokeWidth={1.75} className="text-slate-500 mb-2" aria-hidden="true" />
               <p className="empty-text">
                 Không tìm thấy khóa học nào phù hợp với "<strong>{searchTerm.trim()}</strong>"
               </p>
               <button 
                 type="button" 
-                className="empty-view-all-btn"
+                className="empty-view-all-btn cursor-pointer transition-all duration-200 active:scale-95"
                 onClick={handleSubmit}
               >
                 Tìm kiếm trong toàn bộ thư viện khóa học

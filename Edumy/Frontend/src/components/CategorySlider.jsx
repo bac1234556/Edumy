@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Layers } from 'lucide-react';
 import api from '../api/axiosConfig';
 import './CategorySlider.css';
 
@@ -36,13 +36,13 @@ const CategorySlider = () => {
 
   const scrollLeft = () => {
     if (scrollRef.current) {
-      scrollRef.current.scrollBy({ left: -220, behavior: 'smooth' });
+      scrollRef.current.scrollBy({ left: -240, behavior: 'smooth' });
     }
   };
 
   const scrollRight = () => {
     if (scrollRef.current) {
-      scrollRef.current.scrollBy({ left: 220, behavior: 'smooth' });
+      scrollRef.current.scrollBy({ left: 240, behavior: 'smooth' });
     }
   };
 
@@ -59,7 +59,7 @@ const CategorySlider = () => {
       <div className="category-slider-wrapper container py-2">
         <div className="d-flex gap-3 overflow-hidden">
           {[1, 2, 3, 4, 5, 6].map((i) => (
-            <div key={i} className="skeleton-shimmer-box rounded-pill" style={{ width: '140px', height: '42px', flexShrink: 0 }} />
+            <div key={i} className="skeleton-shimmer-box rounded-full" style={{ width: '148px', height: '42px', flexShrink: 0 }} />
           ))}
         </div>
       </div>
@@ -73,8 +73,13 @@ const CategorySlider = () => {
   return (
     <div className="category-slider-wrapper container">
       {showLeft && (
-        <button className="slider-btn left" onClick={scrollLeft} aria-label="Cuộn sang trái">
-          <ChevronLeft size={24} />
+        <button
+          type="button"
+          className="slider-btn left cursor-pointer transition-all duration-200 active:scale-95"
+          onClick={scrollLeft}
+          aria-label="Cuộn sang trái"
+        >
+          <ChevronLeft size={20} strokeWidth={1.75} aria-hidden="true" />
         </button>
       )}
       
@@ -84,20 +89,25 @@ const CategorySlider = () => {
         onScroll={handleScroll}
       >
         {categories.map((cat) => (
-          <div
+          <button
+            type="button"
             key={cat.categoryId || cat.name}
-            className="category-item hover-3d"
+            className="category-item cursor-pointer transition-all duration-200 active:scale-95"
             onClick={() => handleCategoryClick(cat)}
-            role="button"
-            tabIndex={0}
           >
-            {cat.name}
-          </div>
+            <Layers size={15} strokeWidth={1.75} className="category-item-icon" aria-hidden="true" />
+            <span className="line-clamp-1">{cat.name}</span>
+          </button>
         ))}
       </div>
       
-      <button className="slider-btn right" onClick={scrollRight} aria-label="Cuộn sang phải">
-        <ChevronRight size={24} />
+      <button
+        type="button"
+        className="slider-btn right cursor-pointer transition-all duration-200 active:scale-95"
+        onClick={scrollRight}
+        aria-label="Cuộn sang phải"
+      >
+        <ChevronRight size={20} strokeWidth={1.75} aria-hidden="true" />
       </button>
     </div>
   );

@@ -9,30 +9,30 @@ const Footer = () => {
         <div className="footer-top">
           <div className="footer-links-grid">
             <div className="footer-col">
-              <a href="#">Edumy Doanh nghiệp</a>
-              <a href="#">Giảng dạy trên Edumy</a>
-              <a href="#">Tải ứng dụng di động</a>
-              <a href="#">Về chúng tôi</a>
-              <a href="#">Liên hệ hỗ trợ</a>
+              <a href="#" className="cursor-pointer transition-all duration-200">Edumy Doanh nghiệp</a>
+              <a href="#" className="cursor-pointer transition-all duration-200">Giảng dạy trên Edumy</a>
+              <a href="#" className="cursor-pointer transition-all duration-200">Tải ứng dụng di động</a>
+              <a href="#" className="cursor-pointer transition-all duration-200">Về chúng tôi</a>
+              <a href="#" className="cursor-pointer transition-all duration-200">Liên hệ hỗ trợ</a>
             </div>
             <div className="footer-col">
-              <a href="#">Cơ hội nghề nghiệp</a>
-              <a href="#">Blog công nghệ</a>
-              <a href="#">Trung tâm trợ giúp</a>
-              <a href="#">Tiếp thị liên kết</a>
-              <a href="#">Nhà đầu tư</a>
+              <a href="#" className="cursor-pointer transition-all duration-200">Cơ hội nghề nghiệp</a>
+              <a href="#" className="cursor-pointer transition-all duration-200">Blog công nghệ</a>
+              <a href="#" className="cursor-pointer transition-all duration-200">Trung tâm trợ giúp</a>
+              <a href="#" className="cursor-pointer transition-all duration-200">Tiếp thị liên kết</a>
+              <a href="#" className="cursor-pointer transition-all duration-200">Nhà đầu tư</a>
             </div>
             <div className="footer-col">
-              <a href="#">Điều khoản sử dụng</a>
-              <a href="#">Chính sách bảo mật</a>
-              <a href="#">Cài đặt Cookie</a>
-              <a href="#">Sơ đồ trang web</a>
-              <a href="#">Tuyên bố trợ năng</a>
+              <a href="#" className="cursor-pointer transition-all duration-200">Điều khoản sử dụng</a>
+              <a href="#" className="cursor-pointer transition-all duration-200">Chính sách bảo mật</a>
+              <a href="#" className="cursor-pointer transition-all duration-200">Cài đặt Cookie</a>
+              <a href="#" className="cursor-pointer transition-all duration-200">Sơ đồ trang web</a>
+              <a href="#" className="cursor-pointer transition-all duration-200">Tuyên bố trợ năng</a>
             </div>
           </div>
           <div className="footer-lang">
-            <button className="lang-btn-footer">
-              <Globe size={18} />
+            <button type="button" className="lang-btn-footer cursor-pointer transition-all duration-200 active:scale-95">
+              <Globe size={18} strokeWidth={1.75} aria-hidden="true" />
               <span>Tiếng Việt</span>
             </button>
           </div>
@@ -40,7 +40,7 @@ const Footer = () => {
         
         <div className="footer-bottom">
           <div className="footer-logo">
-            <span className="logo-text">Edumy</span>
+            <span className="logo-text">Edu<span>my</span></span>
           </div>
           <div className="footer-copyright">
             © 2026 Edumy, Inc. Bản quyền được bảo lưu.

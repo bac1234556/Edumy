@@ -1,6 +1,5 @@
 /* ==========================================================================
-   EDUMY PRODUCTION COURSE CARD (HUMAN-CRAFTED DESIGN)
-   Clean, trustworthy, high-contrast e-learning course card.
+   EDUMY PRODUCTION COURSE CARD - MODERN EDTECH (ROUNDED-2XL, SOFT ELEVATION)
    ========================================================================== */
 
 .edumy-course-card {
@@ -8,22 +7,23 @@
   flex-direction: column;
   height: 100%;
   background-color: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
+  border: 1px solid rgba(226, 232, 240, 0.85);
+  border-radius: 1rem;
   overflow: hidden;
   text-decoration: none;
-  box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.06);
-  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.08s ease;
+  box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.05), 0 1px 2px -1px rgba(15, 23, 42, 0.05);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
 }
 
 .edumy-course-card:hover {
   border-color: #cbd5e1;
-  box-shadow: 0 6px 12px -2px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 4px 10px -2px rgba(15, 23, 42, 0.04);
+  transform: translateY(-2px);
 }
 
 .edumy-course-card:active {
-  transform: scale(0.99);
+  transform: scale(0.985);
 }
 
 /* 1. Thumbnail */
@@ -40,35 +40,51 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.3s ease;
+  transition: transform 0.35s ease;
 }
 
 .edumy-course-card:hover .card-thumbnail-wrap img {
-  transform: scale(1.025);
+  transform: scale(1.03);
 }
 
 .card-badge-overlay {
   position: absolute;
-  top: 10px;
-  left: 10px;
+  top: 12px;
+  left: 12px;
   z-index: 2;
 }
 
 .badge-bestseller {
-  background-color: #fef3c7;
-  color: #92400e;
+  background-color: #fffbeb;
+  color: #b45309;
   border: 1px solid #fde68a;
   font-size: 0.725rem;
-  font-weight: 700;
-  padding: 0.25rem 0.55rem;
-  border-radius: 4px;
-  display: inline-block;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  font-weight: 600;
+  padding: 0.2rem 0.65rem;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
 }
 
-/* 2. Body */
+.badge-owned {
+  background-color: #ecfdf5;
+  color: #047857;
+  border: 1px solid #a7f3d0;
+  font-size: 0.725rem;
+  font-weight: 600;
+  padding: 0.2rem 0.65rem;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
+}
+
+/* 2. Body (Generous breathing room p-5) */
 .card-body-content {
-  padding: 1rem 1.15rem 1.15rem;
+  padding: 1.25rem;
   display: flex;
   flex-direction: column;
   flex-grow: 1;
@@ -76,11 +92,11 @@
 
 /* Title */
 .card-course-title {
-  font-size: 0.975rem;
+  font-size: 1rem;
   font-weight: 700;
-  line-height: 1.4;
+  line-height: 1.45;
   color: #0f172a;
-  margin: 0 0 0.4rem 0;
+  margin: 0 0 0.45rem 0;
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -89,14 +105,14 @@
 }
 
 .edumy-course-card:hover .card-course-title {
-  color: #2563eb;
+  color: #4f46e5;
 }
 
 /* Instructor row */
 .card-instructor-meta {
-  font-size: 0.8rem;
+  font-size: 0.8125rem;
   color: #64748b;
-  margin: 0 0 0.5rem 0;
+  margin: 0 0 0.55rem 0;
   display: flex;
   align-items: center;
   gap: 0.35rem;
@@ -107,7 +123,7 @@
 
 .instructor-name {
   font-weight: 600;
-  color: #334155;
+  color: #475569;
 }
 
 .instructor-title {
@@ -125,8 +141,8 @@
 .card-curriculum-meta {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
-  font-size: 0.775rem;
+  gap: 0.45rem;
+  font-size: 0.78rem;
   color: #64748b;
   margin-bottom: 0.65rem;
 }
@@ -134,7 +150,7 @@
 .meta-item {
   display: inline-flex;
   align-items: center;
-  gap: 3px;
+  gap: 0.25rem;
 }
 
 /* Rating */
@@ -142,11 +158,11 @@
   display: flex;
   align-items: center;
   gap: 0.35rem;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.85rem;
 }
 
 .rating-value {
-  font-weight: 800;
+  font-weight: 700;
   font-size: 0.875rem;
   color: #b45309;
 }
@@ -154,7 +170,7 @@
 .rating-stars {
   display: flex;
   align-items: center;
-  gap: 1.5px;
+  gap: 2px;
 }
 
 .rating-count {
@@ -165,37 +181,68 @@
 /* Pricing */
 .card-price-row {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 0.5rem;
   margin-top: auto;
-  padding-top: 0.5rem;
-  border-top: 1px dashed #f1f5f9;
+  padding-top: 0.75rem;
+  border-top: 1px solid #f1f5f9;
 }
 
 .price-main {
-  font-size: 1.15rem;
+  font-size: 1.125rem;
   font-weight: 800;
   color: #0f172a;
   letter-spacing: -0.02em;
 }
 
+.price-main.price-free {
+  color: #059669;
+}
+
 .price-strikethrough {
-  font-size: 0.85rem;
+  font-size: 0.825rem;
   color: #64748b;
   text-decoration: line-through;
   font-weight: 500;
 }
 
 .badge-discount-percent {
+  margin-left: auto;
   font-size: 0.725rem;
-  font-weight: 700;
-  color: #166534;
-  background-color: #dcfce7;
-  padding: 0.15rem 0.4rem;
-  border-radius: 4px;
+  font-weight: 600;
+  color: #047857;
+  background-color: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  padding: 0.15rem 0.55rem;
+  border-radius: 9999px;
 }
 
-/* Backward compatibility classes if other pages use them */
-.course-card {
-  composes: edumy-course-card;
+.card-enrolled-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 0.5rem;
+}
+
+.badge-enrolled-pill {
+  background-color: #ecfdf5;
+  color: #047857;
+  border: 1px solid #a7f3d0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.2rem 0.65rem;
+  border-radius: 9999px;
+}
+
+.btn-card-learn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background-color: #4f46e5;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.78rem;
+  padding: 0.4rem 0.8rem;
+  border-radius: 0.65rem;
 }

@@ -47,14 +47,17 @@ function QuizTaker({ quizId, onComplete, darkMode = true }) {
 
   if (loading) {
     return (
-      <div className={`p-4 rounded shadow-sm ${darkMode ? 'bg-slate-900 text-slate-100' : 'bg-white'}`} style={darkMode ? { backgroundColor: '#0f172a', color: '#f8fafc', border: '1px solid #1e293b' } : {}}>
+      <div
+        className="p-4 p-md-5 rounded-2xl shadow-sm"
+        style={darkMode ? { backgroundColor: '#0f172a', color: '#f8fafc', border: '1px solid #1e293b' } : { backgroundColor: '#ffffff', border: '1px solid rgba(226, 232, 240, 0.85)' }}
+      >
         <SkeletonBox width="50%" height="28px" className="mb-2" />
         <SkeletonBox width="80%" height="16px" className="mb-4" />
-        <div className="card p-3 mb-3 border-0" style={{ backgroundColor: darkMode ? '#1e293b' : '#f8fafc' }}>
+        <div className="card p-4 mb-3 border-0 rounded-xl" style={{ backgroundColor: darkMode ? '#1e293b' : '#f8fafc' }}>
           <SkeletonBox width="30%" height="20px" className="mb-2" />
           <SkeletonBox width="70%" height="18px" className="mb-3" />
-          <SkeletonBox width="100%" height="40px" className="mb-2" />
-          <SkeletonBox width="100%" height="40px" />
+          <SkeletonBox width="100%" height="44px" className="mb-2" />
+          <SkeletonBox width="100%" height="44px" />
         </div>
       </div>
     );
@@ -73,14 +76,24 @@ function QuizTaker({ quizId, onComplete, darkMode = true }) {
   const containerStyle = darkMode ? {
     backgroundColor: '#0f172a',
     color: '#f8fafc',
-    border: '1px solid #1e293b'
-  } : {};
+    border: '1px solid #1e293b',
+    borderRadius: '1rem'
+  } : {
+    backgroundColor: '#ffffff',
+    color: '#0f172a',
+    border: '1px solid rgba(226, 232, 240, 0.85)',
+    borderRadius: '1rem'
+  };
 
   const cardStyle = darkMode ? {
     backgroundColor: '#1e293b',
     borderColor: '#334155',
     color: '#f8fafc'
-  } : {};
+  } : {
+    backgroundColor: '#ffffff',
+    borderColor: 'rgba(226, 232, 240, 0.85)',
+    color: '#0f172a'
+  };
 
   const totalQuestions = quiz.questions?.length || 0;
   const answeredCount = Object.keys(answers).length;
@@ -88,21 +101,19 @@ function QuizTaker({ quizId, onComplete, darkMode = true }) {
 
   return (
     <div 
-      className={`quiz-taker p-4 rounded shadow-sm h-100 overflow-auto ${darkMode ? '' : 'bg-white text-dark'}`}
+      className="quiz-taker p-4 p-md-5 rounded-2xl shadow-sm h-100 overflow-auto"
       style={containerStyle}
     >
-      <div className="d-flex justify-content-between align-items-center mb-2">
+      <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
         <h3 className="mb-0" style={{ color: darkMode ? '#f8fafc' : '#0f172a', fontWeight: 800 }}>
           {quiz.title}
         </h3>
         <span 
-          className="badge" 
+          className="pill-badge" 
           style={{ 
-            backgroundColor: darkMode ? '#334155' : '#e2e8f0', 
-            color: darkMode ? '#94a3b8' : '#475569',
-            fontSize: '0.8rem',
-            padding: '0.4rem 0.75rem',
-            borderRadius: '9999px'
+            backgroundColor: darkMode ? '#1e293b' : '#eef2ff', 
+            color: darkMode ? '#818cf8' : '#4f46e5',
+            border: darkMode ? '1px solid #334155' : '1px solid #e0e7ff'
           }}
         >
           {answeredCount}/{totalQuestions} đã trả lời
@@ -116,18 +127,18 @@ function QuizTaker({ quizId, onComplete, darkMode = true }) {
       {quiz.questions?.map((q, i) => (
         <div 
           key={q.questionId} 
-          className="card mb-4 border"
+          className="card mb-4 border rounded-xl shadow-sm"
           style={cardStyle}
         >
-          <div className="card-body">
-            <h5 className="card-title mb-3 d-flex justify-content-between align-items-center" style={{ color: darkMode ? '#f8fafc' : '#0f172a' }}>
+          <div className="card-body p-4">
+            <h5 className="card-title mb-3 d-flex justify-content-between align-items-center" style={{ color: darkMode ? '#f8fafc' : '#0f172a', fontWeight: 700 }}>
               <span>Câu hỏi {i + 1}</span>
               <span 
-                className="badge" 
+                className="pill-badge" 
                 style={{ 
-                  backgroundColor: darkMode ? '#0f172a' : '#f1f5f9', 
+                  backgroundColor: darkMode ? '#0f172a' : '#f8fafc', 
                   color: darkMode ? '#818cf8' : '#4f46e5',
-                  border: darkMode ? '1px solid #334155' : '1px solid #cbd5e1'
+                  border: darkMode ? '1px solid #334155' : '1px solid #e2e8f0'
                 }}
               >
                 {q.points} điểm
@@ -143,18 +154,18 @@ function QuizTaker({ quizId, onComplete, darkMode = true }) {
                   backgroundColor: isSelected ? '#4f46e5' : '#0f172a',
                   borderColor: isSelected ? '#6366f1' : '#334155',
                   color: isSelected ? '#ffffff' : '#cbd5e1',
-                  cursor: 'pointer',
-                  transition: 'all 0.15s ease'
+                  borderRadius: '0.75rem'
                 } : {
-                  cursor: 'pointer'
+                  backgroundColor: isSelected ? '#eef2ff' : '#f8fafc',
+                  borderColor: isSelected ? '#4f46e5' : '#e2e8f0',
+                  color: isSelected ? '#4f46e5' : '#334155',
+                  borderRadius: '0.75rem'
                 };
 
                 return (
                   <label 
                     key={a.answerId} 
-                    className={`p-3 rounded border cursor-pointer d-flex align-items-center justify-content-between ${
-                      !darkMode && (isSelected ? 'bg-primary text-white border-primary' : 'bg-white border-secondary')
-                    }`}
+                    className="p-3 border cursor-pointer transition-all duration-200 d-flex align-items-center justify-content-between"
                     style={optionStyle}
                   >
                     <div className="d-flex align-items-center gap-2">
@@ -165,9 +176,9 @@ function QuizTaker({ quizId, onComplete, darkMode = true }) {
                         checked={isSelected}
                         onChange={() => handleSelectAnswer(q.questionId, a.answerId)}
                       />
-                      <span>{a.content}</span>
+                      <span style={{ fontWeight: isSelected ? 600 : 500 }}>{a.content}</span>
                     </div>
-                    {isSelected && <CheckCircle2 size={16} />}
+                    {isSelected && <CheckCircle2 size={16} strokeWidth={2} aria-hidden="true" />}
                   </label>
                 );
               })}
@@ -176,13 +187,14 @@ function QuizTaker({ quizId, onComplete, darkMode = true }) {
         </div>
       ))}
 
-      <div className="d-flex justify-content-between align-items-center mt-4 pt-3" style={{ borderTop: darkMode ? '1px solid #1e293b' : '1px solid #e2e8f0' }}>
-        <span style={{ fontSize: '0.85rem', color: darkMode ? '#94a3b8' : '#64748b' }}>
+      <div className="d-flex justify-content-between align-items-center flex-wrap gap-3 mt-4 pt-3" style={{ borderTop: darkMode ? '1px solid #1e293b' : '1px solid #e2e8f0' }}>
+        <span style={{ fontSize: '0.875rem', color: darkMode ? '#94a3b8' : '#64748b' }}>
           {allAnswered ? 'Đã hoàn thành toàn bộ câu hỏi. Sẵn sàng nộp bài!' : 'Vui lòng chọn đáp án cho tất cả câu hỏi trước khi nộp.'}
         </span>
         <button 
-          className="btn-edumy-primary touch-target"
-          style={{ minHeight: '44px', padding: '0 1.5rem', fontWeight: 700 }}
+          type="button"
+          className="btn-edumy-primary touch-target cursor-pointer transition-all duration-200 active:scale-95 hover:opacity-90"
+          style={{ minHeight: '44px', padding: '0 1.5rem', fontWeight: 700, borderRadius: '0.75rem' }}
           onClick={handleSubmit}
           disabled={submitting || !allAnswered}
         >

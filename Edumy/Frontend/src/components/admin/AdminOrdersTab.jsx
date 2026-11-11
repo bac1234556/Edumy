@@ -1,4 +1,17 @@
 import React, { useState, useEffect } from 'react';
+import {
+  Search,
+  DollarSign,
+  Receipt,
+  CheckCircle2,
+  Clock,
+  RefreshCw,
+  Mail,
+  Eye,
+  X,
+  PlayCircle,
+  Loader2
+} from 'lucide-react';
 import api from '../../api/axiosConfig';
 
 export default function AdminOrdersTab({ showNotification }) {
@@ -79,114 +92,128 @@ export default function AdminOrdersTab({ showNotification }) {
         marginBottom: '1.5rem'
       }}>
         {/* Doanh thu thực nhận */}
-        <div style={{
-          background: 'linear-gradient(135deg, #059669, #10b981)',
-          color: '#ffffff',
-          borderRadius: '12px',
-          padding: '1.25rem 1.5rem',
-          boxShadow: '0 4px 12px rgba(16, 185, 129, 0.25)'
-        }}>
+        <div
+          className="bg-white rounded-2xl shadow-sm"
+          style={{
+            border: '1px solid rgba(226, 232, 240, 0.85)',
+            borderLeft: '4px solid #10b981',
+            padding: '1.25rem 1.5rem'
+          }}
+        >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-            <span style={{ fontSize: '0.8rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', opacity: 0.9 }}>
+            <span style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748b' }}>
               Doanh thu thực nhận
             </span>
-            <i className="bi bi-cash-stack" style={{ fontSize: '1.5rem', opacity: 0.85 }}></i>
+            <div style={{ width: '36px', height: '36px', borderRadius: '0.65rem', background: '#ecfdf5', color: '#059669', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <DollarSign size={18} strokeWidth={1.75} aria-hidden="true" />
+            </div>
           </div>
-          <div style={{ fontSize: '1.75rem', fontWeight: 800 }}>{formatCurrency(totalRevenue)}</div>
-          <div style={{ fontSize: '0.78rem', opacity: 0.85, marginTop: '0.25rem' }}>
+          <div style={{ fontSize: '1.65rem', fontWeight: 800, color: '#0f172a' }}>{formatCurrency(totalRevenue)}</div>
+          <div style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '0.25rem' }}>
             Từ {paidOrders.length} đơn hàng thành công
           </div>
         </div>
 
         {/* Tổng đơn hàng */}
-        <div style={{
-          background: '#ffffff',
-          border: '1px solid #e2e8f0',
-          borderRadius: '12px',
-          padding: '1.25rem 1.5rem',
-          boxShadow: '0 2px 8px rgba(15, 23, 42, 0.04)'
-        }}>
+        <div
+          className="bg-white rounded-2xl shadow-sm"
+          style={{
+            border: '1px solid rgba(226, 232, 240, 0.85)',
+            padding: '1.25rem 1.5rem'
+          }}
+        >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-            <span style={{ fontSize: '0.8rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748b' }}>
+            <span style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748b' }}>
               Tổng đơn hàng
             </span>
-            <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: '#eff6ff', color: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <i className="bi bi-receipt-cutoff" style={{ fontSize: '1.15rem' }}></i>
+            <div style={{ width: '36px', height: '36px', borderRadius: '0.65rem', background: '#eef2ff', color: '#4f46e5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Receipt size={18} strokeWidth={1.75} aria-hidden="true" />
             </div>
           </div>
-          <div style={{ fontSize: '1.75rem', fontWeight: 800, color: '#0f172a' }}>{totalOrders}</div>
+          <div style={{ fontSize: '1.65rem', fontWeight: 800, color: '#0f172a' }}>{totalOrders}</div>
           <div style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '0.25rem' }}>Toàn thời gian trên hệ thống</div>
         </div>
 
         {/* Đơn đã thanh toán */}
-        <div style={{
-          background: '#ffffff',
-          border: '1px solid #e2e8f0',
-          borderRadius: '12px',
-          padding: '1.25rem 1.5rem',
-          boxShadow: '0 2px 8px rgba(15, 23, 42, 0.04)'
-        }}>
+        <div
+          className="bg-white rounded-2xl shadow-sm"
+          style={{
+            border: '1px solid rgba(226, 232, 240, 0.85)',
+            padding: '1.25rem 1.5rem'
+          }}
+        >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-            <span style={{ fontSize: '0.8rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748b' }}>
+            <span style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748b' }}>
               Đã thanh toán (PAID)
             </span>
-            <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: '#ecfdf5', color: '#10b981', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <i className="bi bi-check-circle-fill" style={{ fontSize: '1.15rem' }}></i>
+            <div style={{ width: '36px', height: '36px', borderRadius: '0.65rem', background: '#ecfdf5', color: '#10b981', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <CheckCircle2 size={18} strokeWidth={1.75} aria-hidden="true" />
             </div>
           </div>
-          <div style={{ fontSize: '1.75rem', fontWeight: 800, color: '#10b981' }}>{paidOrders.length}</div>
-          <div style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '0.25rem' }}>Tỉ lệ: {totalOrders > 0 ? Math.round((paidOrders.length / totalOrders) * 100) : 0}% thành công</div>
+          <div style={{ fontSize: '1.65rem', fontWeight: 800, color: '#059669' }}>{paidOrders.length}</div>
+          <div style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '0.25rem' }}>
+            Tỉ lệ: {totalOrders > 0 ? Math.round((paidOrders.length / totalOrders) * 100) : 0}% thành công
+          </div>
         </div>
 
         {/* Đơn chờ thanh toán */}
-        <div style={{
-          background: '#ffffff',
-          border: '1px solid #e2e8f0',
-          borderRadius: '12px',
-          padding: '1.25rem 1.5rem',
-          boxShadow: '0 2px 8px rgba(15, 23, 42, 0.04)'
-        }}>
+        <div
+          className="bg-white rounded-2xl shadow-sm"
+          style={{
+            border: '1px solid rgba(226, 232, 240, 0.85)',
+            padding: '1.25rem 1.5rem'
+          }}
+        >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-            <span style={{ fontSize: '0.8rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748b' }}>
+            <span style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748b' }}>
               Chờ thanh toán (PENDING)
             </span>
-            <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: '#fffbeb', color: '#f59e0b', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <i className="bi bi-clock-history" style={{ fontSize: '1.15rem' }}></i>
+            <div style={{ width: '36px', height: '36px', borderRadius: '0.65rem', background: '#fffbeb', color: '#d97706', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Clock size={18} strokeWidth={1.75} aria-hidden="true" />
             </div>
           </div>
-          <div style={{ fontSize: '1.75rem', fontWeight: 800, color: '#f59e0b' }}>{pendingOrders.length}</div>
+          <div style={{ fontSize: '1.65rem', fontWeight: 800, color: '#d97706' }}>{pendingOrders.length}</div>
           <div style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '0.25rem' }}>Đang đợi quét mã VietQR</div>
         </div>
       </div>
 
       {/* FILTER & SEARCH CONTROLS */}
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        flexWrap: 'wrap',
-        gap: '1rem',
-        marginBottom: '1.5rem',
-        background: '#ffffff',
-        padding: '1.25rem 1.5rem',
-        borderRadius: '12px',
-        border: '1px solid #e2e8f0',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.04)'
-      }}>
+      <div
+        className="bg-white rounded-2xl shadow-sm"
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: '1rem',
+          marginBottom: '1.5rem',
+          padding: '1.25rem 1.5rem',
+          border: '1px solid rgba(226, 232, 240, 0.85)'
+        }}
+      >
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flex: '1 1 360px' }}>
           <div style={{ position: 'relative', width: '100%', maxWidth: '420px' }}>
-            <i className="bi bi-search" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }}></i>
+            <Search
+              size={17}
+              strokeWidth={1.75}
+              style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#64748b' }}
+              aria-hidden="true"
+            />
             <input
               type="text"
               placeholder="Tra cứu theo mã đơn (EDUMY...), email khách hàng hoặc mã giao dịch..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
+              className="focus:ring-primary"
               style={{
                 width: '100%',
-                padding: '0.6rem 1rem 0.6rem 2.4rem',
-                borderRadius: '8px',
+                height: '44px',
+                padding: '0 1rem 0 2.5rem',
+                borderRadius: '0.75rem',
                 border: '1px solid #cbd5e1',
                 fontSize: '0.9rem',
+                color: '#0f172a',
+                background: '#f8fafc',
                 outline: 'none'
               }}
             />
@@ -199,78 +226,95 @@ export default function AdminOrdersTab({ showNotification }) {
             Trạng thái:
           </span>
           <button
+            type="button"
             onClick={() => setStatusFilter('ALL')}
+            className="cursor-pointer transition-all duration-200 active:scale-95"
             style={{
-              padding: '0.45rem 0.9rem',
-              borderRadius: '8px',
-              border: statusFilter === 'ALL' ? '1px solid #2563eb' : '1px solid #cbd5e1',
-              background: statusFilter === 'ALL' ? '#eff6ff' : '#ffffff',
-              color: statusFilter === 'ALL' ? '#2563eb' : '#475569',
+              height: '40px',
+              padding: '0 0.9rem',
+              borderRadius: '0.75rem',
+              border: statusFilter === 'ALL' ? '1px solid #4f46e5' : '1px solid #cbd5e1',
+              background: statusFilter === 'ALL' ? '#eef2ff' : '#ffffff',
+              color: statusFilter === 'ALL' ? '#4f46e5' : '#475569',
               fontWeight: 600,
-              fontSize: '0.85rem',
-              cursor: 'pointer'
+              fontSize: '0.825rem'
             }}
           >
             Tất cả ({orders.length})
           </button>
           <button
+            type="button"
             onClick={() => setStatusFilter('PAID')}
+            className="cursor-pointer transition-all duration-200 active:scale-95"
             style={{
-              padding: '0.45rem 0.9rem',
-              borderRadius: '8px',
+              height: '40px',
+              padding: '0 0.9rem',
+              borderRadius: '0.75rem',
               border: statusFilter === 'PAID' ? '1px solid #10b981' : '1px solid #cbd5e1',
               background: statusFilter === 'PAID' ? '#ecfdf5' : '#ffffff',
-              color: statusFilter === 'PAID' ? '#059669' : '#475569',
+              color: statusFilter === 'PAID' ? '#047857' : '#475569',
               fontWeight: 600,
-              fontSize: '0.85rem',
-              cursor: 'pointer'
-            }}
-          >
-            ✓ Đã thanh toán ({paidOrders.length})
-          </button>
-          <button
-            onClick={() => setStatusFilter('PENDING')}
-            style={{
-              padding: '0.45rem 0.9rem',
-              borderRadius: '8px',
-              border: statusFilter === 'PENDING' ? '1px solid #f59e0b' : '1px solid #cbd5e1',
-              background: statusFilter === 'PENDING' ? '#fffbeb' : '#ffffff',
-              color: statusFilter === 'PENDING' ? '#d97706' : '#475569',
-              fontWeight: 600,
-              fontSize: '0.85rem',
-              cursor: 'pointer'
-            }}
-          >
-            ⏳ Chờ thanh toán ({pendingOrders.length})
-          </button>
-          <button
-            onClick={fetchOrders}
-            title="Làm mới danh sách đơn hàng"
-            style={{
-              padding: '0.45rem 0.75rem',
-              borderRadius: '8px',
-              border: '1px solid #cbd5e1',
-              background: '#f8fafc',
-              color: '#334155',
-              cursor: 'pointer',
-              display: 'flex',
+              fontSize: '0.825rem',
+              display: 'inline-flex',
               alignItems: 'center',
               gap: '0.35rem'
             }}
           >
-            <i className="bi bi-arrow-clockwise"></i>
+            <CheckCircle2 size={14} strokeWidth={2} aria-hidden="true" />
+            Đã thanh toán ({paidOrders.length})
+          </button>
+          <button
+            type="button"
+            onClick={() => setStatusFilter('PENDING')}
+            className="cursor-pointer transition-all duration-200 active:scale-95"
+            style={{
+              height: '40px',
+              padding: '0 0.9rem',
+              borderRadius: '0.75rem',
+              border: statusFilter === 'PENDING' ? '1px solid #f59e0b' : '1px solid #cbd5e1',
+              background: statusFilter === 'PENDING' ? '#fffbeb' : '#ffffff',
+              color: statusFilter === 'PENDING' ? '#b45309' : '#475569',
+              fontWeight: 600,
+              fontSize: '0.825rem',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.35rem'
+            }}
+          >
+            <Clock size={14} strokeWidth={2} aria-hidden="true" />
+            Chờ thanh toán ({pendingOrders.length})
+          </button>
+          <button
+            type="button"
+            onClick={fetchOrders}
+            title="Làm mới danh sách đơn hàng"
+            aria-label="Làm mới danh sách đơn hàng"
+            className="cursor-pointer transition-all duration-200 active:scale-95"
+            style={{
+              height: '40px',
+              width: '40px',
+              borderRadius: '0.75rem',
+              border: '1px solid #cbd5e1',
+              background: '#f8fafc',
+              color: '#334155',
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+          >
+            <RefreshCw size={16} strokeWidth={1.75} aria-hidden="true" />
           </button>
         </div>
       </div>
 
       {/* ORDERS TABLE */}
-      <div style={{
-        background: '#ffffff',
-        borderRadius: '12px',
-        border: '1px solid #e2e8f0',
-        overflow: 'hidden',
-        boxShadow: '0 2px 8px rgba(15, 23, 42, 0.04)'
-      }}>
+      <div
+        className="bg-white rounded-2xl shadow-sm"
+        style={{
+          border: '1px solid rgba(226, 232, 240, 0.85)',
+          overflow: 'hidden'
+        }}
+      >
         <div style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.88rem' }}>
             <thead>
@@ -289,15 +333,15 @@ export default function AdminOrdersTab({ showNotification }) {
               {loading ? (
                 <tr>
                   <td colSpan="8" style={{ padding: '3rem', textAlign: 'center', color: '#64748b' }}>
-                    <i className="bi bi-arrow-repeat" style={{ animation: 'spin 1s linear infinite', fontSize: '1.5rem', display: 'inline-block', marginBottom: '0.5rem' }}></i>
+                    <Loader2 size={24} strokeWidth={1.75} className="animate-spin mb-2" style={{ display: 'inline-block', color: '#4f46e5' }} />
                     <div>Đang tải dữ liệu đơn hàng...</div>
                   </td>
                 </tr>
               ) : filteredOrders.length === 0 ? (
                 <tr>
-                  <td colSpan="8" style={{ padding: '3rem', textAlign: 'center', color: '#94a3b8' }}>
-                    <i className="bi bi-receipt" style={{ fontSize: '2.5rem', display: 'block', marginBottom: '0.5rem' }}></i>
-                    Không tìm thấy đơn hàng nào phù hợp với bộ lọc.
+                  <td colSpan="8" style={{ padding: '3rem', textAlign: 'center', color: '#64748b' }}>
+                    <Receipt size={36} strokeWidth={1.5} style={{ display: 'inline-block', marginBottom: '0.5rem', color: '#94a3b8' }} />
+                    <div>Không tìm thấy đơn hàng nào phù hợp với bộ lọc.</div>
                   </td>
                 </tr>
               ) : (
@@ -315,28 +359,24 @@ export default function AdminOrdersTab({ showNotification }) {
                     >
                       {/* Mã đơn */}
                       <td style={{ padding: '1rem 1.25rem' }}>
-                        <span style={{
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: '0.35rem',
-                          padding: '0.25rem 0.6rem',
-                          borderRadius: '6px',
-                          background: '#0f172a',
-                          color: '#f8fafc',
+                        <span className="pill-badge" style={{
+                          background: '#f8fafc',
+                          border: '1px solid #e2e8f0',
+                          color: '#0f172a',
                           fontFamily: 'monospace',
                           fontWeight: 700,
-                          fontSize: '0.85rem'
+                          fontSize: '0.82rem'
                         }}>
-                          <i className="bi bi-receipt" style={{ color: '#38bdf8' }}></i>
+                          <Receipt size={13} strokeWidth={1.75} style={{ color: '#4f46e5' }} aria-hidden="true" />
                           {orderCode}
                         </span>
                       </td>
 
                       {/* Khách hàng */}
                       <td style={{ padding: '1rem 1.25rem' }}>
-                        <div style={{ fontWeight: 700, color: '#0f172a' }}>{order.customerName}</div>
-                        <div style={{ fontSize: '0.78rem', color: '#64748b', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-                          <i className="bi bi-envelope"></i>
+                        <div className="line-clamp-1" style={{ fontWeight: 700, color: '#0f172a' }}>{order.customerName}</div>
+                        <div className="line-clamp-1" style={{ fontSize: '0.78rem', color: '#64748b', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                          <Mail size={12} strokeWidth={1.75} aria-hidden="true" />
                           {order.customerEmail}
                         </div>
                       </td>
@@ -345,17 +385,11 @@ export default function AdminOrdersTab({ showNotification }) {
                       <td style={{ padding: '1rem 1.25rem', maxWidth: '240px' }}>
                         {courseTitles.length > 0 ? (
                           <div>
-                            <div style={{
-                              whiteSpace: 'nowrap',
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis',
-                              fontWeight: 600,
-                              color: '#1e293b'
-                            }} title={courseTitles.join(', ')}>
+                            <div className="line-clamp-1" style={{ fontWeight: 600, color: '#0f172a' }} title={courseTitles.join(', ')}>
                               {courseTitles[0]}
                             </div>
                             {courseTitles.length > 1 && (
-                              <span style={{ fontSize: '0.75rem', color: '#2563eb', fontWeight: 600 }}>
+                              <span style={{ fontSize: '0.75rem', color: '#4f46e5', fontWeight: 600 }}>
                                 + {courseTitles.length - 1} khóa học khác
                               </span>
                             )}
@@ -373,9 +407,9 @@ export default function AdminOrdersTab({ showNotification }) {
                       {/* Mã giao dịch ngân hàng */}
                       <td style={{ padding: '1rem 1.25rem', fontFamily: 'monospace', fontSize: '0.82rem', color: '#475569' }}>
                         <span style={{
-                          padding: '0.2rem 0.5rem',
-                          background: '#f1f5f9',
-                          borderRadius: '4px',
+                          padding: '0.2rem 0.55rem',
+                          background: '#f8fafc',
+                          borderRadius: '0.5rem',
                           border: '1px solid #e2e8f0'
                         }}>
                           {order.bankTransactionRef || `EDUMY ${order.orderId}`}
@@ -390,37 +424,21 @@ export default function AdminOrdersTab({ showNotification }) {
                       {/* Badge trạng thái */}
                       <td style={{ padding: '1rem 1.25rem', textAlign: 'center' }}>
                         {isPaid ? (
-                          <span style={{
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '0.35rem',
-                            padding: '0.3rem 0.75rem',
-                            borderRadius: '9999px',
-                            fontSize: '0.78rem',
-                            fontWeight: 800,
-                            letterSpacing: '0.02em',
-                            background: '#dcfce7',
-                            color: '#15803d',
-                            border: '1px solid #bbf7d0'
+                          <span className="pill-badge" style={{
+                            background: '#ecfdf5',
+                            color: '#047857',
+                            border: '1px solid #a7f3d0'
                           }}>
-                            <i className="bi bi-check-circle-fill"></i>
+                            <CheckCircle2 size={12} strokeWidth={2} aria-hidden="true" />
                             PAID
                           </span>
                         ) : (
-                          <span style={{
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '0.35rem',
-                            padding: '0.3rem 0.75rem',
-                            borderRadius: '9999px',
-                            fontSize: '0.78rem',
-                            fontWeight: 800,
-                            letterSpacing: '0.02em',
-                            background: '#fef3c7',
+                          <span className="pill-badge" style={{
+                            background: '#fffbeb',
                             color: '#b45309',
                             border: '1px solid #fde68a'
                           }}>
-                            <i className="bi bi-clock-history"></i>
+                            <Clock size={12} strokeWidth={2} aria-hidden="true" />
                             PENDING
                           </span>
                         )}
@@ -429,25 +447,23 @@ export default function AdminOrdersTab({ showNotification }) {
                       {/* Thao tác */}
                       <td style={{ padding: '1rem 1.25rem', textAlign: 'right' }}>
                         <button
+                          type="button"
                           onClick={() => setSelectedOrder(order)}
+                          className="cursor-pointer transition-all duration-200 active:scale-95"
                           style={{
                             padding: '0.4rem 0.75rem',
                             background: '#f8fafc',
                             border: '1px solid #cbd5e1',
-                            borderRadius: '6px',
-                            color: '#2563eb',
+                            borderRadius: '0.65rem',
+                            color: '#4f46e5',
                             fontWeight: 600,
                             fontSize: '0.82rem',
-                            cursor: 'pointer',
                             display: 'inline-flex',
                             alignItems: 'center',
-                            gap: '0.3rem',
-                            transition: 'all 0.15s'
+                            gap: '0.3rem'
                           }}
-                          onMouseEnter={(e) => { e.currentTarget.style.background = '#eff6ff'; }}
-                          onMouseLeave={(e) => { e.currentTarget.style.background = '#f8fafc'; }}
                         >
-                          <i className="bi bi-eye-fill"></i>
+                          <Eye size={14} strokeWidth={1.75} aria-hidden="true" />
                           Xem
                         </button>
                       </td>
@@ -464,11 +480,8 @@ export default function AdminOrdersTab({ showNotification }) {
       {selectedOrder && (
         <div style={{
           position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: 'rgba(15, 23, 42, 0.65)',
+          inset: 0,
+          background: 'rgba(15, 23, 42, 0.55)',
           backdropFilter: 'blur(4px)',
           display: 'flex',
           alignItems: 'center',
@@ -476,29 +489,33 @@ export default function AdminOrdersTab({ showNotification }) {
           zIndex: 9999,
           padding: '1rem'
         }}>
-          <div style={{
-            background: '#ffffff',
-            borderRadius: '16px',
-            width: '100%',
-            maxWidth: '580px',
-            padding: '2rem',
-            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-            border: '1px solid #e2e8f0'
-          }}>
+          <div
+            className="bg-white rounded-2xl shadow-sm"
+            style={{
+              width: '100%',
+              maxWidth: '580px',
+              padding: '1.75rem',
+              boxShadow: '0 20px 40px -12px rgba(15, 23, 42, 0.2)',
+              border: '1px solid rgba(226, 232, 240, 0.9)'
+            }}
+          >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid #f1f5f9', paddingBottom: '1rem' }}>
               <div>
-                <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: '#64748b', fontWeight: 700, letterSpacing: '0.05em' }}>
+                <span style={{ fontSize: '0.725rem', textTransform: 'uppercase', color: '#64748b', fontWeight: 700, letterSpacing: '0.05em' }}>
                   Chi tiết Đơn hàng
                 </span>
-                <h4 style={{ margin: 0, fontSize: '1.35rem', fontWeight: 800, color: '#0f172a' }}>
+                <h4 style={{ margin: 0, fontSize: '1.3rem', fontWeight: 800, color: '#0f172a' }}>
                   {selectedOrder.orderCode || `EDUMY${selectedOrder.orderId}`}
                 </h4>
               </div>
               <button
+                type="button"
                 onClick={() => setSelectedOrder(null)}
-                style={{ background: 'none', border: 'none', fontSize: '1.25rem', color: '#94a3b8', cursor: 'pointer' }}
+                className="cursor-pointer transition-all duration-200 active:scale-95"
+                style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '0.5rem', width: '34px', height: '34px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: '#64748b' }}
+                aria-label="Đóng"
               >
-                ✕
+                <X size={18} strokeWidth={1.75} />
               </button>
             </div>
 
@@ -510,14 +527,14 @@ export default function AdminOrdersTab({ showNotification }) {
               </div>
               <div>
                 <div style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 600 }}>Trạng thái thanh toán</div>
-                <div style={{ marginTop: '0.2rem' }}>
+                <div style={{ marginTop: '0.25rem' }}>
                   {(selectedOrder.status === 'PAID' || selectedOrder.status === 'COMPLETED') ? (
-                    <span style={{ padding: '0.25rem 0.6rem', borderRadius: '9999px', background: '#dcfce7', color: '#15803d', fontWeight: 800, fontSize: '0.8rem' }}>
-                      ✓ ĐÃ THANH TOÁN (PAID)
+                    <span className="pill-badge" style={{ background: '#ecfdf5', color: '#047857', border: '1px solid #a7f3d0' }}>
+                      <CheckCircle2 size={12} strokeWidth={2} aria-hidden="true" /> ĐÃ THANH TOÁN (PAID)
                     </span>
                   ) : (
-                    <span style={{ padding: '0.25rem 0.6rem', borderRadius: '9999px', background: '#fef3c7', color: '#b45309', fontWeight: 800, fontSize: '0.8rem' }}>
-                      ⏳ ĐANG CHỜ (PENDING)
+                    <span className="pill-badge" style={{ background: '#fffbeb', color: '#b45309', border: '1px solid #fde68a' }}>
+                      <Clock size={12} strokeWidth={2} aria-hidden="true" /> ĐANG CHỜ (PENDING)
                     </span>
                   )}
                 </div>
@@ -528,7 +545,7 @@ export default function AdminOrdersTab({ showNotification }) {
               </div>
               <div>
                 <div style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 600 }}>Mã đối soát Ngân hàng</div>
-                <div style={{ fontFamily: 'monospace', fontWeight: 700, color: '#2563eb', fontSize: '0.88rem' }}>
+                <div style={{ fontFamily: 'monospace', fontWeight: 700, color: '#4f46e5', fontSize: '0.88rem' }}>
                   {selectedOrder.bankTransactionRef || `EDUMY ${selectedOrder.orderId}`}
                 </div>
               </div>
@@ -538,15 +555,15 @@ export default function AdminOrdersTab({ showNotification }) {
               <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#334155', marginBottom: '0.6rem' }}>
                 Danh sách khóa học trong đơn ({selectedOrder.courses?.length || 0}):
               </div>
-              <div style={{ background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0', padding: '0.75rem' }}>
+              <div style={{ background: '#f8fafc', borderRadius: '0.75rem', border: '1px solid #e2e8f0', padding: '0.75rem 1rem' }}>
                 {(selectedOrder.courses && selectedOrder.courses.length > 0) ? (
                   selectedOrder.courses.map((c, i) => (
-                    <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.4rem 0', borderBottom: i < selectedOrder.courses.length - 1 ? '1px solid #e2e8f0' : 'none' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.88rem', fontWeight: 600, color: '#1e293b' }}>
-                        <i className="bi bi-play-circle-fill" style={{ color: '#2563eb' }}></i>
-                        {c.title}
+                    <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.75rem', padding: '0.45rem 0', borderBottom: i < selectedOrder.courses.length - 1 ? '1px solid #e2e8f0' : 'none' }}>
+                      <div className="line-clamp-1" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.88rem', fontWeight: 600, color: '#0f172a' }}>
+                        <PlayCircle size={15} strokeWidth={1.75} style={{ color: '#4f46e5', flexShrink: 0 }} aria-hidden="true" />
+                        <span>{c.title}</span>
                       </div>
-                      <div style={{ fontWeight: 700, color: '#059669', fontSize: '0.88rem' }}>
+                      <div style={{ fontWeight: 700, color: '#059669', fontSize: '0.88rem', flexShrink: 0 }}>
                         {formatCurrency(c.price)}
                       </div>
                     </div>
@@ -568,14 +585,15 @@ export default function AdminOrdersTab({ showNotification }) {
               <button
                 type="button"
                 onClick={() => setSelectedOrder(null)}
+                className="cursor-pointer transition-all duration-200 active:scale-95"
                 style={{
-                  padding: '0.6rem 1.5rem',
+                  height: '44px',
+                  padding: '0 1.5rem',
                   background: '#0f172a',
                   color: '#ffffff',
                   border: 'none',
-                  borderRadius: '8px',
-                  fontWeight: 600,
-                  cursor: 'pointer'
+                  borderRadius: '0.75rem',
+                  fontWeight: 600
                 }}
               >
                 Đóng

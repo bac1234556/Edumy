@@ -1,4 +1,16 @@
 import React, { useState, useEffect } from 'react';
+import {
+  Search,
+  FolderPlus,
+  FolderOpen,
+  Folder,
+  GraduationCap,
+  Edit3,
+  Trash2,
+  X,
+  AlertTriangle,
+  Loader2
+} from 'lucide-react';
 import api from '../../api/axiosConfig';
 
 export default function AdminCategoriesTab({ showNotification }) {
@@ -119,76 +131,86 @@ export default function AdminCategoriesTab({ showNotification }) {
   return (
     <div className="admin-tab-content">
       {/* Top Controls Bar */}
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        flexWrap: 'wrap',
-        gap: '1rem',
-        marginBottom: '1.5rem',
-        background: '#ffffff',
-        padding: '1.25rem 1.5rem',
-        borderRadius: '12px',
-        border: '1px solid #e2e8f0',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.04)'
-      }}>
+      <div
+        className="bg-white rounded-2xl shadow-sm"
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: '1rem',
+          marginBottom: '1.5rem',
+          padding: '1.25rem 1.5rem',
+          border: '1px solid rgba(226, 232, 240, 0.85)'
+        }}
+      >
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flex: '1 1 320px' }}>
           <div style={{ position: 'relative', width: '100%', maxWidth: '380px' }}>
-            <i className="bi bi-search" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }}></i>
+            <Search
+              size={17}
+              strokeWidth={1.75}
+              style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#64748b' }}
+              aria-hidden="true"
+            />
             <input
               type="text"
               placeholder="Tìm kiếm danh mục theo tên hoặc mô tả..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
+              className="focus:ring-primary"
               style={{
                 width: '100%',
-                padding: '0.6rem 1rem 0.6rem 2.4rem',
-                borderRadius: '8px',
+                height: '44px',
+                padding: '0 1rem 0 2.5rem',
+                borderRadius: '0.75rem',
                 border: '1px solid #cbd5e1',
                 fontSize: '0.9rem',
+                color: '#0f172a',
+                background: '#f8fafc',
                 outline: 'none',
-                transition: 'border-color 0.2s'
+                transition: 'all 0.2s ease'
               }}
             />
           </div>
           <span style={{ fontSize: '0.85rem', color: '#64748b', whiteSpace: 'nowrap' }}>
-            Hiển thị <strong>{filteredCategories.length}</strong> danh mục
+            Hiển thị <strong className="text-slate-900">{filteredCategories.length}</strong> danh mục
           </span>
         </div>
 
         <button
+          type="button"
           onClick={openCreateModal}
+          className="cursor-pointer transition-all duration-200 active:scale-95 hover:opacity-90"
           style={{
             display: 'inline-flex',
             alignItems: 'center',
             gap: '0.5rem',
-            padding: '0.65rem 1.25rem',
-            background: 'linear-gradient(135deg, #2563eb, #1d4ed8)',
+            height: '44px',
+            padding: '0 1.25rem',
+            background: '#4f46e5',
             color: '#ffffff',
             border: 'none',
-            borderRadius: '8px',
+            borderRadius: '0.75rem',
             fontWeight: 600,
-            fontSize: '0.9rem',
-            cursor: 'pointer',
-            boxShadow: '0 4px 10px rgba(37, 99, 235, 0.25)',
-            transition: 'all 0.2s'
+            fontSize: '0.875rem',
+            boxShadow: '0 4px 12px rgba(79, 70, 229, 0.25)'
           }}
         >
-          <i className="bi bi-folder-plus"></i>
+          <FolderPlus size={17} strokeWidth={1.75} aria-hidden="true" />
           Thêm Danh mục Mới
         </button>
       </div>
 
       {/* Categories Table / Card Grid */}
-      <div style={{
-        background: '#ffffff',
-        borderRadius: '12px',
-        border: '1px solid #e2e8f0',
-        overflow: 'hidden',
-        boxShadow: '0 2px 8px rgba(15, 23, 42, 0.04)'
-      }}>
+      <div
+        className="bg-white rounded-2xl shadow-sm"
+        style={{
+          border: '1px solid rgba(226, 232, 240, 0.85)',
+          overflow: 'hidden'
+        }}
+      >
         <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.9rem' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.88rem' }}>
             <thead>
               <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#475569', fontWeight: 700 }}>
                 <th style={{ padding: '1rem 1.25rem' }}>ID</th>
@@ -202,15 +224,15 @@ export default function AdminCategoriesTab({ showNotification }) {
               {loading ? (
                 <tr>
                   <td colSpan="5" style={{ padding: '3rem', textAlign: 'center', color: '#64748b' }}>
-                    <i className="bi bi-arrow-repeat" style={{ animation: 'spin 1s linear infinite', fontSize: '1.5rem', display: 'inline-block', marginBottom: '0.5rem' }}></i>
+                    <Loader2 size={24} strokeWidth={1.75} className="animate-spin mb-2" style={{ display: 'inline-block', color: '#4f46e5' }} />
                     <div>Đang tải danh sách danh mục...</div>
                   </td>
                 </tr>
               ) : filteredCategories.length === 0 ? (
                 <tr>
-                  <td colSpan="5" style={{ padding: '3rem', textAlign: 'center', color: '#94a3b8' }}>
-                    <i className="bi bi-folder2-open" style={{ fontSize: '2.5rem', display: 'block', marginBottom: '0.5rem' }}></i>
-                    Chưa có danh mục nào phù hợp với tìm kiếm.
+                  <td colSpan="5" style={{ padding: '3rem', textAlign: 'center', color: '#64748b' }}>
+                    <FolderOpen size={36} strokeWidth={1.5} style={{ display: 'inline-block', marginBottom: '0.5rem', color: '#94a3b8' }} />
+                    <div>Chưa có danh mục nào phù hợp với tìm kiếm.</div>
                   </td>
                 </tr>
               ) : (
@@ -230,20 +252,21 @@ export default function AdminCategoriesTab({ showNotification }) {
                       <td style={{ padding: '1rem 1.25rem' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                           <div style={{
-                            width: '36px',
-                            height: '36px',
-                            borderRadius: '8px',
-                            background: '#eff6ff',
-                            color: '#2563eb',
+                            width: '38px',
+                            height: '38px',
+                            borderRadius: '0.75rem',
+                            background: '#eef2ff',
+                            border: '1px solid #e0e7ff',
+                            color: '#4f46e5',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            fontSize: '1.15rem'
+                            flexShrink: 0
                           }}>
-                            <i className={`bi ${cat.icon || 'bi-folder-fill'}`}></i>
+                            <Folder size={18} strokeWidth={1.75} aria-hidden="true" />
                           </div>
                           <div>
-                            <div style={{ fontWeight: 700, color: '#0f172a' }}>{cat.name}</div>
+                            <div className="line-clamp-1" style={{ fontWeight: 700, color: '#0f172a' }}>{cat.name}</div>
                             {cat.parentCategoryId && (
                               <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
                                 Danh mục con (Cha: #{cat.parentCategoryId})
@@ -253,71 +276,64 @@ export default function AdminCategoriesTab({ showNotification }) {
                         </div>
                       </td>
                       <td style={{ padding: '1rem 1.25rem', color: '#475569', maxWidth: '320px' }}>
-                        {cat.description || <span style={{ color: '#cbd5e1', fontStyle: 'italic' }}>Không có mô tả</span>}
+                        {cat.description ? (
+                          <span className="line-clamp-2">{cat.description}</span>
+                        ) : (
+                          <span style={{ color: '#94a3b8', fontStyle: 'italic' }}>Không có mô tả</span>
+                        )}
                       </td>
                       <td style={{ padding: '1rem 1.25rem', textAlign: 'center' }}>
-                        <span style={{
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: '0.35rem',
-                          padding: '0.25rem 0.75rem',
-                          borderRadius: '9999px',
-                          fontSize: '0.82rem',
-                          fontWeight: 700,
-                          background: coursesCount > 0 ? '#e0f2fe' : '#f1f5f9',
-                          color: coursesCount > 0 ? '#0284c7' : '#94a3b8',
-                          border: `1px solid ${coursesCount > 0 ? '#bae6fd' : '#e2e8f0'}`
+                        <span className="pill-badge" style={{
+                          background: coursesCount > 0 ? '#eef2ff' : '#f1f5f9',
+                          color: coursesCount > 0 ? '#4f46e5' : '#64748b',
+                          border: `1px solid ${coursesCount > 0 ? '#e0e7ff' : '#e2e8f0'}`
                         }}>
-                          <i className="bi bi-mortarboard-fill"></i>
+                          <GraduationCap size={13} strokeWidth={1.75} aria-hidden="true" />
                           {coursesCount} khóa học
                         </span>
                       </td>
                       <td style={{ padding: '1rem 1.25rem', textAlign: 'right' }}>
                         <div style={{ display: 'inline-flex', gap: '0.5rem' }}>
                           <button
+                            type="button"
                             onClick={() => openEditModal(cat)}
                             title="Chỉnh sửa danh mục"
+                            className="cursor-pointer transition-all duration-200 active:scale-95"
                             style={{
                               padding: '0.45rem 0.75rem',
                               background: '#f8fafc',
                               border: '1px solid #cbd5e1',
-                              borderRadius: '6px',
+                              borderRadius: '0.65rem',
                               color: '#334155',
-                              cursor: 'pointer',
-                              fontSize: '0.85rem',
+                              fontSize: '0.825rem',
                               fontWeight: 600,
                               display: 'inline-flex',
                               alignItems: 'center',
-                              gap: '0.35rem',
-                              transition: 'all 0.15s'
+                              gap: '0.35rem'
                             }}
-                            onMouseEnter={(e) => { e.currentTarget.style.background = '#e2e8f0'; }}
-                            onMouseLeave={(e) => { e.currentTarget.style.background = '#f8fafc'; }}
                           >
-                            <i className="bi bi-pencil-square" style={{ color: '#2563eb' }}></i>
+                            <Edit3 size={14} strokeWidth={1.75} style={{ color: '#4f46e5' }} aria-hidden="true" />
                             Sửa
                           </button>
                           <button
+                            type="button"
                             onClick={() => setDeleteTarget(cat)}
                             title="Xóa danh mục"
+                            className="cursor-pointer transition-all duration-200 active:scale-95"
                             style={{
                               padding: '0.45rem 0.75rem',
                               background: '#fef2f2',
                               border: '1px solid #fecaca',
-                              borderRadius: '6px',
-                              color: '#dc2626',
-                              cursor: 'pointer',
-                              fontSize: '0.85rem',
+                              borderRadius: '0.65rem',
+                              color: '#b91c1c',
+                              fontSize: '0.825rem',
                               fontWeight: 600,
                               display: 'inline-flex',
                               alignItems: 'center',
-                              gap: '0.35rem',
-                              transition: 'all 0.15s'
+                              gap: '0.35rem'
                             }}
-                            onMouseEnter={(e) => { e.currentTarget.style.background = '#fee2e2'; }}
-                            onMouseLeave={(e) => { e.currentTarget.style.background = '#fef2f2'; }}
                           >
-                            <i className="bi bi-trash3-fill"></i>
+                            <Trash2 size={14} strokeWidth={1.75} aria-hidden="true" />
                             Xóa
                           </button>
                         </div>
@@ -335,11 +351,8 @@ export default function AdminCategoriesTab({ showNotification }) {
       {isModalOpen && (
         <div style={{
           position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: 'rgba(15, 23, 42, 0.65)',
+          inset: 0,
+          background: 'rgba(15, 23, 42, 0.55)',
           backdropFilter: 'blur(4px)',
           display: 'flex',
           alignItems: 'center',
@@ -347,39 +360,43 @@ export default function AdminCategoriesTab({ showNotification }) {
           zIndex: 9999,
           padding: '1rem'
         }}>
-          <div style={{
-            background: '#ffffff',
-            borderRadius: '16px',
-            width: '100%',
-            maxWidth: '520px',
-            padding: '2rem',
-            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-            border: '1px solid #e2e8f0'
-          }}>
+          <div
+            className="bg-white rounded-2xl shadow-sm"
+            style={{
+              width: '100%',
+              maxWidth: '520px',
+              padding: '1.75rem',
+              boxShadow: '0 20px 40px -12px rgba(15, 23, 42, 0.2)',
+              border: '1px solid rgba(226, 232, 240, 0.9)'
+            }}
+          >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
                 <div style={{
-                  width: '38px',
-                  height: '38px',
-                  borderRadius: '8px',
-                  background: '#dbeafe',
-                  color: '#2563eb',
+                  width: '40px',
+                  height: '40px',
+                  borderRadius: '0.75rem',
+                  background: '#eef2ff',
+                  border: '1px solid #e0e7ff',
+                  color: '#4f46e5',
                   display: 'flex',
                   alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '1.2rem'
+                  justifyContent: 'center'
                 }}>
-                  <i className={modalMode === 'create' ? 'bi bi-folder-plus' : 'bi bi-pencil-square'}></i>
+                  {modalMode === 'create' ? <FolderPlus size={20} strokeWidth={1.75} /> : <Edit3 size={20} strokeWidth={1.75} />}
                 </div>
-                <h4 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800, color: '#0f172a' }}>
+                <h4 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, color: '#0f172a' }}>
                   {modalMode === 'create' ? 'Thêm Danh mục Mới' : 'Chỉnh sửa Danh mục'}
                 </h4>
               </div>
               <button
+                type="button"
                 onClick={() => setIsModalOpen(false)}
-                style={{ background: 'none', border: 'none', fontSize: '1.25rem', color: '#94a3b8', cursor: 'pointer' }}
+                className="cursor-pointer transition-all duration-200 active:scale-95"
+                style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '0.5rem', width: '34px', height: '34px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: '#64748b' }}
+                aria-label="Đóng"
               >
-                ✕
+                <X size={18} strokeWidth={1.75} />
               </button>
             </div>
 
@@ -394,12 +411,15 @@ export default function AdminCategoriesTab({ showNotification }) {
                   placeholder="Ví dụ: Lập trình Web, Trí tuệ nhân tạo..."
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  className="focus:ring-primary"
                   style={{
                     width: '100%',
-                    padding: '0.65rem 0.85rem',
-                    borderRadius: '8px',
+                    height: '44px',
+                    padding: '0 0.85rem',
+                    borderRadius: '0.75rem',
                     border: '1px solid #cbd5e1',
-                    fontSize: '0.92rem',
+                    fontSize: '0.9rem',
+                    color: '#0f172a',
                     outline: 'none'
                   }}
                 />
@@ -414,12 +434,14 @@ export default function AdminCategoriesTab({ showNotification }) {
                   placeholder="Mô tả tóm tắt nội dung các khóa học trong danh mục này..."
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  className="focus:ring-primary"
                   style={{
                     width: '100%',
                     padding: '0.65rem 0.85rem',
-                    borderRadius: '8px',
+                    borderRadius: '0.75rem',
                     border: '1px solid #cbd5e1',
-                    fontSize: '0.92rem',
+                    fontSize: '0.9rem',
+                    color: '#0f172a',
                     outline: 'none',
                     resize: 'vertical'
                   }}
@@ -433,12 +455,15 @@ export default function AdminCategoriesTab({ showNotification }) {
                 <select
                   value={formData.parentCategoryId}
                   onChange={(e) => setFormData({ ...formData, parentCategoryId: e.target.value })}
+                  className="focus:ring-primary"
                   style={{
                     width: '100%',
-                    padding: '0.65rem 0.85rem',
-                    borderRadius: '8px',
+                    height: '44px',
+                    padding: '0 0.85rem',
+                    borderRadius: '0.75rem',
                     border: '1px solid #cbd5e1',
-                    fontSize: '0.92rem',
+                    fontSize: '0.9rem',
+                    color: '#0f172a',
                     outline: 'none',
                     background: '#ffffff'
                   }}
@@ -458,14 +483,15 @@ export default function AdminCategoriesTab({ showNotification }) {
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
+                  className="cursor-pointer transition-all duration-200 active:scale-95"
                   style={{
-                    padding: '0.6rem 1.25rem',
-                    background: '#f1f5f9',
+                    height: '44px',
+                    padding: '0 1.25rem',
+                    background: '#f8fafc',
                     border: '1px solid #cbd5e1',
-                    borderRadius: '8px',
+                    borderRadius: '0.75rem',
                     fontWeight: 600,
-                    color: '#475569',
-                    cursor: 'pointer'
+                    color: '#475569'
                   }}
                 >
                   Hủy bỏ
@@ -473,15 +499,16 @@ export default function AdminCategoriesTab({ showNotification }) {
                 <button
                   type="submit"
                   disabled={submitting}
+                  className="cursor-pointer transition-all duration-200 active:scale-95 hover:opacity-90"
                   style={{
-                    padding: '0.6rem 1.5rem',
-                    background: 'linear-gradient(135deg, #2563eb, #1d4ed8)',
+                    height: '44px',
+                    padding: '0 1.5rem',
+                    background: '#4f46e5',
                     border: 'none',
-                    borderRadius: '8px',
+                    borderRadius: '0.75rem',
                     fontWeight: 700,
                     color: '#ffffff',
-                    cursor: submitting ? 'not-allowed' : 'pointer',
-                    boxShadow: '0 4px 10px rgba(37, 99, 235, 0.3)'
+                    boxShadow: '0 4px 12px rgba(79, 70, 229, 0.25)'
                   }}
                 >
                   {submitting ? 'Đang lưu...' : (modalMode === 'create' ? 'Tạo mới' : 'Lưu thay đổi')}
@@ -496,11 +523,8 @@ export default function AdminCategoriesTab({ showNotification }) {
       {deleteTarget && (
         <div style={{
           position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: 'rgba(15, 23, 42, 0.65)',
+          inset: 0,
+          background: 'rgba(15, 23, 42, 0.55)',
           backdropFilter: 'blur(4px)',
           display: 'flex',
           alignItems: 'center',
@@ -508,48 +532,54 @@ export default function AdminCategoriesTab({ showNotification }) {
           zIndex: 9999,
           padding: '1rem'
         }}>
-          <div style={{
-            background: '#ffffff',
-            borderRadius: '16px',
-            width: '100%',
-            maxWidth: '460px',
-            padding: '2rem',
-            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-            border: '1px solid #fecaca'
-          }}>
+          <div
+            className="bg-white rounded-2xl shadow-sm"
+            style={{
+              width: '100%',
+              maxWidth: '460px',
+              padding: '1.75rem',
+              boxShadow: '0 20px 40px -12px rgba(15, 23, 42, 0.2)',
+              border: '1px solid #fecaca'
+            }}
+          >
             <div style={{ textAlign: 'center', marginBottom: '1.25rem' }}>
               <div style={{
                 width: '56px',
                 height: '56px',
-                borderRadius: '50%',
-                background: '#fee2e2',
+                borderRadius: '9999px',
+                background: '#fef2f2',
+                border: '1px solid #fecaca',
                 color: '#dc2626',
                 display: 'inline-flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: '1.75rem',
                 marginBottom: '1rem'
               }}>
-                <i className="bi bi-exclamation-triangle-fill"></i>
+                <AlertTriangle size={26} strokeWidth={1.75} aria-hidden="true" />
               </div>
-              <h4 style={{ margin: '0 0 0.5rem 0', fontSize: '1.25rem', fontWeight: 800, color: '#0f172a' }}>
+              <h4 style={{ margin: '0 0 0.5rem 0', fontSize: '1.2rem', fontWeight: 800, color: '#0f172a' }}>
                 Xác nhận xóa danh mục?
               </h4>
               <p style={{ margin: 0, fontSize: '0.9rem', color: '#64748b' }}>
-                Bạn có chắc chắn muốn xóa danh mục <strong>"{deleteTarget.name}"</strong>?
+                Bạn có chắc chắn muốn xóa danh mục <strong className="text-slate-900">"{deleteTarget.name}"</strong>?
               </p>
               {deleteTarget.coursesCount > 0 && (
                 <div style={{
                   marginTop: '1rem',
-                  padding: '0.75rem',
+                  padding: '0.75rem 1rem',
                   background: '#fef2f2',
                   border: '1px solid #fecaca',
-                  borderRadius: '8px',
+                  borderRadius: '0.75rem',
                   color: '#b91c1c',
-                  fontSize: '0.85rem',
-                  fontWeight: 600
+                  fontSize: '0.825rem',
+                  fontWeight: 600,
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: '0.5rem',
+                  textAlign: 'left'
                 }}>
-                  ⚠️ Cảnh báo: Danh mục này đang chứa {deleteTarget.coursesCount} khóa học. Hệ thống sẽ chặn xóa để bảo vệ dữ liệu khóa học!
+                  <AlertTriangle size={16} strokeWidth={2} style={{ flexShrink: 0, marginTop: 2 }} aria-hidden="true" />
+                  <span>Cảnh báo: Danh mục này đang chứa {deleteTarget.coursesCount} khóa học. Hệ thống sẽ chặn xóa để bảo vệ dữ liệu khóa học!</span>
                 </div>
               )}
             </div>
@@ -558,14 +588,15 @@ export default function AdminCategoriesTab({ showNotification }) {
               <button
                 type="button"
                 onClick={() => setDeleteTarget(null)}
+                className="cursor-pointer transition-all duration-200 active:scale-95"
                 style={{
-                  padding: '0.6rem 1.25rem',
-                  background: '#f1f5f9',
+                  height: '44px',
+                  padding: '0 1.25rem',
+                  background: '#f8fafc',
                   border: '1px solid #cbd5e1',
-                  borderRadius: '8px',
+                  borderRadius: '0.75rem',
                   fontWeight: 600,
-                  color: '#475569',
-                  cursor: 'pointer'
+                  color: '#475569'
                 }}
               >
                 Hủy
@@ -574,15 +605,16 @@ export default function AdminCategoriesTab({ showNotification }) {
                 type="button"
                 onClick={handleDelete}
                 disabled={deleting}
+                className="cursor-pointer transition-all duration-200 active:scale-95 hover:opacity-90"
                 style={{
-                  padding: '0.6rem 1.5rem',
+                  height: '44px',
+                  padding: '0 1.5rem',
                   background: '#dc2626',
                   border: 'none',
-                  borderRadius: '8px',
+                  borderRadius: '0.75rem',
                   fontWeight: 700,
                   color: '#ffffff',
-                  cursor: deleting ? 'not-allowed' : 'pointer',
-                  boxShadow: '0 4px 10px rgba(220, 38, 38, 0.3)'
+                  boxShadow: '0 4px 10px rgba(220, 38, 38, 0.25)'
                 }}
               >
                 {deleting ? 'Đang xóa...' : 'Xác nhận Xóa'}

@@ -9,10 +9,14 @@ function ProtectedRoute({ children, allowedRoles }) {
   if (loading) {
     return (
       <div className="container py-5 my-5 text-center" style={{ minHeight: '60vh', maxWidth: '600px' }}>
-        <div className="d-flex flex-column align-items-center gap-3">
-          <SkeletonBox width="64px" height="64px" borderRadius="50%" />
-          <SkeletonBox width="280px" height="28px" />
-          <SkeletonBox width="400px" height="18px" />
+        <div
+          className="bg-white rounded-2xl shadow-sm p-5 d-flex flex-column align-items-center gap-3"
+          style={{ border: '1px solid rgba(226, 232, 240, 0.85)' }}
+          aria-busy="true"
+        >
+          <SkeletonBox width="64px" height="64px" borderRadius="9999px" />
+          <SkeletonBox width="260px" height="26px" borderRadius="0.5rem" />
+          <SkeletonBox width="380px" height="18px" borderRadius="0.5rem" />
         </div>
       </div>
     );
