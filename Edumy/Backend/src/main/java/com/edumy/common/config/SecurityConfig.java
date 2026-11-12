@@ -53,6 +53,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/coupons/validate", "/api/Coupons/validate").permitAll()
                 .requestMatchers("/uploads/**").permitAll()
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                .requestMatchers("/actuator/**").permitAll()
                 .anyRequest().authenticated()
             );
 
