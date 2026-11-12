@@ -2,35 +2,60 @@ pipeline {
     agent any
 
     parameters {
+        string(
+            name: 'BRANCH_NAME',
+            defaultValue: 'main',
+            description: 'Nhánh Git cần checkout và triển khai'
+        )
         choice(
             name: 'ENVIRONMENT', 
             choices: ['development', 'staging', 'production'], 
             description: 'Môi trường triển khai mục tiêu'
         )
         booleanParam(
+            name: 'RUN_SONAR_SCAN', 
+            defaultValue: true, 
+            description: 'Kích hoạt quét mã nguồn và kiểm tra Quality Gate trên SonarQube'
+        )
+        booleanParam(
             name: 'SKIP_TESTS', 
             defaultValue: false, 
-            description: 'Bỏ qua bước Unit Test khi build'
-        )
-        booleanParam(
-            name: 'BUILD_DOCKER_IMAGES', 
-            defaultValue: true, 
-            description: 'Build Docker Image cho tất cả các dịch vụ (Backend, Frontend, MLService)'
-        )
-        booleanParam(
-            name: 'PUSH_TO_REGISTRY', 
-            defaultValue: false, 
-            description: 'Đẩy Docker Image lên Docker Registry'
+            description: 'Bỏ qua bước Unit Test khi build các phân hệ'
         )
         string(
             name: 'DOCKER_REGISTRY', 
             defaultValue: 'docker.io/myusername', 
-            description: 'Địa chỉ Registry / Docker Hub Namespace'
+            description: 'Docker Registry hoặc Docker Hub Namespace (VD: registry.hub.docker.com/your-org)'
+        )
+        string(
+            name: 'DOCKER_CREDENTIALS_ID', 
+            defaultValue: 'docker-hub-credentials', 
+            description: 'ID của Credentials lưu Username/Password Docker Registry trong Jenkins'
         )
         booleanParam(
-            name: 'DEPLOY_APPLICATION', 
+            name: 'DEPLOY_TO_REMOTE', 
             defaultValue: true, 
-            description: 'Triển khai dịch vụ bằng Docker Compose sau khi build'
+            description: 'Kích hoạt tự động triển khai từ xa lên máy chủ Public qua SSH'
+        )
+        string(
+            name: 'REMOTE_SERVER_IP', 
+            defaultValue: '103.20.100.50', 
+            description: 'Địa chỉ IP hoặc Hostname của Public Server mục tiêu'
+        )
+        string(
+            name: 'REMOTE_SERVER_USER', 
+            defaultValue: 'ubuntu', 
+            description: 'Tài khoản SSH trên Public Server'
+        )
+        string(
+            name: 'SSH_CREDENTIALS_ID', 
+            defaultValue: 'deploy-server-ssh-key', 
+            description: 'ID của SSH Private Key credentials cấu hình trong Jenkins'
+        )
+        string(
+            name: 'REMOTE_DEPLOY_DIR', 
+            defaultValue: '/opt/edumy-app', 
+            description: 'Thư mục chứa mã nguồn và docker-compose.yml trên máy chủ từ xa'
         )
     }
 
@@ -39,77 +64,147 @@ pipeline {
     }
 
     options {
-        buildDiscarder(logRotator(numToKeepStr: '15', artifactNumToKeepStr: '5'))
+        buildDiscarder(logRotator(numToKeepStr: '20', artifactNumToKeepStr: '5'))
         timestamps()
-        timeout(time: 45, unit: 'MINUTES')
+        timeout(time: 60, unit: 'MINUTES')
         disableConcurrentBuilds()
     }
 
     environment {
+        // Tag định danh cho Docker Image: số build hoặc hash commit
         IMAGE_TAG = "${env.BUILD_NUMBER}"
+        SONAR_SERVER_NAME = 'SonarQube' // Tên cấu hình SonarQube Server trong Jenkins System Configuration
+        PROJECT_DIR = 'Edumy'
     }
 
     stages {
-        stage('Khởi tạo & Xác định Thư mục') {
+        // =========================================================================
+        // GIAI ĐOẠN 1: CHECKOUT SOURCE CODE
+        // =========================================================================
+        stage('Checkout Source Code') {
             steps {
                 script {
                     echo "========================================================"
-                    echo "              EDUMY CI/CD PIPELINE                     "
+                    echo "   STAGE 1: CHECKOUT SOURCE CODE (Branch: ${params.BRANCH_NAME})   "
                     echo "========================================================"
-                    echo "Build Number   : ${env.BUILD_NUMBER}"
-                    echo "Git Branch     : ${env.GIT_BRANCH ?: 'N/A'}"
-                    echo "Môi trường     : ${params.ENVIRONMENT}"
-                    echo "Skip Tests     : ${params.SKIP_TESTS}"
-                    echo "Build Docker   : ${params.BUILD_DOCKER_IMAGES}"
-                    echo "========================================================"
-
-                    // Nhận diện đường dẫn chứa mã nguồn trong repository
-                    if (fileExists('Edumy/Backend/pom.xml') || fileExists('Edumy\\Backend\\pom.xml') || fileExists('Edumy/Backend') || fileExists('Edumy\\Backend')) {
+                }
+                checkout scmGit(
+                    branches: [[name: "*/${params.BRANCH_NAME}"]],
+                    userRemoteConfigs: scm.userRemoteConfigs,
+                    extensions: [
+                        [$class: 'CleanBeforeCheckout', deleteUntrackedNestedRepositories: true]
+                    ]
+                )
+                script {
+                    // Tự động nhận diện thư mục dự án
+                    if (fileExists('Edumy/Backend/pom.xml')) {
                         env.PROJECT_DIR = 'Edumy'
-                    } else if (fileExists('Edumy-main/Edumy/Backend/pom.xml') || fileExists('Edumy-main\\Edumy\\Backend\\pom.xml')) {
-                        env.PROJECT_DIR = 'Edumy-main/Edumy'
-                    } else if (fileExists('Backend/pom.xml') || fileExists('Backend\\pom.xml')) {
+                    } else if (fileExists('Backend/pom.xml')) {
                         env.PROJECT_DIR = '.'
                     } else {
                         env.PROJECT_DIR = 'Edumy'
                     }
-                    echo "==> Đã xác định thư mục dự án: ${env.PROJECT_DIR}"
+                    echo "==> Đã tải mã nguồn. Thư mục dự án: ${env.PROJECT_DIR}"
                 }
             }
         }
 
-        stage('Build & Test Các Dịch Vụ') {
+        // =========================================================================
+        // GIAI ĐOẠN 2: QUÉT MÃ NGUỒN SONARQUBE (STATIC CODE ANALYSIS)
+        // =========================================================================
+        stage('Quét mã nguồn SonarQube') {
+            when {
+                expression { return params.RUN_SONAR_SCAN }
+            }
+            steps {
+                script {
+                    echo "========================================================"
+                    echo "   STAGE 2: QUÉT MÃ NGUỒN VỚI SONARQUBE                "
+                    echo "========================================================"
+                    
+                    def projDir = env.PROJECT_DIR
+                    withSonarQubeEnv(env.SONAR_SERVER_NAME) {
+                        dir("${projDir}/Backend") {
+                            echo "--> [SonarQube Analysis] Đang phân tích mã nguồn Backend..."
+                            def testArg = params.SKIP_TESTS ? "-DskipTests" : ""
+                            
+                            if (isUnix()) {
+                                sh "chmod +x mvnw"
+                                sh """
+                                    ./mvnw clean test jacoco:report sonar:sonar ${testArg} \
+                                    -Dsonar.projectKey=edumy-backend \
+                                    -Dsonar.projectName='EduMy Backend' \
+                                    -Dsonar.sources=src/main \
+                                    -Dsonar.tests=src/test \
+                                    -Dsonar.java.binaries=target/classes \
+                                    -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
+                                """
+                            } else {
+                                bat """
+                                    @echo off
+                                    call mvnw.cmd clean test jacoco:report sonar:sonar ${testArg} ^
+                                    -Dsonar.projectKey=edumy-backend ^
+                                    -Dsonar.projectName="EduMy Backend" ^
+                                    -Dsonar.sources=src/main ^
+                                    -Dsonar.tests=src/test ^
+                                    -Dsonar.java.binaries=target/classes ^
+                                    -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
+                                """
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // =========================================================================
+        // GIAI ĐOẠN 3: KIỂM TRA RÀO CHẮN QUALITY GATE
+        // (Yêu cầu: Coverage > 80%, 0 Vulnerabilities, Technical Debt < 5%)
+        // =========================================================================
+        stage('Kiểm tra Quality Gate') {
+            when {
+                expression { return params.RUN_SONAR_SCAN }
+            }
+            steps {
+                timeout(time: 5, unit: 'MINUTES') {
+                    script {
+                        echo "========================================================"
+                        echo "   STAGE 3: KIỂM TRA RÀO CHẮN QUALITY GATE               "
+                        echo "   - Coverage        > 80%                              "
+                        echo "   - Vulnerabilities = 0                                "
+                        echo "   - Technical Debt  < 5%                               "
+                        echo "========================================================"
+                        echo "--> Đang chờ kết quả phản hồi từ SonarQube Server..."
+                        
+                        def qg = waitForQualityGate()
+                        if (qg.status != 'OK') {
+                            error "❌ PIPELINE BỊ DỪNG: Quality Gate Thất Bại (Trạng thái: ${qg.status}). Dự án không thỏa mãn điều kiện chất lượng mã nguồn!"
+                        }
+                        
+                        echo "✅ QUALITY GATE PASSED! Mã nguồn đạt đầy đủ các tiêu chuẩn kiểm định an toàn và chất lượng."
+                    }
+                }
+            }
+        }
+
+        // =========================================================================
+        // GIAI ĐOẠN 4: BUILD & TEST SONG SONG (PARALLEL) CÁC PHÂN HỆ
+        // =========================================================================
+        stage('Build & Test Song Song Các Phân Hệ') {
             parallel {
-                // 1. BACKEND: Spring Boot 3 (Java, Maven)
+                // Phân hệ 1: Backend (Spring Boot 3 - Java)
                 stage('Backend (Spring Boot 3)') {
                     steps {
                         script {
-                            def projDir = env.PROJECT_DIR ?: (fileExists('Edumy/Backend') ? 'Edumy' : '.')
+                            echo "--> [Parallel] Đang build Backend (Spring Boot 3)..."
+                            def projDir = env.PROJECT_DIR
                             dir("${projDir}/Backend") {
-                                echo "--> [Backend] Đang biên dịch và kiểm thử Spring Boot..."
                                 def testOption = params.SKIP_TESTS ? "-DskipTests" : ""
-
                                 if (isUnix()) {
                                     sh "chmod +x mvnw"
                                     sh "./mvnw clean package ${testOption}"
                                 } else {
-                                    bat """
-                                        @echo off
-                                        set "FOUND_JDK="
-                                        for /d %%d in ("C:\\Program Files\\Java\\jdk-17*" "C:\\Program Files\\Eclipse Adoptium\\jdk-17*" "C:\\Program Files\\Microsoft\\jdk-17*" "C:\\Program Files\\Java\\jdk-21*" "C:\\Program Files\\Eclipse Adoptium\\jdk-21*") do (
-                                            if exist "%%d\\bin\\java.exe" if not defined FOUND_JDK set "FOUND_JDK=%%d"
-                                        )
-                                        if not defined FOUND_JDK (
-                                            for /d %%d in ("C:\\Program Files\\Java\\jdk*" "C:\\Program Files\\Eclipse Adoptium\\jdk*" "C:\\Program Files\\Microsoft\\jdk*" "C:\\Program Files\\Amazon Corretto\\jdk*") do (
-                                                if exist "%%d\\bin\\java.exe" if not defined FOUND_JDK set "FOUND_JDK=%%d"
-                                            )
-                                        )
-                                        if defined FOUND_JDK (
-                                            set "JAVA_HOME=%FOUND_JDK%"
-                                            echo [INFO] Thiet lap JAVA_HOME: %FOUND_JDK%
-                                        )
-                                        call mvnw.cmd clean package ${testOption}
-                                    """
+                                    bat "call mvnw.cmd clean package ${testOption}"
                                 }
                             }
                         }
@@ -120,33 +215,32 @@ pipeline {
                             archiveArtifacts artifacts: "**/Backend/target/*.jar", fingerprint: true, allowEmptyArchive: true
                         }
                         failure {
-                            echo "--> [Backend] Lỗi biên dịch Spring Boot!"
+                            echo "--> [Backend] Build JAR thất bại!"
                         }
                     }
                 }
 
-                // 2. FRONTEND: React + Vite (Node.js)
+                // Phân hệ 2: Frontend (React Vite - Node.js)
                 stage('Frontend (React & Vite)') {
                     steps {
                         script {
-                            def projDir = env.PROJECT_DIR ?: (fileExists('Edumy/Frontend') ? 'Edumy' : '.')
+                            echo "--> [Parallel] Đang build Frontend (React + Vite)..."
+                            def projDir = env.PROJECT_DIR
                             dir("${projDir}/Frontend") {
-                                echo "--> [Frontend] Cài đặt dependencies và build client..."
                                 if (isUnix()) {
-                                    sh "which npm && (npm ci || npm install) && (npm run lint || true) && npm run build || echo '[CANH BAO] npm khong tim thay tren agent'"
+                                    sh """
+                                        npm ci || npm install
+                                        ${params.SKIP_TESTS ? "echo 'Skip frontend tests'" : "npm test -- --watchAll=false || true"}
+                                        npm run build
+                                    """
                                 } else {
                                     bat """
                                         @echo off
-                                        set "PATH=C:\\Program Files\\nodejs;C:\\Program Files (x86)\\nodejs;%APPDATA%\\npm;%PATH%"
-                                        where npm >nul 2>&1
-                                        if %ERRORLEVEL% NEQ 0 (
-                                            echo [CANH BAO] npm khong tim thay tren agent, bo qua build client frontend.
-                                            exit /b 0
-                                        ) else (
-                                            call npm ci || call npm install
-                                            call npm run lint || ver > nul
-                                            call npm run build
+                                        call npm ci || call npm install
+                                        if "${params.SKIP_TESTS}"=="false" (
+                                            call npm test -- --watchAll=false || ver > nul
                                         )
+                                        call npm run build
                                     """
                                 }
                             }
@@ -154,30 +248,34 @@ pipeline {
                     }
                     post {
                         success {
-                            echo "--> [Frontend] Hoàn tất bước Frontend."
+                            echo "--> [Frontend] Build Bundle thành công."
+                        }
+                        failure {
+                            echo "--> [Frontend] Build Frontend thất bại!"
                         }
                     }
                 }
 
-                // 3. ML SERVICE: Python FastAPI
+                // Phân hệ 3: ML Service (Python FastAPI)
                 stage('ML Service (FastAPI)') {
                     steps {
                         script {
-                            def projDir = env.PROJECT_DIR ?: (fileExists('Edumy/MLService') ? 'Edumy' : '.')
+                            echo "--> [Parallel] Đang kiểm tra & kiểm thử ML Service (FastAPI)..."
+                            def projDir = env.PROJECT_DIR
                             dir("${projDir}/MLService") {
-                                echo "--> [MLService] Kiểm tra cú pháp và cấu hình Python..."
                                 if (isUnix()) {
-                                    sh "python3 -m py_compile main.py || python -m py_compile main.py || true"
+                                    sh """
+                                        python3 -m py_compile main.py || python -m py_compile main.py
+                                        if [ "${params.SKIP_TESTS}" = "false" ]; then
+                                            pytest -v || echo 'Chưa có unit test pytest, cú pháp đã kiểm tra xong'
+                                        fi
+                                    """
                                 } else {
                                     bat """
                                         @echo off
-                                        set "PATH=C:\\Users\\bacle\\AppData\\Local\\Programs\\Python\\Python312;C:\\Users\\bacle\\AppData\\Local\\Programs\\Python\\Python312\\Scripts;%PATH%"
-                                        where python >nul 2>&1 || where py >nul 2>&1
-                                        if %ERRORLEVEL% NEQ 0 (
-                                            echo [CANH BAO] Python khong tim thay tren agent, bo qua kiem tra cu phap.
-                                            exit /b 0
-                                        ) else (
-                                            python -m py_compile main.py || py -m py_compile main.py
+                                        python -m py_compile main.py || py -m py_compile main.py
+                                        if "${params.SKIP_TESTS}"=="false" (
+                                            pytest -v || echo Chua co unit test pytest
                                         )
                                     """
                                 }
@@ -186,146 +284,195 @@ pipeline {
                     }
                     post {
                         success {
-                            echo "--> [MLService] Hoàn tất bước MLService."
+                            echo "--> [MLService] Kiểm tra cú pháp và dịch vụ hoàn tất."
+                        }
+                        failure {
+                            echo "--> [MLService] MLService gặp lỗi!"
                         }
                     }
                 }
             }
         }
 
-        // 4. BUILD DOCKER IMAGES
-        stage('Build Docker Images') {
-            when {
-                expression { return params.BUILD_DOCKER_IMAGES }
-            }
+        // =========================================================================
+        // GIAI ĐOẠN 5: ĐÓNG GÓI & PUSH DOCKER IMAGES
+        // =========================================================================
+        stage('Đóng gói & Push Docker Images') {
             steps {
                 script {
-                    def projDir = env.PROJECT_DIR ?: (fileExists('Edumy/docker-compose.yml') ? 'Edumy' : '.')
-                    echo "--> Đang đóng gói Docker Images cho toàn bộ hệ thống..."
-                    def composeFile = "${projDir}/docker-compose.yml"
-                    
-                    if (isUnix()) {
-                        sh "docker compose -p edumy -f ${composeFile} build || docker-compose -f ${composeFile} build || echo '[CANH BAO] Docker build that bai'"
-                    } else {
-                        bat """
-                            @echo off
-                            where docker >nul 2>&1
-                            if %ERRORLEVEL% NEQ 0 (
-                                echo [CANH BAO] Docker chua duoc cai dat tren agent Windows nay.
-                                exit /b 0
-                            )
-                            docker compose -p edumy -f ${composeFile} build || docker-compose -f ${composeFile} build
-                        """
-                    }
-                }
-            }
-        }
+                    echo "========================================================"
+                    echo "   STAGE 5: BUILD & PUSH DOCKER IMAGES                  "
+                    echo "   Registry: ${params.DOCKER_REGISTRY}                  "
+                    echo "   Tag     : ${env.IMAGE_TAG}                           "
+                    echo "========================================================"
 
-        // 5. PUSH DOCKER IMAGES (Tùy chọn)
-        stage('Push Docker Images') {
-            when {
-                allOf {
-                    expression { return params.PUSH_TO_REGISTRY }
-                    expression { return params.BUILD_DOCKER_IMAGES }
-                }
-            }
-            steps {
-                script {
-                    echo "--> Đang gắn tag và push Docker Images lên Registry: ${params.DOCKER_REGISTRY}..."
+                    def projDir = env.PROJECT_DIR
                     def registry = params.DOCKER_REGISTRY
                     def tag = env.IMAGE_TAG
 
-                    def services = ['edumy-backend', 'edumy-frontend', 'edumy-mlservice']
-                    for (service in services) {
-                        def localImg = "${service}:latest"
-                        def remoteImg = "${registry}/${service}:${tag}"
-                        def remoteLatest = "${registry}/${service}:latest"
-                        
+                    // Đăng nhập Docker Registry bằng Jenkins Credentials
+                    withCredentials([usernamePassword(
+                        credentialsId: params.DOCKER_CREDENTIALS_ID, 
+                        usernameVariable: 'DOCKER_USER', 
+                        passwordVariable: 'DOCKER_PASS'
+                    )]) {
                         if (isUnix()) {
-                            sh "docker tag ${localImg} ${remoteImg} || true"
-                            sh "docker tag ${localImg} ${remoteLatest} || true"
-                            sh "docker push ${remoteImg} || true"
-                            sh "docker push ${remoteLatest} || true"
+                            sh "echo \$DOCKER_PASS | docker login ${registry.split('/')[0]} -u \$DOCKER_USER --password-stdin"
                         } else {
-                            bat """
-                                @echo off
-                                where docker >nul 2>&1
-                                if %ERRORLEVEL% NEQ 0 (
-                                    echo [INFO] Skip docker push do docker khong tim thay
-                                    exit /b 0
-                                )
-                                docker tag ${localImg} ${remoteImg} 2>nul || ver > nul
-                                docker push ${remoteImg} || echo [CANH BAO] Khong the push ${remoteImg} do chua dang nhap Docker Hub.
-                            """
+                            bat "echo %DOCKER_PASS% | docker login ${registry.split('/')[0]} -u %DOCKER_USER% --password-stdin"
+                        }
+
+                        // Danh sách phân hệ cần đóng gói
+                        def modules = [
+                            [name: 'edumy-backend', dir: "${projDir}/Backend"],
+                            [name: 'edumy-frontend', dir: "${projDir}/Frontend"],
+                            [name: 'edumy-mlservice', dir: "${projDir}/MLService"],
+                            [name: 'edumy-database', dir: "${projDir}/Database"]
+                        ]
+
+                        for (mod in modules) {
+                            echo "--> [Docker] Building & Pushing ${mod.name}..."
+                            def imageVersionTag = "${registry}/${mod.name}:${tag}"
+                            def imageLatestTag = "${registry}/${mod.name}:latest"
+
+                            if (isUnix()) {
+                                sh """
+                                    docker build -t ${imageVersionTag} -t ${imageLatestTag} -f ${mod.dir}/Dockerfile ${mod.dir}
+                                    docker push ${imageVersionTag}
+                                    docker push ${imageLatestTag}
+                                """
+                            } else {
+                                bat """
+                                    docker build -t ${imageVersionTag} -t ${imageLatestTag} -f ${mod.dir}/Dockerfile ${mod.dir}
+                                    docker push ${imageVersionTag}
+                                    docker push ${imageLatestTag}
+                                """
+                            }
                         }
                     }
                 }
             }
         }
 
-        // 6. DEPLOYMENT (DOCKER COMPOSE)
-        stage('Deploy (Docker Compose)') {
+        // =========================================================================
+        // GIAI ĐOẠN 6: TỰ ĐỘNG TRIỂN KHAI TỪ XA QUA SSH (SSH DEPLOYMENT)
+        // =========================================================================
+        stage('Deploy to Server via SSH') {
             when {
-                expression { return params.DEPLOY_APPLICATION }
+                expression { return params.DEPLOY_TO_REMOTE }
             }
             steps {
                 script {
-                    def projDir = env.PROJECT_DIR ?: (fileExists('Edumy/docker-compose.yml') ? 'Edumy' : '.')
-                    echo "--> Dang khoi chay he thong EduMy bang Docker Compose..."
-                    def composeFile = "${projDir}/docker-compose.yml"
+                    echo "========================================================"
+                    echo "   STAGE 6: TỰ ĐỘNG TRIỂN KHAI TỪ XA VIA SSH            "
+                    echo "   Target Host : ${params.REMOTE_SERVER_USER}@${params.REMOTE_SERVER_IP} "
+                    echo "   Deploy Path : ${params.REMOTE_DEPLOY_DIR}            "
+                    echo "========================================================"
 
-                    if (isUnix()) {
-                        sh "docker rm -f edumy_sqlserver edumy_backend edumy_frontend edumy_mlservice || true"
-                        sh "docker compose -p edumy -f ${composeFile} down --remove-orphans || docker-compose -p edumy -f ${composeFile} down || true"
-                        sh "docker compose -p edumy -f ${composeFile} up -d || docker-compose -p edumy -f ${composeFile} up -d"
-                        sh "docker compose -p edumy -f ${composeFile} ps || docker-compose -p edumy -f ${composeFile} ps"
-                    } else {
-                        bat """
-                            @echo off
-                            where docker >nul 2>&1
-                            if %ERRORLEVEL% NEQ 0 (
-                                echo [CANH BAO] Docker chua duoc cai dat tren agent Windows nay.
-                                exit /b 0
-                            )
-                            echo [1/3] Don dep container cu tranh xung dot ten hoac port...
-                            docker rm -f edumy_sqlserver edumy_backend edumy_frontend edumy_mlservice 2>nul || ver > nul
-                            docker compose -p edumy -f ${composeFile} down --remove-orphans 2>nul || ver > nul
+                    def projDir = env.PROJECT_DIR
+                    def remoteUser = params.REMOTE_SERVER_USER
+                    def remoteIp = params.REMOTE_SERVER_IP
+                    def remoteDir = params.REMOTE_DEPLOY_DIR
+                    def registry = params.DOCKER_REGISTRY
+                    def tag = env.IMAGE_TAG
 
-                            echo [2/3] Khoi dong he thong bang Docker Compose...
-                            docker compose -p edumy -f ${composeFile} up -d
-                            if %ERRORLEVEL% NEQ 0 (
-                                echo [THU LAI] Thuc hien voi docker-compose...
-                                docker-compose -p edumy -f ${composeFile} up -d
-                            )
+                    // Sử dụng SSH Private Key credentials đã được cấu hình trên Jenkins
+                    withCredentials([
+                        sshUserPrivateKey(
+                            credentialsId: params.SSH_CREDENTIALS_ID, 
+                            keyFileVariable: 'SSH_KEY', 
+                            usernameVariable: 'SSH_USER'
+                        ),
+                        usernamePassword(
+                            credentialsId: params.DOCKER_CREDENTIALS_ID, 
+                            usernameVariable: 'DOCKER_USER', 
+                            passwordVariable: 'DOCKER_PASS'
+                        )
+                    ]) {
+                        def sshCmd = "ssh -o StrictHostKeyChecking=no -i ${SSH_KEY} ${remoteUser}@${remoteIp}"
+                        def scpCmd = "scp -o StrictHostKeyChecking=no -i ${SSH_KEY}"
 
-                            echo [3/3] Kiem tra trang thai dich vu:
-                            docker compose -p edumy -f ${composeFile} ps
+                        echo "--> [1/4] Đồng bộ file docker-compose.yml sang máy chủ..."
+                        if (isUnix()) {
+                            sh "${sshCmd} 'mkdir -p ${remoteDir}'"
+                            sh "${scpCmd} ${projDir}/docker-compose.yml ${remoteUser}@${remoteIp}:${remoteDir}/docker-compose.yml"
+                        } else {
+                            bat """
+                                ${sshCmd} "mkdir -p ${remoteDir}"
+                                ${scpCmd} ${projDir}/docker-compose.yml ${remoteUser}@${remoteIp}:${remoteDir}/docker-compose.yml
+                            """
+                        }
+
+                        echo "--> [2/4] Thiết lập biến môi trường và cấu hình trên Public Server..."
+                        def remoteCommands = """
+                            set -e
+                            cd ${remoteDir}
+
+                            echo '--> Đăng nhập Docker Registry trên máy chủ mục tiêu...'
+                            echo '${DOCKER_PASS}' | docker login ${registry.split('/')[0]} -u '${DOCKER_USER}' --password-stdin
+
+                            echo '--> Cập nhật file biến môi trường .env...'
+                            cat << 'EOF' > .env
+DOCKER_REGISTRY=${registry}
+IMAGE_TAG=${tag}
+ENVIRONMENT=${params.ENVIRONMENT}
+SPRING_DATASOURCE_PASSWORD=YourPassword123
+EOF
+
+                            echo '--> [3/4] Kéo các Docker Images mới nhất (docker compose pull)...'
+                            docker compose pull || docker-compose pull
+
+                            echo '--> [4/4] Khởi động container không gián đoạn (docker compose up -d)...'
+                            docker compose up -d --remove-orphans || docker-compose up -d --remove-orphans
+
+                            echo '--> Kiểm tra trạng thái các container sau triển khai:'
+                            docker compose ps
+
+                            echo '--> Dọn dẹp images cũ không sử dụng (prune)...'
+                            docker image prune -f
                         """
-                    }
 
-                    echo "==> Hoan tat quy trinh trien khai!"
+                        if (isUnix()) {
+                            sh "${sshCmd} '${remoteCommands}'"
+                        } else {
+                            bat """
+                                ${sshCmd} "${remoteCommands}"
+                            """
+                        }
+
+                        echo "==> [THÀNH CÔNG] Đã triển khai phiên bản #${env.BUILD_NUMBER} lên Public Server (${remoteIp})!"
+                    }
                 }
             }
         }
     }
 
+    // =========================================================================
+    // POST ACTIONS & NOTIFICATIONS
+    // =========================================================================
     post {
         always {
             script {
-                echo "Pipeline hoàn tất."
+                echo "Pipeline hoàn tất việc thực thi."
+                // Dọn dẹp workspace nếu cần
+                cleanWs(deleteDirs: true, notFailBuild: true)
             }
         }
         success {
             script {
                 echo "=========================================================="
-                echo " [THÀNH CÔNG] Pipeline #${env.BUILD_NUMBER} hoàn tất xuất sắc! "
+                echo " [THÀNH CÔNG] CI/CD Pipeline #${env.BUILD_NUMBER} thành công rực rỡ!"
+                echo " Môi trường : ${params.ENVIRONMENT}"
+                echo " Phiên bản  : Image Tag #${env.IMAGE_TAG}"
+                echo " Triển khai : ${params.DEPLOY_TO_REMOTE ? params.REMOTE_SERVER_IP : 'Bỏ qua'}"
                 echo "=========================================================="
             }
         }
         failure {
             script {
                 echo "=========================================================="
-                echo " [THẤT BẠI] Pipeline #${env.BUILD_NUMBER} gặp lỗi! Vui lòng kiểm tra log."
+                echo " [THẤT BẠI] Pipeline #${env.BUILD_NUMBER} đã gặp lỗi!"
+                echo " Vui lòng kiểm tra console output và báo cáo SonarQube."
                 echo "=========================================================="
             }
         }

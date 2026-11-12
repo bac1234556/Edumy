@@ -3,7 +3,7 @@ services:
     build:
       context: ./Database
       dockerfile: Dockerfile
-    image: edumy-database:latest
+    image: ${DOCKER_REGISTRY:-edumy}/edumy-database:${IMAGE_TAG:-latest}
     container_name: edumy_sqlserver
     restart: always
     environment:
@@ -25,7 +25,7 @@ services:
     build:
       context: ./MLService
       dockerfile: Dockerfile
-    image: edumy-mlservice:latest
+    image: ${DOCKER_REGISTRY:-edumy}/edumy-mlservice:${IMAGE_TAG:-latest}
     container_name: edumy_mlservice
     ports:
       - "8000:8000"
@@ -36,7 +36,7 @@ services:
     build:
       context: ./Backend
       dockerfile: Dockerfile
-    image: edumy-backend:latest
+    image: ${DOCKER_REGISTRY:-edumy}/edumy-backend:${IMAGE_TAG:-latest}
     container_name: edumy_backend
     ports:
       - "5000:5000"
@@ -55,7 +55,7 @@ services:
     build:
       context: ./Frontend
       dockerfile: Dockerfile
-    image: edumy-frontend:latest
+    image: ${DOCKER_REGISTRY:-edumy}/edumy-frontend:${IMAGE_TAG:-latest}
     container_name: edumy_frontend
     ports:
       - "3000:80"
