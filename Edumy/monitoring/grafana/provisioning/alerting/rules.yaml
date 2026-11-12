@@ -1,0 +1,172 @@
+apiVersion: 1
+
+groups:
+  - orgId: 1
+    name: 'Edumy Backend Alerts'
+    folder: 'Edumy Alerts'
+    interval: 10s
+    rules:
+      - uid: backend-down-alert
+        title: 'Backend Service Down'
+        condition: B
+        data:
+          - refId: A
+            queryType: ''
+            relativeTimeRange:
+              from: 60
+              to: 0
+            datasourceUid: Prometheus
+            model:
+              editorMode: code
+              expr: up{job="edumy-backend"} == 0
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: true
+              refId: A
+          - refId: B
+            queryType: ''
+            relativeTimeRange:
+              from: 60
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                name: Expression
+                type: __expr__
+                uid: __expr__
+              expression: A
+              reducer: last
+              refId: B
+              type: threshold
+        noDataState: Alerting
+        execErrState: Error
+        for: 30s
+        annotations:
+          summary: '🚨 Edumy Backend is DOWN!'
+          description: 'Spring Boot Backend service (http://backend:5000) is unreachable.'
+        labels:
+          severity: critical
+
+      - uid: backend-high-cpu-alert
+        title: 'High CPU Usage (>85%)'
+        condition: B
+        data:
+          - refId: A
+            queryType: ''
+            relativeTimeRange:
+              from: 60
+              to: 0
+            datasourceUid: Prometheus
+            model:
+              editorMode: code
+              expr: process_cpu_usage{job="edumy-backend"} * 100
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: true
+              refId: A
+          - refId: B
+            queryType: ''
+            relativeTimeRange:
+              from: 60
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 85
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                name: Expression
+                type: __expr__
+                uid: __expr__
+              expression: A
+              reducer: last
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Error
+        for: 1m
+        annotations:
+          summary: '⚠️ Backend CPU Usage is over 85%'
+          description: 'Backend JVM process is consuming excessive CPU (>85%) for more than 1 minute.'
+        labels:
+          severity: warning
+
+      - uid: backend-5xx-errors-alert
+        title: 'HTTP 5xx Server Errors'
+        condition: B
+        data:
+          - refId: A
+            queryType: ''
+            relativeTimeRange:
+              from: 60
+              to: 0
+            datasourceUid: Prometheus
+            model:
+              editorMode: code
+              expr: sum(rate(http_server_requests_seconds_count{job="edumy-backend",status=~"5.."}[1m])) or vector(0)
+              intervalMs: 1000
+              maxDataPoints: 43200
+              range: true
+              refId: A
+          - refId: B
+            queryType: ''
+            relativeTimeRange:
+              from: 60
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                name: Expression
+                type: __expr__
+                uid: __expr__
+              expression: A
+              reducer: last
+              refId: B
+              type: threshold
+        noDataState: OK
+        execErrState: Error
+        for: 30s
+        annotations:
+          summary: '🚨 HTTP 5xx Server Errors Detected!'
+          description: 'Backend APIs are returning HTTP 500/502/503 errors to users.'
+        labels:
+          severity: critical
