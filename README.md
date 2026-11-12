@@ -33,26 +33,29 @@ Edumy là nền tảng học trực tuyến hiện đại được xây dựng t
 ```text
 Edumy/
 │
-├── 📂 Edumy/
+├── 📂 Edumy/                         <-- Mã nguồn các dịch vụ lõi & hạ tầng
 │   ├── 📂 Backend/                   <-- Java 17 + Spring Boot 3.2.0 (REST API Server)
-│   │   ├── src/main/java/com/edumy/backend/
-│   │   └── pom.xml
-│   │
-│   ├── 📂 Frontend/                  <-- React 18 + Vite + TailwindCSS (Single Page App)
-│   │   ├── src/pages/                (Trang Học viên, Giảng viên, Quản trị viên)
-│   │   ├── src/components/           (Navbar, CourseCard, QuizModal, ...)
-│   │   └── package.json
-│   │
+│   ├── 📂 Frontend/                  <-- React 18 + Vite + Design System Tokens
 │   ├── 📂 MLService/                 <-- Python 3.11 + FastAPI (AI Microservice Engine)
-│   │   ├── main.py                   (FastAPI Endpoints)
-│   │   └── requirements.txt
-│   │
-│   ├── 📄 docker-compose.yml         <-- Docker compose đa dịch vụ
-│   └── 📄 walkthrough.md             <-- Tài liệu hướng dẫn sử dụng và kiểm thử chi tiết
+│   ├── 📂 Database/                  <-- SQL Server 2022 Docker setup & seed scripts
+│   ├── 📂 monitoring/                <-- Prometheus metrics & Grafana alert dashboards
+│   ├── 📂 ml-training/               <-- Jupyter notebooks & training pipeline
+│   ├── 📂 docs/                      <-- Tài liệu kỹ thuật phân nhóm (system, ml, design-system)
+│   │   ├── README.md                 (Mục lục điều hướng tài liệu)
+│   │   ├── system/                   (Kiến trúc, API_SPEC, luồng dữ liệu, walkthrough)
+│   │   ├── design-system/            (Tokens, bảng màu, typography UI)
+│   │   └── ml/                       (Classification, recommendation, sentiment, general)
+│   ├── 📄 docker-compose.yml         <-- Docker compose toàn bộ dịch vụ (Stack 6 containers)
+│   └── 📄 .env.example               <-- Cấu hình biến môi trường mẫu
 │
-├── 📂 software_specification/        <-- Tài liệu đặc tả kiến trúc & yêu cầu phần mềm
-├── 📄 Jenkinsfile                    <-- Pipeline CI/CD tự động (Checkout, Build, Test)
-├── 📄 start_all.ps1                  <-- Script 1-click kích hoạt toàn bộ hệ thống
+├── 📂 scripts/                       <-- Các script vận hành & tự động hóa
+│   ├── 📄 docker_start.ps1           (Khởi chạy toàn bộ hệ thống bằng Docker)
+│   ├── 📄 docker_stop.ps1            (Dừng toàn bộ container hệ thống)
+│   ├── 📄 start_all.ps1              (Khởi chạy cục bộ từng service trên Windows)
+│   └── 📄 verify_audit.ps1           (Kiểm thử tích hợp & xác thực API đa vai trò)
+│
+├── 📄 Jenkinsfile                    <-- Pipeline CI/CD tự động (Checkout, Build, Test, Deploy)
+├── 📄 .gitignore & .gitattributes    <-- Cấu hình quản trị phiên bản Git chuẩn hóa
 └── 📄 README.md                      <-- Tài liệu tổng quan dự án
 ```
 
