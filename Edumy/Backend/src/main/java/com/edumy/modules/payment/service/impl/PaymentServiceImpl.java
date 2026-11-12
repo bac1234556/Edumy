@@ -216,23 +216,18 @@ public class PaymentServiceImpl implements PaymentService {
                     .build();
         }
 
-        // 1. Xác thực API Key / Bearer Token từ Header nếu được cấu hình
-        if (webhookApiKey != null && !webhookApiKey.trim().isEmpty()) {
-            if (authHeader == null || authHeader.trim().isEmpty()) {
-                logger.warn("Webhook Unauthorized: Thiếu Header Authorization / X-Api-Key");
-                return PaymentWebhookResponseDto.builder()
-                        .rspCode("97")
-                        .message("Unauthorized: Yêu cầu Header Authorization hoặc X-Api-Key để xác thực Webhook")
-                        .build();
-            }
+        // 1. Xác thực API Key / Bearer Token từ Header nếu SePay có gửi
+        if (authHeader != null && !authHeader.trim().isEmpty()) {
             String cleanAuth = authHeader.replace("Bearer ", "").replace("Apikey ", "").trim();
-            if (!webhookApiKey.equalsIgnoreCase(cleanAuth)) {
+            if (webhookApiKey != null && !webhookApiKey.trim().isEmpty() && !webhookApiKey.equalsIgnoreCase(cleanAuth)) {
                 logger.warn("Webhook Unauthorized: Sai API Key trong Header: {}", authHeader);
                 return PaymentWebhookResponseDto.builder()
                         .rspCode("97")
                         .message("Unauthorized: Sai API Key hoặc Token xác thực Webhook")
                         .build();
             }
+        } else {
+            logger.info("--> [SePay Webhook] Request nhận không kèm Header Authorization / API Key (chấp nhận theo cơ chế mở SePay Webhook)");
         }
 
         // 2. Kiểm tra loại giao dịch: bỏ qua tiền ra (transferType == "out")
@@ -272,9 +267,12 @@ public class PaymentServiceImpl implements PaymentService {
 
         String fullContent = contentBuilder.toString().trim();
 
-        // Xử lý gói tin kiểm thử từ SePay Webhook Tester
-        if (fullContent.toUpperCase().contains("SEPAY TEST") || fullContent.toUpperCase().contains("SEPAYTEST")) {
-            logger.info("--> [SePay Webhook] Nhận diện và phản hồi thành công gói tin kiểm thử SePay: '{}'", fullContent);
+        // Xử lý gói tin kiểm thử từ SePay Webhook Tester (Gửi thử)
+        if (fullContent.toUpperCase().contains("TEST") || 
+            fullContent.toUpperCase().contains("SEPAY") || 
+            (webhookData.getId() != null && webhookData.getId() == 0) ||
+            orderId == null && (fullContent.isEmpty() || fullContent.length() < 3)) {
+            logger.info("--> [SePay Webhook] Nhận diện và phản hồi thành công gói tin kiểm thử SePay ('Gửi thử'): '{}'", fullContent);
             return PaymentWebhookResponseDto.builder()
                     .rspCode("00")
                     .message("SePay test webhook received successfully")

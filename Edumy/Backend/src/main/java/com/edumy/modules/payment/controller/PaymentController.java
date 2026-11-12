@@ -96,6 +96,21 @@ public class PaymentController {
     }
 
 
+    @GetMapping({
+            "/api/v1/payments/webhook/sepay",
+            "/api/payments/webhook/sepay",
+            "/api/payment/webhook/sepay",
+            "/api/v1/payment/webhook/sepay",
+            "/api/webhook/sepay",
+            "/webhook/sepay"
+    })
+    public ResponseEntity<?> pingSepayWebhook() {
+        return ResponseEntity.ok(Map.of(
+                "success", true,
+                "message", "Edumy SePay Webhook Endpoint is ready and listening."
+        ));
+    }
+
     /**
      * POST /api/v1/payments/webhook/sepay
      * Webhook tự động kích hoạt khóa học khi học viên chuyển khoản VietQR qua SePay / Casso / VietQR
@@ -104,9 +119,18 @@ public class PaymentController {
             "/api/v1/payments/webhook/sepay",
             "/api/payments/webhook/sepay",
             "/api/payment/webhook/sepay",
+            "/api/v1/payment/webhook/sepay",
+            "/api/Payment/webhook/sepay",
+            "/api/Payments/webhook/sepay",
+            "/api/v1/payments/webhook",
+            "/api/payments/webhook",
+            "/api/payment/webhook",
+            "/api/webhook/sepay",
+            "/webhook/sepay",
             "/api/v1/payments/webhook/casso",
             "/api/v1/payments/webhook/vietqr",
-            "/api/payments/webhook/vietqr"
+            "/api/payments/webhook/vietqr",
+            "/api/payment/webhook/vietqr"
     })
     public ResponseEntity<?> handleSepayWebhook(@RequestBody(required = false) SepayWebhookDto webhookData,
                                                 @RequestHeader(value = "Authorization", required = false) String authHeader,

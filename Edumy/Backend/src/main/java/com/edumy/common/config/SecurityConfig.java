@@ -43,7 +43,12 @@ public class SecurityConfig {
                 // Secure check is performed in service/controller based on JWT / enrollment.
                 .requestMatchers("/api/v1/lessons/*/access", "/api/v1/lessons/**", "/api/Lessons/**").permitAll()
                 // Payment callbacks, Webhooks & Order Status polling
-                .requestMatchers("/api/v1/payments/**", "/api/payment/**", "/api/Payment/**").permitAll()
+                .requestMatchers(
+                    "/api/v1/payments/**", "/api/v1/payment/**",
+                    "/api/payment/**", "/api/Payment/**",
+                    "/api/payments/**", "/api/Payments/**",
+                    "/api/webhook/**", "/webhook/**"
+                ).permitAll()
                 .requestMatchers("/api/v1/orders/*/status", "/api/orders/*/status", "/api/Orders/*/status").permitAll()
                 .requestMatchers("/api/coupons/validate", "/api/Coupons/validate").permitAll()
                 .requestMatchers("/uploads/**").permitAll()
