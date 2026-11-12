@@ -7,7 +7,7 @@ groups:
     interval: 10s
     rules:
       - uid: backend-down-alert
-        title: 'Backend Service Down'
+        title: 'Máy chủ Backend ngưng hoạt động (Down)'
         condition: B
         data:
           - refId: A
@@ -58,13 +58,13 @@ groups:
         execErrState: OK
         for: 0s
         annotations:
-          summary: '🚨 Edumy Backend is DOWN!'
-          description: 'Spring Boot Backend service (http://backend:5000) is unreachable.'
+          summary: '🚨 Máy chủ Backend EduMy ĐANG BỊ SẬP (DOWN)!'
+          description: 'Dịch vụ Spring Boot (http://backend:5000) không phản hồi hoặc mất kết nối cơ sở dữ liệu. Vui lòng kiểm tra container edumy_backend.'
         labels:
           severity: critical
 
       - uid: backend-high-cpu-alert
-        title: 'High CPU Usage (>85%)'
+        title: 'CPU Máy chủ Backend vượt ngưỡng 85%'
         condition: B
         data:
           - refId: A
@@ -115,13 +115,13 @@ groups:
         execErrState: OK
         for: 1m
         annotations:
-          summary: '⚠️ Backend CPU Usage is over 85%'
-          description: 'Backend JVM process is consuming excessive CPU (>85%) for more than 1 minute.'
+          summary: '⚠️ CPU Máy chủ Backend vượt quá 85%'
+          description: 'Tiến trình Spring Boot đang sử dụng hơn 85% CPU liên tục trong hơn 1 phút. Cần kiểm tra tiến trình để tránh quá tải.'
         labels:
           severity: warning
 
       - uid: backend-5xx-errors-alert
-        title: 'HTTP 5xx Server Errors'
+        title: 'Phát hiện lỗi hệ thống HTTP 5xx'
         condition: B
         data:
           - refId: A
@@ -172,7 +172,7 @@ groups:
         execErrState: OK
         for: 0s
         annotations:
-          summary: '🚨 HTTP 5xx Server Errors Detected!'
-          description: 'Backend APIs are returning HTTP 500/502/503 errors to users.'
+          summary: '🚨 Phát hiện lỗi hệ thống HTTP 5xx từ API Backend!'
+          description: 'Hệ thống ghi nhận API Backend trả về mã lỗi 500/502/503 cho người dùng. Cần kiểm tra log backend để xử lý ngoại lệ.'
         labels:
           severity: critical
