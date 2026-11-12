@@ -8,6 +8,7 @@ Write-Host "             KHOI DONG HE THONG EDUMY LOCALHOST           " -Foregro
 Write-Host "==========================================================" -ForegroundColor Cyan
 
 $candidates = @(
+    (Join-Path $PSScriptRoot "..\Edumy"),
     (Join-Path $PSScriptRoot "Edumy\Edumy"),
     (Join-Path $PSScriptRoot "Edumy"),
     $PSScriptRoot

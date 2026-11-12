@@ -69,10 +69,17 @@ Desktop.ini
 jenkin.md
 **/jenkin.md
 
-# Java / Maven
+# Java / Maven / Gradle
 **/target/
 target/
+**/.gradle/
+**/build/
 *.class
 *.jar
 *.war
 workspace.xml
+
+# IDE
+.vscode/
+.idea/
+*.iml
