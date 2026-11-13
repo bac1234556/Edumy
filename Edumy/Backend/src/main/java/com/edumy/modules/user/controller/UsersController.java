@@ -32,7 +32,7 @@ public class UsersController {
         }
     }
 
-    @GetMapping("/profile")
+    @GetMapping({"/profile", "/me"})
     public ResponseEntity<?> getProfile() {
         Integer userId = getCurrentUserId();
         if (userId == null) return ResponseEntity.status(401).build();
@@ -50,7 +50,7 @@ public class UsersController {
         return ResponseEntity.ok(res);
     }
 
-    @PutMapping("/profile")
+    @PutMapping({"/profile", "/me"})
     public ResponseEntity<?> updateProfile(@RequestBody UpdateProfileRequest request) {
         Integer userId = getCurrentUserId();
         if (userId == null) return ResponseEntity.status(401).build();
