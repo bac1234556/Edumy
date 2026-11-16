@@ -37,19 +37,23 @@ public class ApiResponseAdvice implements ResponseBodyAdvice<Object> {
                                   ServerHttpResponse response) {
         String path = request.getURI().getPath();
 
-        // Preserve raw format for external payment gateway webhooks (SePay, Casso, VNPay IPN)
-        // and static binary/resource endpoints
-        if (path != null && (path.contains("/webhook/") || path.contains("/vnpay-ipn") || path.contains("/ipn") || path.startsWith("/uploads/"))) {
-            return body;
-        }
-
-        if (body instanceof ApiResponse<?> || body instanceof Resource || body instanceof byte[]) {
+        // Preserve raw format for external payment gateway webhooks (SePay, Casso, VNPay IPN),
+        // mobile auth endpoints, and static binary/resource endpoints
+        if (path != null && (path.contains("/webhook/") || path.contains("/vnpay-ipn") || path.contains("/ipn") || path.startsWith("/uploads/") || path.contains("/auth/mobile"))) {
             return body;
         }
 
         int status = 200;
         if (response instanceof ServletServerHttpResponse servletResponse && servletResponse.getServletResponse() != null) {
             status = servletResponse.getServletResponse().getStatus();
+        }
+
+        if (body == null || status == 204) {
+            return null;
+        }
+
+        if (body instanceof ApiResponse<?> || body instanceof Resource || body instanceof byte[]) {
+            return body;
         }
 
         boolean isSuccess = status >= 200 && status < 400;

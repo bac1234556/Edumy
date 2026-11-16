@@ -20,10 +20,14 @@ import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Base64;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class AuthServiceImpl implements AuthService {
@@ -330,6 +334,146 @@ public class AuthServiceImpl implements AuthService {
         mailService.sendEmailVerification(user.getEmail(), user.getFullName(), verificationCode);
 
         return Map.of("message", "Thư xác thực mới đã được gửi đến email của bạn.");
+    }
+
+    @Override
+    @Transactional
+    public MobileTokensDto mobileRegister(MobileRegisterRequest request) {
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new BusinessException(ErrorCode.BAD_REQUEST, "Email already in use.");
+        }
+
+        User user = new User();
+        user.setFullName(request.getFullName());
+        user.setEmail(request.getEmail());
+        user.setRole("Student");
+        user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
+        user.setIsActive(true);
+        user.setIsEmailVerified(true);
+        user.setCreatedAt(LocalDateTime.now());
+        userRepository.save(user);
+
+        String jwtToken = generateJwtToken(user);
+        String refreshTokenStr = generateRefreshToken();
+
+        RefreshToken refreshToken = new RefreshToken();
+        refreshToken.setToken(refreshTokenStr);
+        refreshToken.setUserId(user.getUserId());
+        refreshToken.setExpires(LocalDateTime.now().plusDays(7));
+        refreshToken.setCreated(LocalDateTime.now());
+        refreshTokenRepository.save(refreshToken);
+
+        userActivityService.logActivity(user.getUserId(), "MOBILE_REGISTER", "AUTH");
+
+        return MobileTokensDto.builder()
+                .accessToken(jwtToken)
+                .expiresAt(Instant.now().plus(7, ChronoUnit.DAYS).toString())
+                .refreshToken(refreshTokenStr)
+                .refreshExpiresAt(Instant.now().plus(7, ChronoUnit.DAYS).toString())
+                .build();
+    }
+
+    @Override
+    @Transactional
+    public MobileTokensDto mobileLogin(MobileLoginRequest request) {
+        User user = userRepository.findByEmail(request.getEmail());
+        if (user == null || !passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
+            throw new BusinessException(ErrorCode.UNAUTHORIZED, "Invalid email or password.");
+        }
+
+        if (Boolean.FALSE.equals(user.getIsActive())) {
+            throw new BusinessException(ErrorCode.FORBIDDEN, "Tài khoản của bạn đã bị khóa. Vui lòng liên hệ quản trị viên.");
+        }
+
+        String jwtToken = generateJwtToken(user);
+        String refreshTokenStr = generateRefreshToken();
+
+        RefreshToken refreshToken = new RefreshToken();
+        refreshToken.setToken(refreshTokenStr);
+        refreshToken.setUserId(user.getUserId());
+        refreshToken.setExpires(LocalDateTime.now().plusDays(7));
+        refreshToken.setCreated(LocalDateTime.now());
+        refreshTokenRepository.save(refreshToken);
+
+        userActivityService.logActivity(user.getUserId(), "MOBILE_LOGIN", "AUTH");
+
+        return MobileTokensDto.builder()
+                .accessToken(jwtToken)
+                .expiresAt(Instant.now().plus(7, ChronoUnit.DAYS).toString())
+                .refreshToken(refreshTokenStr)
+                .refreshExpiresAt(Instant.now().plus(7, ChronoUnit.DAYS).toString())
+                .build();
+    }
+
+    @Override
+    @Transactional
+    public MobileTokensDto mobileRefresh(MobileRefreshRequest request) {
+        if (request == null || request.getRefreshToken() == null || request.getRefreshToken().trim().isEmpty()) {
+            throw new BusinessException(ErrorCode.UNAUTHORIZED, "Token is required.");
+        }
+
+        String tokenStr = request.getRefreshToken().trim();
+        RefreshToken refreshTokenEntity = refreshTokenRepository.findByToken(tokenStr);
+        if (refreshTokenEntity == null) {
+            throw new BusinessException(ErrorCode.UNAUTHORIZED, "Invalid token.");
+        }
+
+        // Token reuse detection: if token is revoked or already replaced, revoke entire token family
+        if (refreshTokenEntity.isRevoked() || refreshTokenEntity.getReplacedByToken() != null) {
+            List<RefreshToken> allTokens = refreshTokenRepository.findByUserId(refreshTokenEntity.getUserId());
+            for (RefreshToken t : allTokens) {
+                if (t.isActive()) {
+                    t.setRevoked(LocalDateTime.now());
+                }
+            }
+            refreshTokenRepository.saveAll(allTokens);
+            throw new BusinessException(ErrorCode.UNAUTHORIZED, "Token reuse detected. All sessions revoked.");
+        }
+
+        if (refreshTokenEntity.isExpired()) {
+            throw new BusinessException(ErrorCode.UNAUTHORIZED, "Token is expired.");
+        }
+
+        User user = refreshTokenEntity.getUser();
+        if (user == null || Boolean.FALSE.equals(user.getIsActive())) {
+            throw new BusinessException(ErrorCode.FORBIDDEN, "Tài khoản của bạn đã bị khóa.");
+        }
+
+        // Rotate token
+        refreshTokenEntity.setRevoked(LocalDateTime.now());
+        String newJwtToken = generateJwtToken(user);
+        String newRefreshTokenStr = generateRefreshToken();
+
+        refreshTokenEntity.setReplacedByToken(newRefreshTokenStr);
+        refreshTokenRepository.save(refreshTokenEntity);
+
+        RefreshToken newRefreshToken = new RefreshToken();
+        newRefreshToken.setToken(newRefreshTokenStr);
+        newRefreshToken.setUserId(user.getUserId());
+        newRefreshToken.setExpires(LocalDateTime.now().plusDays(7));
+        newRefreshToken.setCreated(LocalDateTime.now());
+        refreshTokenRepository.save(newRefreshToken);
+
+        return MobileTokensDto.builder()
+                .accessToken(newJwtToken)
+                .expiresAt(Instant.now().plus(7, ChronoUnit.DAYS).toString())
+                .refreshToken(newRefreshTokenStr)
+                .refreshExpiresAt(Instant.now().plus(7, ChronoUnit.DAYS).toString())
+                .build();
+    }
+
+    @Override
+    @Transactional
+    public void mobileLogout(MobileLogoutRequest request) {
+        if (request == null || request.getRefreshToken() == null || request.getRefreshToken().trim().isEmpty()) {
+            return;
+        }
+
+        RefreshToken refreshTokenEntity = refreshTokenRepository.findByToken(request.getRefreshToken().trim());
+        if (refreshTokenEntity != null && refreshTokenEntity.isActive()) {
+            refreshTokenEntity.setRevoked(LocalDateTime.now());
+            refreshTokenRepository.save(refreshTokenEntity);
+        }
     }
 
     private String generateJwtToken(User user) {

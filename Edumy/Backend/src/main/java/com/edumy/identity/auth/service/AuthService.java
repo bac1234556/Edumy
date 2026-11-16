@@ -14,4 +14,10 @@ public interface AuthService {
     Map<String, Object> resetPassword(ResetPasswordDto model);
     Map<String, Object> verifyEmail(String token);
     Map<String, Object> resendVerification(String email);
+
+    // Mobile Auth (B01 - UC-G05)
+    MobileTokensDto mobileRegister(MobileRegisterRequest request);
+    MobileTokensDto mobileLogin(MobileLoginRequest request);
+    MobileTokensDto mobileRefresh(MobileRefreshRequest request);
+    void mobileLogout(MobileLogoutRequest request);
 }

@@ -158,8 +158,6 @@ pipeline {
                         }
                     }
                 }
-
-
             }
         }
 
@@ -282,6 +280,22 @@ pipeline {
     post {
         always {
             script {
+                echo "--> [Cleanup] Dọn dẹp Docker dangling images và build cache cũ..."
+                if (isUnix()) {
+                    sh """
+                        docker image prune -f || true
+                        docker builder prune --filter "until=24h" -f || true
+                    """
+                } else {
+                    bat """
+                        @echo off
+                        where docker >nul 2>&1
+                        if %ERRORLEVEL% EQU 0 (
+                            docker image prune -f
+                            docker builder prune --filter "until=24h" -f
+                        )
+                    """
+                }
                 echo "Pipeline hoàn tất."
             }
         }
