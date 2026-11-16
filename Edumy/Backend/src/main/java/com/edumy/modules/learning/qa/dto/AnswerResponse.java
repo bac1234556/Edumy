@@ -18,6 +18,7 @@ public class AnswerResponse {
     private String authorAvatar;
     private String authorType; // STUDENT, INSTRUCTOR
     private String content;
+    private String visibilityStatus;
     private LocalDateTime createdAt;
 
     public Long getAnswerId() {

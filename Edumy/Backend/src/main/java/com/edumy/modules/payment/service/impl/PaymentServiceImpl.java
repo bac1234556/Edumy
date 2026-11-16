@@ -95,6 +95,12 @@ public class PaymentServiceImpl implements PaymentService {
     @Autowired
     private UserActivityService userActivityService;
 
+    @Autowired
+    private com.edumy.modules.user.repository.UserRepository userRepository;
+
+    @Autowired
+    private com.edumy.notification.service.MailService mailService;
+
     // =========================================================================
     // 1. VIETQR GENERATION & POLLING
     // =========================================================================
@@ -419,6 +425,24 @@ public class PaymentServiceImpl implements PaymentService {
 
         logger.info("--> [Payment] Đơn hàng #{} đã thanh toán thành công qua {}. Đã kích hoạt toàn bộ khóa học cho User #{}.", 
                 orderId, gatewayName, orderUserId);
+
+        // 5. Gửi email xác nhận thanh toán đơn hàng qua Mailpit
+        if (mailService != null && userRepository != null && orderUserId != null) {
+            User buyer = userRepository.findById(orderUserId).orElse(null);
+            if (buyer != null && buyer.getEmail() != null) {
+                List<String> titles = new ArrayList<>();
+                if (items != null) {
+                    for (OrderItem item : items) {
+                        if (item.getCourseId() != null) {
+                            courseRepository.findById(item.getCourseId()).ifPresent(c -> titles.add(c.getTitle()));
+                        }
+                    }
+                }
+                long totalPaid = order.getTotalAmount() != null ? order.getTotalAmount().longValue() : 0L;
+                mailService.sendPurchaseConfirmed(buyer.getEmail(), buyer.getFullName(),
+                        "EDUMY" + orderId, totalPaid, titles);
+            }
+        }
 
         return PaymentWebhookResponseDto.builder()
                 .rspCode("00")

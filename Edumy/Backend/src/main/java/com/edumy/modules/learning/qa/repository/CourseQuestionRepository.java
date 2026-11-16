@@ -9,14 +9,27 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
+import java.util.List;
 
 @Repository
 public interface CourseQuestionRepository extends JpaRepository<CourseQuestion, Long> {
 
+    /**
+     * UC-S18: Student view of course Q&A with filters for lesson, own questions (mineOnly),
+     * unanswered by instructor (unansweredOnly), and keyword search (q).
+     */
     @Query("SELECT q FROM CourseQuestion q WHERE q.courseId = :courseId AND q.visibilityStatus = 'VISIBLE' " +
-            "AND (:lessonId IS NULL OR q.lessonId = :lessonId)")
+            "AND (:lessonId IS NULL OR q.lessonId = :lessonId) " +
+            "AND (:authorUserId IS NULL OR q.userId = :authorUserId) " +
+            "AND (:unansweredOnly = false OR NOT EXISTS (" +
+            "  SELECT a.id FROM QuestionAnswer a WHERE a.questionId = q.id AND a.authorType = 'INSTRUCTOR' AND a.visibilityStatus = 'VISIBLE'" +
+            ")) " +
+            "AND (:keyword IS NULL OR LOWER(q.title) LIKE LOWER(CONCAT('%', :keyword, '%')) OR LOWER(q.content) LIKE LOWER(CONCAT('%', :keyword, '%')))")
     Page<CourseQuestion> findForStudentCourse(@Param("courseId") Integer courseId,
                                              @Param("lessonId") Integer lessonId,
+                                             @Param("authorUserId") Integer authorUserId,
+                                             @Param("unansweredOnly") boolean unansweredOnly,
+                                             @Param("keyword") String keyword,
                                              Pageable pageable);
 
     /**
@@ -30,6 +43,8 @@ public interface CourseQuestionRepository extends JpaRepository<CourseQuestion, 
     Page<CourseQuestion> findForInstructorOldestQueue(@Param("courseIds") Collection<Integer> courseIds,
                                                      @Param("unansweredOnly") boolean unansweredOnly,
                                                      Pageable pageable);
+
+    List<CourseQuestion> findAllByOrderByCreatedAtDesc();
 
     long countByCourseIdAndVisibilityStatus(Integer courseId, String visibilityStatus);
 }

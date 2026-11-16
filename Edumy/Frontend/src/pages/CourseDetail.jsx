@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import api from '../api/axiosConfig';
 import { courseApi } from '../api/modules/courseApi';
 import { mlApi } from '../api/modules/mlApi';
+import CourseQaTab from '../components/learning/CourseQaTab';
 import { AuthContext } from '../context/AuthContext';
 import { CartContext } from '../context/CartContext';
 import {
@@ -936,6 +937,17 @@ function CourseDetail() {
                   </form>
                 </div>
               )}
+            </div>
+
+            {/* Course Q&A Discussion Section */}
+            <div className="content-box" style={{ backgroundColor: '#0f172a', borderRadius: '16px', padding: '1.75rem' }}>
+              <h3 className="content-box-title" style={{ color: '#f8fafc', display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                <MessageSquare size={22} color="#3b82f6" /> Hỏi & Đáp (Q&A) cùng Giảng viên
+              </h3>
+              <p style={{ color: '#94a3b8', fontSize: '0.88rem', marginBottom: '1rem' }}>
+                Đặt câu hỏi thắc mắc về kiến thức khóa học và nhận phản hồi trực tiếp từ Giảng viên phụ trách.
+              </p>
+              <CourseQaTab courseId={id} currentUser={user} />
             </div>
           </div>
 

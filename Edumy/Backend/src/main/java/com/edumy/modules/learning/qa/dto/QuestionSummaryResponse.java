@@ -24,9 +24,14 @@ public class QuestionSummaryResponse {
     private Boolean isResolved;
     private long answerCount;
     private boolean hasInstructorAnswer;
+    private String visibilityStatus;
     private LocalDateTime createdAt;
 
     public Long getQuestionId() {
         return id;
+    }
+
+    public String getContentSnippet() {
+        return content;
     }
 }

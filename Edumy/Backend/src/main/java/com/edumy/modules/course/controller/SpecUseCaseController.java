@@ -46,6 +46,7 @@ public class SpecUseCaseController {
     private final LessonProgressRepository lessonProgressRepository;
     private final OrderRepository orderRepository;
     private final ReviewRepository reviewRepository;
+    private final com.edumy.notification.service.MailService mailService;
 
     // Metadata stores for spec fields (review notes, co-instructor invitations, moderation notes, lesson text/pdf metadata)
     private static final Map<Integer, String> COURSE_REVIEW_NOTES = new ConcurrentHashMap<>();
@@ -61,7 +62,8 @@ public class SpecUseCaseController {
                                  EnrollmentRepository enrollmentRepository,
                                  LessonProgressRepository lessonProgressRepository,
                                  OrderRepository orderRepository,
-                                 ReviewRepository reviewRepository) {
+                                 ReviewRepository reviewRepository,
+                                 com.edumy.notification.service.MailService mailService) {
         this.userRepository = userRepository;
         this.courseRepository = courseRepository;
         this.courseSectionRepository = courseSectionRepository;
@@ -70,38 +72,12 @@ public class SpecUseCaseController {
         this.lessonProgressRepository = lessonProgressRepository;
         this.orderRepository = orderRepository;
         this.reviewRepository = reviewRepository;
+        this.mailService = mailService;
     }
 
     // =========================================================================
     // 1. IDENTITY USE CASES (UC-G06, UC-G09, UC-G10, UC-A02..A05)
     // =========================================================================
-
-    @PostMapping({"/api/v1/auth/verify-email", "/api/auth/verify-email"})
-    public ResponseEntity<?> verifyEmail(@RequestBody Map<String, String> body) {
-        String token = body != null ? body.get("token") : null;
-        String email = body != null ? body.get("email") : null;
-        if ((token == null || token.isBlank()) && (email == null || email.isBlank())) {
-            throw new BusinessException(ErrorCode.BAD_REQUEST, "Mã xác thực email không hợp lệ.");
-        }
-        if (email != null && !email.isBlank()) {
-            User user = userRepository.findByEmail(email.trim().toLowerCase());
-            if (user != null) {
-                user.setIsActive(true);
-                userRepository.save(user);
-            }
-        }
-        return ResponseEntity.ok(Map.of(
-                "verified", true,
-                "message", "Xác thực địa chỉ email thành công. Bạn có thể đăng nhập ngay."
-        ));
-    }
-
-    @PostMapping({"/api/v1/auth/verification-email/resend", "/api/auth/verification-email/resend"})
-    public ResponseEntity<?> resendVerificationEmail(@RequestBody Map<String, String> body) {
-        return ResponseEntity.accepted().body(Map.of(
-                "message", "Nếu địa chỉ email tồn tại và chưa xác thực, hướng dẫn xác thực mới đã được gửi."
-        ));
-    }
 
     @PostMapping({"/api/v1/auth/logout", "/api/auth/logout"})
     public ResponseEntity<?> logout() {
@@ -416,6 +392,11 @@ public class SpecUseCaseController {
         invite.put("invitedBy", currentUserId);
         invite.put("invitedAt", LocalDateTime.now().toString());
         list.add(invite);
+
+        User inviter = currentUserId != null ? userRepository.findById(currentUserId).orElse(null) : null;
+        String inviterName = inviter != null ? inviter.getFullName() : "Giảng viên phụ trách";
+        mailService.sendCoInstructorInvited(target.getEmail(), target.getFullName(), inviterName, course.getTitle());
+
         return ResponseEntity.ok(invite);
     }
 
@@ -477,6 +458,12 @@ public class SpecUseCaseController {
         course.setUpdatedAt(LocalDateTime.now());
         courseRepository.save(course);
         COURSE_REVIEW_NOTES.remove(courseId);
+
+        if (course.getInstructorId() != null) {
+            userRepository.findById(course.getInstructorId()).ifPresent(inst ->
+                    mailService.sendCourseApproved(inst.getEmail(), inst.getFullName(), course.getTitle(), course.getSlug()));
+        }
+
         return ResponseEntity.ok(Map.of(
                 "courseId", courseId,
                 "status", "Published",
@@ -497,6 +484,12 @@ public class SpecUseCaseController {
         course.setUpdatedAt(LocalDateTime.now());
         courseRepository.save(course);
         COURSE_REVIEW_NOTES.put(courseId, reviewNote.trim());
+
+        if (course.getInstructorId() != null) {
+            userRepository.findById(course.getInstructorId()).ifPresent(inst ->
+                    mailService.sendCourseRejected(inst.getEmail(), inst.getFullName(), course.getTitle(), Long.valueOf(courseId), reviewNote.trim()));
+        }
+
         return ResponseEntity.ok(Map.of(
                 "courseId", courseId,
                 "status", "NeedsReview",
@@ -515,6 +508,12 @@ public class SpecUseCaseController {
         course.setUpdatedAt(LocalDateTime.now());
         courseRepository.save(course);
         COURSE_REVIEW_NOTES.put(courseId, "Lý do ẩn: " + reason);
+
+        if (course.getInstructorId() != null) {
+            userRepository.findById(course.getInstructorId()).ifPresent(inst ->
+                    mailService.sendCourseHidden(inst.getEmail(), inst.getFullName(), course.getTitle(), Long.valueOf(courseId), reason));
+        }
+
         return ResponseEntity.ok(Map.of(
                 "courseId", courseId,
                 "status", "Hidden",

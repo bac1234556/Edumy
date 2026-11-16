@@ -19,8 +19,9 @@ function AdminDashboard() {
   });
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [activeTab, setActiveTab] = useState('courses'); // 'courses', 'categories', 'orders', 'users', 'reviews', 'ml'
+  const [activeTab, setActiveTab] = useState('courses'); // 'courses', 'categories', 'orders', 'users', 'reviews', 'qa'
   const [adminReviews, setAdminReviews] = useState([]);
+  const [adminQuestions, setAdminQuestions] = useState([]);
   
   // Filter & Search states
   const [courseSearch, setCourseSearch] = useState('');
@@ -72,6 +73,12 @@ function AdminDashboard() {
         setAdminReviews(Array.isArray(revRes.data) ? revRes.data : []);
       } catch {
         setAdminReviews([]);
+      }
+      try {
+        const qaRes = await api.get('/v1/admin/questions');
+        setAdminQuestions(Array.isArray(qaRes.data) ? qaRes.data : []);
+      } catch {
+        setAdminQuestions([]);
       }
     } catch (error) {
       console.error('Failed to fetch admin data', error);
@@ -125,6 +132,17 @@ function AdminDashboard() {
       fetchDashboardData(true);
     } catch (err) {
       showNotification(err.response?.data?.message || 'Không thể ẩn đánh giá', 'error');
+    }
+  };
+
+  // UC-A19: Moderate Question (hide / restore)
+  const handleModerateQuestion = async (questionId, action) => {
+    try {
+      await api.post(`/v1/admin/questions/${questionId}/${action}`);
+      showNotification(action === 'hide' ? 'Đã ẩn câu hỏi vi phạm!' : 'Đã khôi phục câu hỏi công khai!');
+      fetchDashboardData(true);
+    } catch (err) {
+      showNotification(err.response?.data?.message || 'Không thể xử lý câu hỏi', 'error');
     }
   };
 
@@ -314,6 +332,18 @@ function AdminDashboard() {
               <span className="admin-nav-badge">{adminReviews.length}</span>
             </button>
           </li>
+          <li className="admin-nav-item">
+            <button 
+              className={`admin-nav-btn ${activeTab === 'qa' ? 'active' : ''}`}
+              onClick={() => setActiveTab('qa')}
+            >
+              <span className="admin-nav-label">
+                <i className="bi bi-question-diamond-fill"></i>
+                Kiểm duyệt Hỏi & Đáp
+              </span>
+              <span className="admin-nav-badge">{adminQuestions.length}</span>
+            </button>
+          </li>
         </ul>
       </aside>
 
@@ -327,7 +357,8 @@ function AdminDashboard() {
               {activeTab === 'categories' && 'Quản trị Danh mục Khóa học'}
               {activeTab === 'orders' && 'Tra cứu Đơn hàng & Quản lý Doanh thu'}
               {activeTab === 'users' && 'Danh bạ & Phân quyền Người dùng'}
-              {activeTab === 'ml' && 'Hệ thống Giám sát & An toàn AI/ML'}
+              {activeTab === 'reviews' && 'Kiểm duyệt Đánh giá Khóa học (UC-A15)'}
+              {activeTab === 'qa' && 'Kiểm duyệt Hỏi & Đáp Học viên (UC-A19)'}
             </h1>
             <p className="admin-desc">
               Trung tâm điều hành nền tảng Edumy Enterprise — giám sát doanh thu, nội dung và người dùng thời gian thực.
@@ -813,6 +844,95 @@ function AdminDashboard() {
                         </td>
                       </tr>
                     ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* TAB: KIỂM DUYỆT HỎI & ĐÁP (UC-A19) */}
+        {activeTab === 'qa' && (
+          <div className="admin-card">
+            <div className="admin-card-header">
+              <div>
+                <h3 className="admin-card-title">
+                  <i className="bi bi-question-diamond-fill text-primary"></i>
+                  Kiểm duyệt Câu hỏi & Thảo luận Học viên (UC-A19)
+                </h3>
+                <p className="admin-card-subtitle">
+                  Quản trị viên giám sát nội dung hỏi đáp trên toàn bộ khóa học, ẩn hoặc khôi phục các câu hỏi vi phạm
+                </p>
+              </div>
+            </div>
+            <div className="admin-table-container">
+              {adminQuestions.length === 0 ? (
+                <div className="admin-empty-state">
+                  <h4 className="admin-empty-title">Chưa có câu hỏi thảo luận nào</h4>
+                </div>
+              ) : (
+                <table className="admin-table">
+                  <thead>
+                    <tr>
+                      <th>Mã</th>
+                      <th>Khóa học</th>
+                      <th>Học viên</th>
+                      <th>Tiêu đề & Nội dung câu hỏi</th>
+                      <th>Phản hồi</th>
+                      <th>Trạng thái</th>
+                      <th style={{ textAlign: 'right' }}>Thao tác</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {adminQuestions.map((q) => {
+                      const qId = q.id || q.questionId;
+                      const isHidden = q.visibilityStatus === 'HIDDEN';
+                      return (
+                        <tr key={qId}>
+                          <td>#{qId}</td>
+                          <td style={{ maxWidth: 200, fontWeight: 600 }}>{q.courseTitle}</td>
+                          <td>{q.askerName || `User #${q.askerId}`}</td>
+                          <td style={{ maxWidth: 340 }}>
+                            <div style={{ fontWeight: 700, color: '#0f172a', marginBottom: 2 }}>{q.title}</div>
+                            <div style={{ fontSize: '0.82rem', color: '#64748b' }}>{q.content}</div>
+                          </td>
+                          <td>{q.answerCount || 0} phản hồi</td>
+                          <td>
+                            <span
+                              style={{
+                                padding: '0.2rem 0.6rem',
+                                borderRadius: '999px',
+                                fontSize: '0.75rem',
+                                fontWeight: 700,
+                                backgroundColor: isHidden ? '#fee2e2' : '#dcfce7',
+                                color: isHidden ? '#dc2626' : '#16a34a'
+                              }}
+                            >
+                              {isHidden ? 'ĐÃ ẨN (HIDDEN)' : 'HIỂN THỊ (VISIBLE)'}
+                            </span>
+                          </td>
+                          <td style={{ textAlign: 'right' }}>
+                            {isHidden ? (
+                              <button
+                                type="button"
+                                className="btn-admin-action success"
+                                onClick={() => handleModerateQuestion(qId, 'restore')}
+                              >
+                                Khôi phục
+                              </button>
+                            ) : (
+                              <button
+                                type="button"
+                                className="btn-admin-action outline-danger"
+                                onClick={() => handleModerateQuestion(qId, 'hide')}
+                              >
+                                Ẩn vi phạm
+                              </button>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               )}

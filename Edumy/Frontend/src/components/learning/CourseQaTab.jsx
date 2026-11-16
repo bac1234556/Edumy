@@ -10,8 +10,8 @@ import {
   Filter,
   Plus,
   X,
-  ChevronDown,
-  ChevronUp,
+  Edit3,
+  Trash2,
   AlertCircle
 } from 'lucide-react';
 import qaApi from '../../api/modules/qaApi';
@@ -22,22 +22,33 @@ export default function CourseQaTab({ courseId, activeLesson, currentUser }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   
-  // Filters
+  // Filters (UC-S18)
   const [filterByLesson, setFilterByLesson] = useState(false);
+  const [mineOnly, setMineOnly] = useState(false);
+  const [unansweredOnly, setUnansweredOnly] = useState(false);
   const [searchKeyword, setSearchKeyword] = useState('');
 
-  // Ask Question Modal / Accordion
+  // Ask Question Modal / Accordion (UC-S17)
   const [showAskForm, setShowAskForm] = useState(false);
   const [newTitle, setNewTitle] = useState('');
   const [newContent, setNewContent] = useState('');
   const [submittingQuestion, setSubmittingQuestion] = useState(false);
 
-  // Active Selected Thread (Modal or Drawer)
+  // Active Selected Thread
   const [selectedQuestionId, setSelectedQuestionId] = useState(null);
   const [threadData, setThreadData] = useState(null);
   const [loadingThread, setLoadingThread] = useState(false);
   const [replyContent, setReplyContent] = useState('');
   const [submittingReply, setSubmittingReply] = useState(false);
+
+  // Edit Question State (UC-S19)
+  const [editingQuestion, setEditingQuestion] = useState(false);
+  const [editQTitle, setEditQTitle] = useState('');
+  const [editQContent, setEditQContent] = useState('');
+
+  // Edit Answer State (UC-I21 / UC-S19)
+  const [editingAnswerId, setEditingAnswerId] = useState(null);
+  const [editAnsContent, setEditAnsContent] = useState('');
 
   // Load questions
   const loadQuestions = useCallback(async () => {
@@ -47,10 +58,15 @@ export default function CourseQaTab({ courseId, activeLesson, currentUser }) {
     try {
       const params = {
         page: 0,
-        size: 30
+        size: 30,
+        mineOnly,
+        unansweredOnly
       };
       if (filterByLesson && activeLesson?.lessonId) {
         params.lessonId = activeLesson.lessonId;
+      }
+      if (searchKeyword.trim()) {
+        params.q = searchKeyword.trim();
       }
       const res = await qaApi.getCourseQuestions(courseId, params);
       const data = res.data?.content || (Array.isArray(res.data) ? res.data : []);
@@ -61,7 +77,7 @@ export default function CourseQaTab({ courseId, activeLesson, currentUser }) {
     } finally {
       setLoading(false);
     }
-  }, [courseId, filterByLesson, activeLesson?.lessonId]);
+  }, [courseId, filterByLesson, mineOnly, unansweredOnly, searchKeyword, activeLesson?.lessonId]);
 
   useEffect(() => {
     loadQuestions();
@@ -70,6 +86,8 @@ export default function CourseQaTab({ courseId, activeLesson, currentUser }) {
   // Load full thread
   const openThread = async (questionId) => {
     setSelectedQuestionId(questionId);
+    setEditingQuestion(false);
+    setEditingAnswerId(null);
     setLoadingThread(true);
     try {
       const res = await qaApi.getThread(questionId);
@@ -87,9 +105,11 @@ export default function CourseQaTab({ courseId, activeLesson, currentUser }) {
     setSelectedQuestionId(null);
     setThreadData(null);
     setReplyContent('');
+    setEditingQuestion(false);
+    setEditingAnswerId(null);
   };
 
-  // Submit new question
+  // Submit new question (UC-S17)
   const handleAskQuestion = async (e) => {
     e.preventDefault();
     if (!newTitle.trim() || !newContent.trim()) {
@@ -115,7 +135,43 @@ export default function CourseQaTab({ courseId, activeLesson, currentUser }) {
     }
   };
 
-  // Post reply to question
+  // Edit own question (UC-S19)
+  const handleStartEditQuestion = () => {
+    if (!threadData) return;
+    setEditQTitle(threadData.title || '');
+    setEditQContent(threadData.content || '');
+    setEditingQuestion(true);
+  };
+
+  const handleSaveEditQuestion = async (e) => {
+    e.preventDefault();
+    if (!editQTitle.trim() || !editQContent.trim()) return;
+    try {
+      const res = await qaApi.updateQuestion(selectedQuestionId, {
+        title: editQTitle.trim(),
+        content: editQContent.trim()
+      });
+      setThreadData(res.data);
+      setEditingQuestion(false);
+      loadQuestions();
+    } catch (err) {
+      alert(err.response?.data?.message || 'Không thể cập nhật câu hỏi.');
+    }
+  };
+
+  // Delete own question (UC-S19)
+  const handleDeleteQuestion = async () => {
+    if (!window.confirm('Bạn có chắc chắn muốn xóa câu hỏi này không?')) return;
+    try {
+      await qaApi.deleteQuestion(selectedQuestionId);
+      closeThread();
+      loadQuestions();
+    } catch (err) {
+      alert(err.response?.data?.message || 'Không thể xóa câu hỏi.');
+    }
+  };
+
+  // Post reply to question (UC-I20)
   const handlePostReply = async (e) => {
     e.preventDefault();
     if (!replyContent.trim() || !selectedQuestionId) return;
@@ -123,10 +179,8 @@ export default function CourseQaTab({ courseId, activeLesson, currentUser }) {
     try {
       await qaApi.postAnswer(selectedQuestionId, { content: replyContent.trim() });
       setReplyContent('');
-      // Reload thread
       const res = await qaApi.getThread(selectedQuestionId);
       setThreadData(res.data);
-      // Also refresh outer list to update answer count
       loadQuestions();
     } catch (err) {
       alert(err.response?.data?.message || 'Không thể gửi phản hồi.');
@@ -135,7 +189,38 @@ export default function CourseQaTab({ courseId, activeLesson, currentUser }) {
     }
   };
 
-  // Toggle resolve status
+  // Edit own answer (UC-I21 / UC-S19)
+  const handleStartEditAnswer = (ans) => {
+    setEditingAnswerId(ans.id || ans.answerId);
+    setEditAnsContent(ans.content || '');
+  };
+
+  const handleSaveEditAnswer = async (answerId) => {
+    if (!editAnsContent.trim()) return;
+    try {
+      await qaApi.updateAnswer(answerId, { content: editAnsContent.trim() });
+      setEditingAnswerId(null);
+      const res = await qaApi.getThread(selectedQuestionId);
+      setThreadData(res.data);
+    } catch (err) {
+      alert(err.response?.data?.message || 'Không thể cập nhật câu trả lời.');
+    }
+  };
+
+  // Delete own answer (UC-I21 / UC-S19)
+  const handleDeleteAnswer = async (answerId) => {
+    if (!window.confirm('Bạn có chắc chắn muốn xóa phản hồi này không?')) return;
+    try {
+      await qaApi.deleteAnswer(answerId);
+      const res = await qaApi.getThread(selectedQuestionId);
+      setThreadData(res.data);
+      loadQuestions();
+    } catch (err) {
+      alert(err.response?.data?.message || 'Không thể xóa phản hồi.');
+    }
+  };
+
+  // Toggle resolve status (UC-S19)
   const handleToggleResolve = async (questionId) => {
     try {
       await qaApi.toggleResolve(questionId);
@@ -151,7 +236,6 @@ export default function CourseQaTab({ courseId, activeLesson, currentUser }) {
     }
   };
 
-  // Format relative time helper
   const formatTime = (timeStr) => {
     if (!timeStr) return '';
     try {
@@ -168,12 +252,8 @@ export default function CourseQaTab({ courseId, activeLesson, currentUser }) {
     }
   };
 
-  const filteredQuestions = questions.filter(q => {
-    if (!searchKeyword.trim()) return true;
-    const term = searchKeyword.toLowerCase();
-    return (q.title && q.title.toLowerCase().includes(term)) ||
-           (q.askerName && q.askerName.toLowerCase().includes(term));
-  });
+  const isQuestionOwner = threadData && currentUser &&
+    (String(threadData.askerId) === String(currentUser.userId || currentUser.id) || currentUser.role === 'Admin');
 
   return (
     <div className="qa-tab-container">
@@ -183,7 +263,7 @@ export default function CourseQaTab({ courseId, activeLesson, currentUser }) {
           <Search size={16} className="qa-search-icon" />
           <input
             type="text"
-            placeholder="Tìm kiếm câu hỏi theo từ khóa..."
+            placeholder="Tìm kiếm câu hỏi theo tiêu đề hoặc nội dung..."
             value={searchKeyword}
             onChange={(e) => setSearchKeyword(e.target.value)}
             className="qa-search-input"
@@ -202,6 +282,24 @@ export default function CourseQaTab({ courseId, activeLesson, currentUser }) {
               {filterByLesson ? 'Chỉ bài hiện tại' : 'Tất cả bài học'}
             </button>
           )}
+
+          {currentUser && (
+            <button
+              type="button"
+              className={`qa-filter-btn ${mineOnly ? 'active' : ''}`}
+              onClick={() => setMineOnly(!mineOnly)}
+            >
+              <User size={15} /> Câu hỏi của tôi
+            </button>
+          )}
+
+          <button
+            type="button"
+            className={`qa-filter-btn ${unansweredOnly ? 'active' : ''}`}
+            onClick={() => setUnansweredOnly(!unansweredOnly)}
+          >
+            <Clock size={15} /> Chưa có GV phản hồi
+          </button>
 
           <button
             type="button"
@@ -285,12 +383,12 @@ export default function CourseQaTab({ courseId, activeLesson, currentUser }) {
           <div className="qa-spinner"></div>
           <span>Đang tải các câu hỏi thảo luận...</span>
         </div>
-      ) : filteredQuestions.length === 0 ? (
+      ) : questions.length === 0 ? (
         <div className="qa-empty-state">
           <div className="qa-empty-icon-wrap">
             <MessageSquare size={36} />
           </div>
-          <h4>Chưa có câu hỏi nào trong khóa học này</h4>
+          <h4>Chưa có câu hỏi nào phù hợp</h4>
           <p>
             Bạn gặp khó khăn hay thắc mắc về bài học? Hãy đặt câu hỏi ngay để được giảng viên và các bạn học viên hỗ trợ!
           </p>
@@ -304,55 +402,63 @@ export default function CourseQaTab({ courseId, activeLesson, currentUser }) {
         </div>
       ) : (
         <div className="qa-questions-list">
-          {filteredQuestions.map((q) => (
-            <div
-              key={q.questionId}
-              className={`qa-question-card ${q.isResolved ? 'resolved' : ''}`}
-              onClick={() => openThread(q.questionId)}
-            >
-              <div className="qa-card-header">
-                <div className="qa-author-info">
-                  <div className="qa-avatar">
-                    {q.askerAvatar ? (
-                      <img src={q.askerAvatar} alt={q.askerName} />
+          {questions.map((q) => {
+            const qId = q.id || q.questionId;
+            return (
+              <div
+                key={qId}
+                className={`qa-question-card ${q.isResolved ? 'resolved' : ''}`}
+                onClick={() => openThread(qId)}
+              >
+                <div className="qa-card-header">
+                  <div className="qa-author-info">
+                    <div className="qa-avatar">
+                      {q.askerAvatar ? (
+                        <img src={q.askerAvatar} alt={q.askerName} />
+                      ) : (
+                        <User size={16} />
+                      )}
+                    </div>
+                    <div>
+                      <span className="qa-author-name">{q.askerName || 'Học viên'}</span>
+                      <span className="qa-post-time">{formatTime(q.createdAt)}</span>
+                    </div>
+                  </div>
+
+                  <div className="qa-badges-group">
+                    {q.hasInstructorAnswer && (
+                      <span className="qa-badge resolved" style={{ backgroundColor: 'rgba(37, 99, 235, 0.2)', color: '#60a5fa' }}>
+                        <ShieldCheck size={13} /> Giảng viên đã trả lời
+                      </span>
+                    )}
+                    {q.isResolved ? (
+                      <span className="qa-badge resolved">
+                        <CheckCircle2 size={13} /> Đã giải quyết
+                      </span>
                     ) : (
-                      <User size={16} />
+                      <span className="qa-badge unanswered">
+                        <Clock size={13} /> Chờ giải đáp
+                      </span>
+                    )}
+                    {q.answerCount > 0 && (
+                      <span className="qa-badge replies-count">
+                        <MessageSquare size={13} /> {q.answerCount} câu trả lời
+                      </span>
                     )}
                   </div>
-                  <div>
-                    <span className="qa-author-name">{q.askerName || 'Học viên'}</span>
-                    <span className="qa-post-time">{formatTime(q.createdAt)}</span>
-                  </div>
                 </div>
 
-                <div className="qa-badges-group">
-                  {q.isResolved ? (
-                    <span className="qa-badge resolved">
-                      <CheckCircle2 size={13} /> Đã giải quyết
-                    </span>
-                  ) : (
-                    <span className="qa-badge unanswered">
-                      <Clock size={13} /> Chờ giải đáp
-                    </span>
-                  )}
-                  {q.answerCount > 0 && (
-                    <span className="qa-badge replies-count">
-                      <MessageSquare size={13} /> {q.answerCount} câu trả lời
-                    </span>
-                  )}
+                <h4 className="qa-card-title">{q.title}</h4>
+                <p className="qa-card-snippet">{q.content || q.contentSnippet}</p>
+
+                <div className="qa-card-footer">
+                  <span className="qa-btn-view-thread">
+                    Xem thảo luận & trả lời &rarr;
+                  </span>
                 </div>
               </div>
-
-              <h4 className="qa-card-title">{q.title}</h4>
-              <p className="qa-card-snippet">{q.contentSnippet}</p>
-
-              <div className="qa-card-footer">
-                <span className="qa-btn-view-thread">
-                  Xem thảo luận & trả lời &rarr;
-                </span>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 
@@ -388,22 +494,74 @@ export default function CourseQaTab({ courseId, activeLesson, currentUser }) {
                       <span className="qa-time">{formatTime(threadData.createdAt)}</span>
                     </div>
 
-                    <div className="qa-resolve-toggle-wrap">
+                    <div className="qa-resolve-toggle-wrap" style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                      {isQuestionOwner && !editingQuestion && (
+                        <>
+                          <button
+                            type="button"
+                            className="qa-btn-toggle-resolve"
+                            onClick={handleStartEditQuestion}
+                            title="Chỉnh sửa câu hỏi"
+                          >
+                            <Edit3 size={14} /> Sửa
+                          </button>
+                          <button
+                            type="button"
+                            className="qa-btn-toggle-resolve"
+                            style={{ color: '#f87171', borderColor: 'rgba(239,68,68,0.3)' }}
+                            onClick={handleDeleteQuestion}
+                            title="Xóa câu hỏi"
+                          >
+                            <Trash2 size={14} /> Xóa
+                          </button>
+                        </>
+                      )}
                       <button
                         type="button"
                         className={`qa-btn-toggle-resolve ${threadData.isResolved ? 'is-resolved' : ''}`}
-                        onClick={() => handleToggleResolve(threadData.questionId)}
+                        onClick={() => handleToggleResolve(threadData.id || threadData.questionId)}
                         title="Nhấn để đổi trạng thái đã giải quyết"
                       >
                         <CheckCircle2 size={16} />
-                        {threadData.isResolved ? 'Đã giải quyết (Nhấn để mở lại)' : 'Đánh dấu đã giải quyết'}
+                        {threadData.isResolved ? 'Đã giải quyết' : 'Đánh dấu đã giải quyết'}
                       </button>
                     </div>
                   </div>
 
-                  <div className="qa-post-content-body">
-                    {threadData.content}
-                  </div>
+                  {editingQuestion ? (
+                    <form onSubmit={handleSaveEditQuestion} style={{ marginTop: '0.75rem' }}>
+                      <div className="qa-form-group">
+                        <input
+                          type="text"
+                          className="qa-form-input"
+                          value={editQTitle}
+                          onChange={(e) => setEditQTitle(e.target.value)}
+                          required
+                        />
+                      </div>
+                      <div className="qa-form-group">
+                        <textarea
+                          className="qa-form-textarea"
+                          rows={3}
+                          value={editQContent}
+                          onChange={(e) => setEditQContent(e.target.value)}
+                          required
+                        />
+                      </div>
+                      <div className="qa-form-actions">
+                        <button type="button" className="qa-btn-cancel" onClick={() => setEditingQuestion(false)}>
+                          Hủy
+                        </button>
+                        <button type="submit" className="qa-btn-submit">
+                          Lưu thay đổi
+                        </button>
+                      </div>
+                    </form>
+                  ) : (
+                    <div className="qa-post-content-body">
+                      {threadData.content}
+                    </div>
+                  )}
                 </div>
 
                 {/* Answers List */}
@@ -418,36 +576,82 @@ export default function CourseQaTab({ courseId, activeLesson, currentUser }) {
                     </div>
                   ) : (
                     threadData.answers.map((ans) => {
+                      const ansId = ans.id || ans.answerId;
                       const isInstructor = ans.authorType === 'INSTRUCTOR';
+                      const isAnsOwner = currentUser &&
+                        (String(ans.authorId) === String(currentUser.userId || currentUser.id) || currentUser.role === 'Admin');
+
                       return (
                         <div
-                          key={ans.answerId}
+                          key={ansId}
                           className={`qa-answer-card ${isInstructor ? 'instructor-reply' : ''}`}
                         >
-                          <div className="qa-answer-header">
-                            <div className="qa-avatar">
-                              {isInstructor ? (
-                                <ShieldCheck size={18} color="#3b82f6" />
-                              ) : (
-                                <User size={16} />
-                              )}
-                            </div>
-                            <div className="qa-answer-author-meta">
-                              <span className="qa-name">
-                                {ans.authorName || (isInstructor ? 'Giảng viên' : 'Học viên')}
-                              </span>
-                              {isInstructor && (
-                                <span className="qa-badge-instructor">
-                                  Giảng viên / Ban đào tạo
+                          <div className="qa-answer-header" style={{ justifyContent: 'space-between' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                              <div className="qa-avatar">
+                                {isInstructor ? (
+                                  <ShieldCheck size={18} color="#3b82f6" />
+                                ) : (
+                                  <User size={16} />
+                                )}
+                              </div>
+                              <div className="qa-answer-author-meta">
+                                <span className="qa-name">
+                                  {ans.authorName || (isInstructor ? 'Giảng viên' : 'Học viên')}
                                 </span>
-                              )}
-                              <span className="qa-time">{formatTime(ans.createdAt)}</span>
+                                {isInstructor && (
+                                  <span className="qa-badge-instructor">
+                                    Giảng viên / Ban đào tạo
+                                  </span>
+                                )}
+                                <span className="qa-time">{formatTime(ans.createdAt)}</span>
+                              </div>
                             </div>
+
+                            {isAnsOwner && editingAnswerId !== ansId && (
+                              <div style={{ display: 'flex', gap: '0.4rem' }}>
+                                <button
+                                  type="button"
+                                  className="qa-btn-toggle-resolve"
+                                  style={{ padding: '0.25rem 0.5rem', fontSize: '0.72rem' }}
+                                  onClick={() => handleStartEditAnswer(ans)}
+                                >
+                                  <Edit3 size={12} /> Sửa
+                                </button>
+                                <button
+                                  type="button"
+                                  className="qa-btn-toggle-resolve"
+                                  style={{ padding: '0.25rem 0.5rem', fontSize: '0.72rem', color: '#f87171', borderColor: 'rgba(239,68,68,0.3)' }}
+                                  onClick={() => handleDeleteAnswer(ansId)}
+                                >
+                                  <Trash2 size={12} /> Xóa
+                                </button>
+                              </div>
+                            )}
                           </div>
 
-                          <div className="qa-answer-content">
-                            {ans.content}
-                          </div>
+                          {editingAnswerId === ansId ? (
+                            <div style={{ marginTop: '0.5rem' }}>
+                              <textarea
+                                className="qa-form-textarea"
+                                rows={2}
+                                value={editAnsContent}
+                                onChange={(e) => setEditAnsContent(e.target.value)}
+                              />
+                              <div className="qa-form-actions" style={{ marginTop: '0.5rem' }}>
+                                <button type="button" className="qa-btn-cancel" onClick={() => setEditingAnswerId(null)}>
+                                  Hủy
+                                </button>
+                                <button type="button" className="qa-btn-submit" onClick={() => handleSaveEditAnswer(ansId)}>
+                                  Lưu phản hồi
+                                </button>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="qa-answer-content">
+                              {ans.content}
+                            </div>
+                          )}
                         </div>
                       );
                     })
