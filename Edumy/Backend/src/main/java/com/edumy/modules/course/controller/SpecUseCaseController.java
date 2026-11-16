@@ -221,27 +221,61 @@ public class SpecUseCaseController {
     // 2. CATALOG & INSTRUCTOR COLLABORATION USE CASES (UC-I08, I12, I13..I18, A09..A12)
     // =========================================================================
 
-    @PostMapping({"/api/v1/instructor/courses/{courseId}/submit", "/api/instructor/courses/{courseId}/submit"})
+    @PostMapping({"/api/v1/instructor/courses/{courseId}/submit", "/api/instructor/courses/{courseId}/submit", "/api/courses/{courseId}/submit-review"})
     @PreAuthorize("hasAnyRole('Instructor', 'Admin')")
     public ResponseEntity<?> submitCourseForReview(@PathVariable Integer courseId) {
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "Không tìm thấy khóa học."));
+
+        // BR-07 Checklist kiểm tra trước khi gửi duyệt
+        if (course.getTitle() == null || course.getTitle().trim().length() < 5) {
+            throw new BusinessException(ErrorCode.BAD_REQUEST, "Tiêu đề khóa học phải có ít nhất 5 ký tự hợp lệ.");
+        }
+        if (course.getDescription() == null || course.getDescription().trim().length() < 10) {
+            throw new BusinessException(ErrorCode.BAD_REQUEST, "Mô tả khóa học phải có ít nhất 10 ký tự trước khi nộp duyệt.");
+        }
+        if (course.getCategoryId() == null) {
+            throw new BusinessException(ErrorCode.BAD_REQUEST, "Khóa học phải thuộc về một danh mục hợp lệ.");
+        }
+        if (course.getPrice() != null && course.getPrice().compareTo(BigDecimal.ZERO) > 0) {
+            long p = course.getPrice().longValue();
+            if (p < 10000 || p % 1000 != 0) {
+                throw new BusinessException(ErrorCode.BAD_REQUEST, "Giá khóa học trả phí phải từ 10.000 VNĐ trở lên và là bội số của 1.000 VNĐ.");
+            }
+        }
+
         List<CourseSection> sections = courseSectionRepository.findAll().stream()
                 .filter(s -> courseId.equals(s.getCourseId()))
                 .toList();
-        long lessonCount = sections.stream()
-                .mapToLong(s -> s.getLessons() != null ? s.getLessons().size() : 0)
-                .sum();
-        if (sections.isEmpty() || lessonCount == 0) {
-            throw new BusinessException(ErrorCode.BAD_REQUEST, "Khóa học phải có ít nhất 1 chương và 1 bài học hợp lệ trước khi gửi duyệt.");
+        if (sections.isEmpty()) {
+            throw new BusinessException(ErrorCode.BAD_REQUEST, "Khóa học phải có ít nhất 1 chương (section) trước khi nộp duyệt.");
         }
+
+        // Kiểm tra không có chương nào bị rỗng bài học
+        List<Lesson> allLessons = lessonRepository.findAll();
+        for (CourseSection sec : sections) {
+            List<Lesson> secLessons = allLessons.stream()
+                    .filter(l -> sec.getSectionId().equals(l.getSectionId()))
+                    .toList();
+            if (secLessons.isEmpty()) {
+                throw new BusinessException(ErrorCode.BAD_REQUEST, "Chương '" + sec.getTitle() + "' chưa có bài học nào. Vui lòng thêm bài học hoặc xóa chương trống.");
+            }
+            for (Lesson les : secLessons) {
+                boolean hasContent = (les.getVideoUrl() != null && !les.getVideoUrl().trim().isEmpty()) ||
+                                     LESSON_EXTRA_CONTENT.containsKey(les.getLessonId());
+                if (!hasContent) {
+                    throw new BusinessException(ErrorCode.BAD_REQUEST, "Bài học '" + les.getTitle() + "' thuộc chương '" + sec.getTitle() + "' chưa có nội dung hoặc liên kết video.");
+                }
+            }
+        }
+
         course.setStatus("PendingApproval");
         course.setUpdatedAt(LocalDateTime.now());
         courseRepository.save(course);
         return ResponseEntity.ok(Map.of(
                 "courseId", courseId,
                 "status", "PendingApproval",
-                "message", "Đã gửi yêu cầu xét duyệt khóa học tới Quản trị viên."
+                "message", "Đã kiểm tra checklist thành công và gửi yêu cầu xét duyệt khóa học tới Quản trị viên."
         ));
     }
 
@@ -473,15 +507,18 @@ public class SpecUseCaseController {
 
     @PostMapping({"/api/v1/admin/courses/{courseId}/hide", "/api/admin/courses/{courseId}/hide"})
     @PreAuthorize("hasRole('Admin')")
-    public ResponseEntity<?> hideCourse(@PathVariable Integer courseId) {
+    public ResponseEntity<?> hideCourse(@PathVariable Integer courseId, @RequestBody(required = false) Map<String, String> body) {
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "Không tìm thấy khóa học."));
+        String reason = (body != null && body.get("reason") != null) ? body.get("reason").trim() : "Quản trị viên ẩn theo chính sách nền tảng";
         course.setStatus("Hidden");
         course.setUpdatedAt(LocalDateTime.now());
         courseRepository.save(course);
+        COURSE_REVIEW_NOTES.put(courseId, "Lý do ẩn: " + reason);
         return ResponseEntity.ok(Map.of(
                 "courseId", courseId,
                 "status", "Hidden",
+                "reason", reason,
                 "message", "Đã ẩn khóa học khỏi danh sách công khai. Học viên đã ghi danh vẫn tiếp tục học bình thường."
         ));
     }

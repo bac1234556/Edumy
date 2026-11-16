@@ -107,7 +107,7 @@ function HomePage() {
             <div className="hero-text-content">
               <div className="hero-badge-pill">
                 <Sparkles size={16} className="text-warning" />
-                <span>Nền tảng đào tạo công nghệ hàng đầu </span>
+                <span>Nền tảng đào tạo công nghệ hàng đầu</span>
               </div>
 
               <h1 className="hero-title">
@@ -119,53 +119,58 @@ function HomePage() {
                 Tiếp cận các khóa học thực chiến từ chuyên gia hàng đầu. Hệ thống gợi ý AI cá nhân hóa giúp bạn xây dựng lộ trình học tập hiệu quả nhất.
               </p>
 
-              {/* Quick Search Bar with Live Instant Suggestion */}
-              <div className="hero-search-wrapper" style={{ width: '100%', maxWidth: '640px' }}>
-                <LiveCourseSearchBar
-                  variant="hero"
-                  placeholder="Bạn muốn làm chủ kỹ năng gì hôm nay? (VD: React, Python, UI/UX...)"
-                />
+              {/* Interactive Live Search Input */}
+              <div className="hero-search-box">
+                <LiveCourseSearchBar variant="hero" placeholder="Tìm kiếm khóa học theo công nghệ, kỹ năng..." />
               </div>
 
-              {/* Trending Tags */}
-              <div className="trending-tags">
-                <span className="fw-semibold">Xu hướng:</span>
-                <Link to="/courses?search=React" className="trending-tag-link">#ReactJS</Link>
-                <Link to="/courses?search=AI" className="trending-tag-link">#Machine Learning</Link>
-                <Link to="/courses?search=Spring" className="trending-tag-link">#Spring Boot</Link>
-                <Link to="/courses?search=Design" className="trending-tag-link">#Figma UI/UX</Link>
+              {/* Trust Badges Bar */}
+              <div className="hero-trust-metrics">
+                <div className="trust-item">
+                  <GraduationCap size={18} className="trust-icon" />
+                  <span>20,000+ Học viên</span>
+                </div>
+                <div className="trust-divider">•</div>
+                <div className="trust-item">
+                  <Award size={18} className="trust-icon" />
+                  <span>Chứng chỉ chuẩn quốc tế</span>
+                </div>
+                <div className="trust-divider">•</div>
+                <div className="trust-item">
+                  <Star size={18} className="trust-icon text-warning" />
+                  <span>4.8/5 Đánh giá hài lòng</span>
+                </div>
               </div>
             </div>
 
-            {/* Hero Visual Card */}
-            <div className="hero-visual-card d-none d-lg-block">
-              <div className="hero-image-frame">
+            <div className="hero-visual-card">
+              <div className="visual-image-wrapper">
                 <img
                   src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1000&q=80"
-                  alt="Sinh viên học tập cùng Edumy"
+                  alt="Học viên Edumy"
                   className="hero-main-img"
+                  loading="eager"
                 />
-              </div>
+                {/* Floating Metric Pill 1 */}
+                <div className="floating-metric-card top-left">
+                  <div className="metric-icon-box bg-primary-soft">
+                    <BookOpen size={20} className="text-primary" />
+                  </div>
+                  <div>
+                    <span className="metric-number">500+</span>
+                    <span className="metric-label">Khóa học chuyên sâu</span>
+                  </div>
+                </div>
 
-              {/* Floating Stat 1 */}
-              <div className="hero-floating-stat stat-left">
-                <div className="stat-icon-circle indigo">
-                  <GraduationCap size={22} />
-                </div>
-                <div>
-                  <div className="stat-value">20,000+</div>
-                  <div className="stat-label">Học viên đang học</div>
-                </div>
-              </div>
-
-              {/* Floating Stat 2 */}
-              <div className="hero-floating-stat stat-right">
-                <div className="stat-icon-circle amber">
-                  <Star size={20} fill="#f59e0b" color="#f59e0b" />
-                </div>
-                <div>
-                  <div className="stat-value">4.9 / 5.0</div>
-                  <div className="stat-label">Đánh giá xuất sắc</div>
+                {/* Floating Metric Pill 2 */}
+                <div className="floating-metric-card bottom-right">
+                  <div className="metric-icon-box bg-success-soft">
+                    <CheckCircle2 size={20} className="text-success" />
+                  </div>
+                  <div>
+                    <span className="metric-number">95%</span>
+                    <span className="metric-label">Tỷ lệ hoàn thành</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -174,165 +179,123 @@ function HomePage() {
       </section>
 
       {/* --------------------------------------------------------------------
-          2. TRUST STRIP / SOCIAL PROOF
+          2. STATS OVERVIEW SECTION
           -------------------------------------------------------------------- */}
-      <section className="trust-strip">
+      <section className="stats-banner-section">
         <div className="container">
-          <div className="trust-grid">
-            <div className="trust-item">
-              <div className="trust-icon-box">
-                <BookOpen size={22} />
-              </div>
-              <div>
-                <div className="trust-text-title">500+ Khóa học chuyên sâu</div>
-                <div className="trust-text-sub">Cập nhật xu hướng công nghệ mới nhất</div>
-              </div>
+          <div className="stats-grid">
+            <div className="stat-box">
+              <h3 className="stat-number">500+</h3>
+              <p className="stat-label">Khóa học từ cơ bản đến nâng cao</p>
             </div>
-
-            <div className="trust-item">
-              <div className="trust-icon-box">
-                <Users size={22} />
-              </div>
-              <div>
-                <div className="trust-text-title">Giảng viên chuyên gia</div>
-                <div className="trust-text-sub">Kinh nghiệm thực chiến từ doanh nghiệp lớn</div>
-              </div>
+            <div className="stat-box">
+              <h3 className="stat-number">120+</h3>
+              <p className="stat-label">Giảng viên & Chuyên gia công nghệ</p>
             </div>
-
-            <div className="trust-item">
-              <div className="trust-icon-box">
-                <ShieldCheck size={22} />
-              </div>
-              <div>
-                <div className="trust-text-title">Thanh toán QR & Học ngay</div>
-                <div className="trust-text-sub">Ghi danh tự động cho khóa Miễn phí & Trả phí</div>
-              </div>
+            <div className="stat-box">
+              <h3 className="stat-number">25,000+</h3>
+              <p className="stat-label">Giờ video bài giảng chất lượng cao</p>
             </div>
-
-            <div className="trust-item">
-              <div className="trust-icon-box">
-                <Sparkles size={22} />
-              </div>
-              <div>
-                <div className="trust-text-title">Gợi ý lộ trình AI</div>
-                <div className="trust-text-sub">Định hướng cá nhân hóa theo mục tiêu</div>
-              </div>
+            <div className="stat-box">
+              <h3 className="stat-number">98%</h3>
+              <p className="stat-label">Học viên tự tin ứng tuyển thành công</p>
             </div>
           </div>
         </div>
       </section>
 
       {/* --------------------------------------------------------------------
-          3. AI RECOMMENDATION SECTION (WHEN LOGGED IN AS STUDENT)
+          3. CATEGORIES SECTION
+          -------------------------------------------------------------------- */}
+      <section className="categories-section">
+        <div className="container">
+          <div className="section-header-flex">
+            <div>
+              <span className="section-eyebrow">Khám phá theo lĩnh vực</span>
+              <h2 className="section-title">Danh mục nổi bật</h2>
+            </div>
+            <Link to="/courses" className="view-all-link">
+              Xem tất cả danh mục <ArrowRight size={16} />
+            </Link>
+          </div>
+
+          <div className="categories-grid">
+            {categories.length > 0 ? (
+              categories.map((cat) => (
+                <Link
+                  key={cat.categoryId || cat.id}
+                  to={`/courses?categoryId=${cat.categoryId || cat.id}`}
+                  className="category-card"
+                >
+                  <div className="category-icon-box">
+                    {getCategoryIcon(cat.name || cat.categoryName)}
+                  </div>
+                  <h4 className="category-name">{cat.name || cat.categoryName}</h4>
+                  <p className="category-desc line-clamp-2">
+                    {cat.description || "Nắm vững kỹ năng thực tế với các dự án thực chiến chuẩn doanh nghiệp."}
+                  </p>
+                </Link>
+              ))
+            ) : (
+              [1, 2, 3, 4].map((n) => (
+                <div key={n} className="category-card skeleton-box" style={{ height: '140px' }} />
+              ))
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* --------------------------------------------------------------------
+          4. AI PERSONALIZED RECOMMENDATIONS (IF LOGGED IN)
           -------------------------------------------------------------------- */}
       {user && user.role === 'Student' && recommendedCourses.length > 0 && (
-        <section className="home-section pb-0">
+        <section className="courses-section ai-recommended-section">
           <div className="container">
-            <div className="ai-recommendation-box">
-              <div className="ai-recommendation-header">
-                <div>
-                  <div className="ai-title-badge mb-2">
-                    <Sparkles size={16} /> Gợi ý riêng cho bạn
-                  </div>
-                  <h2 className="fw-bold mb-1" style={{ fontSize: '1.6rem' }}>
-                    Khóa học phù hợp với hồ sơ học tập của {user.fullName || 'bạn'}
-                  </h2>
-                  <p className="text-muted mb-0 small">
-                    Thuật toán AI phân tích kỹ năng và đề xuất các bài giảng tối ưu nhất cho bạn.
-                  </p>
+            <div className="section-header-flex">
+              <div>
+                <div className="d-flex align-items-center gap-2 mb-1">
+                  <Sparkles size={18} className="text-primary" />
+                  <span className="section-eyebrow text-primary fw-bold">Gợi ý dành riêng cho bạn</span>
                 </div>
-                <Link to="/courses" className="section-view-all">
-                  Xem tất cả đề xuất <ArrowRight size={16} />
-                </Link>
+                <h2 className="section-title">Khóa học được AI đề xuất</h2>
               </div>
+              <Link to="/courses" className="view-all-link">
+                Xem thêm lộ trình <ArrowRight size={16} />
+              </Link>
+            </div>
 
-              <div className="courses-grid">
-                {recommendedCourses.slice(0, 4).map((course) => (
-                  <CourseCard key={course.courseId} course={course} />
-                ))}
-              </div>
+            <div className="courses-grid">
+              {recommendedCourses.slice(0, 4).map((course) => (
+                <CourseCard key={course.courseId || course.id} course={course} />
+              ))}
             </div>
           </div>
         </section>
       )}
 
       {/* --------------------------------------------------------------------
-          4. TOP CATEGORIES
+          5. POPULAR COURSES SECTION
           -------------------------------------------------------------------- */}
-      <section className="home-section">
+      <section className="courses-section">
         <div className="container">
-          <div className="section-header-row">
-            <div className="section-title-wrap">
-              <h2>Khám phá theo Danh mục</h2>
-              <p>Lựa chọn lĩnh vực bạn yêu thích và bắt đầu xây dựng nền tảng vững chắc.</p>
+          <div className="section-header-flex">
+            <div>
+              <span className="section-eyebrow">Học viên tin chọn</span>
+              <h2 className="section-title">Khóa học bán chạy nhất</h2>
             </div>
-            <Link to="/courses" className="section-view-all">
-              Tất cả danh mục <ArrowRight size={16} />
-            </Link>
-          </div>
-
-          <div className="categories-grid">
-            {loading ? (
-              [1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
-                <div key={n} className="category-card skeleton-box" style={{ height: '94px' }}></div>
-              ))
-            ) : categories.length === 0 ? (
-              <div className="col-12 text-center py-4 text-muted">Đang cập nhật danh mục...</div>
-            ) : (
-              categories.map((cat) => (
-                <Link
-                  to={`/courses?categoryId=${cat.categoryId}`}
-                  key={cat.categoryId}
-                  className="category-card"
-                >
-                  <div className="category-icon-wrapper">
-                    {getCategoryIcon(cat.name)}
-                  </div>
-                  <div className="category-info">
-                    <h4>{cat.name}</h4>
-                    <span>Khám phá lộ trình →</span>
-                  </div>
-                </Link>
-              ))
-            )}
-          </div>
-        </div>
-      </section>
-
-      {/* --------------------------------------------------------------------
-          5. BESTSELLING & TOP RATED COURSES
-          -------------------------------------------------------------------- */}
-      <section className="home-section bg-alt">
-        <div className="container">
-          <div className="section-header-row">
-            <div className="section-title-wrap">
-              <h2>Khóa học Nổi bật & Bán chạy nhất</h2>
-              <p>Những khóa học được cộng đồng học viên bình chọn cao nhất tháng này.</p>
-            </div>
-            <Link to="/courses?sortBy=rating" className="section-view-all">
-              Xem toàn bộ <ArrowRight size={16} />
+            <Link to="/courses?sortBy=rating" className="view-all-link">
+              Xem tất cả <ArrowRight size={16} />
             </Link>
           </div>
 
           <div className="courses-grid">
-            {loading ? (
-              [1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
-                <div key={n} className="skeleton-card">
-                  <div className="skeleton-img skeleton-box"></div>
-                  <div className="skeleton-line long skeleton-box"></div>
-                  <div className="skeleton-line medium skeleton-box"></div>
-                  <div className="skeleton-line short skeleton-box mt-auto"></div>
-                </div>
-              ))
-            ) : popularCourses.length === 0 ? (
-              <div className="col-12 text-center py-5 bg-white rounded-4 border p-4">
-                <BookOpen size={40} className="text-muted opacity-50 mb-3" />
-                <h5>Chưa có khóa học nào được đăng tải</h5>
-                <p className="text-muted small">Hãy quay lại sau hoặc chuyển sang danh mục khác.</p>
-              </div>
-            ) : (
+            {popularCourses.length > 0 ? (
               popularCourses.map((course) => (
-                <CourseCard key={course.courseId} course={course} />
+                <CourseCard key={course.courseId || course.id} course={course} />
+              ))
+            ) : (
+              [1, 2, 3, 4].map((n) => (
+                <div key={n} className="skeleton-box" style={{ height: '360px', borderRadius: '16px' }} />
               ))
             )}
           </div>
@@ -340,35 +303,28 @@ function HomePage() {
       </section>
 
       {/* --------------------------------------------------------------------
-          6. NEWEST COURSES
+          6. NEWEST COURSES SECTION
           -------------------------------------------------------------------- */}
-      <section className="home-section">
+      <section className="courses-section bg-surface-alt">
         <div className="container">
-          <div className="section-header-row">
-            <div className="section-title-wrap">
-              <h2>Mới ra mắt gần đây</h2>
-              <p>Bắt kịp kiến thức và công cụ hiện đại với những bài giảng vừa cập nhật.</p>
+          <div className="section-header-flex">
+            <div>
+              <span className="section-eyebrow">Mới cập nhật</span>
+              <h2 className="section-title">Khóa học mới phát hành</h2>
             </div>
-            <Link to="/courses?sortBy=newest" className="section-view-all">
-              Xem thêm khóa mới <ArrowRight size={16} />
+            <Link to="/courses?sortBy=newest" className="view-all-link">
+              Xem thêm <ArrowRight size={16} />
             </Link>
           </div>
 
           <div className="courses-grid">
-            {loading ? (
-              [1, 2, 3, 4].map((n) => (
-                <div key={n} className="skeleton-card">
-                  <div className="skeleton-img skeleton-box"></div>
-                  <div className="skeleton-line long skeleton-box"></div>
-                  <div className="skeleton-line medium skeleton-box"></div>
-                  <div className="skeleton-line short skeleton-box mt-auto"></div>
-                </div>
-              ))
-            ) : newestCourses.length === 0 ? (
-              <div className="col-12 text-center py-4 text-muted">Chưa có khóa học mới.</div>
-            ) : (
+            {newestCourses.length > 0 ? (
               newestCourses.map((course) => (
-                <CourseCard key={course.courseId} course={course} />
+                <CourseCard key={course.courseId || course.id} course={course} />
+              ))
+            ) : (
+              [1, 2, 3, 4].map((n) => (
+                <div key={n} className="skeleton-box" style={{ height: '360px', borderRadius: '16px' }} />
               ))
             )}
           </div>
@@ -376,47 +332,46 @@ function HomePage() {
       </section>
 
       {/* --------------------------------------------------------------------
-          7. VALUE PROPOSITIONS (WHY EDUMY)
+          7. VALUE PROPOSITION / FEATURES SECTION
           -------------------------------------------------------------------- */}
-      <section className="home-section bg-alt">
-        <div className="container text-center">
-          <div className="max-w-2xl mx-auto mb-5">
-            <h2 className="fw-bold mb-3" style={{ fontSize: '2rem' }}>
-              Tại sao hàng ngàn học viên chọn Edumy?
-            </h2>
-            <p className="text-muted">
-              Chúng tôi cam kết mang lại trải nghiệm học tập hiện đại, trực quan và gắn liền với yêu cầu tuyển dụng thực tế.
+      <section className="features-section">
+        <div className="container">
+          <div className="text-center max-w-700 mx-auto mb-5">
+            <span className="section-eyebrow">Lý do chọn Edumy</span>
+            <h2 className="section-title">Trải nghiệm học tập vượt trội</h2>
+            <p className="section-subtitle">
+              Được thiết kế tối ưu cho sinh viên và kỹ sư công nghệ muốn học nhanh, thực chiến và nắm bắt công việc thực tế.
             </p>
           </div>
 
-          <div className="why-edumy-grid text-start">
-            <div className="feature-box">
-              <div className="feature-icon-box">
+          <div className="features-grid">
+            <div className="feature-card">
+              <div className="feature-icon-box bg-primary-soft text-primary">
+                <BrainCircuit size={28} />
+              </div>
+              <h4 className="feature-title">Gợi ý lộ trình bằng AI</h4>
+              <p className="feature-desc">
+                Mô hình học máy phân tích kỹ năng và hành vi học tập để đề xuất khóa học phù hợp với từng giai đoạn phát triển sự nghiệp của bạn.
+              </p>
+            </div>
+
+            <div className="feature-card">
+              <div className="feature-icon-box bg-success-soft text-success">
                 <Code size={28} />
               </div>
-              <h3>Lộ trình chuẩn Doanh nghiệp</h3>
-              <p>
-                Giáo trình được thiết kế bài bản từ cơ bản đến chuyên sâu, tích hợp các dự án thực tế giúp bạn tự tin xây dựng portfolio.
+              <h4 className="feature-title">Bài tập & Quiz thực hành</h4>
+              <p className="feature-desc">
+                Không chỉ xem video lý thuyết, bạn được thử thách ngay với hệ thống Quiz tương tác và dự án thực chiến chuẩn môi trường doanh nghiệp.
               </p>
             </div>
 
-            <div className="feature-box">
-              <div className="feature-icon-box">
-                <Sparkles size={28} />
-              </div>
-              <h3>Bài giảng Đa định dạng (Video, PDF, Text)</h3>
-              <p>
-                Hệ thống phòng học trực tuyến hỗ trợ bài giảng Video HTTPS, tài liệu PDF xem trực tiếp và bài đọc chuyên sâu kèm đánh dấu hoàn thành từng bài.
-              </p>
-            </div>
-
-            <div className="feature-box">
-              <div className="feature-icon-box">
+            <div className="feature-card">
+              <div className="feature-icon-box bg-warning-soft text-warning">
                 <Award size={28} />
               </div>
-              <h3>Theo dõi Tiến độ & Đánh giá Minh bạch</h3>
-              <p>
-                Theo dõi tỷ lệ hoàn thành khóa học theo thời gian thực và tham khảo đánh giá 1-5 sao từ học viên đã ghi danh thực tế.
+              <h4 className="feature-title">Chứng chỉ xác thực độc quyền</h4>
+              <p className="feature-desc">
+                Nhận chứng chỉ điện tử có mã định danh xác thực ngay khi hoàn thành 100% giáo trình và bài kiểm tra đánh giá năng lực.
               </p>
             </div>
           </div>
@@ -424,16 +379,15 @@ function HomePage() {
       </section>
 
       {/* --------------------------------------------------------------------
-          8. TESTIMONIALS (SOCIAL PROOF)
+          8. TESTIMONIALS SECTION
           -------------------------------------------------------------------- */}
-      <section className="home-section">
+      <section className="testimonials-section">
         <div className="container">
-          <div className="text-center mb-5">
-            <h2 className="fw-bold mb-3" style={{ fontSize: '2rem' }}>
-              Cảm nhận từ Học viên xuất sắc
-            </h2>
-            <p className="text-muted">
-              Lắng nghe câu chuyện chuyển mình và thăng tiến nghề nghiệp của các bạn học viên tại Edumy.
+          <div className="text-center max-w-700 mx-auto mb-5">
+            <span className="section-eyebrow">Câu chuyện thành công</span>
+            <h2 className="section-title">Học viên nói gì về chúng tôi</h2>
+            <p className="section-subtitle">
+              Lắng nghe chia sẻ từ những học viên đã bứt phá sự nghiệp tại Edumy.
             </p>
           </div>
 

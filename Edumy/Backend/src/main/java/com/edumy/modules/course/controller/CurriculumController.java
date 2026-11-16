@@ -96,9 +96,25 @@ public class CurriculumController {
 
     @PostMapping("/courses/{courseId}/sections")
     @PreAuthorize("hasAnyRole('Instructor', 'Admin')")
-    public ResponseEntity<?> createSection(@PathVariable Integer courseId, @RequestBody CourseSection section) {
+    public ResponseEntity<?> createSection(
+            @PathVariable Integer courseId,
+            @RequestBody CourseSection section,
+            @RequestHeader(value = "X-Client-Platform", required = false) String clientPlatform) {
+        if ("MOBILE".equalsIgnoreCase(clientPlatform)) {
+            return ResponseEntity.status(403).body(Map.of(
+                    "success", false,
+                    "message", "Chức năng tạo chương và bài giảng chỉ thực hiện trên Edumy Web Studio (không hỗ trợ trên Mobile App)."
+            ));
+        }
         Course course = courseRepository.findById(courseId).orElse(null);
         if (course == null) return ResponseEntity.status(404).body("Course not found");
+
+        if ("PendingApproval".equalsIgnoreCase(course.getStatus())) {
+            return ResponseEntity.status(400).body(Map.of(
+                    "success", false,
+                    "message", "Khóa học đang trong quá trình chờ xét duyệt (Pending Approval), không được phép chỉnh sửa nội dung."
+            ));
+        }
 
         Integer userId = getCurrentUserId();
         if (userId != null && !userId.equals(course.getInstructorId()) && !isUserInRole("Admin")) {
@@ -112,12 +128,28 @@ public class CurriculumController {
 
     @PostMapping("/sections/{sectionId}/lessons")
     @PreAuthorize("hasAnyRole('Instructor', 'Admin')")
-    public ResponseEntity<?> createLesson(@PathVariable Integer sectionId, @RequestBody Lesson lesson) {
+    public ResponseEntity<?> createLesson(
+            @PathVariable Integer sectionId,
+            @RequestBody Lesson lesson,
+            @RequestHeader(value = "X-Client-Platform", required = false) String clientPlatform) {
+        if ("MOBILE".equalsIgnoreCase(clientPlatform)) {
+            return ResponseEntity.status(403).body(Map.of(
+                    "success", false,
+                    "message", "Chức năng tạo bài giảng chỉ thực hiện trên Edumy Web Studio (không hỗ trợ trên Mobile App)."
+            ));
+        }
         CourseSection section = courseSectionRepository.findById(sectionId).orElse(null);
         if (section == null) return ResponseEntity.status(404).body("Section not found");
 
         Course course = courseRepository.findById(section.getCourseId()).orElse(null);
         if (course == null) return ResponseEntity.status(404).body("Course not found");
+
+        if ("PendingApproval".equalsIgnoreCase(course.getStatus())) {
+            return ResponseEntity.status(400).body(Map.of(
+                    "success", false,
+                    "message", "Khóa học đang trong quá trình chờ xét duyệt (Pending Approval), không được phép chỉnh sửa nội dung."
+            ));
+        }
 
         Integer userId = getCurrentUserId();
         if (userId != null && !userId.equals(course.getInstructorId()) && !isUserInRole("Admin")) {
@@ -138,6 +170,13 @@ public class CurriculumController {
         Course course = courseRepository.findById(section.getCourseId()).orElse(null);
         if (course == null) return ResponseEntity.status(404).body("Course not found");
 
+        if ("PendingApproval".equalsIgnoreCase(course.getStatus())) {
+            return ResponseEntity.status(400).body(Map.of(
+                    "success", false,
+                    "message", "Khóa học đang trong quá trình chờ xét duyệt (Pending Approval), không được phép chỉnh sửa nội dung."
+            ));
+        }
+
         Integer userId = getCurrentUserId();
         if (userId != null && !userId.equals(course.getInstructorId()) && !isUserInRole("Admin")) {
             return ResponseEntity.status(403).build();
@@ -157,6 +196,13 @@ public class CurriculumController {
 
         Course course = courseRepository.findById(section.getCourseId()).orElse(null);
         if (course == null) return ResponseEntity.status(404).body("Course not found");
+
+        if ("PendingApproval".equalsIgnoreCase(course.getStatus())) {
+            return ResponseEntity.status(400).body(Map.of(
+                    "success", false,
+                    "message", "Khóa học đang trong quá trình chờ xét duyệt (Pending Approval), không được phép chỉnh sửa nội dung."
+            ));
+        }
 
         Integer userId = getCurrentUserId();
         if (userId != null && !userId.equals(course.getInstructorId()) && !isUserInRole("Admin")) {

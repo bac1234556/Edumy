@@ -439,10 +439,11 @@ public class CoursesController {
 
     private static String generateSlug(String title) {
         if (title == null || title.isEmpty()) return "";
-        String slug = title.toLowerCase().trim().replaceAll(" ", "-").replaceAll("--", "-");
-        slug = slug.replaceAll("[^a-z0-9\\-]", "");
-        slug += "-" + UUID.randomUUID().toString().replace("-", "").substring(0, 6);
-        return slug;
+        String cleanSlug = com.edumy.shared.text.SlugGenerator.slugify(title, 80);
+        if (cleanSlug.isEmpty()) {
+            cleanSlug = "course";
+        }
+        return cleanSlug + "-" + UUID.randomUUID().toString().replace("-", "").substring(0, 6);
     }
 
     @PostMapping("/{courseId}/lessons/{lessonId}/complete")

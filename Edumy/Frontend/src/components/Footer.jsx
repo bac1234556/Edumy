@@ -6,7 +6,7 @@ import './Footer.css';
 const Footer = () => {
   const location = useLocation();
 
-  // Hide footer on dashboard / editor / player pages to maintain fixed viewport
+  // Ẩn footer trên các trang dashboard / studio / course player để giữ trải nghiệm tập trung
   if (
     location.pathname.startsWith('/admin') ||
     location.pathname.startsWith('/instructor') ||
@@ -20,7 +20,7 @@ const Footer = () => {
       <div className="container">
         <div className="footer-top">
           <div className="footer-links-grid">
-            {/* Column 1: Về Edumy */}
+            {/* Cột 1: Về Edumy */}
             <div className="footer-col">
               <h5 className="footer-col-title">Về Edumy</h5>
               <Link to="/courses">Giới thiệu nền tảng</Link>
@@ -30,7 +30,7 @@ const Footer = () => {
               <a href="#investors">Nhà đầu tư & Đối tác</a>
             </div>
 
-            {/* Column 2: Khóa học nổi bật */}
+            {/* Cột 2: Khóa học nổi bật */}
             <div className="footer-col">
               <h5 className="footer-col-title">Khóa học nổi bật</h5>
               <Link to="/courses?categoryId=1">Lập trình Fullstack Web</Link>
@@ -40,7 +40,7 @@ const Footer = () => {
               <Link to="/courses">Tất cả chứng chỉ nghề nghiệp</Link>
             </div>
 
-            {/* Column 3: Hỗ trợ & Tài nguyên */}
+            {/* Cột 3: Hỗ trợ & Tài nguyên */}
             <div className="footer-col">
               <h5 className="footer-col-title">Hỗ trợ & Tài nguyên</h5>
               <a href="#help">Trung tâm trợ giúp 24/7</a>
@@ -50,7 +50,7 @@ const Footer = () => {
               <a href="#accessibility">Tuyên bố trợ năng WCAG</a>
             </div>
 
-            {/* Column 4: Pháp lý & Điều khoản */}
+            {/* Cột 4: Pháp lý & Điều khoản */}
             <div className="footer-col">
               <h5 className="footer-col-title">Pháp lý & Điều khoản</h5>
               <a href="#terms">Điều khoản sử dụng</a>

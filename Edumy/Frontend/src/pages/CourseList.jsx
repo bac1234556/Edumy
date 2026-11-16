@@ -125,66 +125,43 @@ function CourseList() {
   return (
     <div className="course-list-page py-4">
       <div className="container">
-        {/* Breadcrumb Navigation */}
-        <nav aria-label="breadcrumb" className="edumy-breadcrumbs">
-          <Link to="/">Trang chủ</Link>
-          <span className="separator">/</span>
-          <span className="current">Danh mục Khóa học công khai</span>
-        </nav>
-
-        {/* Page Header */}
-        <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3 mb-4 pb-3 border-bottom">
+        {/* Breadcrumb Header */}
+        <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
           <div>
-            <h1 className="h3 fw-bold text-dark mb-1">Danh mục Khóa học Công khai</h1>
-            <p className="text-secondary mb-0 small">
-              Tìm kiếm theo tên khóa học và kết hợp lọc theo Danh mục & Loại giá Miễn phí / Trả phí.
+            <h1 className="h3 fw-bold text-dark mb-1">Tất cả khóa học</h1>
+            <p className="text-secondary small mb-0">
+              Khám phá hơn {courses.length} khóa học công nghệ thực chiến cùng chuyên gia
             </p>
           </div>
 
-          {/* Search & Sort Controls */}
-          <div className="d-flex flex-wrap gap-2 align-items-center">
-            <div className="search-box-wrap" style={{ minWidth: '260px' }}>
-              <div className="input-group">
-                <span className="input-group-text bg-white border-end-0 text-muted">
-                  <Search size={16} />
-                </span>
-                <input
-                  type="text"
-                  className="form-control border-start-0 ps-1"
-                  placeholder="Tìm kiếm tên khóa học..."
-                  value={searchTerm}
-                  onChange={(e) => {
-                    setSearchTerm(e.target.value);
-                    setCurrentPage(1);
-                  }}
-                />
-              </div>
+          {/* Quick Search Input */}
+          <div className="search-box-wrapper" style={{ minWidth: '280px' }}>
+            <div className="input-group">
+              <span className="input-group-text bg-white border-end-0 text-secondary">
+                <Search size={16} />
+              </span>
+              <input
+                type="text"
+                className="form-control border-start-0 ps-0 shadow-none"
+                placeholder="Tìm kiếm khóa học..."
+                value={searchTerm}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  setCurrentPage(1);
+                }}
+              />
             </div>
-
-            <select
-              className="form-select"
-              style={{ width: 'auto', minWidth: '175px' }}
-              value={sortBy}
-              onChange={(e) => {
-                setSortBy(e.target.value);
-                setCurrentPage(1);
-              }}
-            >
-              <option value="NEWEST">Mới nhất</option>
-              <option value="RATING">Đánh giá cao nhất</option>
-              <option value="PRICE_ASC">Giá: Thấp đến Cao</option>
-              <option value="PRICE_DESC">Giá: Cao đến Thấp</option>
-            </select>
           </div>
         </div>
 
-        <div className="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
+        {/* Filters and Sorting Bar */}
+        <div className="filters-control-bar p-3 bg-white rounded-3 border mb-4 d-flex flex-wrap align-items-center justify-content-between gap-3">
           <div className="d-flex align-items-center gap-2 flex-wrap">
-            <span className="small fw-semibold text-secondary d-flex align-items-center gap-1">
-              <Filter size={14} /> Loại học phí:
+            <span className="small fw-bold text-secondary d-flex align-items-center gap-1">
+              <Filter size={15} /> Bộ lọc giá:
             </span>
             {[
-              { key: 'ALL', label: 'Tất cả khóa học' },
+              { key: 'ALL', label: 'Tất cả' },
               { key: 'FREE', label: 'Miễn phí (0đ)' },
               { key: 'PAID', label: 'Trả phí' }
             ].map((item) => (

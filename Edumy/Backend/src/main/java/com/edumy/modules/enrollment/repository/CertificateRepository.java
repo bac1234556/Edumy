@@ -10,4 +10,5 @@ public interface CertificateRepository extends JpaRepository<Certificate, Intege
     Certificate findByUserIdAndCourseId(Integer userId, Integer courseId);
     Certificate findByCertificateUrl(String certificateUrl);
     boolean existsByUserIdAndCourseId(Integer userId, Integer courseId);
+    java.util.List<Certificate> findByUserId(Integer userId);
 }

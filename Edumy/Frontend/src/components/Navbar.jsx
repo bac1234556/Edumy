@@ -26,7 +26,7 @@ const Navbar = () => {
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
 
-  // Close dropdown when clicking outside
+  // Đóng dropdown khi click ngoài
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -43,7 +43,7 @@ const Navbar = () => {
     try {
       await api.post('/v1/auth/logout');
     } catch {
-      // ignore if token already expired
+      // ignore if token expired
     }
     if (clearCartState) {
       clearCartState();
@@ -130,63 +130,73 @@ const Navbar = () => {
               {isDropdownOpen && (
                 <div className="user-dropdown-card">
                   <div className="dropdown-user-header">
-                    <div className="dropdown-user-name line-clamp-1">
-                      {user.fullName || user.email?.split('@')[0]}
-                    </div>
-                    <span className="dropdown-role-badge pill-badge">
-                      {user.role === 'Admin' ? 'Quản trị viên (ADMIN)' :
-                        user.role === 'Instructor' ? 'Giảng viên (INSTRUCTOR)' : 'Học viên (STUDENT)'}
-                    </span>
+                    <p className="dropdown-user-name line-clamp-1">{user.fullName || 'Người dùng'}</p>
+                    <p className="dropdown-user-email line-clamp-1">{user.email}</p>
+                    <span className="dropdown-user-role-badge">{user.role}</span>
                   </div>
 
-                  <Link
-                    to="/my-courses"
-                    className="dropdown-item-link"
-                    onClick={() => setIsDropdownOpen(false)}
-                  >
-                    <BookOpen size={16} strokeWidth={1.75} aria-hidden="true" /> Khóa học đã ghi danh
-                  </Link>
+                  <div className="dropdown-divider" />
 
-                  <Link
-                    to="/orders"
-                    className="dropdown-item-link"
-                    onClick={() => setIsDropdownOpen(false)}
-                  >
-                    <Receipt size={16} strokeWidth={1.75} aria-hidden="true" /> Lịch sử đơn hàng
-                  </Link>
-
-                  <Link
-                    to="/profile"
-                    className="dropdown-item-link"
-                    onClick={() => setIsDropdownOpen(false)}
-                  >
-                    <User size={16} strokeWidth={1.75} aria-hidden="true" /> Hồ sơ cá nhân
-                  </Link>
-
-                  {(user.role === 'Instructor' || user.role === 'Admin') && (
+                  <div className="dropdown-links-list">
                     <Link
-                      to="/instructor"
-                      className="dropdown-item-link"
+                      to="/profile"
+                      className="dropdown-menu-item"
                       onClick={() => setIsDropdownOpen(false)}
                     >
-                      <LayoutDashboard size={16} strokeWidth={1.75} aria-hidden="true" /> Quản lý khóa giảng dạy
+                      <User size={16} strokeWidth={1.75} aria-hidden="true" />
+                      <span>Hồ sơ cá nhân</span>
                     </Link>
-                  )}
 
-                  {user.role === 'Admin' && (
                     <Link
-                      to="/admin"
-                      className="dropdown-item-link"
+                      to="/my-courses"
+                      className="dropdown-menu-item"
                       onClick={() => setIsDropdownOpen(false)}
                     >
-                      <Shield size={16} strokeWidth={1.75} aria-hidden="true" /> Bảng điều khiển Quản trị
+                      <BookOpen size={16} strokeWidth={1.75} aria-hidden="true" />
+                      <span>Khóa học của tôi</span>
                     </Link>
-                  )}
 
-                  <div className="dropdown-divider"></div>
+                    <Link
+                      to="/orders"
+                      className="dropdown-menu-item"
+                      onClick={() => setIsDropdownOpen(false)}
+                    >
+                      <Receipt size={16} strokeWidth={1.75} aria-hidden="true" />
+                      <span>Lịch sử đơn hàng</span>
+                    </Link>
 
-                  <button type="button" className="dropdown-logout-btn" onClick={handleLogout}>
-                    <LogOut size={16} strokeWidth={1.75} aria-hidden="true" /> Đăng xuất
+                    {(user.role === 'Instructor' || user.role === 'Admin') && (
+                      <Link
+                        to="/instructor"
+                        className="dropdown-menu-item"
+                        onClick={() => setIsDropdownOpen(false)}
+                      >
+                        <LayoutDashboard size={16} strokeWidth={1.75} aria-hidden="true" />
+                        <span>Kênh Giảng viên</span>
+                      </Link>
+                    )}
+
+                    {user.role === 'Admin' && (
+                      <Link
+                        to="/admin"
+                        className="dropdown-menu-item"
+                        onClick={() => setIsDropdownOpen(false)}
+                      >
+                        <Shield size={16} strokeWidth={1.75} aria-hidden="true" />
+                        <span>Bảng quản trị</span>
+                      </Link>
+                    )}
+                  </div>
+
+                  <div className="dropdown-divider" />
+
+                  <button
+                    type="button"
+                    className="dropdown-menu-item dropdown-logout-action"
+                    onClick={handleLogout}
+                  >
+                    <LogOut size={16} strokeWidth={1.75} aria-hidden="true" />
+                    <span>Đăng xuất</span>
                   </button>
                 </div>
               )}
@@ -196,26 +206,26 @@ const Navbar = () => {
               <Link to="/login" className="btn-nav-login">
                 Đăng nhập
               </Link>
-              <Link to="/register" className="btn-nav-signup">
+              <Link to="/register" className="btn-nav-register">
                 Đăng ký
               </Link>
             </div>
           )}
 
-          {/* Mobile Hamburger Toggle Button */}
+          {/* Mobile Menu Toggle Button */}
           <button
             type="button"
             className="navbar-mobile-toggle-btn"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            aria-label="Mở menu điều hướng"
+            aria-label="Mở menu di động"
             aria-expanded={mobileMenuOpen}
           >
-            {mobileMenuOpen ? <X size={24} strokeWidth={1.75} /> : <Menu size={24} strokeWidth={1.75} />}
+            {mobileMenuOpen ? <X size={22} strokeWidth={2} /> : <Menu size={22} strokeWidth={2} />}
           </button>
         </div>
       </div>
 
-      {/* Mobile Navigation Slide-out Drawer */}
+      {/* Mobile Drawer Navigation */}
       {mobileMenuOpen && (
         <div className="mobile-drawer-overlay" onClick={() => setMobileMenuOpen(false)}>
           <div className="mobile-drawer-content" onClick={(e) => e.stopPropagation()}>

@@ -62,6 +62,11 @@ public class OrderServiceImpl implements OrderService {
             throw new IllegalStateException("Khóa học hiện chưa được phát hành để đăng ký.");
         }
 
+        // BR-10 / D-12: Giảng viên không thể mua khóa học của chính mình
+        if (course.getInstructorId() != null && course.getInstructorId().equals(userId)) {
+            throw new IllegalStateException("Giảng viên không thể mua khóa học do chính mình giảng dạy.");
+        }
+
         // 1. Kiểm tra nếu học viên đã sở hữu khóa học này rồi (ACTIVE hoặc Completed)
         boolean alreadyEnrolled = enrollmentRepository.isUserEnrolledActive(userId, courseId);
         if (alreadyEnrolled) {
@@ -198,6 +203,14 @@ public class OrderServiceImpl implements OrderService {
 
         if (payableCartItems.isEmpty()) {
             throw new IllegalStateException("Tất cả khóa học trong giỏ hàng của bạn đã được thanh toán thành công.");
+        }
+
+        // BR-10 / D-12: Giảng viên không thể mua khóa học của chính mình
+        for (CartItem ci : payableCartItems) {
+            Course c = courseRepository.findById(ci.getCourseId()).orElse(null);
+            if (c != null && c.getInstructorId() != null && c.getInstructorId().equals(userId)) {
+                throw new IllegalStateException("Giỏ hàng chứa khóa học do chính bạn giảng dạy ('" + c.getTitle() + "'). Vui lòng xóa khỏi giỏ hàng trước khi thanh toán.");
+            }
         }
 
         // Tính toán số tiền sau khi áp dụng mã giảm giá

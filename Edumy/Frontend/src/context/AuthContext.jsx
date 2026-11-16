@@ -1,9 +1,35 @@
 import { createContext, useState, useEffect } from 'react';
+import { jwtDecode } from 'jwt-decode';
 import api from '../api/axiosConfig';
 import { authApi } from '../api/modules/authApi';
 import { courseApi } from '../api/modules/courseApi';
 
 export const AuthContext = createContext();
+
+// Helper an toàn giải mã JWT Token hỗ trợ tiếng Việt UTF-8 chuẩn xác
+const parseJwtPayload = (token) => {
+  if (!token || typeof token !== 'string') return null;
+  try {
+    // 1. Thử dùng thư viện jwtDecode chuyên dụng
+    return jwtDecode(token);
+  } catch (err) {
+    try {
+      // 2. Fallback Base64URL + decodeURIComponent UTF-8
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(
+        atob(base64)
+          .split('')
+          .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+          .join('')
+      );
+      return JSON.parse(jsonPayload);
+    } catch (fallbackErr) {
+      console.error('Failed to parse token payload:', fallbackErr);
+      return null;
+    }
+  }
+};
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -23,13 +49,17 @@ export const AuthProvider = ({ children }) => {
 
     if (token) {
       try {
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        setUser({
-          id: payload.sub || payload.nameid || payload.id || savedUser?.id,
-          email: payload.email || savedUser?.email,
-          fullName: payload.unique_name || payload.name || savedUser?.fullName || (payload.email ? payload.email.split('@')[0] : 'User'),
-          role: payload.role || savedUser?.role || 'Student'
-        });
+        const payload = parseJwtPayload(token);
+        if (payload) {
+          setUser({
+            id: payload.sub || payload.nameid || payload.id || savedUser?.id,
+            email: payload.email || savedUser?.email,
+            fullName: savedUser?.fullName || payload.unique_name || payload.name || (payload.email ? payload.email.split('@')[0] : 'User'),
+            role: payload.role || savedUser?.role || 'Student'
+          });
+        } else if (savedUser) {
+          setUser(savedUser);
+        }
       } catch (error) {
         console.error('Invalid token', error);
         localStorage.removeItem('token');
@@ -46,14 +76,20 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem('token', token);
     
     let userId = null;
+    let decodedName = fullName;
     try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      userId = payload.sub || payload.nameid || payload.id;
+      const payload = parseJwtPayload(token);
+      if (payload) {
+        userId = payload.sub || payload.nameid || payload.id;
+        if (!decodedName && (payload.unique_name || payload.name)) {
+          decodedName = payload.unique_name || payload.name;
+        }
+      }
     } catch (e) {
       console.error('Failed to parse token payload', e);
     }
 
-    const userData = { id: userId, email, fullName, role };
+    const userData = { id: userId, email, fullName: decodedName || fullName, role };
     localStorage.setItem('user_profile', JSON.stringify(userData));
     setUser(userData);
     return message;
@@ -65,21 +101,10 @@ export const AuthProvider = ({ children }) => {
     
     // Safely extract claims directly from Google ID Token
     try {
-      if (googleToken && googleToken.includes('.')) {
-        const parts = googleToken.split('.');
-        if (parts.length >= 2) {
-          const base64Url = parts[1];
-          const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-          const jsonPayload = decodeURIComponent(
-            atob(base64)
-              .split('')
-              .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-              .join('')
-          );
-          const gPayload = JSON.parse(jsonPayload);
-          if (gPayload.name) googleName = gPayload.name;
-          if (gPayload.email) googleEmail = gPayload.email;
-        }
+      const gPayload = parseJwtPayload(googleToken);
+      if (gPayload) {
+        if (gPayload.name) googleName = gPayload.name;
+        if (gPayload.email) googleEmail = gPayload.email;
       }
     } catch (e) {
       console.warn('Client Google token decoding fallback:', e);
@@ -91,14 +116,16 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem('token', token);
     let userId = null;
     let email = googleEmail || response.data?.email || 'google-user';
-    let resolvedName = googleName || fullName || 'Google User';
+    let resolvedName = fullName || googleName || 'Google User';
 
     try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      userId = payload.sub || payload.nameid || payload.id;
-      if (payload.email) email = payload.email;
-      if (payload.unique_name || payload.name) {
-        resolvedName = payload.unique_name || payload.name;
+      const payload = parseJwtPayload(token);
+      if (payload) {
+        userId = payload.sub || payload.nameid || payload.id;
+        if (payload.email) email = payload.email;
+        if (payload.unique_name || payload.name) {
+          resolvedName = payload.unique_name || payload.name;
+        }
       }
     } catch (e) {
       console.error('Failed to parse token payload', e);

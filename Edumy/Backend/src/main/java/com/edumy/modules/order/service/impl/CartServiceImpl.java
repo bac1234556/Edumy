@@ -124,6 +124,11 @@ public class CartServiceImpl implements CartService {
             throw new NoSuchElementException("Khóa học không tồn tại hoặc chưa xuất bản.");
         }
 
+        // BR-10 / D-12: Giảng viên không thể mua khóa học của chính mình
+        if (course.getInstructorId() != null && course.getInstructorId().equals(userId)) {
+            throw new IllegalStateException("Giảng viên không thể mua khóa học do chính mình giảng dạy.");
+        }
+
         boolean alreadyEnrolled = enrollmentRepository.isUserEnrolledActive(userId, courseId);
         if (alreadyEnrolled) {
             throw new IllegalStateException("Bạn đã sở hữu khóa học này rồi. Vui lòng vào phòng học để tiếp tục.");
