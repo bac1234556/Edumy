@@ -254,7 +254,7 @@ function AdminDashboard() {
             animation: 'fadeIn 0.2s ease-in'
           }}
         >
-          <span>{feedbackMsg.type === 'error' ? '⚠️' : '✓'}</span>
+          <i className={feedbackMsg.type === 'error' ? 'bi bi-exclamation-triangle-fill' : 'bi bi-check-circle-fill'}></i>
           <span>{feedbackMsg.text}</span>
         </div>
       )}
@@ -481,7 +481,7 @@ function AdminDashboard() {
                 </div>
               ) : filteredCourses.length === 0 ? (
                 <div className="admin-empty-state">
-                  <div className="admin-empty-icon">📂</div>
+                  <div className="admin-empty-icon"><i className="bi bi-folder2-open"></i></div>
                   <h4 className="admin-empty-title">Không tìm thấy khóa học nào</h4>
                   <p className="admin-empty-desc">Thử thay đổi từ khóa tìm kiếm hoặc bộ lọc trạng thái phía trên.</p>
                 </div>
@@ -717,7 +717,7 @@ function AdminDashboard() {
                 </div>
               ) : filteredUsers.length === 0 ? (
                 <div className="admin-empty-state">
-                  <div className="admin-empty-icon">👥</div>
+                  <div className="admin-empty-icon"><i className="bi bi-people"></i></div>
                   <h4 className="admin-empty-title">Không tìm thấy người dùng phù hợp</h4>
                   <p className="admin-empty-desc">Vui lòng kiểm tra lại bộ lọc hoặc từ khóa tìm kiếm.</p>
                 </div>

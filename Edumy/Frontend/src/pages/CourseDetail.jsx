@@ -768,13 +768,13 @@ function CourseDetail() {
                 </div>
               </div>
 
-              {/* Feature 2: Smart Sentiment Filter Tabs */}
+              {/* Review Rating Filter Tabs */}
               {course.reviews?.length > 0 && (
                 <div className="d-flex flex-wrap align-items-center gap-2 mb-4 pb-3 border-bottom">
-                  <span className="small text-muted fw-semibold me-1">Lọc theo cảm xúc:</span>
+                  <span className="small text-muted fw-semibold me-1">Lọc đánh giá:</span>
                   <button
                     type="button"
-                    className={`btn btn-sm ${filterSentiment === 'ALL' ? 'btn-dark' : 'btn-outline-secondary bg-white text-dark'} rounded-pill px-3 py-1`}
+                    className={`btn btn-sm ${filterSentiment === 'ALL' ? 'btn-dark' : 'btn-outline-secondary bg-white text-dark'} rounded-2 px-3 py-1`}
                     style={{ fontSize: '0.8rem' }}
                     onClick={() => setFilterSentiment('ALL')}
                   >
@@ -782,27 +782,27 @@ function CourseDetail() {
                   </button>
                   <button
                     type="button"
-                    className={`btn btn-sm ${filterSentiment === 'POSITIVE' ? 'btn-success text-white' : 'btn-outline-success bg-white'} rounded-pill px-3 py-1`}
+                    className={`btn btn-sm ${filterSentiment === 'POSITIVE' ? 'btn-success text-white' : 'btn-outline-success bg-white'} rounded-2 px-3 py-1 d-inline-flex align-items-center gap-1`}
                     style={{ fontSize: '0.8rem' }}
                     onClick={() => setFilterSentiment('POSITIVE')}
                   >
-                    🌿 Tích cực ({course.reviews.filter(r => (r.sentimentLabel || '').toUpperCase() === 'POSITIVE' || (r.sentimentLabel || '').toUpperCase() === 'TÍCH CỰC' || r.rating >= 4).length})
+                    <CheckCircle size={13} strokeWidth={1.75} /> 4–5 Sao ({course.reviews.filter(r => r.rating >= 4).length})
                   </button>
                   <button
                     type="button"
-                    className={`btn btn-sm ${filterSentiment === 'NEUTRAL' ? 'btn-warning text-dark' : 'btn-outline-warning bg-white text-dark'} rounded-pill px-3 py-1`}
+                    className={`btn btn-sm ${filterSentiment === 'NEUTRAL' ? 'btn-warning text-dark' : 'btn-outline-warning bg-white text-dark'} rounded-2 px-3 py-1 d-inline-flex align-items-center gap-1`}
                     style={{ fontSize: '0.8rem' }}
                     onClick={() => setFilterSentiment('NEUTRAL')}
                   >
-                    💬 Trung tính ({course.reviews.filter(r => (r.sentimentLabel || '').toUpperCase() === 'NEUTRAL' || (r.sentimentLabel || '').toUpperCase() === 'TRUNG TÍNH' || r.rating === 3).length})
+                    <MessageSquare size={13} strokeWidth={1.75} /> 3 Sao ({course.reviews.filter(r => r.rating === 3).length})
                   </button>
                   <button
                     type="button"
-                    className={`btn btn-sm ${filterSentiment === 'NEGATIVE' ? 'btn-danger text-white' : 'btn-outline-danger bg-white'} rounded-pill px-3 py-1`}
+                    className={`btn btn-sm ${filterSentiment === 'NEGATIVE' ? 'btn-danger text-white' : 'btn-outline-danger bg-white'} rounded-2 px-3 py-1 d-inline-flex align-items-center gap-1`}
                     style={{ fontSize: '0.8rem' }}
                     onClick={() => setFilterSentiment('NEGATIVE')}
                   >
-                    ⚠️ Cần cải thiện ({course.reviews.filter(r => (r.sentimentLabel || '').toUpperCase() === 'NEGATIVE' || (r.sentimentLabel || '').toUpperCase() === 'TIÊU CỰC' || r.rating <= 2).length})
+                    <AlertCircle size={13} strokeWidth={1.75} /> 1–2 Sao ({course.reviews.filter(r => r.rating <= 2).length})
                   </button>
                 </div>
               )}
@@ -1102,8 +1102,8 @@ function CourseDetail() {
                     <CourseCard course={c} />
                     {c.positiveRatingPercent && (
                       <div className="position-absolute top-0 end-0 m-2" style={{ zIndex: 3 }}>
-                        <span className="badge bg-dark bg-opacity-80 text-white px-2 py-1 small rounded-1 shadow-sm">
-                          🔥 {c.positiveRatingPercent}% hài lòng
+                        <span className="badge bg-dark bg-opacity-80 text-white px-2 py-1 small rounded-1 shadow-sm d-inline-flex align-items-center gap-1">
+                          <Star size={11} fill="#fbbf24" color="#fbbf24" /> {c.positiveRatingPercent}% hài lòng
                         </span>
                       </div>
                     )}

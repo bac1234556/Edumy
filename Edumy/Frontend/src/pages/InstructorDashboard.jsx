@@ -262,9 +262,9 @@ function InstructorDashboard() {
         <div className="instructor-header-box">
           <div className="instructor-title-area">
             <h2>
-              <Layers className="text-primary" /> Instructor Studio
+              <Layers className="text-primary" /> Bảng điều hành Giảng viên
             </h2>
-            <p>Quản lý giáo trình, theo dõi KPI doanh thu và đánh giá chất lượng bài giảng từ AI.</p>
+            <p>Quản lý đề cương giáo trình, cộng tác đồng giảng viên, giải đáp hàng đợi Q&amp;A và theo dõi doanh thu.</p>
           </div>
 
           <div className="instructor-header-actions">
@@ -314,32 +314,16 @@ function InstructorDashboard() {
               <div className="kpi-value">{formatPrice(stats.totalRevenue)}</div>
             </div>
 
-            {/* AI Quality Score */}
+            {/* Quality Rating */}
             <div className="kpi-card">
               <div className="kpi-top-row">
-                <span className="kpi-label">Điểm đánh giá chất lượng</span>
+                <span className="kpi-label">Tỷ lệ hài lòng</span>
                 <div className="kpi-icon-wrap indigo">
-                  <Sparkles size={20} />
+                  <Star size={20} />
                 </div>
               </div>
-              <div className="kpi-value">{stats.averageQualityScore || 92}%</div>
+              <div className="kpi-value">{stats.averageQualityScore || 96}%</div>
             </div>
-          </div>
-        )}
-
-        {/* ------------------------------------------------------------------
-            3. ACTIONABLE AI RECOMMENDATIONS
-            ------------------------------------------------------------------ */}
-        {stats?.recommendations && stats.recommendations.length > 0 && (
-          <div className="ai-insights-alert">
-            <h5 className="ai-insights-title">
-              <AlertTriangle size={18} /> Khuyến nghị cải tiến nội dung từ AI Microservice:
-            </h5>
-            <ul className="ai-insights-list">
-              {stats.recommendations.map((rec, i) => (
-                <li key={i}>{rec}</li>
-              ))}
-            </ul>
           </div>
         )}
 
@@ -363,7 +347,7 @@ function InstructorDashboard() {
             className={`studio-tab-btn ${activeTab === 'qa' ? 'active' : ''}`}
             onClick={() => setActiveTab('qa')}
           >
-            <MessageSquare size={18} /> Hàng đợi Hỏi đáp (Q&A)
+            <MessageSquare size={18} /> Hàng đợi Hỏi đáp (Q&amp;A)
             {unansweredCount > 0 && (
               <span className="badge bg-danger rounded-pill ms-2 px-2 py-1" style={{ fontSize: '0.72rem' }}>
                 {unansweredCount} cần xử lý
@@ -380,7 +364,7 @@ function InstructorDashboard() {
             className={`studio-tab-btn ${activeTab === 'analytics' ? 'active' : ''}`}
             onClick={() => setActiveTab('analytics')}
           >
-            <BarChart3 size={18} /> Thống kê & Phân tích AI
+            <BarChart3 size={18} /> Thống kê Doanh thu &amp; Đánh giá
           </button>
         </div>
 

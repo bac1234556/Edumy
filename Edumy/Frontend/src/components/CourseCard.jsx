@@ -25,11 +25,12 @@ const CourseCard = ({ course }) => {
     ? (course.thumbnailUrl.startsWith('http') ? course.thumbnailUrl : `${BACKEND_URL}${course.thumbnailUrl}`)
     : (course.image || "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800&q=80");
 
+  const categoryName = course.category?.name || course.categoryName || "Kỹ thuật phần mềm";
   const instructorName = course.instructor?.fullName || course.instructor || "Giảng viên Edumy";
   const instructorTitle = course.instructor?.headline || "Chuyên gia công nghệ";
 
   const price = course.price !== undefined ? course.price : 499000;
-  const originalPrice = course.originalPrice || (price > 0 ? Math.round(price * 1.8) : null);
+  const originalPrice = course.originalPrice || (price > 0 ? Math.round(price * 1.6) : null);
   const discountPercent = originalPrice && originalPrice > price 
     ? Math.round(((originalPrice - price) / originalPrice) * 100) 
     : null;
@@ -37,7 +38,7 @@ const CourseCard = ({ course }) => {
   return (
     <Link
       to={`/courses/${courseId}`}
-      className="edumy-course-card cursor-pointer transition-all duration-200"
+      className="edumy-course-card"
     >
       {/* 1. Thumbnail Box */}
       <div className="card-thumbnail-wrap">
@@ -46,19 +47,18 @@ const CourseCard = ({ course }) => {
           alt={course.title} 
           loading="lazy"
         />
-        {/* Bestseller Badge */}
         {(course.bestseller || course.isBestseller || studentCount > 500) && !isEnrolled && (
           <div className="card-badge-overlay">
-            <span className="badge-bestseller pill-badge">
-              <Award size={12} strokeWidth={2} aria-hidden="true" />
-              Bán chạy nhất
+            <span className="badge-bestseller">
+              <Award size={12} strokeWidth={1.75} aria-hidden="true" />
+              Bán chạy
             </span>
           </div>
         )}
         {isEnrolled && (
           <div className="card-badge-overlay">
-            <span className="badge-owned pill-badge">
-              <CheckCircle2 size={12} strokeWidth={2} aria-hidden="true" />
+            <span className="badge-owned">
+              <CheckCircle2 size={12} strokeWidth={1.75} aria-hidden="true" />
               Đã sở hữu
             </span>
           </div>
@@ -67,26 +67,30 @@ const CourseCard = ({ course }) => {
 
       {/* 2. Course Details */}
       <div className="card-body-content">
+        <div className="card-category-eyebrow">
+          <span>{categoryName}</span>
+        </div>
+
         <h3 className="card-course-title line-clamp-2" title={course.title}>
           {course.title || "Khóa học Lập trình Fullstack Web"}
         </h3>
 
         <p className="card-instructor-meta line-clamp-1">
           <span className="instructor-name">{instructorName}</span>
-          <span className="dot-divider" aria-hidden="true">•</span>
+          <span className="dot-divider" aria-hidden="true">·</span>
           <span className="instructor-title">{instructorTitle}</span>
         </p>
 
-        {/* Thông tin bài học & thời lượng */}
+        {/* Thông tin bài học & thời lượng (Tabular Mono) */}
         <div className="card-curriculum-meta">
           <span className="meta-item">
-            <Clock size={13} strokeWidth={1.75} className="text-slate-500" aria-hidden="true" />
-            {duration} giờ học
+            <Clock size={13} strokeWidth={1.75} aria-hidden="true" />
+            <span>{duration}h</span>
           </span>
-          <span className="dot-divider" aria-hidden="true">•</span>
+          <span className="dot-divider" aria-hidden="true">·</span>
           <span className="meta-item">
-            <BookOpen size={13} strokeWidth={1.75} className="text-slate-500" aria-hidden="true" />
-            {lectureCount} bài giảng
+            <BookOpen size={13} strokeWidth={1.75} aria-hidden="true" />
+            <span>{lectureCount} bài giảng</span>
           </span>
         </div>
 
@@ -97,9 +101,8 @@ const CourseCard = ({ course }) => {
             {[1, 2, 3, 4, 5].map((star) => (
               <Star 
                 key={star} 
-                size={13} 
+                size={12} 
                 strokeWidth={1.75}
-                className={star <= Math.round(Number(ratingScore)) ? "star-solid" : "star-muted"}
                 fill={star <= Math.round(Number(ratingScore)) ? "#d97706" : "none"}
                 color={star <= Math.round(Number(ratingScore)) ? "#d97706" : "#cbd5e1"}
                 aria-hidden="true"
@@ -113,9 +116,9 @@ const CourseCard = ({ course }) => {
         <div className="card-price-row">
           {isEnrolled ? (
             <div className="card-enrolled-footer">
-              <span className="badge-enrolled-pill pill-badge">
-                <CheckCircle2 size={13} strokeWidth={2} aria-hidden="true" />
-                Đã sở hữu
+              <span className="badge-enrolled-pill">
+                <CheckCircle2 size={13} strokeWidth={1.75} aria-hidden="true" />
+                Đã đăng ký
               </span>
               <span
                 onClick={(e) => {
@@ -123,25 +126,27 @@ const CourseCard = ({ course }) => {
                   e.stopPropagation();
                   window.location.href = `/my-courses/${courseId}/learn`;
                 }}
-                className="btn-card-learn cursor-pointer transition-all duration-200 active:scale-95 hover:opacity-90"
+                className="btn-card-learn"
               >
-                <PlayCircle size={14} strokeWidth={1.75} aria-hidden="true" /> Vào học ngay
+                <PlayCircle size={14} strokeWidth={1.75} aria-hidden="true" /> Vào học
               </span>
             </div>
           ) : (
             <>
-              <span className={`price-main ${price === 0 ? 'price-free' : ''}`}>
-                {price === 0 ? "Miễn phí" : `₫${Number(price).toLocaleString('vi-VN')}`}
-              </span>
-
-              {originalPrice && price > 0 && (
-                <span className="price-strikethrough">
-                  ₫${Number(originalPrice).toLocaleString('vi-VN')}
+              <div className="price-stack">
+                <span className={`price-main ${price === 0 ? 'price-free' : ''}`}>
+                  {price === 0 ? "Miễn phí" : `${Number(price).toLocaleString('vi-VN')} ₫`}
                 </span>
-              )}
+
+                {originalPrice && price > 0 && (
+                  <span className="price-strikethrough">
+                    {Number(originalPrice).toLocaleString('vi-VN')} ₫
+                  </span>
+                )}
+              </div>
 
               {discountPercent && (
-                <span className="badge-discount-percent pill-badge">
+                <span className="badge-discount-percent">
                   -{discountPercent}%
                 </span>
               )}
