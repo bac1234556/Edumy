@@ -89,6 +89,9 @@ public class PaymentServiceImpl implements PaymentService {
     @Autowired
     private CourseRepository courseRepository;
 
+    @Autowired(required = false)
+    private com.edumy.payout.api.EarningApi earningApi;
+
     @Autowired
     private OrderItemRepository orderItemRepository;
 
@@ -395,6 +398,31 @@ public class PaymentServiceImpl implements PaymentService {
                     int currentCount = course.getStudentCount() != null ? course.getStudentCount() : 0;
                     course.setStudentCount(currentCount + 1);
                     courseRepository.save(course);
+                }
+            }
+
+            // Ghi nhận sổ thu nhập giảng viên (EarningApi)
+            if (earningApi != null) {
+                List<com.edumy.payout.api.EarningApi.OrderLine> earningLines = new ArrayList<>();
+                for (OrderItem it : items) {
+                    if (it.getCourseId() != null && it.getPrice() != null && it.getPrice().compareTo(BigDecimal.ZERO) > 0) {
+                        Course c = courseRepository.findById(it.getCourseId()).orElse(null);
+                        String cTitle = c != null ? c.getTitle() : "Khóa học #" + it.getCourseId();
+                        earningLines.add(new com.edumy.payout.api.EarningApi.OrderLine(
+                                it.getOrderItemId(),
+                                it.getCourseId(),
+                                cTitle,
+                                it.getPrice().longValue()
+                        ));
+                    }
+                }
+                if (!earningLines.isEmpty()) {
+                    String code = "ORD-" + order.getOrderId();
+                    earningApi.recordForPaidOrder(new com.edumy.payout.api.EarningApi.PaidOrderCommand(
+                            order.getOrderId(),
+                            code,
+                            earningLines
+                    ));
                 }
             }
         }

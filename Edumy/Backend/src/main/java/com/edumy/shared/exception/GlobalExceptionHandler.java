@@ -21,9 +21,10 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<ApiResponse<Void>> handleBusinessException(BusinessException ex) {
+        String code = ex.getCode() != null ? ex.getCode() : (ex.getErrorCode() != null ? ex.getErrorCode().name() : "ERROR");
         return ResponseEntity
                 .status(ex.getStatus())
-                .body(ApiResponse.error(ex.getMessage(), Map.of("code", ex.getErrorCode().name())));
+                .body(ApiResponse.error(ex.getMessage(), Map.of("code", code)));
     }
 
     @ExceptionHandler(NoSuchElementException.class)

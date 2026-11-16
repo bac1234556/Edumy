@@ -38,8 +38,8 @@ public class ApiResponseAdvice implements ResponseBodyAdvice<Object> {
         String path = request.getURI().getPath();
 
         // Preserve raw format for external payment gateway webhooks (SePay, Casso, VNPay IPN),
-        // mobile auth endpoints, and static binary/resource endpoints
-        if (path != null && (path.contains("/webhook/") || path.contains("/vnpay-ipn") || path.contains("/ipn") || path.startsWith("/uploads/") || path.contains("/auth/mobile"))) {
+        // mobile auth endpoints, payout endpoints, and static binary/resource endpoints
+        if (path != null && (path.contains("/webhook/") || path.contains("/vnpay-ipn") || path.contains("/ipn") || path.startsWith("/uploads/") || path.contains("/auth/mobile") || path.contains("/me/earnings") || path.contains("/me/payout-account") || path.contains("/me/withdrawals") || path.contains("/admin/withdrawals"))) {
             return body;
         }
 

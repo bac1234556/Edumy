@@ -3,5 +3,5 @@
  */
 @org.springframework.modulith.ApplicationModule(
         displayName = "04 Commerce",
-        allowedDependencies = {"shared", "authoring :: api", "learning :: api"})
+        allowedDependencies = {"shared", "authoring :: api", "learning :: api", "payout :: api"})
 package com.edumy.commerce;
