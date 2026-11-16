@@ -10,6 +10,7 @@ import com.edumy.modules.auth.service.AuthService;
 import com.edumy.modules.user.model.User;
 import com.edumy.modules.user.repository.UserRepository;
 import com.edumy.modules.user.service.UserActivityService;
+import com.edumy.notification.service.MailService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.Cookie;
@@ -32,17 +33,20 @@ public class AuthServiceImpl implements AuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final UserActivityService userActivityService;
     private final PasswordEncoder passwordEncoder;
+    private final MailService mailService;
 
     public AuthServiceImpl(UserRepository userRepository,
                            RefreshTokenRepository refreshTokenRepository,
                            JwtTokenProvider jwtTokenProvider,
                            UserActivityService userActivityService,
-                           PasswordEncoder passwordEncoder) {
+                           PasswordEncoder passwordEncoder,
+                           MailService mailService) {
         this.userRepository = userRepository;
         this.refreshTokenRepository = refreshTokenRepository;
         this.jwtTokenProvider = jwtTokenProvider;
         this.userActivityService = userActivityService;
         this.passwordEncoder = passwordEncoder;
+        this.mailService = mailService;
     }
 
     @Override
@@ -57,8 +61,17 @@ public class AuthServiceImpl implements AuthService {
         user.setRole(model.getRole() == null || model.getRole().isEmpty() ? "Student" : model.getRole());
         user.setPasswordHash(passwordEncoder.encode(model.getPassword()));
 
+        String verificationCode = String.format("%06d", new SecureRandom().nextInt(1_000_000));
+        user.setVerificationCode(verificationCode);
+        user.setVerificationCodeExpiry(LocalDateTime.now().plusHours(24));
+        user.setIsEmailVerified(false);
+
         userRepository.save(user);
-        return Map.of("message", "User registered successfully.");
+
+        // Send email verification asynchronously via Mailpit
+        mailService.sendEmailVerification(user.getEmail(), user.getFullName(), verificationCode);
+
+        return Map.of("message", "Đăng ký thành công! Vui lòng kiểm tra email để xác thực tài khoản.");
     }
 
     @Override
@@ -248,22 +261,25 @@ public class AuthServiceImpl implements AuthService {
     public Map<String, Object> forgotPassword(ForgotPasswordDto model) {
         User user = userRepository.findByEmail(model.getEmail());
         if (user == null) {
-            return Map.of("message", "If the email is registered, a password reset token has been generated.");
+            return Map.of("message", "Nếu địa chỉ email tồn tại trong hệ thống, hướng dẫn đặt lại mật khẩu đã được gửi.");
         }
 
         String token = UUID.randomUUID().toString().replace("-", "").substring(0, 8).toUpperCase();
         user.setResetToken(token);
-        user.setResetTokenExpiry(LocalDateTime.now().plusMinutes(15));
+        user.setResetTokenExpiry(LocalDateTime.now().plusMinutes(30));
         userRepository.save(user);
 
-        return Map.of("message", "Password reset token generated.", "resetToken", token);
+        // Send password reset email via Mailpit
+        mailService.sendPasswordReset(user.getEmail(), user.getFullName(), token);
+
+        return Map.of("message", "Hướng dẫn đặt lại mật khẩu đã được gửi về email của bạn.");
     }
 
     @Override
     public Map<String, Object> resetPassword(ResetPasswordDto model) {
         User user = userRepository.findByEmail(model.getEmail());
         if (user == null || user.getResetToken() == null || !user.getResetToken().equals(model.getToken()) || user.getResetTokenExpiry().isBefore(LocalDateTime.now())) {
-            throw new BusinessException(ErrorCode.BAD_REQUEST, "Invalid or expired password reset token.");
+            throw new BusinessException(ErrorCode.BAD_REQUEST, "Mã đặt lại mật khẩu không hợp lệ hoặc đã hết hạn.");
         }
 
         user.setPasswordHash(passwordEncoder.encode(model.getNewPassword()));
@@ -271,7 +287,49 @@ public class AuthServiceImpl implements AuthService {
         user.setResetTokenExpiry(null);
         userRepository.save(user);
 
-        return Map.of("message", "Password reset successfully. You can now login with your new password.");
+        // Send password changed notification
+        mailService.sendPasswordChanged(user.getEmail(), user.getFullName(), java.time.Instant.now());
+
+        return Map.of("message", "Mật khẩu đã được thay đổi thành công. Bạn có thể đăng nhập ngay.");
+    }
+
+    @Override
+    public Map<String, Object> verifyEmail(String token) {
+        User user = userRepository.findAll().stream()
+                .filter(u -> token != null && token.equals(u.getVerificationCode()))
+                .findFirst()
+                .orElseThrow(() -> new BusinessException(ErrorCode.BAD_REQUEST, "Mã xác thực email không hợp lệ hoặc không tồn tại."));
+
+        if (user.getVerificationCodeExpiry() != null && user.getVerificationCodeExpiry().isBefore(LocalDateTime.now())) {
+            throw new BusinessException(ErrorCode.BAD_REQUEST, "Mã xác thực email đã hết hạn. Vui lòng yêu cầu gửi lại.");
+        }
+
+        user.setIsEmailVerified(true);
+        user.setVerificationCode(null);
+        user.setVerificationCodeExpiry(null);
+        userRepository.save(user);
+
+        return Map.of("message", "Xác thực email thành công! Tài khoản của bạn đã sẵn sàng sử dụng.");
+    }
+
+    @Override
+    public Map<String, Object> resendVerification(String email) {
+        User user = userRepository.findByEmail(email);
+        if (user == null) {
+            throw new BusinessException(ErrorCode.NOT_FOUND, "Không tìm thấy người dùng với email này.");
+        }
+        if (Boolean.TRUE.equals(user.getIsEmailVerified())) {
+            return Map.of("message", "Tài khoản này đã được xác thực trước đó.");
+        }
+
+        String verificationCode = String.format("%06d", new SecureRandom().nextInt(1_000_000));
+        user.setVerificationCode(verificationCode);
+        user.setVerificationCodeExpiry(LocalDateTime.now().plusHours(24));
+        userRepository.save(user);
+
+        mailService.sendEmailVerification(user.getEmail(), user.getFullName(), verificationCode);
+
+        return Map.of("message", "Thư xác thực mới đã được gửi đến email của bạn.");
     }
 
     private String generateJwtToken(User user) {

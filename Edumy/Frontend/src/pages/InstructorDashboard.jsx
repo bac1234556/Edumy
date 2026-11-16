@@ -18,8 +18,13 @@ import {
   Edit,
   Calendar,
   CheckCircle2,
-  Clock
+  Clock,
+  MessageSquare,
+  Send,
+  HelpCircle,
+  RefreshCw
 } from 'lucide-react';
+import qaApi from '../api/modules/qaApi';
 import EmptyState from '../components/EmptyState';
 import { SkeletonBox } from '../components/Skeleton';
 import './InstructorDashboard.css';
@@ -32,9 +37,18 @@ function InstructorDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  // Tabs: 'courses' | 'invitations' | 'analytics' | 'students'
+  // Tabs: 'courses' | 'invitations' | 'qa' | 'analytics' | 'students'
   const [activeTab, setActiveTab] = useState('courses');
   const [invitations, setInvitations] = useState([]);
+
+  // Q&A Waiting Queue (UC-I22 oldest-first unanswered queue)
+  const [qaQuestions, setQaQuestions] = useState([]);
+  const [loadingQa, setLoadingQa] = useState(false);
+  const [qaStatusFilter, setQaStatusFilter] = useState('unanswered'); // 'unanswered' | 'all'
+  const [qaCourseFilter, setQaCourseFilter] = useState('');
+  const [qaReplies, setQaReplies] = useState({});
+  const [submittingReplyId, setSubmittingReplyId] = useState(null);
+  const [unansweredCount, setUnansweredCount] = useState(0);
 
   // Student roster state for selected course
   const [selectedCourseForRoster, setSelectedCourseForRoster] = useState(null);
@@ -136,6 +150,74 @@ function InstructorDashboard() {
       fetchRoster();
     }
   }, [activeTab, selectedCourseForRoster]);
+
+  // Fetch Q&A Waiting Queue (UC-I22 oldest-first unanswered queue)
+  const fetchQaQueue = async () => {
+    try {
+      setLoadingQa(true);
+      const params = {
+        status: qaStatusFilter,
+        page: 0,
+        size: 50
+      };
+      if (qaCourseFilter) params.courseId = Number(qaCourseFilter);
+      const res = await qaApi.getInstructorQuestions(params);
+      const items = res.data?.content || (Array.isArray(res.data) ? res.data : []);
+      setQaQuestions(items);
+      if (qaStatusFilter === 'unanswered') {
+        setUnansweredCount(items.length);
+      }
+    } catch (err) {
+      console.warn('Could not fetch QA queue:', err);
+      setQaQuestions([]);
+    } finally {
+      setLoadingQa(false);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === 'qa') {
+      fetchQaQueue();
+    }
+  }, [activeTab, qaStatusFilter, qaCourseFilter]);
+
+  // Initial load to get badge count of unanswered questions
+  useEffect(() => {
+    qaApi.getInstructorQuestions({ status: 'unanswered', page: 0, size: 50 })
+      .then(res => {
+        const items = res.data?.content || (Array.isArray(res.data) ? res.data : []);
+        setUnansweredCount(items.length);
+      })
+      .catch(() => {});
+  }, []);
+
+  const handleSendQaReply = async (questionId) => {
+    const text = (qaReplies[questionId] || '').trim();
+    if (!text) {
+      alert('Vui lòng nhập nội dung câu trả lời.');
+      return;
+    }
+    try {
+      setSubmittingReplyId(questionId);
+      await qaApi.postAnswer(questionId, { content: text });
+      setQaReplies(prev => ({ ...prev, [questionId]: '' }));
+      alert('Đã gửi phản hồi thành công! Hệ thống đã gửi email thông báo tới học viên.');
+      fetchQaQueue();
+    } catch (err) {
+      alert(err.response?.data?.message || 'Không thể gửi phản hồi.');
+    } finally {
+      setSubmittingReplyId(null);
+    }
+  };
+
+  const handleResolveQa = async (questionId) => {
+    try {
+      await qaApi.toggleResolve(questionId);
+      fetchQaQueue();
+    } catch (err) {
+      alert('Không thể đổi trạng thái câu hỏi.');
+    }
+  };
 
   // Trigger AI content reanalysis
   const handleTriggerAnalysis = async (courseId) => {
@@ -278,6 +360,17 @@ function InstructorDashboard() {
             <Users size={18} /> Lời mời Đồng giảng viên ({invitations.filter(i => i.status === 'PENDING').length})
           </button>
           <button
+            className={`studio-tab-btn ${activeTab === 'qa' ? 'active' : ''}`}
+            onClick={() => setActiveTab('qa')}
+          >
+            <MessageSquare size={18} /> Hàng đợi Hỏi đáp (Q&A)
+            {unansweredCount > 0 && (
+              <span className="badge bg-danger rounded-pill ms-2 px-2 py-1" style={{ fontSize: '0.72rem' }}>
+                {unansweredCount} cần xử lý
+              </span>
+            )}
+          </button>
+          <button
             className={`studio-tab-btn ${activeTab === 'students' ? 'active' : ''}`}
             onClick={() => setActiveTab('students')}
           >
@@ -350,6 +443,157 @@ function InstructorDashboard() {
                     </tbody>
                   </table>
                 </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* TAB: QA WAITING QUEUE (UC-I22 Oldest-First Queue) */}
+        {activeTab === 'qa' && (
+          <div className="roster-card mb-4">
+            <div className="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+              <div>
+                <h4 className="analytics-panel-title mb-1 d-flex align-items-center gap-2">
+                  <MessageSquare size={20} className="text-primary" />
+                  Hàng đợi giải đáp câu hỏi (UC-I22: Oldest-First Queue)
+                </h4>
+                <p className="text-muted small mb-0">
+                  Các câu hỏi chưa giải đáp được xếp theo thứ tự thời gian cũ nhất lên trước nhằm đảm bảo phản hồi học viên kịp thời.
+                </p>
+              </div>
+
+              <div className="d-flex align-items-center gap-2 flex-wrap">
+                {/* Course Filter */}
+                <select
+                  className="form-select form-select-sm"
+                  style={{ width: '220px' }}
+                  value={qaCourseFilter}
+                  onChange={(e) => setQaCourseFilter(e.target.value)}
+                >
+                  <option value="">Tất cả các khóa học</option>
+                  {courses.map(c => (
+                    <option key={c.courseId} value={c.courseId}>{c.title}</option>
+                  ))}
+                </select>
+
+                {/* Status Toggle */}
+                <div className="btn-group btn-group-sm">
+                  <button
+                    type="button"
+                    className={`btn ${qaStatusFilter === 'unanswered' ? 'btn-primary' : 'btn-outline-secondary'}`}
+                    onClick={() => setQaStatusFilter('unanswered')}
+                  >
+                    Chưa trả lời ({unansweredCount})
+                  </button>
+                  <button
+                    type="button"
+                    className={`btn ${qaStatusFilter === 'all' ? 'btn-primary' : 'btn-outline-secondary'}`}
+                    onClick={() => setQaStatusFilter('all')}
+                  >
+                    Tất cả câu hỏi
+                  </button>
+                </div>
+
+                <button
+                  type="button"
+                  className="btn btn-sm btn-outline-primary d-flex align-items-center gap-1"
+                  onClick={fetchQaQueue}
+                  title="Tải lại hàng đợi"
+                >
+                  <RefreshCw size={14} className={loadingQa ? 'spin' : ''} />
+                </button>
+              </div>
+            </div>
+
+            {loadingQa ? (
+              <div className="text-center py-5">
+                <div className="spinner-border text-primary spinner-border-sm me-2"></div>
+                <span className="text-muted">Đang tải hàng đợi câu hỏi...</span>
+              </div>
+            ) : qaQuestions.length === 0 ? (
+              <div className="text-center py-5 bg-light rounded-3">
+                <CheckCircle2 size={40} className="text-success mb-2" />
+                <h5 className="fw-bold">Tuyệt vời! Không còn câu hỏi nào đang chờ giải đáp</h5>
+                <p className="text-muted small mb-0">
+                  {qaStatusFilter === 'unanswered'
+                    ? 'Bạn đã phản hồi toàn bộ thắc mắc của học viên trên các khóa học bạn phụ trách.'
+                    : 'Chưa có câu hỏi nào từ học viên cho các khóa học đã chọn.'}
+                </p>
+              </div>
+            ) : (
+              <div className="d-flex flex-column gap-3">
+                {qaQuestions.map((q) => (
+                  <div
+                    key={q.questionId}
+                    className="p-3 border rounded-3 bg-white shadow-sm"
+                    style={{ borderLeft: q.isResolved ? '4px solid #10b981' : '4px solid #f59e0b' }}
+                  >
+                    <div className="d-flex justify-content-between align-items-start gap-2 mb-2">
+                      <div>
+                        <span className="badge bg-primary-subtle text-primary me-2 px-2 py-1">
+                          {q.courseTitle || `Khóa học #${q.courseId}`}
+                        </span>
+                        {q.isResolved ? (
+                          <span className="badge bg-success-subtle text-success px-2 py-1">
+                            <CheckCircle2 size={12} className="me-1" /> Đã giải quyết
+                          </span>
+                        ) : (
+                          <span className="badge bg-warning-subtle text-warning px-2 py-1">
+                            <Clock size={12} className="me-1" /> Chờ giảng viên trả lời
+                          </span>
+                        )}
+                        <h5 className="fw-bold mt-2 mb-1">{q.title}</h5>
+                        <div className="small text-muted d-flex align-items-center gap-2">
+                          <span>Học viên: <strong>{q.askerName || 'Ẩn danh'}</strong></span>
+                          <span>&bull;</span>
+                          <span>Gửi lúc: {new Date(q.createdAt).toLocaleString('vi-VN')}</span>
+                          <span>&bull;</span>
+                          <span>{q.answerCount || 0} câu trả lời</span>
+                        </div>
+                      </div>
+
+                      <button
+                        type="button"
+                        className={`btn btn-sm ${q.isResolved ? 'btn-outline-secondary' : 'btn-outline-success'}`}
+                        onClick={() => handleResolveQa(q.questionId)}
+                      >
+                        {q.isResolved ? 'Mở lại câu hỏi' : 'Đánh dấu đã giải quyết'}
+                      </button>
+                    </div>
+
+                    <p className="text-secondary small mb-3 bg-light p-2 rounded">
+                      {q.contentSnippet}
+                    </p>
+
+                    {/* Quick Instructor Reply Area */}
+                    <div className="pt-2 border-top">
+                      <div className="input-group input-group-sm">
+                        <input
+                          type="text"
+                          className="form-control"
+                          placeholder="Nhập câu trả lời của giảng viên để gửi học viên..."
+                          value={qaReplies[q.questionId] || ''}
+                          onChange={(e) => setQaReplies(prev => ({ ...prev, [q.questionId]: e.target.value }))}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              e.preventDefault();
+                              handleSendQaReply(q.questionId);
+                            }
+                          }}
+                        />
+                        <button
+                          type="button"
+                          className="btn btn-primary d-flex align-items-center gap-1"
+                          onClick={() => handleSendQaReply(q.questionId)}
+                          disabled={submittingReplyId === q.questionId || !(qaReplies[q.questionId] || '').trim()}
+                        >
+                          <Send size={14} />
+                          {submittingReplyId === q.questionId ? 'Đang gửi...' : 'Trả lời & Gửi mail'}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             )}
           </div>

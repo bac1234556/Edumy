@@ -65,6 +65,18 @@ public class User {
     @Column(name = "CreatedAt")
     private LocalDateTime createdAt;
 
+    @Column(name = "EmailVerified")
+    @Builder.Default
+    private Boolean isEmailVerified = true;
+
+    @Column(name = "VerificationCode")
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    private String verificationCode;
+
+    @Column(name = "VerificationCodeExpiry")
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    private LocalDateTime verificationCodeExpiry;
+
     @Column(name = "ResetToken")
     @com.fasterxml.jackson.annotation.JsonIgnore
     private String resetToken;

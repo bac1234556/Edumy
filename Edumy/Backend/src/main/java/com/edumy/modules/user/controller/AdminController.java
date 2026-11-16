@@ -46,6 +46,9 @@ public class AdminController {
     @Autowired
     private UserActivityRepository userActivityRepository;
 
+    @Autowired
+    private com.edumy.notification.service.MailService mailService;
+
     @GetMapping("/activities")
     public ResponseEntity<?> getActivities() {
         var list = userActivityRepository.findAll().stream()
@@ -119,15 +122,32 @@ public class AdminController {
         if (course == null) return ResponseEntity.notFound().build();
 
         String statusStr = "";
+        String reviewNote = "Khóa học cần chỉnh sửa nội dung theo tiêu chuẩn của Edumy.";
         if (body instanceof Map) {
             Object s = ((Map<?, ?>) body).get("status");
             statusStr = s != null ? s.toString() : "";
+            Object n = ((Map<?, ?>) body).get("reviewNote");
+            if (n == null) n = ((Map<?, ?>) body).get("reason");
+            if (n != null) reviewNote = n.toString();
         } else {
             statusStr = body != null ? body.toString().replace("\"", "").trim() : "";
         }
 
         course.setStatus(statusStr);
         courseRepository.save(course);
+
+        // Notify instructor via email
+        if (course.getInstructor() != null && course.getInstructor().getEmail() != null) {
+            String instEmail = course.getInstructor().getEmail();
+            String instName = course.getInstructor().getFullName();
+            if ("Published".equalsIgnoreCase(statusStr)) {
+                mailService.sendCourseApproved(instEmail, instName, course.getTitle(), course.getSlug());
+            } else if ("NeedsReview".equalsIgnoreCase(statusStr) || "Rejected".equalsIgnoreCase(statusStr)) {
+                mailService.sendCourseRejected(instEmail, instName, course.getTitle(), Long.valueOf(course.getCourseId()), reviewNote);
+            } else if ("Hidden".equalsIgnoreCase(statusStr)) {
+                mailService.sendCourseHidden(instEmail, instName, course.getTitle(), Long.valueOf(course.getCourseId()), reviewNote);
+            }
+        }
 
         Map<String, String> response = new HashMap<>();
         response.put("message", "Status updated to " + statusStr);

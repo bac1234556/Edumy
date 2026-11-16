@@ -33,9 +33,21 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:sqlserver://database:1433;databaseName=EduMyDb;encrypt=false;trustServerCertificate=true
       - SPRING_DATASOURCE_USERNAME=sa
       - SPRING_DATASOURCE_PASSWORD=YourPassword123
+      - SPRING_MAIL_HOST=mailpit
+      - SPRING_MAIL_PORT=1025
     depends_on:
       database:
         condition: service_healthy
+      mailpit:
+        condition: service_started
+
+  mailpit:
+    image: 'axllent/mailpit:v1.32.0'
+    container_name: edumy_mailpit
+    restart: unless-stopped
+    ports:
+      - "1025:1025"   # SMTP
+      - "8025:8025"   # Web UI
 
   frontend:
     build:

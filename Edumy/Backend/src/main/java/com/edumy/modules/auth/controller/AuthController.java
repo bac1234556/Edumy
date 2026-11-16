@@ -52,4 +52,20 @@ public class AuthController {
     public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordDto model) {
         return ResponseEntity.ok(authService.resetPassword(model));
     }
+
+    @GetMapping("/verify-email")
+    public ResponseEntity<?> verifyEmailGet(@RequestParam("token") String token) {
+        return ResponseEntity.ok(authService.verifyEmail(token));
+    }
+
+    @PostMapping("/verify-email")
+    public ResponseEntity<?> verifyEmailPost(@RequestBody java.util.Map<String, String> body) {
+        String token = body.getOrDefault("token", body.get("code"));
+        return ResponseEntity.ok(authService.verifyEmail(token));
+    }
+
+    @PostMapping({"/resend-verification", "/verification-email/resend"})
+    public ResponseEntity<?> resendVerification(@RequestBody java.util.Map<String, String> body) {
+        return ResponseEntity.ok(authService.resendVerification(body.get("email")));
+    }
 }

@@ -22,6 +22,22 @@ spring:
   jackson:
     serialization:
       fail-on-empty-beans: false
+  mail:
+    host: ${SPRING_MAIL_HOST:localhost}
+    port: ${SPRING_MAIL_PORT:1025}
+    default-encoding: UTF-8
+    properties:
+      mail:
+        smtp:
+          auth: false
+          starttls:
+            enable: false
+
+edumy:
+  frontend:
+    base-url: ${FRONTEND_BASE_URL:http://localhost:3000}
+  mail:
+    from: ${MAIL_FROM:Edumy Academy <no-reply@edumy.vn>}
 
 server:
   port: ${PORT:5000}

@@ -12,4 +12,6 @@ public interface AuthService {
     AuthResponseDto googleLogin(GoogleLoginDto googleLoginDto, HttpServletResponse response);
     Map<String, Object> forgotPassword(ForgotPasswordDto model);
     Map<String, Object> resetPassword(ResetPasswordDto model);
+    Map<String, Object> verifyEmail(String token);
+    Map<String, Object> resendVerification(String email);
 }

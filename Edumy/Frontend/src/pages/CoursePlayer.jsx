@@ -28,10 +28,12 @@ import {
   Check,
   Inbox,
   Share2,
-  Paperclip
+  Paperclip,
+  MessageSquare
 } from 'lucide-react';
 import QuizTaker from '../components/QuizTaker';
 import QuizResults from '../components/QuizResults';
+import CourseQaTab from '../components/learning/CourseQaTab';
 import confetti from 'canvas-confetti';
 import './CoursePlayer.css';
 
@@ -684,6 +686,13 @@ function CoursePlayer() {
                 <Download size={16} /> Tài liệu đính kèm
                 <span className="tab-badge-counter">{currentAttachments.length}</span>
               </button>
+
+              <button
+                className={`player-tab-button ${activeTab === 'qa' ? 'active' : ''}`}
+                onClick={() => setActiveTab('qa')}
+              >
+                <MessageSquare size={16} /> Hỏi & Đáp (Q&A)
+              </button>
             </nav>
 
             {/* Tab 1: Tổng quan bài học */}
@@ -796,6 +805,15 @@ function CoursePlayer() {
                   </div>
                 ))}
               </div>
+            )}
+
+            {/* Tab 4: Hỏi & Đáp Q&A */}
+            {activeTab === 'qa' && (
+              <CourseQaTab
+                courseId={id}
+                activeLesson={activeLesson}
+                currentUser={user}
+              />
             )}
           </div>
         </main>
