@@ -1,4 +1,4 @@
-package com.edumy.modules.ml.dto;
+package com.edumy.modules.course.dto;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

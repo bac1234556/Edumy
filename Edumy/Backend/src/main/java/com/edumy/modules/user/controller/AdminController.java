@@ -3,8 +3,6 @@ package com.edumy.modules.user.controller;
 import com.edumy.modules.course.model.Category;
 import com.edumy.modules.course.repository.CategoryRepository;
 import com.edumy.modules.course.model.Course;
-import com.edumy.modules.ml.model.CourseMlAnalysis;
-import com.edumy.modules.ml.repository.CourseMlAnalysisRepository;
 import com.edumy.modules.course.repository.CourseRepository;
 import com.edumy.modules.order.model.Order;
 import com.edumy.modules.order.model.OrderItem;
@@ -38,9 +36,6 @@ public class AdminController {
 
     @Autowired
     private OrderRepository orderRepository;
-
-    @Autowired
-    private CourseMlAnalysisRepository courseMlAnalysisRepository;
 
     @Autowired
     private ReviewRepository reviewRepository;
@@ -331,15 +326,11 @@ public class AdminController {
     }
 
     // =========================================================================
-    // ML MONITORING & GOVERNANCE
+    // SYSTEM MONITORING (NO ML DEPENDENCY)
     // =========================================================================
 
     @GetMapping("/ml-monitoring")
     public ResponseEntity<?> getMlMonitoring() {
-        long totalAnalyses = courseMlAnalysisRepository.count();
-        long highRiskCount = courseMlAnalysisRepository.countByRiskLevel("High");
-        long pendingReviews = courseMlAnalysisRepository.countByStatusIn(List.of("NeedsManualReview", "InstructorConfirmationRequired"));
-        
         long totalReviews = reviewRepository.count();
         long posCount = reviewRepository.findAll().stream()
                 .filter(r -> "POSITIVE".equalsIgnoreCase(r.getSentimentLabel()) || "POS".equalsIgnoreCase(r.getSentimentLabel())).count();
@@ -355,93 +346,18 @@ public class AdminController {
         );
         
         Map<String, Object> response = new HashMap<>();
-        response.put("TotalAnalyses", totalAnalyses);
-        response.put("HighRiskCount", highRiskCount);
-        response.put("PendingReviews", pendingReviews);
+        response.put("TotalAnalyses", 0);
+        response.put("HighRiskCount", 0);
+        response.put("PendingReviews", 0);
         response.put("TotalReviews", totalReviews);
         response.put("SentimentStats", sentimentStats);
         response.put("sentimentStats", sentimentStats);
-        response.put("totalAnalyses", totalAnalyses);
-        response.put("highRiskCount", highRiskCount);
-        response.put("pendingReviews", pendingReviews);
+        response.put("totalAnalyses", 0);
+        response.put("highRiskCount", 0);
+        response.put("pendingReviews", 0);
         response.put("totalReviews", totalReviews);
-        
-        List<CourseMlAnalysis> history = courseMlAnalysisRepository.findTop20ByOrderByCreatedAtDesc();
-        List<Map<String, Object>> analysesHistory = history.stream().map(a -> {
-            Map<String, Object> m = new HashMap<>();
-            m.put("id", a.getId());
-            m.put("courseId", a.getCourseId());
-            m.put("courseTitle", a.getCourse() != null ? a.getCourse().getTitle() : null);
-            m.put("primaryCategory", a.getPrimaryCategory());
-            m.put("confidence", a.getConfidence());
-            m.put("qualityScore", a.getQualityScore());
-            m.put("riskLevel", a.getRiskLevel());
-            m.put("status", a.getStatus());
-            m.put("createdAt", a.getCreatedAt());
-            return m;
-        }).collect(Collectors.toList());
-        
-        response.put("AnalysesHistory", analysesHistory);
-        response.put("analysesHistory", analysesHistory);
+        response.put("AnalysesHistory", List.of());
+        response.put("analysesHistory", List.of());
         return ResponseEntity.ok(response);
     }
-
-    @PostMapping("/ml-analyses/{id}/approve")
-    public ResponseEntity<?> approveMlAnalysis(@PathVariable Integer id) {
-        CourseMlAnalysis analysis = courseMlAnalysisRepository.findById(id).orElse(null);
-        if (analysis == null) return ResponseEntity.notFound().build();
-
-        analysis.setStatus("Approved");
-        analysis.setApprovedAt(LocalDateTime.now());
-
-        try {
-            Integer adminId = Integer.parseInt(SecurityContextHolder.getContext().getAuthentication().getName());
-            analysis.setApprovedByUserId(adminId);
-        } catch(Exception ignored) {}
-
-        if (analysis.getCourse() != null) {
-            analysis.getCourse().setStatus("PendingApproval");
-        }
-        
-        courseMlAnalysisRepository.save(analysis);
-
-        Map<String, String> response = new HashMap<>();
-        response.put("message", "ML classification approved.");
-        return ResponseEntity.ok(response);
-    }
-
-    @PostMapping("/ml-analyses/{id}/override")
-    public ResponseEntity<?> overrideMlAnalysis(@PathVariable Integer id, @RequestBody OverrideMlDto dto) {
-        CourseMlAnalysis analysis = courseMlAnalysisRepository.findById(id).orElse(null);
-        if (analysis == null) return ResponseEntity.notFound().build();
-
-        analysis.setStatus("Overridden");
-        analysis.setApprovedAt(LocalDateTime.now());
-
-        try {
-            Integer adminId = Integer.parseInt(SecurityContextHolder.getContext().getAuthentication().getName());
-            analysis.setApprovedByUserId(adminId);
-        } catch(Exception ignored) {}
-
-        Category cat = categoryRepository.findByName(dto.getCategoryName());
-        if (cat != null && analysis.getCourse() != null) {
-            analysis.getCourse().setCategoryId(cat.getCategoryId());
-        }
-
-        if (analysis.getCourse() != null) {
-            analysis.getCourse().setStatus("PendingApproval");
-        }
-        
-        courseMlAnalysisRepository.save(analysis);
-
-        Map<String, String> response = new HashMap<>();
-        response.put("message", "ML classification overridden and course updated.");
-        return ResponseEntity.ok(response);
-    }
-}
-
-class OverrideMlDto {
-    private String categoryName = "";
-    public String getCategoryName() { return categoryName; }
-    public void setCategoryName(String categoryName) { this.categoryName = categoryName; }
 }

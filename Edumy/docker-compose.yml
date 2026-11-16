@@ -21,17 +21,6 @@ services:
       retries: 10
       start_period: 15s
 
-  mlservice:
-    build:
-      context: ./MLService
-      dockerfile: Dockerfile
-    image: ${DOCKER_REGISTRY:-edumy}/edumy-mlservice:${IMAGE_TAG:-latest}
-    container_name: edumy_mlservice
-    ports:
-      - "8000:8000"
-    environment:
-      - PORT=8000
-
   backend:
     build:
       context: ./Backend
@@ -44,12 +33,9 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:sqlserver://database:1433;databaseName=EduMyDb;encrypt=false;trustServerCertificate=true
       - SPRING_DATASOURCE_USERNAME=sa
       - SPRING_DATASOURCE_PASSWORD=YourPassword123
-      - MACHINE_LEARNING_BASE_URL=http://mlservice:8000
     depends_on:
       database:
         condition: service_healthy
-      mlservice:
-        condition: service_started
 
   frontend:
     build:

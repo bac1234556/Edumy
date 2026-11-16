@@ -4,8 +4,6 @@ import com.edumy.modules.course.repository.CategoryRepository;
 import com.edumy.modules.enrollment.model.Certificate;
 import com.edumy.modules.enrollment.repository.CertificateRepository;
 import com.edumy.modules.course.model.Course;
-import com.edumy.modules.ml.service.CourseAiService;
-import com.edumy.modules.ml.repository.CourseMlAnalysisRepository;
 import com.edumy.modules.course.dto.CourseQueryDto;
 import com.edumy.modules.course.repository.CourseRepository;
 import com.edumy.modules.course.repository.CourseTagRepository;
@@ -16,13 +14,11 @@ import com.edumy.modules.course.dto.InstantCourseSearchDTO;
 import com.edumy.modules.enrollment.model.LessonProgress;
 import com.edumy.modules.enrollment.repository.LessonProgressRepository;
 import com.edumy.modules.course.repository.LessonRepository;
-import com.edumy.modules.ml.service.MachineLearningService;
 import com.edumy.common.response.PagedResultDto;
 import com.edumy.modules.quiz.repository.QuizAttemptRepository;
 import com.edumy.modules.quiz.repository.QuizRepository;
 import com.edumy.modules.review.model.Review;
 import com.edumy.modules.review.repository.ReviewRepository;
-import com.edumy.modules.ml.dto.SentimentAnalysisResponse;
 import com.edumy.modules.course.repository.TagRepository;
 import com.edumy.modules.user.service.UserActivityService;
 
@@ -103,15 +99,6 @@ public class CoursesController {
 
     @Autowired
     private ReviewRepository reviewRepository;
-    
-    @Autowired
-    private CourseMlAnalysisRepository courseMlAnalysisRepository;
-
-    @Autowired
-    private com.edumy.modules.ml.service.CourseAiService courseAiService;
-
-    @Autowired
-    private com.edumy.modules.ml.service.MachineLearningService machineLearningService;
 
     @Autowired
     private com.edumy.modules.user.service.UserActivityService userActivityService;
@@ -130,25 +117,17 @@ public class CoursesController {
     }
 
     @GetMapping("/recommend")
-    @PreAuthorize("hasRole('Student')")
     public ResponseEntity<?> getRecommendations() {
-        Integer userId = getCurrentUserId();
-        if (userId == null) return ResponseEntity.status(401).build();
-
-        var recResult = machineLearningService.recommendCourses(userId);
-        List<Integer> recommendedCourseIds = recResult != null ? recResult.getRecommendedCourseIds() : new ArrayList<>(); 
-        
-        if (!recommendedCourseIds.isEmpty()) {
-            List<Course> courses = courseRepository.findAllById(recommendedCourseIds);
-            
-            List<Course> ordered = new ArrayList<>();
-            for (Integer id : recommendedCourseIds) {
-                courses.stream().filter(c -> c.getCourseId().equals(id)).findFirst().ifPresent(ordered::add);
-            }
-            return ResponseEntity.ok(ordered);
-        }
-
-        return ResponseEntity.ok(new ArrayList<Course>());
+        List<Course> courses = courseRepository.findAll().stream()
+                .filter(c -> "Published".equalsIgnoreCase(c.getStatus()))
+                .sorted((c1, c2) -> {
+                    double r1 = c1.getAverageRating() != null ? c1.getAverageRating() : 0.0;
+                    double r2 = c2.getAverageRating() != null ? c2.getAverageRating() : 0.0;
+                    return Double.compare(r2, r1);
+                })
+                .limit(4)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(courses);
     }
 
     @GetMapping
@@ -585,16 +564,8 @@ public class CoursesController {
         review.setRating(dto.getRating());
         review.setComment(dto.getComment());
 
-        // AI Sentiment Analysis
-        com.edumy.modules.ml.dto.SentimentAnalysisResponse sentiment =
-                courseAiService.analyzeSentiment(dto.getRating(), dto.getComment());
-        if (sentiment != null) {
-            review.setSentimentLabel(sentiment.getSentiment());
-            review.setSentimentScore(sentiment.getScore());
-        } else {
-            review.setSentimentLabel(dto.getRating() >= 4 ? "POSITIVE" : (dto.getRating() == 3 ? "NEUTRAL" : "NEGATIVE"));
-            review.setSentimentScore(dto.getRating() >= 4 ? 0.90 : (dto.getRating() == 3 ? 0.50 : 0.20));
-        }
+        review.setSentimentLabel(dto.getRating() >= 4 ? "POSITIVE" : (dto.getRating() == 3 ? "NEUTRAL" : "NEGATIVE"));
+        review.setSentimentScore(dto.getRating() >= 4 ? 0.90 : (dto.getRating() == 3 ? 0.50 : 0.20));
 
         review.setCreatedAt(LocalDateTime.now());
         

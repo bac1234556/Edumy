@@ -38,7 +38,6 @@ public class SecurityConfig {
                 .requestMatchers("/api/categories/**", "/api/Categories/**").permitAll()
                 .requestMatchers("/api/reviews/course/**", "/api/Reviews/course/**").permitAll()
                 .requestMatchers("/api/quizzes/**", "/api/Quizzes/**").permitAll()
-                .requestMatchers("/api/mltest/**", "/api/MLTest/**").permitAll()
                 // Lesson access endpoint: allow permitAll so unauthenticated users can access preview lessons;
                 // Secure check is performed in service/controller based on JWT / enrollment.
                 .requestMatchers("/api/v1/lessons/*/access", "/api/v1/lessons/**", "/api/Lessons/**").permitAll()

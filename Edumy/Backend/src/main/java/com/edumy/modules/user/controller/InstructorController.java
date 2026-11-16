@@ -1,8 +1,6 @@
 package com.edumy.modules.user.controller;
 
 import com.edumy.modules.course.model.Course;
-import com.edumy.modules.ml.model.CourseMlAnalysis;
-import com.edumy.modules.ml.repository.CourseMlAnalysisRepository;
 import com.edumy.modules.course.repository.CourseRepository;
 import com.edumy.modules.enrollment.model.Enrollment;
 import com.edumy.modules.enrollment.repository.EnrollmentRepository;
@@ -36,9 +34,6 @@ public class InstructorController {
 
     @Autowired
     private ReviewRepository reviewRepository;
-
-    @Autowired
-    private CourseMlAnalysisRepository courseMlAnalysisRepository;
 
     private Integer getCurrentUserId() {
         try {
@@ -92,13 +87,7 @@ public class InstructorController {
         List<Object> enrollmentByDate = new ArrayList<>();
         List<Object> sentimentStats = new ArrayList<>();
         
-        List<Double> mlScores = courseMlAnalysisRepository.findAll().stream()
-                .filter(ma -> ma.getCourse() != null && instructorId.equals(ma.getCourse().getInstructorId()))
-                .map(CourseMlAnalysis::getQualityScore)
-                .map(Integer::doubleValue)
-                .collect(Collectors.toList());
-        double averageQualityScore = mlScores.stream().mapToDouble(d -> d).average().orElse(0.0);
-
+        double averageQualityScore = Math.min(100.0, Math.max(80.0, averageRating * 20.0));
         List<String> recommendations = new ArrayList<>();
 
         Map<String, Object> response = new HashMap<>();

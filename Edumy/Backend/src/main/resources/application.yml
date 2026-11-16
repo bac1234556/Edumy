@@ -57,8 +57,7 @@ payment:
     payment-url: ${VNPAY_PAYMENT_URL:https://sandbox.vnpayment.vn/paymentv2/vpcpay.html}
     return-url: ${VNPAY_RETURN_URL:http://localhost:5173/payment/vnpay-return}
 
-machine-learning:
-  base-url: ${MACHINE_LEARNING_BASE_URL:${ML_SERVICE_URL:http://localhost:8000}}
+
 
 logging:
   level:

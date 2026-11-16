@@ -2,7 +2,6 @@ package com.edumy.modules.course.model;
 
 import com.edumy.modules.enrollment.model.Certificate;
 import com.edumy.modules.order.model.CourseCoupon;
-import com.edumy.modules.ml.model.CourseMlAnalysis;
 import com.edumy.modules.enrollment.model.Enrollment;
 import com.edumy.modules.order.model.OrderItem;
 import com.edumy.modules.review.model.Review;
@@ -117,9 +116,6 @@ public class Course {
     @Builder.Default
     private List<Certificate> certificates = new ArrayList<>();
 
-    @OneToMany(mappedBy = "course")
-    @Builder.Default
-    private List<CourseMlAnalysis> mlAnalyses = new ArrayList<>();
     
     @OneToMany(mappedBy = "course")
     @Builder.Default

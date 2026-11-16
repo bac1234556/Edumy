@@ -33,7 +33,6 @@ import {
   Flame,
   Zap
 } from 'lucide-react';
-import SentimentBadge from '../components/SentimentBadge';
 import CourseBundleCard from '../components/CourseBundleCard';
 import CourseCard from '../components/CourseCard';
 import './CourseDetail.css';
@@ -846,11 +845,6 @@ function CourseDetail() {
                           </div>
                         </div>
 
-                        {/* Feature 2: Smart AI Sentiment Badge */}
-                        <SentimentBadge
-                          sentiment={rev.sentimentLabel}
-                          score={rev.sentimentScore}
-                        />
                       </div>
 
                       <p className="mb-0 text-body small mt-2" style={{ lineHeight: '1.6' }}>

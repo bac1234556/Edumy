@@ -15,7 +15,7 @@ pipeline {
         booleanParam(
             name: 'BUILD_DOCKER_IMAGES', 
             defaultValue: true, 
-            description: 'Build Docker Image cho tất cả các dịch vụ (Backend, Frontend, MLService)'
+            description: 'Build Docker Image cho các dịch vụ (Backend, Frontend)'
         )
         booleanParam(
             name: 'PUSH_TO_REGISTRY', 
@@ -159,37 +159,7 @@ pipeline {
                     }
                 }
 
-                // 3. ML SERVICE: Python FastAPI
-                stage('ML Service (FastAPI)') {
-                    steps {
-                        script {
-                            def projDir = env.PROJECT_DIR ?: (fileExists('Edumy/MLService') ? 'Edumy' : '.')
-                            dir("${projDir}/MLService") {
-                                echo "--> [MLService] Kiểm tra cú pháp và cấu hình Python..."
-                                if (isUnix()) {
-                                    sh "python3 -m py_compile main.py || python -m py_compile main.py || true"
-                                } else {
-                                    bat """
-                                        @echo off
-                                        set "PATH=C:\\Users\\bacle\\AppData\\Local\\Programs\\Python\\Python312;C:\\Users\\bacle\\AppData\\Local\\Programs\\Python\\Python312\\Scripts;%PATH%"
-                                        where python >nul 2>&1 || where py >nul 2>&1
-                                        if %ERRORLEVEL% NEQ 0 (
-                                            echo [CANH BAO] Python khong tim thay tren agent, bo qua kiem tra cu phap.
-                                            exit /b 0
-                                        ) else (
-                                            python -m py_compile main.py || py -m py_compile main.py
-                                        )
-                                    """
-                                }
-                            }
-                        }
-                    }
-                    post {
-                        success {
-                            echo "--> [MLService] Hoàn tất bước MLService."
-                        }
-                    }
-                }
+
             }
         }
 
@@ -235,7 +205,7 @@ pipeline {
                     def registry = params.DOCKER_REGISTRY
                     def tag = env.IMAGE_TAG
 
-                    def services = ['edumy-backend', 'edumy-frontend', 'edumy-mlservice']
+                    def services = ['edumy-backend', 'edumy-frontend']
                     for (service in services) {
                         def localImg = "${service}:latest"
                         def remoteImg = "${registry}/${service}:${tag}"
@@ -275,7 +245,7 @@ pipeline {
                     def composeFile = "${projDir}/docker-compose.yml"
 
                     if (isUnix()) {
-                        sh "docker rm -f edumy_sqlserver edumy_backend edumy_frontend edumy_mlservice || true"
+                        sh "docker rm -f edumy_sqlserver edumy_backend edumy_frontend || true"
                         sh "docker compose -p edumy -f ${composeFile} down --remove-orphans || docker-compose -p edumy -f ${composeFile} down || true"
                         sh "docker compose -p edumy -f ${composeFile} up -d || docker-compose -p edumy -f ${composeFile} up -d"
                         sh "docker compose -p edumy -f ${composeFile} ps || docker-compose -p edumy -f ${composeFile} ps"
@@ -288,7 +258,7 @@ pipeline {
                                 exit /b 0
                             )
                             echo [1/3] Don dep container cu tranh xung dot ten hoac port...
-                            docker rm -f edumy_sqlserver edumy_backend edumy_frontend edumy_mlservice 2>nul || ver > nul
+                            docker rm -f edumy_sqlserver edumy_backend edumy_frontend 2>nul || ver > nul
                             docker compose -p edumy -f ${composeFile} down --remove-orphans 2>nul || ver > nul
 
                             echo [2/3] Khoi dong he thong bang Docker Compose...

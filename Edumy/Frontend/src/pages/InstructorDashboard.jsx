@@ -235,7 +235,7 @@ function InstructorDashboard() {
             {/* AI Quality Score */}
             <div className="kpi-card">
               <div className="kpi-top-row">
-                <span className="kpi-label">Điểm chất lượng AI</span>
+                <span className="kpi-label">Điểm đánh giá chất lượng</span>
                 <div className="kpi-icon-wrap indigo">
                   <Sparkles size={20} />
                 </div>
@@ -489,7 +489,7 @@ function InstructorDashboard() {
             {/* Sentiment Breakdown */}
             <div className="analytics-panel-card">
               <h4 className="analytics-panel-title d-flex align-items-center gap-2">
-                <Sparkles size={20} className="text-warning" /> Phân tích cảm xúc học viên (AI)
+                <Sparkles size={20} className="text-warning" /> Phân bổ đánh giá học viên
               </h4>
               {(!stats.sentimentStats || stats.sentimentStats.length === 0) ? (
                 <p className="text-muted small py-4 text-center">Chưa có dữ liệu cảm xúc đánh giá.</p>

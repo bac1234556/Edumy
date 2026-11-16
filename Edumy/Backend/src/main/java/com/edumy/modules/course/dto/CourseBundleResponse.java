@@ -1,11 +1,11 @@
-package com.edumy.modules.ml.dto;
+package com.edumy.modules.course.dto;
 
 import com.edumy.modules.course.model.Course;
-
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

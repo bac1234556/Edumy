@@ -1,13 +1,10 @@
 package com.edumy.modules.review.controller;
 
 import com.edumy.modules.course.model.Course;
-import com.edumy.modules.ml.service.CourseAiService;
 import com.edumy.modules.course.repository.CourseRepository;
 import com.edumy.modules.enrollment.repository.EnrollmentRepository;
-import com.edumy.modules.ml.service.MachineLearningService;
 import com.edumy.modules.review.model.Review;
 import com.edumy.modules.review.repository.ReviewRepository;
-import com.edumy.modules.ml.dto.SentimentAnalysisResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -32,12 +29,6 @@ public class ReviewsController {
 
     @Autowired
     private CourseRepository courseRepository;
-
-    @Autowired
-    private com.edumy.modules.ml.service.MachineLearningService machineLearningService;
-
-    @Autowired
-    private com.edumy.modules.ml.service.CourseAiService courseAiService;
 
     private Integer getCurrentUserId() {
         try {
@@ -84,16 +75,9 @@ public class ReviewsController {
             return ResponseEntity.badRequest().body(Map.of("message", "Số sao đánh giá phải từ 1 đến 5 sao."));
         }
 
-        // Gọi AI Service để phân tích cảm xúc đánh giá kết hợp số sao
-        com.edumy.modules.ml.dto.SentimentAnalysisResponse sentiment = 
-                courseAiService.analyzeSentiment(review.getRating(), review.getComment());
-        if (sentiment != null) {
-            review.setSentimentLabel(sentiment.getSentiment());
-            review.setSentimentScore(sentiment.getScore());
-        } else {
-            review.setSentimentLabel("POSITIVE");
-            review.setSentimentScore(0.85);
-        }
+        int rating = review.getRating();
+        review.setSentimentLabel(rating >= 4 ? "POSITIVE" : (rating == 3 ? "NEUTRAL" : "NEGATIVE"));
+        review.setSentimentScore(rating / 5.0);
 
         review.setCourseId(courseId);
         review.setUserId(userId);

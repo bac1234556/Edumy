@@ -1,7 +1,7 @@
 package com.edumy.modules.user.service;
 
-import com.edumy.modules.ml.model.SearchHistory;
-import com.edumy.modules.ml.repository.SearchHistoryRepository;
+import com.edumy.modules.user.model.SearchHistory;
+import com.edumy.modules.user.repository.SearchHistoryRepository;
 import com.edumy.modules.user.model.UserActivity;
 import com.edumy.modules.user.repository.UserActivityRepository;
 

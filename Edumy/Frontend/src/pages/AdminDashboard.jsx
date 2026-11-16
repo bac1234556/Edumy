@@ -59,23 +59,14 @@ function AdminDashboard() {
     else setRefreshing(true);
 
     try {
-      const [statsRes, coursesRes, usersRes, mlRes] = await Promise.all([
+      const [statsRes, coursesRes, usersRes] = await Promise.all([
         api.get('/admin/stats'),
         api.get('/admin/courses'),
-        api.get('/admin/users'),
-        api.get('/admin/ml-monitoring')
+        api.get('/admin/users')
       ]);
       setStats(statsRes.data || { totalUsers: 0, totalCourses: 0, totalRevenue: 0 });
       setCourses(coursesRes.data || []);
       setUsers(usersRes.data || []);
-      setMlStats(mlRes.data || {
-        totalAnalyses: 0,
-        highRiskCount: 0,
-        pendingReviews: 0,
-        totalReviews: 0,
-        sentimentStats: [],
-        analysesHistory: []
-      });
       try {
         const revRes = await api.get('/v1/admin/reviews');
         setAdminReviews(Array.isArray(revRes.data) ? revRes.data : []);
@@ -323,20 +314,6 @@ function AdminDashboard() {
               <span className="admin-nav-badge">{adminReviews.length}</span>
             </button>
           </li>
-          <li className="admin-nav-item">
-            <button 
-              className={`admin-nav-btn ${activeTab === 'ml' ? 'active' : ''}`}
-              onClick={() => setActiveTab('ml')}
-            >
-              <span className="admin-nav-label">
-                <i className="bi bi-cpu-fill"></i>
-                Giám sát AI & ML
-              </span>
-              {mlStats.highRiskCount > 0 && (
-                <span className="admin-nav-badge danger">{mlStats.highRiskCount}</span>
-              )}
-            </button>
-          </li>
         </ul>
       </aside>
 
@@ -413,15 +390,15 @@ function AdminDashboard() {
 
           <div className="admin-kpi-card">
             <div className="admin-kpi-header">
-              <span className="admin-kpi-label">Cảnh báo An toàn AI</span>
-              <div className="admin-kpi-icon-wrap danger">
-                <i className="bi bi-exclamation-triangle-fill"></i>
+              <span className="admin-kpi-label">Đánh giá học viên</span>
+              <div className="admin-kpi-icon-wrap info">
+                <i className="bi bi-chat-left-quote-fill"></i>
               </div>
             </div>
-            <div className="admin-kpi-value danger">
-              {mlStats.highRiskCount || 0}
+            <div className="admin-kpi-value info">
+              {adminReviews.length || 0}
             </div>
-            <p className="admin-kpi-hint">Nội dung có nguy cơ độc hại hoặc spam cao</p>
+            <p className="admin-kpi-hint">Tổng số phản hồi và nhận xét đã gửi</p>
           </div>
         </div>
 
@@ -580,12 +557,22 @@ function AdminDashboard() {
                                 <i className="bi bi-eye"></i> Mở ẩn
                               </button>
                             ) : (
-                              <button 
-                                className="btn-admin-action success"
-                                onClick={() => handleUpdateStatus(course.courseId, 'Published')}
-                              >
-                                <i className="bi bi-check-circle"></i> Duyệt công khai
-                              </button>
+                              <>
+                                <button 
+                                  className="btn-admin-action success"
+                                  onClick={() => handleUpdateStatus(course.courseId, 'Published')}
+                                  title="Duyệt công khai"
+                                >
+                                  <i className="bi bi-check-circle"></i> Duyệt công khai
+                                </button>
+                                <button 
+                                  className="btn-admin-action outline-danger"
+                                  onClick={() => handleUpdateStatus(course.courseId, 'Rejected')}
+                                  title="Từ chối kèm lý do bắt buộc"
+                                >
+                                  <i className="bi bi-x-lg"></i> Từ chối
+                                </button>
+                              </>
                             )}
                           </div>
                         </td>
@@ -766,191 +753,7 @@ function AdminDashboard() {
           </div>
         )}
 
-        {/* TAB 3: ML MONITORING & MODERATION */}
-        {activeTab === 'ml' && (
-          <div>
-            <div className="ai-mon-grid">
-              {/* Sentiment Overview Panel */}
-              <div className="admin-card" style={{ marginBottom: 0 }}>
-                <div className="admin-card-header">
-                  <div>
-                    <h3 className="admin-card-title">
-                      <i className="bi bi-pie-chart-fill text-primary"></i>
-                      Phân tích Cảm xúc Học viên (Sentiment)
-                    </h3>
-                    <p className="admin-card-subtitle">
-                      Tổng số {mlStats.totalReviews || 0} bài đánh giá đã qua xử lý ML
-                    </p>
-                  </div>
-                </div>
-                <div style={{ padding: '1.25rem 1.5rem' }}>
-                  {(!mlStats.sentimentStats || mlStats.sentimentStats.length === 0) ? (
-                    <p className="text-muted small">Chưa có đủ dữ liệu thống kê cảm xúc.</p>
-                  ) : (
-                    mlStats.sentimentStats.map(stat => (
-                      <div key={stat.label} className="ai-sentiment-item">
-                        <span style={{ fontWeight: 600, color: '#334155' }}>
-                          {stat.label === 'POS' ? '🟢 Tích cực (Positive)' : 
-                           stat.label === 'NEG' ? '🔴 Tiêu cực (Negative)' : 
-                           '🟡 Trung lập (Neutral)'}
-                        </span>
-                        <span style={{ 
-                          fontWeight: 700, 
-                          color: '#0f172a',
-                          background: '#f1f5f9',
-                          padding: '0.2rem 0.6rem',
-                          borderRadius: '6px'
-                        }}>
-                          {stat.count} lượt
-                        </span>
-                      </div>
-                    ))
-                  )}
-                </div>
-              </div>
 
-              {/* High Risk & Safety Panel */}
-              <div className="ai-risk-panel">
-                <div className="ai-risk-panel-title">
-                  <i className="bi bi-shield-slash-fill"></i>
-                  Chỉ số An toàn & Kiểm duyệt Thủ công
-                </div>
-                <p className="ai-risk-panel-desc">
-                  Các khóa học hoặc bình luận vượt ngưỡng cảnh báo spam, độc hại hoặc có độ tin cậy AI thấp.
-                </p>
-
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginTop: '1rem' }}>
-                  <div style={{ background: '#ffffff', padding: '1rem', borderRadius: '8px', border: '1px solid #fecaca' }}>
-                    <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#991b1b', textTransform: 'uppercase' }}>
-                      Cần duyệt thủ công
-                    </div>
-                    <div style={{ fontSize: '1.75rem', fontWeight: 800, color: '#d97706', marginTop: '0.25rem' }}>
-                      {mlStats.pendingReviews || 0}
-                    </div>
-                    <div style={{ fontSize: '0.72rem', color: '#64748b' }}>Độ tin cậy &lt; 65%</div>
-                  </div>
-
-                  <div style={{ background: '#ffffff', padding: '1rem', borderRadius: '8px', border: '1px solid #fecaca' }}>
-                    <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#991b1b', textTransform: 'uppercase' }}>
-                      Nguy cơ cao (High Risk)
-                    </div>
-                    <div style={{ fontSize: '1.75rem', fontWeight: 800, color: '#dc2626', marginTop: '0.25rem' }}>
-                      {mlStats.highRiskCount || 0}
-                    </div>
-                    <div style={{ fontSize: '0.72rem', color: '#64748b' }}>Cảnh báo độc hại / vi phạm</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Auto Classification & Override Table */}
-            <div className="admin-card">
-              <div className="admin-card-header">
-                <div>
-                  <h3 className="admin-card-title">
-                    <i className="bi bi-cpu text-primary"></i>
-                    Nhật ký Tự động Phân loại & Quyền ghi đè (AI Overrides)
-                  </h3>
-                  <p className="admin-card-subtitle">
-                    Kiểm tra dự đoán danh mục và can thiệp điều chỉnh nếu AI phân loại sai
-                  </p>
-                </div>
-              </div>
-
-              <div className="admin-table-container">
-                {(!mlStats.analysesHistory || mlStats.analysesHistory.length === 0) ? (
-                  <div className="admin-empty-state">
-                    <div className="admin-empty-icon">🤖</div>
-                    <h4 className="admin-empty-title">Chưa có dữ liệu phân loại</h4>
-                    <p className="admin-empty-desc">Các phiên phân loại ML mới sẽ tự động hiển thị ở đây.</p>
-                  </div>
-                ) : (
-                  <table className="admin-table">
-                    <thead>
-                      <tr>
-                        <th>Tên Khóa học</th>
-                        <th>Danh mục Dự đoán</th>
-                        <th>Độ tin cậy (Confidence)</th>
-                        <th>Mức độ rủi ro</th>
-                        <th>Trạng thái AI</th>
-                        <th style={{ textAlign: 'right' }}>Quyền kiểm duyệt</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {mlStats.analysesHistory.map(log => {
-                        const confPercent = Math.round((log.confidence || 0) * 100);
-                        const confClass = (log.confidence > 0.85) ? 'high' : (log.confidence > 0.65) ? 'med' : 'low';
-                        return (
-                          <tr key={log.id}>
-                            <td style={{ fontWeight: 600, color: '#0f172a' }}>{log.courseTitle}</td>
-                            <td>
-                              <span style={{ 
-                                background: '#f1f5f9', 
-                                padding: '0.2rem 0.5rem', 
-                                borderRadius: '4px',
-                                fontWeight: 600
-                              }}>
-                                {log.primaryCategory || 'Chưa rõ'}
-                              </span>
-                            </td>
-                            <td>
-                              <div className="ai-confidence-wrap">
-                                <div className="ai-confidence-bar">
-                                  <div 
-                                    className={`ai-confidence-fill ${confClass}`}
-                                    style={{ width: `${confPercent}%` }}
-                                  ></div>
-                                </div>
-                                <span style={{ fontSize: '0.78rem', fontWeight: 700 }}>{confPercent}%</span>
-                              </div>
-                            </td>
-                            <td>
-                              <span className={`admin-badge ${log.riskLevel === 'High' ? 'high-risk' : 'low-risk'}`}>
-                                {log.riskLevel === 'High' ? '⚠️ High Risk' : '✓ An toàn'}
-                              </span>
-                            </td>
-                            <td>
-                              <span style={{ 
-                                fontSize: '0.78rem', 
-                                padding: '0.2rem 0.5rem', 
-                                borderRadius: '4px',
-                                background: '#f8fafc',
-                                border: '1px solid #cbd5e1',
-                                fontWeight: 600
-                              }}>
-                                {log.status}
-                              </span>
-                            </td>
-                            <td>
-                              <div className="admin-action-btn-group">
-                                <button 
-                                  className="btn-admin-action success"
-                                  onClick={() => handleApproveMl(log.id)}
-                                  disabled={log.status === 'Approved'}
-                                >
-                                  <i className="bi bi-check-circle"></i> Duyệt
-                                </button>
-                                <button 
-                                  className="btn-admin-action warning"
-                                  onClick={() => {
-                                    setSelectedAnalysisId(log.id);
-                                    setShowOverrideModal(true);
-                                  }}
-                                >
-                                  <i className="bi bi-pencil-square"></i> Ghi đè
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* TAB: QUẢN LÝ DANH MỤC */}
         {activeTab === 'categories' && (
