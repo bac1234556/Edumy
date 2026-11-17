@@ -3,6 +3,7 @@ package com.edumy.authoring.controller;
 import com.edumy.authoring.model.Course;
 import com.edumy.authoring.model.CourseSection;
 import com.edumy.authoring.model.Lesson;
+import com.edumy.authoring.repository.CourseCoInstructorRepository;
 import com.edumy.authoring.repository.CourseRepository;
 import com.edumy.authoring.repository.CourseSectionRepository;
 import com.edumy.authoring.repository.LessonRepository;
@@ -43,6 +44,7 @@ public class MobileLearningController {
     private final LearningProgressService learningProgressService;
     private final QuizRepository quizRepository;
     private final QuizAttemptRepository quizAttemptRepository;
+    private final CourseCoInstructorRepository courseCoInstructorRepository;
 
     @Value("${edumy.time-zone:Asia/Ho_Chi_Minh}")
     private String timeZone;
@@ -53,7 +55,8 @@ public class MobileLearningController {
                                     EnrollmentRepository enrollmentRepository,
                                     LearningProgressService learningProgressService,
                                     QuizRepository quizRepository,
-                                    QuizAttemptRepository quizAttemptRepository) {
+                                    QuizAttemptRepository quizAttemptRepository,
+                                    CourseCoInstructorRepository courseCoInstructorRepository) {
         this.courseRepository = courseRepository;
         this.courseSectionRepository = courseSectionRepository;
         this.lessonRepository = lessonRepository;
@@ -61,6 +64,7 @@ public class MobileLearningController {
         this.learningProgressService = learningProgressService;
         this.quizRepository = quizRepository;
         this.quizAttemptRepository = quizAttemptRepository;
+        this.courseCoInstructorRepository = courseCoInstructorRepository;
     }
 
     public record EnrollmentCreatedDto(Integer enrollmentId, Integer courseId) {}
@@ -365,13 +369,10 @@ public class MobileLearningController {
         if (course == null || userId == null) return false;
         if (SecurityUtils.hasRole("Admin")) return true;
         if (Objects.equals(course.getInstructorId(), userId)) return true;
-        List<Map<String, Object>> coList = SpecUseCaseController.COURSE_CO_INSTRUCTORS.getOrDefault(course.getCourseId(), Collections.emptyList());
-        for (Map<String, Object> m : coList) {
-            if ("ACCEPTED".equalsIgnoreCase(String.valueOf(m.get("status")))
-                    && Objects.equals(m.get("instructorId"), userId)) {
-                return true;
-            }
-        }
+        boolean isCo = courseCoInstructorRepository.findFirstByCourseIdAndInstructorId(course.getCourseId(), userId)
+                .map(ci -> "ACCEPTED".equalsIgnoreCase(ci.getStatus()))
+                .orElse(false);
+        if (isCo) return true;
         return enrollmentRepository.isUserEnrolledActive(userId, course.getCourseId());
     }
 

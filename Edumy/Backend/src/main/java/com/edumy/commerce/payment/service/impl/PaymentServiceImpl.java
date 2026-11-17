@@ -436,7 +436,7 @@ public class PaymentServiceImpl implements PaymentService {
                     .collect(Collectors.toSet());
 
             for (Integer pCourseId : paidCourseIds) {
-                cartItemRepository.deleteByCartIdAndCourseOrItemId(cart.getId(), pCourseId);
+                cartItemRepository.deleteByCartIdAndCourseId(cart.getId(), pCourseId);
             }
             if (cart.getCartItems() != null) {
                 cart.getCartItems().removeIf(ci -> paidCourseIds.contains(ci.getCourseId()));

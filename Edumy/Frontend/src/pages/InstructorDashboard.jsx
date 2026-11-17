@@ -341,7 +341,7 @@ function InstructorDashboard() {
             className={`studio-tab-btn ${activeTab === 'invitations' ? 'active' : ''}`}
             onClick={() => setActiveTab('invitations')}
           >
-            <Users size={18} /> Lời mời Đồng giảng viên ({invitations.filter(i => i.status === 'PENDING').length})
+            <Users size={18} /> Lời mời Đồng giảng viên ({invitations.filter(i => i.status === 'INVITED' || i.status === 'PENDING').length})
           </button>
           <button
             className={`studio-tab-btn ${activeTab === 'qa' ? 'active' : ''}`}
@@ -399,19 +399,19 @@ function InstructorDashboard() {
                             </span>
                           </td>
                           <td className="text-end">
-                            {inv.status === 'PENDING' ? (
+                            {(inv.status === 'INVITED' || inv.status === 'PENDING') ? (
                               <div className="d-inline-flex gap-2">
                                 <button
                                   type="button"
                                   className="btn btn-sm btn-success"
-                                  onClick={() => handleRespondInvitation(inv.courseId, 'accept')}
+                                  onClick={() => handleRespondInvitation(inv.id || inv.invitationId, 'accept')}
                                 >
                                   Chấp nhận
                                 </button>
                                 <button
                                   type="button"
                                   className="btn btn-sm btn-outline-danger"
-                                  onClick={() => handleRespondInvitation(inv.courseId, 'decline')}
+                                  onClick={() => handleRespondInvitation(inv.id || inv.invitationId, 'decline')}
                                 >
                                   Từ chối
                                 </button>

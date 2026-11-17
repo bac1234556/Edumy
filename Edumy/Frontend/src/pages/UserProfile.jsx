@@ -32,7 +32,13 @@ function UserProfile() {
   const [saving, setSaving] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
 
-  const { user } = useContext(AuthContext);
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [changingPassword, setChangingPassword] = useState(false);
+
+  const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -83,6 +89,34 @@ function UserProfile() {
       alert(err.response?.data?.message || 'Cập nhật hồ sơ thất bại. Vui lòng thử lại.');
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleChangePassword = async (e) => {
+    e.preventDefault();
+    setPasswordError('');
+    if (!currentPassword || !newPassword) {
+      setPasswordError('Vui lòng nhập đầy đủ mật khẩu hiện tại và mật khẩu mới.');
+      return;
+    }
+    if (newPassword.length < 8 || newPassword.length > 72 || !/(?=.*[A-Za-z])(?=.*\d)/.test(newPassword)) {
+      setPasswordError('Mật khẩu mới phải từ 8–72 ký tự, bao gồm cả chữ cái và chữ số.');
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setPasswordError('Mật khẩu xác nhận không khớp.');
+      return;
+    }
+    try {
+      setChangingPassword(true);
+      await api.put('/v1/me/password', { currentPassword, newPassword });
+      alert('Đổi mật khẩu thành công! Vui lòng đăng nhập lại bằng mật khẩu mới.');
+      logout();
+      navigate('/login');
+    } catch (err) {
+      setPasswordError(err.response?.data?.message || 'Không thể đổi mật khẩu. Vui lòng thử lại.');
+    } finally {
+      setChangingPassword(false);
     }
   };
 
@@ -356,14 +390,63 @@ function UserProfile() {
                 <div className="p-4 bg-light rounded-3 border mb-4">
                   <h5 className="fw-bold mb-2">Đổi mật khẩu tài khoản</h5>
                   <p className="text-muted small mb-3">
-                    Để đảm bảo an toàn tuyệt đối, hệ thống Edumy sử dụng quy trình gửi mã xác thực qua Email đã đăng ký để xác nhận đổi mật khẩu mới.
+                    Mật khẩu mới phải từ 8–72 ký tự, có cả chữ và số. Sau khi đổi mật khẩu, tất cả thiết bị sẽ được đăng xuất.
                   </p>
-                  <Link 
-                    to={`/forgot-password`} 
-                    className="btn btn-primary rounded-pill px-4 fw-semibold d-inline-flex align-items-center gap-2"
+                  {passwordError && (
+                    <div className="alert alert-danger py-2 small mb-3">{passwordError}</div>
+                  )}
+                  <form onSubmit={handleChangePassword} className="profile-edit-form" style={{ maxWidth: 460 }}>
+                    <div className="profile-input-group mb-3">
+                      <label htmlFor="current-password">Mật khẩu hiện tại</label>
+                      <input
+                        id="current-password"
+                        type="password"
+                        className="profile-text-input"
+                        value={currentPassword}
+                        onChange={(e) => setCurrentPassword(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className="profile-input-group mb-3">
+                      <label htmlFor="new-password">Mật khẩu mới</label>
+                      <input
+                        id="new-password"
+                        type="password"
+                        className="profile-text-input"
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        placeholder="8–72 ký tự, gồm chữ và số"
+                        required
+                      />
+                    </div>
+                    <div className="profile-input-group mb-3">
+                      <label htmlFor="confirm-password">Xác nhận mật khẩu mới</label>
+                      <input
+                        id="confirm-password"
+                        type="password"
+                        className="profile-text-input"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <button type="submit" className="btn btn-primary rounded-pill px-4 fw-semibold" disabled={changingPassword}>
+                      {changingPassword ? 'Đang cập nhật...' : 'Đổi mật khẩu'}
+                    </button>
+                  </form>
+                </div>
+
+                <div className="p-4 bg-light rounded-3 border">
+                  <h6 className="fw-bold mb-2">Quên mật khẩu hiện tại?</h6>
+                  <p className="text-muted small mb-3">
+                    Nếu bạn không nhớ mật khẩu hiện tại, có thể yêu cầu mã đặt lại mật khẩu qua Email.
+                  </p>
+                  <Link
+                    to={`/forgot-password`}
+                    className="btn btn-outline-primary btn-sm rounded-pill px-3 fw-semibold d-inline-flex align-items-center gap-2"
                   >
-                    <span>Yêu cầu mã đổi mật khẩu</span>
-                    <ArrowRight size={16} />
+                    <span>Yêu cầu mã qua Email</span>
+                    <ArrowRight size={14} />
                   </Link>
                 </div>
               </div>

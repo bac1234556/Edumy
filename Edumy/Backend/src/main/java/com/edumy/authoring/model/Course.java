@@ -72,6 +72,9 @@ public class Course {
     @Builder.Default
     private Boolean needsReanalysis = false;
 
+    @Column(name = "ReviewNote", length = 1000)
+    private String reviewNote;
+
     @Column(name = "CreatedAt")
     private LocalDateTime createdAt;
 

@@ -4,8 +4,10 @@ import com.edumy.shared.exception.BusinessException;
 import com.edumy.shared.exception.ErrorCode;
 import com.edumy.shared.security.SecurityUtils;
 import com.edumy.authoring.model.Course;
+import com.edumy.authoring.model.CourseCoInstructor;
 import com.edumy.authoring.model.CourseSection;
 import com.edumy.authoring.model.Lesson;
+import com.edumy.authoring.repository.CourseCoInstructorRepository;
 import com.edumy.authoring.repository.CourseRepository;
 import com.edumy.authoring.repository.CourseSectionRepository;
 import com.edumy.authoring.repository.LessonRepository;
@@ -28,13 +30,10 @@ import org.springframework.web.bind.annotation.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 /**
- * Implements the full 59 Use Cases (UC-G01..G10, UC-S01..S15, UC-I01..I19, UC-A01..A15)
- * aligned with manhdanhtran/Edumy_Course Modular Monolith specification.
+ * Implements the remaining Use Cases (Admin moderation, Co-instructors, Orders, Free enrollment).
  */
 @RestController
 public class SpecUseCaseController {
@@ -49,15 +48,11 @@ public class SpecUseCaseController {
     private final ReviewRepository reviewRepository;
     private final com.edumy.notification.service.MailService mailService;
 
-    // Metadata stores for spec fields (review notes, co-instructor invitations, moderation notes, lesson text/pdf metadata)
-    private static final Map<Integer, String> COURSE_REVIEW_NOTES = new ConcurrentHashMap<>();
-    private static final Map<Integer, Map<String, Object>> LESSON_EXTRA_CONTENT = new ConcurrentHashMap<>();
-    private static final Map<Integer, Map<String, Object>> REVIEW_MODERATION = new ConcurrentHashMap<>();
-    public static final Map<Integer, List<Map<String, Object>>> COURSE_CO_INSTRUCTORS = new ConcurrentHashMap<>();
-    private static final AtomicInteger INVITATION_ID_SEQ = new AtomicInteger(100);
-
     @org.springframework.beans.factory.annotation.Autowired
     private com.edumy.learning.enrollment.service.LearningProgressService learningProgressService;
+
+    @org.springframework.beans.factory.annotation.Autowired
+    private CourseCoInstructorRepository courseCoInstructorRepository;
 
     @org.springframework.beans.factory.annotation.Autowired
     private com.edumy.authoring.repository.CategoryRepository categoryRepository;
@@ -212,8 +207,9 @@ public class SpecUseCaseController {
                 throw new BusinessException(ErrorCode.BAD_REQUEST, "Chương '" + sec.getTitle() + "' chưa có bài học nào. Vui lòng thêm bài học hoặc xóa chương trống.");
             }
             for (Lesson les : secLessons) {
-                boolean hasContent = (les.getVideoUrl() != null && !les.getVideoUrl().trim().isEmpty()) ||
-                                     LESSON_EXTRA_CONTENT.containsKey(les.getLessonId());
+                boolean hasContent = (les.getVideoUrl() != null && !les.getVideoUrl().trim().isEmpty())
+                        || (les.getContentText() != null && !les.getContentText().trim().isEmpty())
+                        || (les.getPdfUrl() != null && !les.getPdfUrl().trim().isEmpty());
                 if (!hasContent) {
                     throw new BusinessException(ErrorCode.BAD_REQUEST, "Bài học '" + les.getTitle() + "' thuộc chương '" + sec.getTitle() + "' chưa có nội dung hoặc liên kết video.");
                 }
@@ -303,12 +299,16 @@ public class SpecUseCaseController {
         if (body.containsKey("isPreview") && body.get("isPreview") != null) {
             lesson.setIsPreview(Boolean.parseBoolean(body.get("isPreview").toString()));
         }
+        if (body.containsKey("contentType")) {
+            lesson.setContentType(body.get("contentType") != null ? body.get("contentType").toString() : null);
+        }
+        if (body.containsKey("contentText")) {
+            lesson.setContentText(body.get("contentText") != null ? body.get("contentText").toString() : null);
+        }
+        if (body.containsKey("pdfUrl")) {
+            lesson.setPdfUrl(body.get("pdfUrl") != null ? body.get("pdfUrl").toString() : null);
+        }
         lessonRepository.save(lesson);
-
-        Map<String, Object> extra = LESSON_EXTRA_CONTENT.computeIfAbsent(lessonId, k -> new HashMap<>());
-        if (body.containsKey("contentType")) extra.put("contentType", body.get("contentType"));
-        if (body.containsKey("contentText")) extra.put("contentText", body.get("contentText"));
-        if (body.containsKey("pdfUrl")) extra.put("pdfUrl", body.get("pdfUrl"));
 
         return ResponseEntity.ok(lesson);
     }
@@ -326,14 +326,12 @@ public class SpecUseCaseController {
     @GetMapping({"/api/v1/instructor/courses/{courseId}/co-instructors", "/api/instructor/courses/{courseId}/co-instructors"})
     @PreAuthorize("hasAnyRole('Instructor', 'Admin')")
     public ResponseEntity<?> getCoInstructors(@PathVariable Integer courseId) {
-        List<Map<String, Object>> list = COURSE_CO_INSTRUCTORS.getOrDefault(courseId, Collections.emptyList());
-        int totalAccepted = 0;
-        for (Map<String, Object> m : list) {
-            if ("ACCEPTED".equalsIgnoreCase((String) m.get("status"))) {
-                Object s = m.get("shareBps");
-                if (s instanceof Number n) totalAccepted += n.intValue();
-            }
-        }
+        List<CourseCoInstructor> rows = courseCoInstructorRepository.findByCourseIdAndStatusNot(courseId, "REMOVED");
+        List<Map<String, Object>> list = toCoInstructorDtos(rows);
+        int totalAccepted = rows.stream()
+                .filter(r -> "ACCEPTED".equalsIgnoreCase(r.getStatus()))
+                .mapToInt(r -> r.getShareBps() != null ? r.getShareBps() : 0)
+                .sum();
         int mainShareBps = Math.max(0, 10000 - totalAccepted);
         Map<String, Object> res = new LinkedHashMap<>();
         res.put("coInstructors", list);
@@ -352,19 +350,9 @@ public class SpecUseCaseController {
             throw new BusinessException(ErrorCode.BAD_REQUEST, "Vui lòng nhập email giảng viên cần mời.");
         }
 
-        int shareBps = 0;
-        if (body != null && body.get("shareBps") != null) {
-            Object s = body.get("shareBps");
-            if (s instanceof Number n) {
-                shareBps = n.intValue();
-            } else {
-                try {
-                    shareBps = Integer.parseInt(s.toString());
-                } catch (Exception ignored) {}
-            }
-        }
+        int shareBps = parseShareBps(body != null ? body.get("shareBps") : null);
         if (shareBps < 0 || shareBps > 10000) {
-            throw new BusinessException(org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY, "INVALID_SHARE_BPS", "Tỷ lệ chia sẻ phải từ 0 đến 10.000 bps.");
+            throw new BusinessException(HttpStatus.UNPROCESSABLE_ENTITY, "INVALID_SHARE_BPS", "Tỷ lệ chia sẻ phải từ 0 đến 10.000 bps.");
         }
 
         User target = userRepository.findByEmail(email);
@@ -374,51 +362,36 @@ public class SpecUseCaseController {
             throw new BusinessException(ErrorCode.NOT_FOUND, "Không tìm thấy giảng viên hợp lệ với email đã nhập.");
         }
 
-        List<Map<String, Object>> list = COURSE_CO_INSTRUCTORS.computeIfAbsent(courseId, k -> new ArrayList<>());
-
-        int currentTotal = 0;
-        for (Map<String, Object> m : list) {
-            if (!Objects.equals(m.get("instructorId"), target.getUserId())) {
-                String st = (String) m.get("status");
-                if ("ACCEPTED".equalsIgnoreCase(st) || "PENDING".equalsIgnoreCase(st)) {
-                    Object s = m.get("shareBps");
-                    if (s instanceof Number n) currentTotal += n.intValue();
-                }
-            }
-        }
+        List<CourseCoInstructor> rows = courseCoInstructorRepository.findByCourseIdAndStatusNot(courseId, "REMOVED");
+        int currentTotal = rows.stream()
+                .filter(r -> !Objects.equals(r.getInstructorId(), target.getUserId()))
+                .filter(r -> "ACCEPTED".equalsIgnoreCase(r.getStatus()) || "INVITED".equalsIgnoreCase(r.getStatus()))
+                .mapToInt(r -> r.getShareBps() != null ? r.getShareBps() : 0)
+                .sum();
 
         if (currentTotal + shareBps > 10000) {
-            throw new BusinessException(org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY, "CO_INSTRUCTOR_SHARE_EXCEEDS_TOTAL", "Tổng tỷ lệ chia sẻ của các đồng giảng viên vượt quá 100%.");
+            throw new BusinessException(HttpStatus.UNPROCESSABLE_ENTITY, "CO_INSTRUCTOR_SHARE_EXCEEDS_TOTAL",
+                    "Tổng tỷ lệ chia sẻ của các đồng giảng viên vượt quá 100%.");
         }
 
-        Optional<Map<String, Object>> existing = list.stream()
-                .filter(m -> Objects.equals(m.get("instructorId"), target.getUserId()))
-                .findFirst();
-        if (existing.isPresent()) {
-            existing.get().put("status", "PENDING");
-            existing.get().put("shareBps", shareBps);
-            existing.get().put("invitedAt", LocalDateTime.now().toString());
-            return ResponseEntity.ok(existing.get());
-        }
+        CourseCoInstructor entity = courseCoInstructorRepository
+                .findFirstByCourseIdAndInstructorId(courseId, target.getUserId())
+                .orElseGet(() -> CourseCoInstructor.builder()
+                        .courseId(courseId)
+                        .instructorId(target.getUserId())
+                        .build());
 
-        Map<String, Object> invite = new LinkedHashMap<>();
-        invite.put("invitationId", INVITATION_ID_SEQ.incrementAndGet());
-        invite.put("courseId", courseId);
-        invite.put("courseTitle", course.getTitle());
-        invite.put("instructorId", target.getUserId());
-        invite.put("fullName", target.getFullName());
-        invite.put("email", target.getEmail());
-        invite.put("status", "PENDING");
-        invite.put("shareBps", shareBps);
-        invite.put("invitedBy", currentUserId);
-        invite.put("invitedAt", LocalDateTime.now().toString());
-        list.add(invite);
+        entity.setStatus("INVITED");
+        entity.setShareBps(shareBps);
+        entity.setInvitedAt(LocalDateTime.now());
+        entity.setRespondedAt(null);
+        entity = courseCoInstructorRepository.save(entity);
 
         User inviter = currentUserId != null ? userRepository.findById(currentUserId).orElse(null) : null;
         String inviterName = inviter != null ? inviter.getFullName() : "Giảng viên phụ trách";
         mailService.sendCoInstructorInvited(target.getEmail(), target.getFullName(), inviterName, course.getTitle());
 
-        return ResponseEntity.ok(invite);
+        return ResponseEntity.ok(toCoInstructorDto(entity, course, target));
     }
 
     @PutMapping({"/api/v1/instructor/courses/{courseId}/co-instructors/{instructorId}/share",
@@ -435,57 +408,41 @@ public class SpecUseCaseController {
             throw new BusinessException(ErrorCode.FORBIDDEN, "Chỉ giảng viên chính mới có quyền thay đổi tỷ lệ chia sẻ.");
         }
 
-        int newShareBps = 0;
-        if (body != null && body.get("shareBps") != null) {
-            Object s = body.get("shareBps");
-            if (s instanceof Number n) {
-                newShareBps = n.intValue();
-            } else {
-                try {
-                    newShareBps = Integer.parseInt(s.toString());
-                } catch (Exception ignored) {}
-            }
-        }
+        int newShareBps = parseShareBps(body != null ? body.get("shareBps") : null);
         if (newShareBps < 0 || newShareBps > 10000) {
-            throw new BusinessException(org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY, "INVALID_SHARE_BPS", "Tỷ lệ chia sẻ phải từ 0 đến 10.000 bps (0% - 100%).");
+            throw new BusinessException(HttpStatus.UNPROCESSABLE_ENTITY, "INVALID_SHARE_BPS", "Tỷ lệ chia sẻ phải từ 0 đến 10.000 bps (0% - 100%).");
         }
 
-        List<Map<String, Object>> list = COURSE_CO_INSTRUCTORS.computeIfAbsent(courseId, k -> new ArrayList<>());
-        Map<String, Object> targetInvite = null;
+        List<CourseCoInstructor> rows = courseCoInstructorRepository.findByCourseIdAndStatusNot(courseId, "REMOVED");
+        CourseCoInstructor targetRow = null;
         int otherTotal = 0;
-        for (Map<String, Object> m : list) {
-            Integer mId = (Integer) m.get("instructorId");
-            if (Objects.equals(mId, instructorId)) {
-                targetInvite = m;
-            } else {
-                String st = (String) m.get("status");
-                if ("ACCEPTED".equalsIgnoreCase(st) || "PENDING".equalsIgnoreCase(st)) {
-                    Object s = m.get("shareBps");
-                    if (s instanceof Number n) otherTotal += n.intValue();
-                }
+        for (CourseCoInstructor r : rows) {
+            if (Objects.equals(r.getInstructorId(), instructorId)) {
+                targetRow = r;
+            } else if ("ACCEPTED".equalsIgnoreCase(r.getStatus()) || "INVITED".equalsIgnoreCase(r.getStatus())) {
+                otherTotal += r.getShareBps() != null ? r.getShareBps() : 0;
             }
         }
 
-        if (targetInvite == null) {
+        if (targetRow == null) {
             throw new BusinessException(ErrorCode.NOT_FOUND, "Không tìm thấy đồng giảng viên này trong khóa học.");
         }
-
         if (otherTotal + newShareBps > 10000) {
-            throw new BusinessException(org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY, "CO_INSTRUCTOR_SHARE_EXCEEDS_TOTAL",
+            throw new BusinessException(HttpStatus.UNPROCESSABLE_ENTITY, "CO_INSTRUCTOR_SHARE_EXCEEDS_TOTAL",
                     "Tổng tỷ lệ chia sẻ của các đồng giảng viên vượt quá 100%.");
         }
 
-        targetInvite.put("shareBps", newShareBps);
-        int totalAccepted = 0;
-        for (Map<String, Object> m : list) {
-            if ("ACCEPTED".equalsIgnoreCase((String) m.get("status"))) {
-                Object s = m.get("shareBps");
-                if (s instanceof Number n) totalAccepted += n.intValue();
-            }
-        }
+        targetRow.setShareBps(newShareBps);
+        targetRow = courseCoInstructorRepository.save(targetRow);
+
+        int totalAccepted = rows.stream()
+                .filter(r -> "ACCEPTED".equalsIgnoreCase(r.getStatus()))
+                .mapToInt(r -> Objects.equals(r.getInstructorId(), instructorId) ? newShareBps : (r.getShareBps() != null ? r.getShareBps() : 0))
+                .sum();
         int mainShareBps = Math.max(0, 10000 - totalAccepted);
 
-        Map<String, Object> res = new LinkedHashMap<>(targetInvite);
+        User u = userRepository.findById(instructorId).orElse(null);
+        Map<String, Object> res = new LinkedHashMap<>(toCoInstructorDto(targetRow, course, u));
         res.put("mainShareBps", mainShareBps);
         return ResponseEntity.ok(res);
     }
@@ -493,8 +450,13 @@ public class SpecUseCaseController {
     @DeleteMapping({"/api/v1/instructor/courses/{courseId}/co-instructors/{instructorId}", "/api/instructor/courses/{courseId}/co-instructors/{instructorId}"})
     @PreAuthorize("hasAnyRole('Instructor', 'Admin')")
     public ResponseEntity<?> removeCoInstructor(@PathVariable Integer courseId, @PathVariable Integer instructorId) {
-        List<Map<String, Object>> list = COURSE_CO_INSTRUCTORS.getOrDefault(courseId, new ArrayList<>());
-        list.removeIf(m -> Objects.equals(m.get("instructorId"), instructorId));
+        courseCoInstructorRepository.findFirstByCourseIdAndInstructorId(courseId, instructorId)
+                .ifPresent(ci -> {
+                    ci.setStatus("REMOVED");
+                    ci.setShareBps(0);
+                    ci.setRespondedAt(LocalDateTime.now());
+                    courseCoInstructorRepository.save(ci);
+                });
         return ResponseEntity.ok(Map.of("message", "Đã gỡ đồng giảng viên khỏi khóa học."));
     }
 
@@ -502,15 +464,8 @@ public class SpecUseCaseController {
     @PreAuthorize("hasAnyRole('Instructor', 'Admin')")
     public ResponseEntity<?> getMyInvitations() {
         Integer currentUserId = SecurityUtils.getCurrentUserId();
-        List<Map<String, Object>> result = new ArrayList<>();
-        COURSE_CO_INSTRUCTORS.values().forEach(list -> {
-            for (Map<String, Object> inv : list) {
-                if (Objects.equals(inv.get("instructorId"), currentUserId)) {
-                    result.add(inv);
-                }
-            }
-        });
-        return ResponseEntity.ok(result);
+        List<CourseCoInstructor> rows = courseCoInstructorRepository.findByInstructorIdAndStatusNot(currentUserId, "REMOVED");
+        return ResponseEntity.ok(toCoInstructorDtos(rows));
     }
 
     @PostMapping({"/api/v1/instructor/invitations/{invitationId}/accept", "/api/instructor/invitations/{invitationId}/accept"})
@@ -526,16 +481,58 @@ public class SpecUseCaseController {
     }
 
     private ResponseEntity<?> updateInvitationStatus(Integer invitationId, String status, String message) {
-        for (List<Map<String, Object>> list : COURSE_CO_INSTRUCTORS.values()) {
-            for (Map<String, Object> inv : list) {
-                if (Objects.equals(inv.get("invitationId"), invitationId)) {
-                    inv.put("status", status);
-                    inv.put("respondedAt", LocalDateTime.now().toString());
-                    return ResponseEntity.ok(Map.of("invitation", inv, "message", message));
-                }
-            }
+        Integer currentUserId = SecurityUtils.getCurrentUserId();
+        CourseCoInstructor inv = courseCoInstructorRepository.findById(invitationId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "Không tìm thấy lời mời cộng tác."));
+        if (currentUserId != null && !Objects.equals(inv.getInstructorId(), currentUserId) && !SecurityUtils.hasRole("Admin")) {
+            throw new BusinessException(ErrorCode.FORBIDDEN, "Bạn không có quyền xử lý lời mời này.");
         }
-        throw new BusinessException(ErrorCode.NOT_FOUND, "Không tìm thấy lời mời cộng tác.");
+        inv.setStatus(status);
+        inv.setRespondedAt(LocalDateTime.now());
+        inv = courseCoInstructorRepository.save(inv);
+
+        Course course = courseRepository.findById(inv.getCourseId()).orElse(null);
+        User user = userRepository.findById(inv.getInstructorId()).orElse(null);
+        return ResponseEntity.ok(Map.of("invitation", toCoInstructorDto(inv, course, user), "message", message));
+    }
+
+    private int parseShareBps(Object s) {
+        if (s instanceof Number n) return n.intValue();
+        if (s != null) {
+            try {
+                return Integer.parseInt(s.toString());
+            } catch (Exception ignored) {}
+        }
+        return 0;
+    }
+
+    private List<Map<String, Object>> toCoInstructorDtos(List<CourseCoInstructor> rows) {
+        if (rows == null || rows.isEmpty()) return Collections.emptyList();
+        Set<Integer> courseIds = rows.stream().map(CourseCoInstructor::getCourseId).collect(Collectors.toSet());
+        Set<Integer> userIds = rows.stream().map(CourseCoInstructor::getInstructorId).collect(Collectors.toSet());
+        Map<Integer, Course> courseMap = courseRepository.findAllById(courseIds).stream()
+                .collect(Collectors.toMap(Course::getCourseId, c -> c));
+        Map<Integer, User> userMap = userRepository.findAllById(userIds).stream()
+                .collect(Collectors.toMap(User::getUserId, u -> u));
+        return rows.stream()
+                .map(r -> toCoInstructorDto(r, courseMap.get(r.getCourseId()), userMap.get(r.getInstructorId())))
+                .collect(Collectors.toList());
+    }
+
+    private Map<String, Object> toCoInstructorDto(CourseCoInstructor r, Course course, User user) {
+        Map<String, Object> m = new LinkedHashMap<>();
+        m.put("id", r.getId());
+        m.put("invitationId", r.getId());
+        m.put("courseId", r.getCourseId());
+        m.put("courseTitle", course != null ? course.getTitle() : "Khóa học #" + r.getCourseId());
+        m.put("instructorId", r.getInstructorId());
+        m.put("fullName", user != null ? user.getFullName() : null);
+        m.put("email", user != null ? user.getEmail() : null);
+        m.put("status", r.getStatus());
+        m.put("shareBps", r.getShareBps());
+        m.put("invitedAt", r.getInvitedAt() != null ? r.getInvitedAt().toString() : null);
+        m.put("respondedAt", r.getRespondedAt() != null ? r.getRespondedAt().toString() : null);
+        return m;
     }
 
     // Admin Course Approval / Reject with reason / Hide / Unhide (UC-A09..A12)
@@ -545,9 +542,9 @@ public class SpecUseCaseController {
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "Không tìm thấy khóa học."));
         course.setStatus("Published");
+        course.setReviewNote(null);
         course.setUpdatedAt(LocalDateTime.now());
         courseRepository.save(course);
-        COURSE_REVIEW_NOTES.remove(courseId);
 
         if (course.getInstructorId() != null) {
             userRepository.findById(course.getInstructorId()).ifPresent(inst ->
@@ -571,9 +568,9 @@ public class SpecUseCaseController {
             throw new BusinessException(ErrorCode.BAD_REQUEST, "Vui lòng nhập lý do từ chối xét duyệt để giảng viên chỉnh sửa.");
         }
         course.setStatus("NeedsReview");
+        course.setReviewNote(reviewNote.trim());
         course.setUpdatedAt(LocalDateTime.now());
         courseRepository.save(course);
-        COURSE_REVIEW_NOTES.put(courseId, reviewNote.trim());
 
         if (course.getInstructorId() != null) {
             userRepository.findById(course.getInstructorId()).ifPresent(inst ->
@@ -595,9 +592,9 @@ public class SpecUseCaseController {
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "Không tìm thấy khóa học."));
         String reason = (body != null && body.get("reason") != null) ? body.get("reason").trim() : "Quản trị viên ẩn theo chính sách nền tảng";
         course.setStatus("Hidden");
+        course.setReviewNote("Lý do ẩn: " + reason);
         course.setUpdatedAt(LocalDateTime.now());
         courseRepository.save(course);
-        COURSE_REVIEW_NOTES.put(courseId, "Lý do ẩn: " + reason);
 
         if (course.getInstructorId() != null) {
             userRepository.findById(course.getInstructorId()).ifPresent(inst ->
@@ -629,9 +626,11 @@ public class SpecUseCaseController {
 
     @GetMapping({"/api/v1/courses/{courseId}/review-note", "/api/courses/{courseId}/review-note"})
     public ResponseEntity<?> getCourseReviewNote(@PathVariable Integer courseId) {
+        Course course = courseRepository.findById(courseId).orElse(null);
+        String note = (course != null && course.getReviewNote() != null) ? course.getReviewNote() : "";
         return ResponseEntity.ok(Map.of(
                 "courseId", courseId,
-                "reviewNote", COURSE_REVIEW_NOTES.getOrDefault(courseId, "")
+                "reviewNote", note
         ));
     }
 
@@ -825,10 +824,9 @@ public class SpecUseCaseController {
                     m.put("rating", r.getRating());
                     m.put("comment", r.getComment());
                     m.put("createdAt", r.getCreatedAt());
-                    Map<String, Object> mod = REVIEW_MODERATION.get(r.getReviewId());
-                    m.put("visibility", mod != null ? mod.get("visibility") : "VISIBLE");
-                    m.put("moderationReason", mod != null ? mod.get("moderationReason") : null);
-                    m.put("moderatedAt", mod != null ? mod.get("moderatedAt") : null);
+                    m.put("visibility", r.getVisibilityStatus() != null ? r.getVisibilityStatus() : "VISIBLE");
+                    m.put("moderationReason", r.getModerationReason());
+                    m.put("moderatedAt", r.getModeratedAt());
                     return m;
                 })
                 .collect(Collectors.toList());
@@ -841,19 +839,17 @@ public class SpecUseCaseController {
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "Không tìm thấy đánh giá."));
         String reason = body != null && body.get("reason") != null ? body.get("reason").trim() : "Vi phạm quy tắc cộng đồng";
-        Map<String, Object> mod = new LinkedHashMap<>();
-        mod.put("visibility", "HIDDEN_BY_ADMIN");
-        mod.put("moderationReason", reason);
-        mod.put("moderatedBy", SecurityUtils.getCurrentUserId());
-        mod.put("moderatedAt", LocalDateTime.now().toString());
-        REVIEW_MODERATION.put(reviewId, mod);
+        review.setVisibilityStatus("HIDDEN_BY_ADMIN");
+        review.setModerationReason(reason);
+        review.setModeratedAt(LocalDateTime.now());
+        reviewRepository.save(review);
 
-        // Remove from public course reviews by deleting or hiding
         Integer courseId = review.getCourseId();
-        reviewRepository.delete(review);
         Course course = courseRepository.findById(courseId).orElse(null);
         if (course != null) {
-            List<Review> remaining = reviewRepository.findByCourseId(courseId);
+            List<Review> remaining = reviewRepository.findByCourseId(courseId).stream()
+                    .filter(r -> !"HIDDEN_BY_ADMIN".equalsIgnoreCase(r.getVisibilityStatus()))
+                    .toList();
             double avg = remaining.isEmpty() ? 0.0 : remaining.stream().mapToInt(Review::getRating).average().orElse(0.0);
             course.setAverageRating(Math.round(avg * 10.0) / 10.0);
             courseRepository.save(course);

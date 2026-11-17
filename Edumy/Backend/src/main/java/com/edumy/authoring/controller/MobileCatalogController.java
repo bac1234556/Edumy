@@ -1,12 +1,16 @@
 package com.edumy.authoring.controller;
 
 import com.edumy.authoring.model.Course;
+import com.edumy.authoring.model.CourseCoInstructor;
 import com.edumy.authoring.model.CourseSection;
 import com.edumy.authoring.model.Lesson;
 import com.edumy.authoring.repository.CategoryRepository;
+import com.edumy.authoring.repository.CourseCoInstructorRepository;
 import com.edumy.authoring.repository.CourseRepository;
 import com.edumy.authoring.repository.CourseSectionRepository;
 import com.edumy.authoring.repository.LessonRepository;
+import com.edumy.identity.user.model.User;
+import com.edumy.identity.user.repository.UserRepository;
 import com.edumy.learning.enrollment.repository.EnrollmentRepository;
 import com.edumy.learning.quiz.repository.QuizRepository;
 import com.edumy.learning.review.model.Review;
@@ -41,6 +45,8 @@ public class MobileCatalogController {
     private final ReviewRepository reviewRepository;
     private final EnrollmentRepository enrollmentRepository;
     private final QuizRepository quizRepository;
+    private final CourseCoInstructorRepository courseCoInstructorRepository;
+    private final UserRepository userRepository;
 
     @Value("${edumy.time-zone:Asia/Ho_Chi_Minh}")
     private String timeZone;
@@ -51,7 +57,9 @@ public class MobileCatalogController {
                                    LessonRepository lessonRepository,
                                    ReviewRepository reviewRepository,
                                    EnrollmentRepository enrollmentRepository,
-                                   QuizRepository quizRepository) {
+                                   QuizRepository quizRepository,
+                                   CourseCoInstructorRepository courseCoInstructorRepository,
+                                   UserRepository userRepository) {
         this.categoryRepository = categoryRepository;
         this.courseRepository = courseRepository;
         this.courseSectionRepository = courseSectionRepository;
@@ -59,6 +67,8 @@ public class MobileCatalogController {
         this.reviewRepository = reviewRepository;
         this.enrollmentRepository = enrollmentRepository;
         this.quizRepository = quizRepository;
+        this.courseCoInstructorRepository = courseCoInstructorRepository;
+        this.userRepository = userRepository;
     }
 
     public record CategoryDto(Integer id, String name, String slug) {}
@@ -259,6 +269,20 @@ public class MobileCatalogController {
         boolean isFree = course.getPrice() == null || course.getPrice().compareTo(BigDecimal.ZERO) <= 0;
         Double avgRating = ratingCount > 0 ? course.getAverageRating() : null;
 
+        List<CourseCoInstructor> acceptedCos = courseCoInstructorRepository.findByCourseIdAndStatus(courseId, "ACCEPTED");
+        List<InstructorRefDto> coInstructors = new ArrayList<>();
+        if (!acceptedCos.isEmpty()) {
+            List<Integer> coIds = acceptedCos.stream().map(CourseCoInstructor::getInstructorId).toList();
+            Map<Integer, User> coUserMap = userRepository.findAllById(coIds).stream()
+                    .collect(Collectors.toMap(User::getUserId, u -> u));
+            for (CourseCoInstructor ci : acceptedCos) {
+                User u = coUserMap.get(ci.getInstructorId());
+                if (u != null) {
+                    coInstructors.add(new InstructorRefDto(u.getUserId(), u.getFullName()));
+                }
+            }
+        }
+
         return ResponseEntity.ok(new CourseDetailDto(
                 courseId,
                 resolveCourseSlug(course),
@@ -271,7 +295,7 @@ public class MobileCatalogController {
                 catName,
                 instName,
                 new InstructorRefDto(course.getInstructorId() != null ? course.getInstructorId() : 1, instName),
-                Collections.emptyList(),
+                coInstructors,
                 avgRating,
                 ratingCount,
                 totalLessons,
@@ -402,14 +426,9 @@ public class MobileCatalogController {
     private boolean isCourseInstructorOrAdmin(Course course, Integer userId) {
         if (SecurityUtils.hasRole("Admin")) return true;
         if (Objects.equals(course.getInstructorId(), userId)) return true;
-        List<Map<String, Object>> coList = SpecUseCaseController.COURSE_CO_INSTRUCTORS.getOrDefault(course.getCourseId(), Collections.emptyList());
-        for (Map<String, Object> m : coList) {
-            if ("ACCEPTED".equalsIgnoreCase(String.valueOf(m.get("status")))
-                    && Objects.equals(m.get("instructorId"), userId)) {
-                return true;
-            }
-        }
-        return false;
+        return courseCoInstructorRepository.findFirstByCourseIdAndInstructorId(course.getCourseId(), userId)
+                .map(ci -> "ACCEPTED".equalsIgnoreCase(ci.getStatus()))
+                .orElse(false);
     }
 
     private Course resolveCourseBySlugOrId(String slugOrId) {

@@ -73,18 +73,21 @@ public class CartController {
         return addToCart(courseId);
     }
 
-    @DeleteMapping({"/remove/{id}", "/items/{id}", "/courses/{id}"})
+    @DeleteMapping("/items/{id}")
+    public ResponseEntity<?> removeCartItem(@PathVariable Integer id) {
+        Integer userId = getCurrentUserId();
+        if (userId == null) {
+            return ResponseEntity.status(401).body(Map.of("message", "Yêu cầu đăng nhập"));
+        }
+        return ResponseEntity.ok(cartService.removeCartItem(userId, id));
+    }
+
+    @DeleteMapping({"/remove/{id}", "/courses/{id}"})
     public ResponseEntity<?> removeFromCart(@PathVariable Integer id) {
         Integer userId = getCurrentUserId();
         if (userId == null) {
             return ResponseEntity.status(401).body(Map.of("message", "Yêu cầu đăng nhập"));
         }
-
-        try {
-            Map<String, String> res = cartService.removeFromCart(userId, id);
-            return ResponseEntity.ok(res);
-        } catch (Exception ex) {
-            return ResponseEntity.internalServerError().body(Map.of("message", "Lỗi xóa khóa học khỏi giỏ: " + ex.getMessage()));
-        }
+        return ResponseEntity.ok(cartService.removeFromCart(userId, id));
     }
 }

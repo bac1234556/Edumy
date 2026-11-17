@@ -44,6 +44,16 @@ public class Review {
     @Column(name = "CreatedAt")
     private LocalDateTime createdAt;
 
+    @Column(name = "VisibilityStatus", length = 32)
+    @Builder.Default
+    private String visibilityStatus = "VISIBLE";
+
+    @Column(name = "ModerationReason", length = 500)
+    private String moderationReason;
+
+    @Column(name = "ModeratedAt")
+    private LocalDateTime moderatedAt;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "UserId", insertable = false, updatable = false)
     @com.fasterxml.jackson.annotation.JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "courses", "enrollments", "reviews", "orders", "userRoles", "refreshTokens", "wishlists", "certificates", "quizAttempts", "cart"})

@@ -159,16 +159,10 @@ public class CartServiceImpl implements CartService {
     @Transactional(rollbackFor = Exception.class)
     public Map<String, String> removeFromCart(Integer userId, Integer courseId) {
         Cart cart = getOrCreateCart(userId);
-        
-        // 1. Delete from database via explicit transactional query (supporting both courseId and cartItemId)
-        cartItemRepository.deleteByCartIdAndCourseOrItemId(cart.getId(), courseId);
+        cartItemRepository.deleteByCartIdAndCourseId(cart.getId(), courseId);
 
-        // 2. Remove matching item from loaded collection to avoid Hibernate cascade re-save or orphanRemoval conflict
         if (cart.getCartItems() != null) {
-            cart.getCartItems().removeIf(ci -> 
-                (ci.getCourseId() != null && ci.getCourseId().equals(courseId)) ||
-                (ci.getId() != null && ci.getId().equals(courseId))
-            );
+            cart.getCartItems().removeIf(ci -> ci.getCourseId() != null && ci.getCourseId().equals(courseId));
         }
 
         cart.setUpdatedAt(LocalDateTime.now());
@@ -182,6 +176,18 @@ public class CartServiceImpl implements CartService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Map<String, String> removeCartItem(Integer userId, Integer itemId) {
-        return removeFromCart(userId, itemId);
+        Cart cart = getOrCreateCart(userId);
+        cartItemRepository.deleteByCartIdAndItemId(cart.getId(), itemId);
+
+        if (cart.getCartItems() != null) {
+            cart.getCartItems().removeIf(ci -> ci.getId() != null && ci.getId().equals(itemId));
+        }
+
+        cart.setUpdatedAt(LocalDateTime.now());
+        cartRepository.save(cart);
+
+        Map<String, String> res = new HashMap<>();
+        res.put("message", "Đã xóa khóa học khỏi giỏ hàng thành công.");
+        return res;
     }
 }

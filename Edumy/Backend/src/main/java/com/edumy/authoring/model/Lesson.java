@@ -37,6 +37,15 @@ public class Lesson {
     @Builder.Default
     private Boolean isPreview = false;
 
+    @Column(name = "ContentType", length = 32)
+    private String contentType;
+
+    @Column(name = "ContentText", columnDefinition = "NVARCHAR(MAX)")
+    private String contentText;
+
+    @Column(name = "PdfUrl", length = 500)
+    private String pdfUrl;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "SectionId", insertable = false, updatable = false)
     @com.fasterxml.jackson.annotation.JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "lessons", "quizzes", "course"})

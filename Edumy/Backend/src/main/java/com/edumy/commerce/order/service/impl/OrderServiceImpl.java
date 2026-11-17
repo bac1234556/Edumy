@@ -342,7 +342,7 @@ public class OrderServiceImpl implements OrderService {
     private void cleanUpCartForCourse(Integer userId, Integer courseId) {
         Cart cart = cartRepository.findByUserId(userId);
         if (cart != null && cart.getCartItems() != null) {
-            cartItemRepository.deleteByCartIdAndCourseOrItemId(cart.getId(), courseId);
+            cartItemRepository.deleteByCartIdAndCourseId(cart.getId(), courseId);
             cart.getCartItems().removeIf(ci -> ci.getCourseId().equals(courseId));
             cart.setUpdatedAt(LocalDateTime.now());
             cartRepository.save(cart);
