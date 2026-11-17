@@ -36,10 +36,17 @@ spring:
 edumy:
   frontend:
     base-url: ${FRONTEND_BASE_URL:http://localhost:3000}
+  time-zone: ${EDUMY_TIME_ZONE:Asia/Ho_Chi_Minh}
   cors:
     allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000,http://localhost:5173,http://localhost:8081,http://localhost:19006}
   mail:
     from: ${MAIL_FROM:Edumy Academy <no-reply@edumy.vn>}
+
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
 
 server:
   port: ${PORT:5000}

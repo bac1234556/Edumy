@@ -2,6 +2,8 @@ package com.edumy.learning.enrollment.repository;
 
 import com.edumy.learning.enrollment.model.Enrollment;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import java.util.List;
@@ -36,6 +38,7 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Integer>
     }
 
     List<Enrollment> findByUserId(Integer userId);
+    Page<Enrollment> findByUserIdOrderByEnrolledAtDesc(Integer userId, Pageable pageable);
     List<Enrollment> findByCourseId(Integer courseId);
     Enrollment findByUserIdAndCourseId(Integer userId, Integer courseId);
     Optional<Enrollment> findFirstByUserIdAndCourseId(Integer userId, Integer courseId);

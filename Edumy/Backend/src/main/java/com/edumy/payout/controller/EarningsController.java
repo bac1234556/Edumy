@@ -4,8 +4,8 @@ import com.edumy.payout.dto.*;
 import com.edumy.payout.service.EarningService;
 import com.edumy.shared.exception.BusinessException;
 import com.edumy.shared.exception.ErrorCode;
+import com.edumy.shared.response.PageResponse;
 import com.edumy.shared.security.SecurityUtils;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -50,7 +50,7 @@ public class EarningsController {
     }
 
     @GetMapping("/entries")
-    public ResponseEntity<Page<EarningEntryDto>> getEntries(
+    public ResponseEntity<PageResponse<EarningEntryDto>> getEntries(
             @RequestParam(required = false) Integer courseId,
             @RequestParam(required = false) String month,
             @RequestParam(defaultValue = "0") int page,
@@ -59,6 +59,7 @@ public class EarningsController {
         if (userId == null) {
             throw new BusinessException(ErrorCode.UNAUTHORIZED);
         }
-        return ResponseEntity.ok(earningService.getEntries(userId, courseId, month, PageRequest.of(page, Math.min(size, 100))));
+        return ResponseEntity.ok(PageResponse.from(
+                earningService.getEntries(userId, courseId, month, PageRequest.of(page, Math.min(size, 100)))));
     }
 }

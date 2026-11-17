@@ -308,13 +308,18 @@ public class QaService {
     }
 
     /**
-     * Toggle resolved mark on question.
+     * Toggle or set resolved mark on question.
      */
     public QuestionSummaryResponse toggleResolve(Integer userId, Long questionId) {
+        return setResolved(userId, questionId, null);
+    }
+
+    public QuestionSummaryResponse setResolved(Integer userId, Long questionId, Boolean resolved) {
         CourseQuestion question = questionRepository.findById(questionId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "Không tìm thấy câu hỏi."));
 
-        question.setIsResolved(!Boolean.TRUE.equals(question.getIsResolved()));
+        boolean target = resolved != null ? resolved : !Boolean.TRUE.equals(question.getIsResolved());
+        question.setIsResolved(target);
         question.setUpdatedAt(LocalDateTime.now());
         questionRepository.save(question);
 

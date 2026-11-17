@@ -5,9 +5,9 @@ import com.edumy.payout.dto.WithdrawalResponseDto;
 import com.edumy.payout.service.WithdrawalService;
 import com.edumy.shared.exception.BusinessException;
 import com.edumy.shared.exception.ErrorCode;
+import com.edumy.shared.response.PageResponse;
 import com.edumy.shared.security.SecurityUtils;
 import jakarta.validation.Valid;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,14 +23,15 @@ public class WithdrawalController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<WithdrawalResponseDto>> getMyWithdrawals(
+    public ResponseEntity<PageResponse<WithdrawalResponseDto>> getMyWithdrawals(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
         Integer userId = SecurityUtils.getCurrentUserId();
         if (userId == null) {
             throw new BusinessException(ErrorCode.UNAUTHORIZED);
         }
-        return ResponseEntity.ok(withdrawalService.getMyWithdrawals(userId, PageRequest.of(page, Math.min(size, 100))));
+        return ResponseEntity.ok(PageResponse.from(
+                withdrawalService.getMyWithdrawals(userId, PageRequest.of(page, Math.min(size, 100)))));
     }
 
     @PostMapping

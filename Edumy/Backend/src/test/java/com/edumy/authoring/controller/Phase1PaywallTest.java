@@ -3,15 +3,15 @@ package com.edumy.authoring.controller;
 import com.edumy.authoring.model.Course;
 import com.edumy.authoring.model.CourseSection;
 import com.edumy.authoring.model.Lesson;
+import com.edumy.authoring.repository.CategoryRepository;
 import com.edumy.authoring.repository.CourseRepository;
 import com.edumy.authoring.repository.CourseSectionRepository;
 import com.edumy.authoring.repository.LessonRepository;
-import com.edumy.commerce.order.repository.OrderRepository;
-import com.edumy.identity.user.repository.UserRepository;
+import com.edumy.learning.enrollment.repository.CertificateRepository;
 import com.edumy.learning.enrollment.repository.EnrollmentRepository;
 import com.edumy.learning.enrollment.repository.LessonProgressRepository;
+import com.edumy.learning.quiz.repository.QuizRepository;
 import com.edumy.learning.review.repository.ReviewRepository;
-import com.edumy.notification.service.MailService;
 import com.edumy.shared.exception.BusinessException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,7 +26,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -35,24 +34,28 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class Phase1PaywallTest {
 
-    @Mock private UserRepository userRepository;
+    @Mock private CategoryRepository categoryRepository;
     @Mock private CourseRepository courseRepository;
     @Mock private CourseSectionRepository courseSectionRepository;
     @Mock private LessonRepository lessonRepository;
     @Mock private EnrollmentRepository enrollmentRepository;
     @Mock private LessonProgressRepository lessonProgressRepository;
-    @Mock private OrderRepository orderRepository;
     @Mock private ReviewRepository reviewRepository;
-    @Mock private MailService mailService;
+    @Mock private QuizRepository quizRepository;
+    @Mock private CertificateRepository certificateRepository;
 
-    private SpecUseCaseController controller;
+    private MobileCatalogController catalogController;
+    private MobileLearningController learningController;
 
     @BeforeEach
     void setUp() {
-        controller = new SpecUseCaseController(
-                userRepository, courseRepository, courseSectionRepository,
-                lessonRepository, enrollmentRepository, lessonProgressRepository,
-                orderRepository, reviewRepository, mailService
+        catalogController = new MobileCatalogController(
+                categoryRepository, courseRepository, courseSectionRepository,
+                lessonRepository, reviewRepository, enrollmentRepository, quizRepository
+        );
+        learningController = new MobileLearningController(
+                courseRepository, courseSectionRepository, lessonRepository,
+                enrollmentRepository, lessonProgressRepository, certificateRepository
         );
     }
 
@@ -77,12 +80,12 @@ class Phase1PaywallTest {
         CourseSection section = CourseSection.builder().sectionId(20).courseId(10).title("Sec 1").build();
         Lesson lesson = Lesson.builder().lessonId(30).sectionId(20).title("Secret").isPreview(false).build();
 
-        when(courseRepository.findAll()).thenReturn(List.of(course));
+        when(courseRepository.findFirstBySlugIgnoreCase("java-101")).thenReturn(Optional.of(course));
         when(lessonRepository.findById(30)).thenReturn(Optional.of(lesson));
         when(courseSectionRepository.findById(20)).thenReturn(Optional.of(section));
 
         BusinessException ex = assertThrows(BusinessException.class,
-                () -> controller.getCatalogLessonPreview("java-101", 30));
+                () -> catalogController.getCatalogLessonPreview("java-101", 30));
 
         assertEquals(HttpStatus.FORBIDDEN, ex.getStatus());
         assertEquals("LESSON_NOT_PREVIEWABLE", ex.getCode());
@@ -95,12 +98,12 @@ class Phase1PaywallTest {
         CourseSection otherSection = CourseSection.builder().sectionId(21).courseId(999).title("Other").build();
         Lesson lesson = Lesson.builder().lessonId(31).sectionId(21).title("Preview Elsewhere").isPreview(true).build();
 
-        when(courseRepository.findAll()).thenReturn(List.of(course));
+        when(courseRepository.findFirstBySlugIgnoreCase("java-101")).thenReturn(Optional.of(course));
         when(lessonRepository.findById(31)).thenReturn(Optional.of(lesson));
         when(courseSectionRepository.findById(21)).thenReturn(Optional.of(otherSection));
 
         BusinessException ex = assertThrows(BusinessException.class,
-                () -> controller.getCatalogLessonPreview("java-101", 31));
+                () -> catalogController.getCatalogLessonPreview("java-101", 31));
 
         assertEquals(HttpStatus.FORBIDDEN, ex.getStatus());
         assertEquals("LESSON_NOT_PREVIEWABLE", ex.getCode());
@@ -116,7 +119,7 @@ class Phase1PaywallTest {
         when(enrollmentRepository.isUserEnrolledActive(5, 10)).thenReturn(false);
 
         BusinessException ex = assertThrows(BusinessException.class,
-                () -> controller.getLearnCourseRoom(10));
+                () -> learningController.getLearnCourseRoom(10));
 
         assertEquals(HttpStatus.FORBIDDEN, ex.getStatus());
         assertEquals("NOT_ENROLLED", ex.getCode());
@@ -136,7 +139,7 @@ class Phase1PaywallTest {
         when(enrollmentRepository.isUserEnrolledActive(5, 10)).thenReturn(false);
 
         BusinessException ex = assertThrows(BusinessException.class,
-                () -> controller.setLessonCompletionV1(30, Map.of("completed", true)));
+                () -> learningController.setLessonCompletion(30, new MobileLearningController.LessonCompletionRequest(true)));
 
         assertEquals(HttpStatus.FORBIDDEN, ex.getStatus());
         assertEquals("NOT_ENROLLED", ex.getCode());

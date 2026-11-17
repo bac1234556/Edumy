@@ -14,6 +14,7 @@ public interface LessonProgressRepository extends JpaRepository<LessonProgress, 
     List<LessonProgress> findByUserId(Integer userId);
     List<LessonProgress> findByUserIdAndCourseId(Integer userId, Integer courseId);
     LessonProgress findByUserIdAndLessonId(Integer userId, Integer lessonId);
+    List<LessonProgress> findAllByUserIdAndLessonId(Integer userId, Integer lessonId);
     Optional<LessonProgress> findFirstByUserIdAndCourseIdAndLessonId(Integer userId, Integer courseId, Integer lessonId);
     boolean existsByUserIdAndCourseIdAndLessonId(Integer userId, Integer courseId, Integer lessonId);
 

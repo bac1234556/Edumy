@@ -37,9 +37,17 @@ public class ApiResponseAdvice implements ResponseBodyAdvice<Object> {
                                   ServerHttpResponse response) {
         String path = request.getURI().getPath();
 
-        // Preserve raw format for external payment gateway webhooks (SePay, Casso, VNPay IPN),
-        // mobile auth endpoints, payout endpoints, and static binary/resource endpoints
-        if (path != null && (path.contains("/webhook/") || path.contains("/vnpay-ipn") || path.contains("/ipn") || path.startsWith("/uploads/") || path.contains("/auth/mobile") || path.contains("/me/earnings") || path.contains("/me/payout-account") || path.contains("/me/withdrawals") || path.contains("/admin/withdrawals"))) {
+        // Preserve raw format for external payment gateway webhooks (SePay, Casso, VNPay IPN/return),
+        // static/binary endpoints, and OpenAPI docs
+        if (path != null && (
+                path.contains("/webhook")
+                || path.contains("/vnpay-ipn")
+                || path.contains("/vnpay-return")
+                || path.contains("/ipn")
+                || path.startsWith("/uploads/")
+                || path.startsWith("/v3/api-docs")
+                || path.startsWith("/swagger-ui")
+        )) {
             return body;
         }
 

@@ -129,11 +129,13 @@ public class QuestionController {
     /**
      * UC-S19: Mark a question resolved / open.
      */
-    @RequestMapping(value = "/questions/{questionId}/resolve", method = {RequestMethod.PUT, RequestMethod.PATCH})
+    @RequestMapping(value = "/questions/{questionId}/resolve", method = {RequestMethod.POST, RequestMethod.PUT, RequestMethod.PATCH})
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<?> toggleResolve(@PathVariable Long questionId) {
+    public ResponseEntity<?> toggleResolve(@PathVariable Long questionId,
+                                           @RequestBody(required = false) Map<String, Boolean> body) {
         Integer userId = getCurrentUserId();
-        return ResponseEntity.ok(qaService.toggleResolve(userId, questionId));
+        Boolean resolved = body != null ? body.get("resolved") : null;
+        return ResponseEntity.ok(qaService.setResolved(userId, questionId, resolved));
     }
 
     /**

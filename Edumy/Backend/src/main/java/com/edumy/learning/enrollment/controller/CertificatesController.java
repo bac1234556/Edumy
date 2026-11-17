@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.*;
 
 @RestController
-@RequestMapping({"/api/Certificates", "/api/certificates"})
+@RequestMapping({"/api/v1/Certificates", "/api/v1/certificates", "/api/Certificates", "/api/certificates"})
 public class CertificatesController {
 
     @Autowired
