@@ -599,10 +599,9 @@ thead tr th,
 }
 
 .admin-page-number.active {
-  background-color: #4f46e5;
-  border-color: #4f46e5;
+  background-color: var(--color-primary, #0F766E);
+  border-color: var(--color-primary, #0F766E);
   color: #ffffff;
-  box-shadow: 0 2px 6px rgba(79, 70, 229, 0.25);
 }
 
 .admin-table td {

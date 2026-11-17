@@ -70,8 +70,8 @@
   width: 84px;
   height: 84px;
   border-radius: 50%;
-  background: rgba(79, 70, 229, 0.08);
-  color: var(--student-primary);
+  background: var(--color-primary-light, #F0FDFA);
+  color: var(--color-primary, #0F766E);
   display: flex;
   align-items: center;
   justify-content: center;

@@ -158,8 +158,8 @@ const OrderHistory = () => {
             style={{
               display: 'inline-flex', alignItems: 'center', gap: 8,
               padding: '0.75rem 1.5rem', borderRadius: '0.75rem',
-              background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
-              color: '#fff', textDecoration: 'none', fontWeight: 700
+              background: 'var(--color-primary, #0F766E)',
+              color: '#fff', textDecoration: 'none', fontWeight: 600
             }}
           >
             <BookOpen size={18} /> Khám phá khóa học ngay

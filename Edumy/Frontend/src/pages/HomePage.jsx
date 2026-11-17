@@ -101,9 +101,15 @@ function HomePage() {
                 Giáo trình biên soạn bài bản theo tiêu chuẩn doanh nghiệp. Học qua dự án mã nguồn thực tế, thảo luận trực tiếp 1-1 cùng giảng viên và nhận chứng chỉ định danh.
               </p>
 
-              {/* Interactive Live Search Input */}
-              <div className="hero-search-box">
-                <LiveCourseSearchBar variant="hero" placeholder="Tìm khóa học: Spring Boot, Next.js, Kubernetes, Tài chính..." />
+              {/* Interactive Live Search Input + Primary CTA */}
+              <div className="hero-actions-row">
+                <div className="hero-search-box">
+                  <LiveCourseSearchBar variant="hero" placeholder="Tìm khóa học: Spring Boot, Next.js, Kubernetes, Tài chính..." />
+                </div>
+                <Link to="/courses" className="hero-primary-cta">
+                  <span>Khám phá khóa học</span>
+                  <ArrowRight size={16} strokeWidth={2} aria-hidden="true" />
+                </Link>
               </div>
 
               {/* Quick Topic Pills */}
@@ -128,9 +134,10 @@ function HomePage() {
             <div className="hero-dossier-panel">
               <div className="dossier-card">
                 <div className="dossier-header">
-                  <span className="dossier-code">SYLLABUS // EDUMY-2026</span>
+                  <span className="dossier-code">LỘ TRÌNH HỌC TẬP TIÊU CHUẨN</span>
                   <span className="dossier-status">
-                    <span className="status-dot"></span> Đang mở ghi danh
+                    <BookOpen size={13} strokeWidth={2} aria-hidden="true" />
+                    <span>Thực hành theo dự án</span>
                   </span>
                 </div>
 
@@ -189,37 +196,7 @@ function HomePage() {
       </section>
 
       {/* --------------------------------------------------------------------
-          2. ARCHITECTURAL LEDGER METRICS BAR (Tabular Numerals)
-          -------------------------------------------------------------------- */}
-      <section className="stats-banner-section">
-        <div className="container">
-          <div className="stats-grid">
-            <div className="stat-box">
-              <span className="stat-index">01 / GIÁO TRÌNH</span>
-              <h3 className="stat-number">45+</h3>
-              <p className="stat-label">Khóa học chuyên sâu đã xuất bản</p>
-            </div>
-            <div className="stat-box">
-              <span className="stat-index">02 / CHUYÊN GIA</span>
-              <h3 className="stat-number">100%</h3>
-              <p className="stat-label">Giảng viên có kinh nghiệm thực tế</p>
-            </div>
-            <div className="stat-box">
-              <span className="stat-index">03 / HỖ TRỢ HỌC TẬP</span>
-              <h3 className="stat-number">&lt; 24h</h3>
-              <p className="stat-label">Cam kết phản hồi câu hỏi Q&amp;A</p>
-            </div>
-            <div className="stat-box">
-              <span className="stat-index">04 / ĐÁNH GIÁ</span>
-              <h3 className="stat-number">4.8/5</h3>
-              <p className="stat-label">Điểm hài lòng trung bình từ học viên</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* --------------------------------------------------------------------
-          3. CATEGORIES INDEX SECTION
+          2. CATEGORIES INDEX SECTION
           -------------------------------------------------------------------- */}
       <section className="categories-section">
         <div className="container">

@@ -1,5 +1,30 @@
 import { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import {
+  ChevronLeft,
+  ChevronRight,
+  AlertTriangle,
+  CheckCircle2,
+  ShieldCheck,
+  BookOpenCheck,
+  LayoutGrid,
+  Receipt,
+  Landmark,
+  Users,
+  MessageSquareQuote,
+  HelpCircle,
+  RefreshCw,
+  Banknote,
+  UserCheck,
+  PlaySquare,
+  Search,
+  FolderOpen,
+  Check,
+  X,
+  EyeOff,
+  Eye,
+  Ban,
+  Unlock
+} from 'lucide-react';
 import api from '../api/axiosConfig';
 import './AdminDashboard.css';
 import AdminCategoriesTab from '../components/admin/AdminCategoriesTab';
@@ -255,7 +280,7 @@ function AdminDashboard() {
             animation: 'fadeIn 0.2s ease-in'
           }}
         >
-          <i className={feedbackMsg.type === 'error' ? 'bi bi-exclamation-triangle-fill' : 'bi bi-check-circle-fill'}></i>
+          {feedbackMsg.type === 'error' ? <AlertTriangle size={18} aria-hidden="true" /> : <CheckCircle2 size={18} aria-hidden="true" />}
           <span>{feedbackMsg.text}</span>
         </div>
       )}
@@ -264,7 +289,7 @@ function AdminDashboard() {
       <aside className="admin-sidebar">
         <div className="admin-sidebar-brand">
           <div className="admin-brand-icon">
-            <i className="bi bi-shield-lock-fill"></i>
+            <ShieldCheck size={20} aria-hidden="true" />
           </div>
           <div>
             <h4 className="admin-brand-title">Edumy Admin</h4>
@@ -279,7 +304,7 @@ function AdminDashboard() {
               onClick={() => setActiveTab('courses')}
             >
               <span className="admin-nav-label">
-                <i className="bi bi-journal-check"></i>
+                <BookOpenCheck size={17} aria-hidden="true" />
                 Kiểm duyệt Khóa học
               </span>
               {pendingCoursesCount > 0 && (
@@ -293,7 +318,7 @@ function AdminDashboard() {
               onClick={() => setActiveTab('categories')}
             >
               <span className="admin-nav-label">
-                <i className="bi bi-grid-fill"></i>
+                <LayoutGrid size={17} aria-hidden="true" />
                 Quản lý Danh mục
               </span>
             </button>
@@ -304,7 +329,7 @@ function AdminDashboard() {
               onClick={() => setActiveTab('orders')}
             >
               <span className="admin-nav-label">
-                <i className="bi bi-receipt"></i>
+                <Receipt size={17} aria-hidden="true" />
                 Đơn hàng & Doanh thu
               </span>
             </button>
@@ -315,7 +340,7 @@ function AdminDashboard() {
               onClick={() => setActiveTab('withdrawals')}
             >
               <span className="admin-nav-label">
-                <i className="bi bi-bank2"></i>
+                <Landmark size={17} aria-hidden="true" />
                 Rút tiền giảng viên
               </span>
             </button>
@@ -326,7 +351,7 @@ function AdminDashboard() {
               onClick={() => setActiveTab('users')}
             >
               <span className="admin-nav-label">
-                <i className="bi bi-people-fill"></i>
+                <Users size={17} aria-hidden="true" />
                 Người dùng & Vai trò
               </span>
               <span className="admin-nav-badge">{users.length}</span>
@@ -338,7 +363,7 @@ function AdminDashboard() {
               onClick={() => setActiveTab('reviews')}
             >
               <span className="admin-nav-label">
-                <i className="bi bi-chat-left-quote-fill"></i>
+                <MessageSquareQuote size={17} aria-hidden="true" />
                 Kiểm duyệt Đánh giá
               </span>
               <span className="admin-nav-badge">{adminReviews.length}</span>
@@ -350,7 +375,7 @@ function AdminDashboard() {
               onClick={() => setActiveTab('qa')}
             >
               <span className="admin-nav-label">
-                <i className="bi bi-question-diamond-fill"></i>
+                <HelpCircle size={17} aria-hidden="true" />
                 Kiểm duyệt Hỏi & Đáp
               </span>
               <span className="admin-nav-badge">{adminQuestions.length}</span>
@@ -383,7 +408,7 @@ function AdminDashboard() {
               onClick={() => fetchDashboardData(true)}
               disabled={refreshing || loading}
             >
-              <i className={`bi bi-arrow-clockwise ${refreshing ? 'fa-spin' : ''}`}></i>
+              <RefreshCw size={15} className={refreshing ? 'btn-spinner' : ''} aria-hidden="true" />
               {refreshing ? 'Đang cập nhật...' : 'Làm mới'}
             </button>
           </div>
@@ -395,10 +420,10 @@ function AdminDashboard() {
             <div className="admin-kpi-header">
               <span className="admin-kpi-label">Tổng doanh thu nền tảng</span>
               <div className="admin-kpi-icon-wrap success">
-                <i className="bi bi-cash-stack"></i>
+                <Banknote size={20} aria-hidden="true" />
               </div>
             </div>
-            <div className="admin-kpi-value success">
+            <div className="admin-kpi-value success tabular-nums">
               ₫{(stats.totalRevenue || 0).toLocaleString('vi-VN')}
             </div>
             <p className="admin-kpi-hint">Tổng giá trị đơn hàng thanh toán thành công</p>
@@ -408,10 +433,10 @@ function AdminDashboard() {
             <div className="admin-kpi-header">
               <span className="admin-kpi-label">Tài khoản thành viên</span>
               <div className="admin-kpi-icon-wrap primary">
-                <i className="bi bi-person-badge"></i>
+                <UserCheck size={20} aria-hidden="true" />
               </div>
             </div>
-            <div className="admin-kpi-value">
+            <div className="admin-kpi-value tabular-nums">
               {(stats.totalUsers || 0).toLocaleString()}
             </div>
             <p className="admin-kpi-hint">Học viên, giảng viên và quản trị viên</p>
@@ -421,10 +446,10 @@ function AdminDashboard() {
             <div className="admin-kpi-header">
               <span className="admin-kpi-label">Tổng khóa học</span>
               <div className="admin-kpi-icon-wrap warning">
-                <i className="bi bi-collection-play"></i>
+                <PlaySquare size={20} aria-hidden="true" />
               </div>
             </div>
-            <div className="admin-kpi-value">
+            <div className="admin-kpi-value tabular-nums">
               {stats.totalCourses || 0}
             </div>
             <p className="admin-kpi-hint">
@@ -436,10 +461,10 @@ function AdminDashboard() {
             <div className="admin-kpi-header">
               <span className="admin-kpi-label">Đánh giá học viên</span>
               <div className="admin-kpi-icon-wrap info">
-                <i className="bi bi-chat-left-quote-fill"></i>
+                <MessageSquareQuote size={20} aria-hidden="true" />
               </div>
             </div>
-            <div className="admin-kpi-value info">
+            <div className="admin-kpi-value info tabular-nums">
               {adminReviews.length || 0}
             </div>
             <p className="admin-kpi-hint">Tổng số phản hồi và nhận xét đã gửi</p>
@@ -452,7 +477,7 @@ function AdminDashboard() {
             <div className="admin-card-header">
               <div>
                 <h3 className="admin-card-title">
-                  <i className="bi bi-grid-3x3-gap-fill text-primary"></i>
+                  <LayoutGrid size={18} className="text-primary" aria-hidden="true" />
                   Danh sách Khóa học
                 </h3>
                 <p className="admin-card-subtitle">
@@ -462,7 +487,7 @@ function AdminDashboard() {
 
               <div className="admin-card-toolbar">
                 <div className="admin-search-input-wrap">
-                  <i className="bi bi-search admin-search-icon"></i>
+                  <Search size={15} className="admin-search-icon" aria-hidden="true" />
                   <input 
                     type="text"
                     className="admin-search-input"
@@ -494,7 +519,7 @@ function AdminDashboard() {
                 </div>
               ) : filteredCourses.length === 0 ? (
                 <div className="admin-empty-state">
-                  <div className="admin-empty-icon"><i className="bi bi-folder2-open"></i></div>
+                  <div className="admin-empty-icon"><FolderOpen size={28} aria-hidden="true" /></div>
                   <h4 className="admin-empty-title">Không tìm thấy khóa học nào</h4>
                   <p className="admin-empty-desc">Thử thay đổi từ khóa tìm kiếm hoặc bộ lọc trạng thái phía trên.</p>
                 </div>
@@ -576,14 +601,14 @@ function AdminDashboard() {
                                   onClick={() => handleUpdateStatus(course.courseId, 'Published')}
                                   title="Duyệt và phát hành khóa học"
                                 >
-                                  <i className="bi bi-check-lg"></i> Duyệt
+                                  <Check size={14} aria-hidden="true" /> Duyệt
                                 </button>
                                 <button 
                                   className="btn-admin-action outline-danger"
                                   onClick={() => handleUpdateStatus(course.courseId, 'Rejected')}
                                   title="Từ chối kèm lý do bắt buộc"
                                 >
-                                  <i className="bi bi-x-lg"></i> Từ chối
+                                  <X size={14} aria-hidden="true" /> Từ chối
                                 </button>
                               </>
                             ) : course.status === 'Published' ? (
@@ -591,14 +616,14 @@ function AdminDashboard() {
                                 className="btn-admin-action outline-secondary"
                                 onClick={() => handleUpdateStatus(course.courseId, 'Hidden')}
                               >
-                                <i className="bi bi-eye-slash"></i> Ẩn khóa học
+                                <EyeOff size={14} aria-hidden="true" /> Ẩn khóa học
                               </button>
                             ) : course.status === 'Hidden' ? (
                               <button 
                                 className="btn-admin-action success"
                                 onClick={() => handleUpdateStatus(course.courseId, 'Unhide')}
                               >
-                                <i className="bi bi-eye"></i> Mở ẩn
+                                <Eye size={14} aria-hidden="true" /> Mở ẩn
                               </button>
                             ) : (
                               <>
@@ -607,14 +632,14 @@ function AdminDashboard() {
                                   onClick={() => handleUpdateStatus(course.courseId, 'Published')}
                                   title="Duyệt công khai"
                                 >
-                                  <i className="bi bi-check-circle"></i> Duyệt công khai
+                                  <CheckCircle2 size={14} aria-hidden="true" /> Duyệt công khai
                                 </button>
                                 <button 
                                   className="btn-admin-action outline-danger"
                                   onClick={() => handleUpdateStatus(course.courseId, 'Rejected')}
                                   title="Từ chối kèm lý do bắt buộc"
                                 >
-                                  <i className="bi bi-x-lg"></i> Từ chối
+                                  <X size={14} aria-hidden="true" /> Từ chối
                                 </button>
                               </>
                             )}
@@ -678,7 +703,7 @@ function AdminDashboard() {
             <div className="admin-card-header">
               <div>
                 <h3 className="admin-card-title">
-                  <i className="bi bi-person-lines-fill text-primary"></i>
+                  <Users size={18} className="text-primary" aria-hidden="true" />
                   Danh bạ Tài khoản
                 </h3>
                 <p className="admin-card-subtitle">
@@ -688,7 +713,7 @@ function AdminDashboard() {
 
               <div className="admin-card-toolbar">
                 <div className="admin-search-input-wrap">
-                  <i className="bi bi-search admin-search-icon"></i>
+                  <Search size={15} className="admin-search-icon" aria-hidden="true" />
                   <input 
                     type="text"
                     className="admin-search-input"
@@ -730,7 +755,7 @@ function AdminDashboard() {
                 </div>
               ) : filteredUsers.length === 0 ? (
                 <div className="admin-empty-state">
-                  <div className="admin-empty-icon"><i className="bi bi-people"></i></div>
+                  <div className="admin-empty-icon"><Users size={28} aria-hidden="true" /></div>
                   <h4 className="admin-empty-title">Không tìm thấy người dùng phù hợp</h4>
                   <p className="admin-empty-desc">Vui lòng kiểm tra lại bộ lọc hoặc từ khóa tìm kiếm.</p>
                 </div>
@@ -781,9 +806,9 @@ function AdminDashboard() {
                               className={`btn-admin-action ${u.isActive ? 'outline-danger' : 'success'}`}
                             >
                               {u.isActive ? (
-                                <><i className="bi bi-slash-circle"></i> Khóa tài khoản</>
+                                <><Ban size={14} aria-hidden="true" /> Khóa tài khoản</>
                               ) : (
-                                <><i className="bi bi-unlock-fill"></i> Mở khóa</>
+                                <><Unlock size={14} aria-hidden="true" /> Mở khóa</>
                               )}
                             </button>
                           </div>
@@ -820,7 +845,7 @@ function AdminDashboard() {
             <div className="admin-card-header">
               <div>
                 <h3 className="admin-card-title">
-                  <i className="bi bi-chat-left-quote-fill text-primary"></i>
+                  <MessageSquareQuote size={18} className="text-primary" aria-hidden="true" />
                   Kiểm duyệt & Ẩn Đánh giá vi phạm
                 </h3>
                 <p className="admin-card-subtitle">
@@ -875,7 +900,7 @@ function AdminDashboard() {
             <div className="admin-card-header">
               <div>
                 <h3 className="admin-card-title">
-                  <i className="bi bi-question-diamond-fill text-primary"></i>
+                  <HelpCircle size={18} className="text-primary" aria-hidden="true" />
                   Kiểm duyệt Câu hỏi & Thảo luận Học viên (UC-A19)
                 </h3>
                 <p className="admin-card-subtitle">

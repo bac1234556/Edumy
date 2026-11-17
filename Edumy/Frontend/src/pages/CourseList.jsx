@@ -172,17 +172,36 @@ function CourseList() {
                   setPriceType(item.key);
                   setCurrentPage(1);
                 }}
-                className={`btn btn-sm rounded-pill px-3 py-1 fw-semibold ${
-                  priceType === item.key ? 'btn-primary' : 'btn-outline-secondary bg-white text-dark'
-                }`}
-                style={{ fontSize: '0.82rem' }}
+                className={`filter-pill-btn ${priceType === item.key ? 'active' : ''}`}
               >
                 {item.label}
               </button>
             ))}
           </div>
-          <div className="small text-secondary">
-            Hiển thị <strong>{filteredCourses.length}</strong> khóa học
+          <div className="d-flex align-items-center gap-3">
+            <div className="d-flex align-items-center gap-2">
+              <label htmlFor="course-sort-select" className="small fw-semibold text-secondary mb-0">
+                Sắp xếp:
+              </label>
+              <select
+                id="course-sort-select"
+                className="form-select form-select-sm"
+                value={sortBy}
+                onChange={(e) => {
+                  setSortBy(e.target.value);
+                  setCurrentPage(1);
+                }}
+                style={{ width: 'auto', borderRadius: '8px', borderColor: 'var(--border-subtle)' }}
+              >
+                <option value="NEWEST">Mới nhất</option>
+                <option value="RATING">Đánh giá cao</option>
+                <option value="PRICE_ASC">Giá tăng dần</option>
+                <option value="PRICE_DESC">Giá giảm dần</option>
+              </select>
+            </div>
+            <div className="small text-secondary tabular-nums">
+              Hiển thị <strong>{filteredCourses.length}</strong> khóa học
+            </div>
           </div>
         </div>
 
@@ -190,12 +209,12 @@ function CourseList() {
         {categoriesList.length > 0 && (
           <div className="category-filters-row d-flex flex-wrap gap-2 mb-4">
             <button
+              type="button"
               onClick={() => {
                 setSelectedCategory('ALL');
                 setCurrentPage(1);
               }}
-              className={`btn btn-sm ${selectedCategory === 'ALL' ? 'btn-dark' : 'btn-outline-secondary bg-white text-dark'} rounded-pill px-3 py-1 fw-semibold`}
-              style={{ fontSize: '0.825rem' }}
+              className={`filter-pill-btn ${selectedCategory === 'ALL' ? 'active' : ''}`}
             >
               Tất cả danh mục
             </button>
@@ -203,13 +222,13 @@ function CourseList() {
               const isActive = selectedCategory === String(cat.categoryId) || selectedCategory === cat.name;
               return (
                 <button
+                  type="button"
                   key={cat.categoryId}
                   onClick={() => {
                     setSelectedCategory(String(cat.categoryId));
                     setCurrentPage(1);
                   }}
-                  className={`btn btn-sm ${isActive ? 'btn-dark' : 'btn-outline-secondary bg-white text-dark'} rounded-pill px-3 py-1 fw-semibold`}
-                  style={{ fontSize: '0.825rem' }}
+                  className={`filter-pill-btn ${isActive ? 'active' : ''}`}
                 >
                   {cat.name}
                 </button>

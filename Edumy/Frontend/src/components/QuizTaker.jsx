@@ -111,9 +111,9 @@ function QuizTaker({ quizId, onComplete, darkMode = true }) {
         <span 
           className="pill-badge" 
           style={{ 
-            backgroundColor: darkMode ? '#1e293b' : '#eef2ff', 
-            color: darkMode ? '#818cf8' : '#4f46e5',
-            border: darkMode ? '1px solid #334155' : '1px solid #e0e7ff'
+            backgroundColor: darkMode ? '#1E293B' : 'var(--color-primary-light, #F0FDFA)', 
+            color: darkMode ? '#5EEAD4' : 'var(--color-primary, #0F766E)',
+            border: darkMode ? '1px solid #334155' : '1px solid var(--color-primary-border, #99F6E4)'
           }}
         >
           {answeredCount}/{totalQuestions} đã trả lời
@@ -136,9 +136,9 @@ function QuizTaker({ quizId, onComplete, darkMode = true }) {
               <span 
                 className="pill-badge" 
                 style={{ 
-                  backgroundColor: darkMode ? '#0f172a' : '#f8fafc', 
-                  color: darkMode ? '#818cf8' : '#4f46e5',
-                  border: darkMode ? '1px solid #334155' : '1px solid #e2e8f0'
+                  backgroundColor: darkMode ? '#0F172A' : '#F8FAFC', 
+                  color: darkMode ? '#5EEAD4' : 'var(--color-primary, #0F766E)',
+                  border: darkMode ? '1px solid #334155' : '1px solid #E2E8F0'
                 }}
               >
                 {q.points} điểm
@@ -151,14 +151,14 @@ function QuizTaker({ quizId, onComplete, darkMode = true }) {
               {q.answers?.map(a => {
                 const isSelected = answers[q.questionId] === a.answerId;
                 const optionStyle = darkMode ? {
-                  backgroundColor: isSelected ? '#4f46e5' : '#0f172a',
-                  borderColor: isSelected ? '#6366f1' : '#334155',
-                  color: isSelected ? '#ffffff' : '#cbd5e1',
+                  backgroundColor: isSelected ? '#0F766E' : '#0F172A',
+                  borderColor: isSelected ? '#14B8A6' : '#334155',
+                  color: isSelected ? '#ffffff' : '#CBD5E1',
                   borderRadius: '0.75rem'
                 } : {
-                  backgroundColor: isSelected ? '#eef2ff' : '#f8fafc',
-                  borderColor: isSelected ? '#4f46e5' : '#e2e8f0',
-                  color: isSelected ? '#4f46e5' : '#334155',
+                  backgroundColor: isSelected ? '#F0FDFA' : '#F8FAFC',
+                  borderColor: isSelected ? '#0F766E' : '#E2E8F0',
+                  color: isSelected ? '#0F766E' : '#334155',
                   borderRadius: '0.75rem'
                 };
 

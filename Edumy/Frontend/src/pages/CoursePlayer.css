@@ -3,18 +3,18 @@
    ========================================================================== */
 
 :root {
-  --player-bg: var(--cinema-bg, #0b0f19);
+  --player-bg: var(--cinema-bg, #0B1120);
   --player-surface: var(--cinema-surface, #111827);
-  --player-card: #151e2e;
-  --player-border: var(--cinema-border, #1f2937);
-  --player-border-light: #374151;
-  --player-primary: var(--color-brand-primary, #2563eb);
-  --player-primary-hover: var(--color-brand-primary-hover, #1d4ed8);
-  --player-emerald: var(--color-success, #16a34a);
-  --player-emerald-bg: rgba(22, 163, 74, 0.12);
-  --player-text-main: var(--cinema-text-heading, #f8fafc);
-  --player-text-sub: var(--cinema-text-body, #cbd5e1);
-  --player-text-muted: var(--cinema-text-muted, #94a3b8);
+  --player-card: #151E2E;
+  --player-border: var(--cinema-border, #1E293B);
+  --player-border-light: #334155;
+  --player-primary: var(--color-primary, #0F766E);
+  --player-primary-hover: var(--color-primary-hover, #115E59);
+  --player-emerald: var(--color-success, #15803D);
+  --player-emerald-bg: rgba(21, 128, 61, 0.16);
+  --player-text-main: var(--cinema-text-heading, #F8FAFC);
+  --player-text-sub: var(--cinema-text-body, #CBD5E1);
+  --player-text-muted: var(--cinema-text-muted, #94A3B8);
   --player-sidebar-w: 390px;
 }
 
@@ -24,7 +24,7 @@
   height: 100vh;
   background-color: var(--player-bg);
   color: var(--player-text-main);
-  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  font-family: var(--font-body);
   overflow: hidden;
 }
 

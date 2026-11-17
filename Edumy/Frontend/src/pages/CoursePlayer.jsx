@@ -558,7 +558,7 @@ function CoursePlayer() {
                   <Link
                     to={`/courses/${id}`}
                     className="btn-ctrl-nav"
-                    style={{ background: '#4f46e5', color: '#fff', border: 'none', padding: '0.6rem 1.25rem' }}
+                    style={{ background: 'var(--color-accent, #EA580C)', color: '#fff', border: 'none', padding: '0.6rem 1.25rem' }}
                   >
                     Đăng ký khóa học ngay
                   </Link>

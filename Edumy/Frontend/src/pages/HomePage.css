@@ -4,32 +4,28 @@
    ========================================================================== */
 
 .homepage-container {
-  background-color: var(--surface-canvas, #faf9f6);
+  background-color: var(--bg-canvas, #F8FAFC);
   min-height: 100vh;
-  color: var(--color-text-body, #334155);
+  color: var(--text-primary, #0F172A);
   overflow-x: hidden;
 }
 
 /* --------------------------------------------------------------------------
-   1. EDITORIAL SPLIT HERO SECTION
+   1. EDITORIAL SPLIT HERO SECTION (7/5 Asymmetric Desktop Grid)
    -------------------------------------------------------------------------- */
 .edumy-hero-section {
   position: relative;
-  background-color: #0b0f17;
-  background-image: 
-    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-  background-size: 48px 48px;
-  color: #ffffff;
-  padding: 4.25rem 0 4.75rem;
-  border-bottom: 1px solid #1e293b;
+  background-color: var(--bg-surface, #FFFFFF);
+  color: var(--text-primary, #0F172A);
+  padding: 3.75rem 0 4.25rem;
+  border-bottom: 1px solid var(--border-subtle, #E2E8F0);
 }
 
 .hero-grid {
   display: grid;
-  grid-template-columns: 1.15fr 0.85fr;
+  grid-template-columns: 7fr 5fr;
   align-items: center;
-  gap: 3.5rem;
+  gap: 3rem;
   position: relative;
   z-index: 2;
 }
@@ -38,39 +34,67 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  color: #93c5fd;
+  background: var(--color-primary-light, #F0FDFA);
+  border: 1px solid var(--color-primary-border, #99F6E4);
+  color: var(--color-primary, #0F766E);
   padding: 0.35rem 0.75rem;
-  border-radius: var(--radius-xs, 4px);
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
+  border-radius: var(--radius-btn, 8px);
+  font-size: 0.75rem;
   font-weight: 600;
-  letter-spacing: 0.06em;
-  margin-bottom: 1.25rem;
+  letter-spacing: 0.05em;
+  margin-bottom: 1.15rem;
 }
 
 .hero-title {
   font-family: var(--font-heading);
-  font-size: clamp(2.25rem, 3.6vw, 3.15rem);
+  font-size: clamp(2.15rem, 3.5vw, 3rem);
   font-weight: 700;
-  line-height: 1.12;
-  color: #f8fafc;
-  margin-bottom: 1.25rem;
-  letter-spacing: -0.03em;
+  line-height: 1.15;
+  color: var(--text-primary, #0F172A);
+  margin-bottom: 1.15rem;
+  letter-spacing: -0.025em;
 }
 
 .hero-subtitle {
-  font-size: 1.05rem;
-  color: #94a3b8;
+  font-size: 1.025rem;
+  color: var(--text-secondary, #475569);
   line-height: 1.65;
-  margin-bottom: 1.75rem;
+  margin-bottom: 1.65rem;
   max-width: 560px;
 }
 
-.hero-search-box {
-  max-width: 560px;
+.hero-actions-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 0.75rem;
+  max-width: 640px;
   margin-bottom: 1.25rem;
+}
+
+.hero-search-box {
+  flex: 1 1 320px;
+}
+
+.hero-primary-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background-color: var(--color-accent, #EA580C);
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  padding: 0.75rem 1.35rem;
+  border-radius: var(--radius-btn, 8px);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color var(--transition-fast);
+}
+
+.hero-primary-cta:hover {
+  background-color: var(--color-accent-hover, #C2410C);
+  color: #ffffff;
 }
 
 /* Quick Topic Chips */
@@ -82,28 +106,28 @@
 }
 
 .quick-topics-label {
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  color: #64748b;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-muted, #64748B);
   margin-right: 0.25rem;
 }
 
 .topic-chip {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  color: #cbd5e1;
-  font-family: var(--font-mono);
-  font-size: 0.74rem;
-  padding: 0.25rem 0.65rem;
-  border-radius: var(--radius-xs, 4px);
+  background: var(--bg-muted, #F1F5F9);
+  border: 1px solid var(--border-subtle, #E2E8F0);
+  color: var(--text-secondary, #475569);
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 0.3rem 0.75rem;
+  border-radius: var(--radius-pill, 9999px);
   cursor: pointer;
   transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
 }
 
 .topic-chip:hover {
-  background: rgba(255, 255, 255, 0.12);
-  border-color: rgba(255, 255, 255, 0.28);
-  color: #ffffff;
+  background: var(--color-primary-light, #F0FDFA);
+  border-color: var(--color-primary-border, #99F6E4);
+  color: var(--color-primary, #0F766E);
 }
 
 /* Right Architectural Dossier Card */
@@ -112,11 +136,11 @@
 }
 
 .dossier-card {
-  background-color: #111827;
-  border: 1px solid #1e293b;
-  border-radius: var(--radius-md, 10px);
+  background-color: var(--bg-canvas, #F8FAFC);
+  border: 1px solid var(--border-subtle, #E2E8F0);
+  border-radius: var(--radius-card, 12px);
   padding: 1.5rem;
-  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
+  box-shadow: var(--shadow-sm);
 }
 
 .dossier-header {
@@ -125,31 +149,23 @@
   justify-content: space-between;
   padding-bottom: 0.85rem;
   margin-bottom: 1rem;
-  border-bottom: 1px solid #1e293b;
+  border-bottom: 1px solid var(--border-subtle, #E2E8F0);
 }
 
 .dossier-code {
-  font-family: var(--font-mono);
   font-size: 0.72rem;
   font-weight: 600;
-  color: #64748b;
+  color: var(--text-muted, #64748B);
   letter-spacing: 0.05em;
 }
 
 .dossier-status {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  color: #34d399;
-}
-
-.status-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background-color: #10b981;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-primary, #0F766E);
 }
 
 .dossier-featured-course {
@@ -157,10 +173,9 @@
 }
 
 .dossier-course-meta {
-  font-family: var(--font-mono);
-  font-size: 0.68rem;
+  font-size: 0.7rem;
   font-weight: 600;
-  color: #60a5fa;
+  color: var(--color-primary, #0F766E);
   letter-spacing: 0.06em;
   margin-bottom: 0.35rem;
 }
@@ -168,15 +183,15 @@
 .dossier-course-title {
   font-family: var(--font-heading);
   font-size: 1.15rem;
-  font-weight: 700;
-  color: #f8fafc;
+  font-weight: 600;
+  color: var(--text-primary, #0F172A);
   line-height: 1.35;
   margin: 0 0 0.4rem 0;
 }
 
 .dossier-course-desc {
-  font-size: 0.83rem;
-  color: #94a3b8;
+  font-size: 0.85rem;
+  color: var(--text-secondary, #475569);
   margin: 0;
   line-height: 1.5;
 }
@@ -193,16 +208,16 @@
   align-items: center;
   gap: 0.85rem;
   padding: 0.65rem 0.85rem;
-  background-color: #0b0f17;
-  border: 1px solid #1e293b;
-  border-radius: var(--radius-sm, 6px);
+  background-color: var(--bg-surface, #FFFFFF);
+  border: 1px solid var(--border-subtle, #E2E8F0);
+  border-radius: var(--radius-btn, 8px);
 }
 
 .module-idx {
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: 0.78rem;
   font-weight: 700;
-  color: #60a5fa;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-primary, #0F766E);
 }
 
 .module-info {
@@ -212,23 +227,22 @@
 
 .module-info strong {
   display: block;
-  font-size: 0.84rem;
-  color: #e2e8f0;
+  font-size: 0.85rem;
+  color: var(--text-primary, #0F172A);
   font-weight: 600;
 }
 
 .module-info span {
   display: block;
-  font-size: 0.74rem;
-  color: #64748b;
+  font-size: 0.75rem;
+  color: var(--text-muted, #64748B);
 }
 
 .module-hours {
-  font-family: var(--font-mono);
-  font-size: 0.76rem;
+  font-size: 0.78rem;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
-  color: #94a3b8;
+  color: var(--text-secondary, #475569);
 }
 
 .dossier-footer {
@@ -236,7 +250,7 @@
   align-items: center;
   justify-content: space-between;
   padding-top: 0.9rem;
-  border-top: 1px solid #1e293b;
+  border-top: 1px solid var(--border-subtle, #E2E8F0);
 }
 
 .dossier-cert-badge {
@@ -244,22 +258,21 @@
   align-items: center;
   gap: 0.4rem;
   font-size: 0.78rem;
-  color: #cbd5e1;
+  color: var(--text-secondary, #475569);
 }
 
 .dossier-cta-link {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  font-family: var(--font-mono);
-  font-size: 0.76rem;
+  font-size: 0.8rem;
   font-weight: 600;
-  color: #60a5fa;
+  color: var(--color-primary, #0F766E);
   text-decoration: none;
 }
 
 .dossier-cta-link:hover {
-  color: #93c5fd;
+  color: var(--color-primary-hover, #115E59);
   text-decoration: underline;
 }
 

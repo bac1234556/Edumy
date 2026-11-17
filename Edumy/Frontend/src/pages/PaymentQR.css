@@ -3,16 +3,16 @@
    ============================================================== */
 
 :root {
-  --vietqr-primary: var(--color-brand-primary, #2563eb);
-  --vietqr-primary-hover: var(--color-brand-primary-hover, #1d4ed8);
-  --vietqr-dark: var(--color-text-title, #0f172a);
-  --vietqr-accent: var(--color-accent-amber, #d97706);
-  --vietqr-success: var(--color-success, #16a34a);
-  --vietqr-success-bg: var(--color-success-bg, #f0fdf4);
-  --vietqr-card-bg: var(--color-bg-card, #ffffff);
-  --vietqr-border: var(--color-border-hairline, #e2e8f0);
-  --vietqr-text-muted: var(--color-text-muted, #64748b);
-  --vietqr-shadow: 0 20px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
+  --vietqr-primary: var(--color-primary, #0F766E);
+  --vietqr-primary-hover: var(--color-primary-hover, #115E59);
+  --vietqr-dark: var(--text-primary, #0F172A);
+  --vietqr-accent: var(--color-accent, #EA580C);
+  --vietqr-success: var(--color-success, #15803D);
+  --vietqr-success-bg: var(--color-success-bg, #DCFCE7);
+  --vietqr-card-bg: var(--bg-surface, #FFFFFF);
+  --vietqr-border: var(--border-subtle, #E2E8F0);
+  --vietqr-text-muted: var(--text-muted, #64748B);
+  --vietqr-shadow: var(--shadow-md);
 }
 
 .payment-qr-container {
@@ -90,12 +90,11 @@
   align-items: center;
   gap: 6px;
   background: rgba(255, 255, 255, 0.12);
-  color: #38bdf8;
+  color: #5EEAD4;
   padding: 0.4rem 0.9rem;
   border-radius: 9999px;
   font-size: 0.825rem;
   font-weight: 600;
-  backdrop-filter: blur(4px);
 }
 
 /* Body Layout */

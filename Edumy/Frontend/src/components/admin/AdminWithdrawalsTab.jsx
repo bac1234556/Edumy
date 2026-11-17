@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Landmark, Wallet, CheckCircle2, XCircle } from 'lucide-react';
 import api from '../../api/axiosConfig';
 
 function AdminWithdrawalsTab({ showNotification }) {
@@ -82,7 +82,7 @@ function AdminWithdrawalsTab({ showNotification }) {
       <div className="admin-card-header">
         <div>
           <h3 className="admin-card-title">
-            <i className="bi bi-bank2 text-primary"></i>
+            <Landmark size={18} className="text-primary" aria-hidden="true" />
             Yêu cầu Rút tiền Giảng viên
           </h3>
           <p className="admin-card-subtitle">
@@ -117,7 +117,7 @@ function AdminWithdrawalsTab({ showNotification }) {
           </div>
         ) : items.length === 0 ? (
           <div className="admin-empty-state">
-            <div className="admin-empty-icon"><i className="bi bi-wallet2"></i></div>
+            <div className="admin-empty-icon"><Wallet size={28} aria-hidden="true" /></div>
             <h4 className="admin-empty-title">Không có yêu cầu rút tiền nào</h4>
             <p className="admin-empty-desc">Thử thay đổi bộ lọc trạng thái phía trên.</p>
           </div>
@@ -139,7 +139,7 @@ function AdminWithdrawalsTab({ showNotification }) {
                 <tr key={w.id}>
                   <td>#{w.id}</td>
                   <td style={{ fontWeight: 600, color: '#0f172a' }}>{w.accountHolder || 'Giảng viên'}</td>
-                  <td style={{ fontWeight: 700, color: '#059669' }}>
+                  <td className="tabular-nums" style={{ fontWeight: 700, color: 'var(--color-success, #15803D)' }}>
                     ₫{(w.amount || 0).toLocaleString('vi-VN')}
                   </td>
                   <td>
@@ -166,14 +166,14 @@ function AdminWithdrawalsTab({ showNotification }) {
                             className="btn-admin-action success"
                             onClick={() => handleOpenModal('pay', w)}
                           >
-                            <i className="bi bi-check2-circle"></i> Đã chuyển khoản
+                            <CheckCircle2 size={14} aria-hidden="true" /> Đã chuyển khoản
                           </button>
                           <button
                             type="button"
                             className="btn-admin-action outline-danger"
                             onClick={() => handleOpenModal('reject', w)}
                           >
-                            <i className="bi bi-x-circle"></i> Từ chối
+                            <XCircle size={14} aria-hidden="true" /> Từ chối
                           </button>
                         </>
                       )}

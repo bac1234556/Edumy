@@ -1,86 +1,51 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+@import './styles/tokens.css';
 
 :root {
-  /* ==========================================================================
-     ROLE 1: STUDENT & PUBLIC THEME TOKENS
-     ========================================================================== */
-  --student-bg: #f8fafc;              /* Off-white sang trọng */
-  --student-card-bg: #ffffff;         /* Nền card nổi */
-  --student-border: #e2e8f0;          /* Viền mảnh */
-  --student-primary: #4f46e5;         /* Indigo hiện đại */
-  --student-primary-hover: #4338ca;
-  --student-accent: #f59e0b;          /* Amber Gold cho Review Sao và Giá Sale */
+  /* Legacy aliases mapped to Editorial Academy tokens */
+  --student-bg: var(--bg-canvas);
+  --student-card-bg: var(--bg-surface);
+  --student-border: var(--border-subtle);
+  --student-primary: var(--color-primary);
+  --student-primary-hover: var(--color-primary-hover);
+  --student-accent: var(--color-accent);
 
-  /* Cinema Dark Theme (CoursePlayer / Learning Hub) */
-  --cinema-bg: #0b0f19;              /* Deep Slate */
-  --cinema-surface: #111827;         /* Nền Sidebar / Tabs */
-  --cinema-border: #1f2937;          /* Viền tối */
-  --cinema-text-heading: #f8fafc;
-  --cinema-text-body: #cbd5e1;
-  --cinema-text-muted: #94a3b8;
+  --instructor-bg: var(--bg-muted);
+  --instructor-card-bg: var(--bg-surface);
+  --instructor-primary: var(--color-primary);
+  --instructor-primary-hover: var(--color-primary-hover);
+  --instructor-border: var(--border-strong);
 
-  /* ==========================================================================
-     ROLE 2: INSTRUCTOR STUDIO THEME TOKENS
-     ========================================================================== */
-  --instructor-bg: #f1f5f9;           /* Cool Grey nhẹ */
-  --instructor-card-bg: #ffffff;      /* Nền box công việc */
-  --instructor-primary: #0284c7;      /* Ocean/Sky Blue */
-  --instructor-primary-hover: #0369a1;
-  --instructor-border: #cbd5e1;       /* Viền bảng */
+  --admin-sidebar-bg: #0F172A;
+  --admin-bg: var(--bg-canvas);
+  --admin-card-bg: var(--bg-surface);
+  --admin-border: var(--border-subtle);
+  --admin-risk-bg: var(--color-error-bg);
+  --admin-risk-border: var(--color-error-border);
+  --admin-risk-text: var(--color-error);
 
-  /* ==========================================================================
-     ROLE 3: ADMIN PORTAL THEME TOKENS
-     ========================================================================== */
-  --admin-sidebar-bg: #0f172a;        /* Slate 900 */
-  --admin-bg: #f8fafc;                /* Vùng nội dung chính */
-  --admin-card-bg: #ffffff;
-  --admin-border: #e2e8f0;
-  --admin-risk-bg: #fef2f2;           /* Cảnh báo AI Flagged */
-  --admin-risk-border: #fecaca;
-  --admin-risk-text: #dc2626;
+  --text-heading: var(--text-primary);
+  --text-body: #334155;
 
-  /* ==========================================================================
-     TYPOGRAPHY & CONTRAST (WCAG AA COMPLIANT)
-     ========================================================================== */
-  --text-heading: #0f172a;            /* Slate 900 - Tiêu đề nền sáng */
-  --text-body: #334155;               /* Slate 700 - Nội dung nền sáng */
-  --text-muted: #64748b;              /* Slate 500 - Chú thích nền sáng */
+  --primary-color: var(--color-primary);
+  --primary-hover: var(--color-primary-hover);
+  --secondary-color: #0F172A;
+  --bg-color: var(--bg-canvas);
+  --bg-light: var(--bg-muted);
+  --surface-color: var(--bg-surface);
+  --text-dark: var(--text-primary);
+  --border-color: var(--border-subtle);
+  --accent-color: var(--color-accent);
+  --success-color: var(--color-success);
+  --danger-color: var(--color-error);
 
-  /* Semantic Integrity */
-  --color-success: #10b981;          /* Emerald Green */
-  --color-warning: #f59e0b;          /* Amber */
-  --color-danger: #ef4444;           /* Ruby Red */
-  --color-info: #0ea5e9;             /* Sky Blue */
-
-  /* Legacy aliases for backward compatibility */
-  --primary-color: #4f46e5;
-  --primary-hover: #4338ca;
-  --secondary-color: #0f172a;
-  --bg-color: #f8fafc;
-  --bg-light: #f1f5f9;
-  --surface-color: #ffffff;
-  --text-dark: #0f172a;
-  --border-color: #e2e8f0;
-  --accent-color: #f59e0b;
-  --success-color: #10b981;
-  --danger-color: #ef4444;
-
-  /* Soft Shadows & Elevation */
-  --shadow-sm: 0 1px 3px 0 rgba(15, 23, 42, 0.08), 0 1px 2px -1px rgba(15, 23, 42, 0.08);
-  --shadow-card: 0 4px 20px -2px rgba(15, 23, 42, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.07), 0 2px 4px -2px rgba(15, 23, 42, 0.07);
-  --shadow-lg: 0 10px 25px -3px rgba(15, 23, 42, 0.08), 0 4px 6px -4px rgba(15, 23, 42, 0.05);
-
-  /* Radius standards */
-  --radius-sm: 6px;
-  --radius-btn: 8px;
-  --radius-card: 14px;
-  --radius-pill: 9999px;
+  --shadow-card: var(--shadow-sm);
+  --shadow-lg: var(--shadow-md);
+  --radius-sm: var(--radius-btn);
 }
 
 * {
   box-sizing: border-box;
-  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -91,53 +56,69 @@ html, body {
 }
 
 body {
-  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-  background-color: var(--student-bg);
-  color: var(--text-body);
+  font-family: var(--font-body);
+  background-color: var(--bg-canvas);
+  color: var(--text-primary);
   margin: 0;
   padding: 0;
   min-height: 100vh;
   line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 
-/* ==========================================================================
-   GLOBAL UTILITIES: LINE CLAMP, BUTTON SPINNERS & FORM VALIDATION
-   ========================================================================== */
-.bg-slate-50 { background-color: #f8fafc !important; }
-.bg-slate-100 { background-color: #f1f5f9 !important; }
-.bg-white { background-color: #ffffff !important; }
-.text-slate-900 { color: #0f172a !important; }
-.text-slate-700 { color: #334155 !important; }
-.text-slate-600 { color: #475569 !important; }
-.text-slate-500 { color: #64748b !important; }
-.border-slate-200\/80, .border-slate-200 { border-color: rgba(226, 232, 240, 0.85) !important; }
-.rounded-xl { border-radius: 0.75rem !important; }
-.rounded-2xl { border-radius: 1rem !important; }
-.rounded-full { border-radius: 9999px !important; }
-.shadow-sm { box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.06), 0 1px 2px -1px rgba(15, 23, 42, 0.06) !important; }
-.hover\:shadow-md:hover { box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 4px 10px -2px rgba(15, 23, 42, 0.05) !important; }
-.cursor-pointer { cursor: pointer !important; }
-.transition-all { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important; }
-.duration-200 { transition-duration: 200ms !important; }
-.active\:scale-95:active { transform: scale(0.95) !important; }
-.hover\:opacity-90:hover { opacity: 0.92 !important; }
-.focus-ring-primary:focus,
-.focus\:ring-primary:focus {
-  outline: none !important;
-  border-color: #4f46e5 !important;
-  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2) !important;
+/* Global Accessible Focus Ring */
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
 }
-.pill-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  border-radius: 9999px;
-  padding: 0.2rem 0.65rem;
-  font-size: 0.75rem;
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
   font-weight: 600;
-  line-height: 1.25;
+  margin-top: 0;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+
+a {
+  text-decoration: none;
+  color: var(--color-primary);
+  transition: color var(--transition-fast);
+}
+
+a:hover {
+  color: var(--color-primary-hover);
+}
+
+button, [role="button"], .cursor-pointer {
+  cursor: pointer;
+}
+
+/* Utilities */
+.bg-slate-50 { background-color: var(--bg-canvas) !important; }
+.bg-slate-100 { background-color: var(--bg-muted) !important; }
+.bg-white { background-color: var(--bg-surface) !important; }
+.text-slate-900 { color: var(--text-primary) !important; }
+.text-slate-700 { color: #334155 !important; }
+.text-slate-600 { color: var(--text-secondary) !important; }
+.text-slate-500 { color: var(--text-muted) !important; }
+.border-slate-200\/80, .border-slate-200 { border-color: var(--border-subtle) !important; }
+.rounded-xl { border-radius: var(--radius-card) !important; }
+.rounded-2xl { border-radius: var(--radius-card) !important; }
+.rounded-full { border-radius: var(--radius-pill) !important; }
+.shadow-sm { box-shadow: var(--shadow-sm) !important; }
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
 }
 
 .line-clamp-1 {
@@ -161,25 +142,33 @@ body {
   overflow: hidden;
 }
 
-/* Accessible touch targets (min 44px on mobile) */
+.pill-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border-radius: var(--radius-pill);
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
 .touch-target {
   min-height: 44px;
   min-width: 44px;
 }
 
-/* Inline form validation error text (WCAG compliant ruby red #ef4444) */
 .field-error-text {
-  color: #ef4444;
+  color: var(--color-error);
   font-size: 0.8125rem;
   margin-top: 0.35rem;
-  font-weight: 600;
+  font-weight: 500;
   display: flex;
   align-items: center;
   gap: 0.35rem;
   line-height: 1.4;
 }
 
-/* Button loading spinner for double-submit prevention */
 .btn-spinner {
   display: inline-block;
   width: 1rem;
@@ -195,42 +184,17 @@ body {
   to { transform: rotate(360deg); }
 }
 
-a {
-  text-decoration: none;
-  color: var(--student-primary);
-  transition: color 0.15s ease-in-out;
-}
-
-a:hover {
-  color: var(--student-primary-hover);
-}
-
-h1, h2, h3, h4, h5, h6 {
-  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-  font-weight: 700;
-  margin-top: 0;
-  color: var(--text-heading);
-  letter-spacing: -0.02em;
-}
-
-/* Base utilities */
-.text-heading { color: var(--text-heading) !important; }
-.text-body { color: var(--text-body) !important; }
-.text-muted { color: var(--text-muted) !important; }
-.text-primary { color: var(--student-primary) !important; }
-.bg-primary { background-color: var(--student-primary) !important; color: white; }
-
-/* Buttons */
+/* Primary & Accent Buttons */
 .btn-edumy-primary {
-  background-color: var(--student-primary);
-  color: white;
-  border: 1px solid var(--student-primary);
-  padding: 0.7rem 1.4rem;
+  background-color: var(--color-primary);
+  color: #ffffff;
+  border: 1px solid var(--color-primary);
+  padding: 0.65rem 1.35rem;
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: 0.9375rem;
   border-radius: var(--radius-btn);
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: background-color var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -238,46 +202,64 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .btn-edumy-primary:hover {
-  background-color: var(--student-primary-hover);
-  border-color: var(--student-primary-hover);
-  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.3);
-  transform: translateY(-1px);
+  background-color: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+  color: #ffffff;
 }
 
-/* Skeleton Loading Helpers */
+.btn-edumy-accent {
+  background-color: var(--color-accent);
+  color: #ffffff;
+  border: 1px solid var(--color-accent);
+  padding: 0.65rem 1.35rem;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  border-radius: var(--radius-btn);
+  cursor: pointer;
+  transition: background-color var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.btn-edumy-accent:hover {
+  background-color: var(--color-accent-hover);
+  border-color: var(--color-accent-hover);
+  color: #ffffff;
+}
+
+/* Skeleton Loading */
 @keyframes shimmer {
   0% { background-position: -200% 0; }
   100% { background-position: 200% 0; }
 }
 
 .skeleton-box {
-  background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+  background: linear-gradient(90deg, #E2E8F0 25%, #F1F5F9 50%, #E2E8F0 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-btn);
 }
 
 .skeleton-dark {
-  background: linear-gradient(90deg, #1f2937 25%, #374151 50%, #1f2937 75%);
+  background: linear-gradient(90deg, #1E293B 25%, #334155 50%, #1E293B 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-btn);
 }
 
-/* Elevation card default */
 .edumy-card {
-  background: var(--student-card-bg);
-  border: 1px solid var(--student-border);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-card);
-  box-shadow: var(--shadow-card);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast);
 }
 
 .edumy-card:hover {
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--shadow-sm);
 }
 
-/* Layout container */
 .container {
   max-width: 1280px;
   margin: 0 auto;
