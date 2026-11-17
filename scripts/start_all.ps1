@@ -52,6 +52,6 @@ Write-Host " -> Frontend dang khoi chay tai http://localhost:5173" -ForegroundCo
 Write-Host "`n==========================================================" -ForegroundColor Cyan
 Write-Host " TOAN BO CAC DICH VU DA DUOC KICH HOAT THANH CONG!        " -ForegroundColor Cyan
 Write-Host " - Giao dien Web Client: http://localhost:5173            " -ForegroundColor Yellow
-Write-Host " - API Backend         : http://localhost:5000            " -ForegroundColor Yellow
-Write-Host " - ML Microservice     : http://127.0.0.1:8000            " -ForegroundColor Yellow
+Write-Host " - Backend API         : http://localhost:5000            " -ForegroundColor Yellow
+Write-Host " - Actuator Health     : http://localhost:5000/actuator/health" -ForegroundColor Yellow
 Write-Host "==========================================================" -ForegroundColor Cyan

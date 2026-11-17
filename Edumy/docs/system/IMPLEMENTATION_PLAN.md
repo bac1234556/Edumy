@@ -1,3 +1,6 @@
+> [!NOTE]
+> **Tài liệu lưu trữ lịch sử (Historical Archive)**: Kế hoạch bên dưới thuộc giai đoạn tích hợp `MLService` (FastAPI) trước đây. Hiện tại hệ thống đã chuyển sang kiến trúc **Spring Modulith 1.1.5 + React 19 + SQL Server 2022 + Mailpit + Prometheus/Grafana** (xem [CURRENT_SYSTEM_AUDIT.md](./CURRENT_SYSTEM_AUDIT.md) và [DATA_FLOW_API_MAP.md](./DATA_FLOW_API_MAP.md)).
+
 # Implementation Plan — EduMy ML Integration
 
 This document outlines the multi-phase roadmap to train, evaluate, deploy, and integrate real Machine Learning models into the EduMy eLearning platform.

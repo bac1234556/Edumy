@@ -1,265 +1,102 @@
 # EduMy eLearning Platform Walkthrough
 
-We have successfully built and expanded the **EduMy** online learning platform. The system operates on separate concerns: Spring Boot 3.2.0 (Backend API Orchestration in Java 17), React (Visual Frontend Web Application), and FastAPI (Automated Text Processing & ML Analytics).
+Tài liệu hướng dẫn tổng quan kiến trúc, nghiệp vụ và cách vận hành nền tảng **EduMy** sau khi nâng cấp lên kiến trúc **Spring Modulith 1.1.5 (Java 17 + Spring Boot 3.2.0)** kết hợp **React 19 + Vite 8**, **SQL Server 2022**, **Mailpit SMTP** và **Prometheus + Grafana**.
 
 ---
 
-## 1. List of Implemented Features
-
-### Phase 1: Core Database & Foundations
-- **Search Histories & User Activities Tracking:** Created database schemas to monitor user search terms and student event flows.
-- **Enhanced Database Seeder:** Added 1 System Admin, 3 Instructors, 10 Student learners, 8 Categories, and 20+ complete Courses with multi-tier lesson plans, enrollments, reviews, and transaction records.
-
-### Phase 2: Accounts & Password Recovery
-- **Security Validation:** Integrated server-side validations using Data Annotations (Model validation triggers) for registration and login.
-- **Mock Recovery Workflow (Development-only):** Built `/auth/forgot-password` and `/auth/reset-password` endpoints generating secure recovery tokens and outputting links to developer logs to bypass SMTP setup. *Production SMTP/email delivery is not yet enabled.*
-
-### Phase 3: Machine Learning & Content Moderation
-- **Auto-Categorization Rules**: Automatically suggests course categories based on content analysis using Machine Learning.
-- **Toxicity Content Lock (Rule-based):** Flags courses as `NeedsReview` with `High` risk levels if content matches toxic words.
-- **Vietnamese Slug Generator:** Converts letters with accents to non-accent counterparts to yield readable URLs.
-- **Admin Control Overrides:** Added status updates, user blocking, and override methods to override predicted ML values.
-- **Instructor Dashboard Extensions:** Enabled monthly charts tracking sales, sentiment aggregates, and quality improvement alerts.
-
----
-
-## 2. System Architecture
+## 1. Kiến Trúc Tổng Thể (Single Source of Truth)
 
 ```text
-       [ EduMy Client (Vite + React) ]
-                    |
-                    |  HTTP REST
-                    v
-    [ Spring Boot 3.2.0 API Gateway ] <---- JWT Token (HttpOnly Cookie Rotation)
-       |           |
-       | JPA       | HTTP REST / RestTemplate
-       v           v
- [SQL Server]   [FastAPI ML Service (Python)]
+  [ React 19 + Vite 8 Web SPA ]      [ Mobile App (Expo / REST) ]
+       (Docker :3000 / Dev :5173)         (/api/v1/auth/mobile/*)
+                   │                                 │
+                   └────────────────┬────────────────┘
+                                    ▼  HTTP REST JSON
+           ┌─────────────────────────────────────────────────┐
+           │     Spring Boot 3.2 + Spring Modulith Core      │
+           │                   (Port 5000)                   │
+           │  identity | catalog | authoring | commerce      │
+           │  learning | payout  | notification | shared     │
+           └──────┬─────────────────┬─────────────────┬──────┘
+                  │ JDBC            │ Async SMTP      │ /actuator/prometheus
+                  ▼                 ▼                 ▼
+          [SQL Server 2022]    [Mailpit]     [Prometheus + Grafana]
+          (Docker :14333)    (8025 / 1025)      (9090 / 3001)
 ```
 
 ---
 
-## 3. Database Schema Layout
+## 2. Các Luồng Nghiệp Vụ Cốt Lõi
 
-The database includes the following key tables and relations:
-- `Users` & `Roles`: Linked via `UserRoles` join table. Supports properties `IsActive`, `ResetToken`, and `ResetTokenExpiry`.
-- `Courses`: Linked to `Users` (Instructor) and `Categories` (Parent/Child hierarchies). Tracks state (`Draft`, `Analyzing`, `NeedsReview`, `PendingApproval`, `Published`).
-- `CourseMlAnalyses` & `CourseMlAnalysisTags`: Stores history logs of AI predictions.
-- `SearchHistories` & `UserActivities`: Tracks user behaviour patterns.
-- `Quizzes`, `Questions`, `Answers`, `QuizAttempts`, `QuizAttemptAnswers`: Handles student assessment progress.
+### A. Xác Thực Đa Nền Tảng (`identity` + `notification`)
+1. **Web SPA**:
+   - Đăng ký (`POST /api/v1/auth/register`) phát Domain Event `UserRegistered`.
+   - `IdentityMailListener` (`@Async` + `@TransactionalEventListener` sau khi transaction commit) gửi email xác thực HTML tiếng Việt qua **Mailpit** (`http://localhost:8025`).
+   - Đăng nhập cấp JWT Access Token ngắn hạn + Refresh Token lưu trong `HttpOnly` Cookie (`/api/v1/auth/refresh-token`). Hỗ trợ đăng nhập Google OAuth & khôi phục mật khẩu qua email.
+2. **Mobile App**:
+   - Sử dụng `/api/v1/auth/mobile/{register,login,refresh,logout}` trả về Access Token + Opaque Refresh Token kèm cơ chế **Refresh Token Rotation** & phát hiện dùng lại token (Token Family revocation).
+
+### B. Quản Lý Khóa Học, Đồng Giảng Viên & Kiểm Duyệt (`authoring` + `catalog`)
+1. Giảng viên tạo khóa học (`Draft`), xây dựng chương/bài học, upload video/ảnh (`/api/media/upload`, `/api/uploads/image`).
+2. Có thể mời **Đồng giảng viên (Co-Instructor)** và cấu hình tỷ lệ chia sẻ doanh thu (`shareBps`).
+3. Quy trình kiểm duyệt: Giảng viên `submit` (`PendingApproval`) → Admin `approve` (`Published`), `reject` (kèm review note + email thông báo) hoặc `hide`/`unhide`.
+4. Học viên/Khách tìm kiếm khóa học công khai qua `instant-search`, bộ lọc danh mục/giá/đánh giá, xem gợi ý khóa học tương đồng (`/similar`) và combo ưu đãi 15% (`/bundle-recommendation`).
+
+### C. Thương Mại, Thanh Toán & Sổ Cái Doanh Thu (`commerce` + `payout`)
+1. Học viên thêm khóa học vào giỏ hàng (`Cart`), áp dụng mã giảm giá (`Coupon`) hoặc bấm Mua ngay (`buy-now`).
+2. Hỗ trợ các kênh thanh toán:
+   - **VietQR + SePay Webhook**: Sinh mã QR chuyển khoản động (`/api/v1/payments/create-qr`). Khi nhận webhook từ SePay (`/api/v1/payments/webhook/sepay`), hệ thống tự động đối soát, chuyển đơn sang `PAID`, tạo `Enrollment`, gửi email xác nhận mua hàng.
+   - **VNPay / Stripe**: Tạo URL thanh toán và xử lý IPN/Return callback.
+3. **Hạch toán doanh thu giảng viên (`payout`)**:
+   - Ngay khi đơn hàng `PAID`, `commerce` gọi `EarningApi.recordForPaidOrder(...)` tạo các dòng sổ cái `EarningEntry` (`payout_earnings`) bất biến.
+   - Khấu trừ phí nền tảng (mặc định 30% = `3000 bps`), chia phần cho Co-Instructor theo `shareBps`, phần còn lại cho giảng viên chính.
+   - Giảng viên khai báo tài khoản ngân hàng (`/api/v1/me/payout-account`), gửi yêu cầu rút tiền (`/api/v1/me/withdrawals`) khi đạt số dư khả dụng tối thiểu (`100.000đ`), và Admin duyệt chi/từ chối (`/api/v1/admin/withdrawals/{id}/{pay,reject}`).
+
+### D. Học Tập, Hỏi Đáp Q&A & Chứng Chỉ Số (`learning`)
+1. Học viên xem bài giảng (kiểm tra quyền truy cập hoặc preview công khai), đánh dấu hoàn thành bài học để cập nhật `%` tiến độ.
+2. Làm bài kiểm tra trắc nghiệm (`Quiz`, `QuizAttempt`) và đánh giá khóa học (`Review`).
+3. **Diễn đàn Hỏi đáp Q&A**: Học viên đặt câu hỏi theo khóa học/bài học (`CourseQuestion`), giảng viên trả lời (`QuestionAnswer`, phát email thông báo `question-answered.html`), đánh dấu `Resolved`, Admin kiểm duyệt ẩn/khôi phục nội dung vi phạm.
+4. **Chứng chỉ PDF OpenPDF**: Khi hoàn thành khóa học, học viên tải trực tiếp file PDF A4 ngang hỗ trợ tiếng Việt đầy đủ (`NotoSans`) tại `/api/certificates/my/{courseId}/pdf` và mọi bên thứ ba có thể xác thực qua `/api/certificates/verify/{code}`.
 
 ---
 
-## 4. Workflows
+## 3. Hướng Dẫn Chạy Hệ Thống
 
-### Authentication Flow
-1. **Register:** Student submits credentials. Password hashed using BCrypt.
-2. **Login:** Server verifies password hash and returns short-lived JWT Access Token.
-3. **Cookie Rotation:** Refresh Token is set inside an `HttpOnly`, `Secure` Cookie.
-4. **Forgot Password:** Submitting email returns an 8-character token (written to dev logs).
-5. **Reset:** Submitting email, token, and new password updates credentials.
-
-### Machine Learning Classification Flow
-```mermaid
-graph TD
-    A[Instructor submits course] --> B[Status = Analyzing]
-    B --> C[Spring Boot calls FastAPI /classify/course]
-    C --> D[Receive category, tags, toxicity and confidence]
-    D --> E{Is content toxic?}
-    E -- Yes --> F[NeedsReview]
-    E -- No --> G{Confidence < 0.65?}
-    G -- Yes --> H[NeedsManualReview]
-    G -- No --> I{Confidence < 0.85?}
-    I -- Yes --> J[RequiresInstructorConfirmation]
-    I -- No --> K[PendingApproval / Auto-apply predicted category]
+### Cách 1: Docker Compose (Khuyên dùng - 6 Containers)
+Tại thư mục `Edumy/`:
+```powershell
+.\scripts\docker_start.ps1
 ```
+Hoặc tại `Edumy/Edumy/`:
+```bash
+docker compose up -d --build
+```
+Các dịch vụ sau khi khởi chạy:
+- **Frontend UI (Nginx)**: `http://localhost:3000`
+- **Backend API**: `http://localhost:5000` (`http://localhost:5000/actuator/health`)
+- **Mailpit Web UI**: `http://localhost:8025`
+- **SQL Server 2022**: `localhost:14333` (`sa` / `YourPassword123`, DB `EduMyDb`)
+- **Prometheus**: `http://localhost:9090`
+- **Grafana**: `http://localhost:3001` (`admin` / `admin`)
 
----
-
-## 5. Execution Instructions
-
-### Option A: Running with Docker Compose (Recommended)
-1. In the project root, launch all containers:
+### Cách 2: Chạy Thủ Công (Local Dev)
+1. Đảm bảo SQL Server chạy tại `127.0.0.1:1433` với database `EduMyDb`.
+2. Backend:
    ```bash
-   docker-compose up -d --build
+   cd Edumy/Edumy/Backend
+   .\mvnw.cmd spring-boot:run
    ```
-2. The UI is served at: `http://localhost`
-3. Backend Swagger UI is at: `http://localhost:5000/swagger`
-4. FastAPI status: `http://localhost:8000/health`
-
-### Option B: Running Manually
-1. **Database & API:**
-   - In `Backend/src/main/resources/application.yml`, set your SQL Server connection string.
-   - Run:
-     ```bash
-     cd Backend
-     .\mvnw.cmd spring-boot:run
-     ```
-   - Standard local URL: `http://localhost:5000`
-
-2. **ML Service:**
-   - Run:
-     ```bash
-     cd MLService
-     pip install -r requirements.txt
-     uvicorn main:app --reload --port 8000
-     ```
-
-3. **Frontend Client:**
-   - Run:
-     ```bash
-     cd Frontend
-     npm install
-     npm run dev
-     ```
+3. Frontend:
+   ```bash
+   cd Edumy/Edumy/Frontend
+   npm install
+   npm run dev
+   ```
+   Truy cập `http://localhost:5173`.
 
 ---
 
-## 6. Seed Accounts for Testing (Development Setup Only)
-Please refer to the internal configuration documentation for default seed credentials. Instructors and Students must change their passwords upon first login.
-
----
-
-## 7. Machine Learning Audit Fixes & Integration
-
-The previously identified blockers have been addressed. Final production readiness depends on the attached build, API, and end-to-end test evidence.
-
-### 7.1 Identity Mapping
-We implemented a bidirectional translation service (`RecommendationMappingService`) mapping OULAD's string identifiers to database CourseIds using the configurations loaded from JSON. All 7 items from OULAD are mapped as follows:
-
-| OULAD item | Encoded item | SQL CourseId | Trạng thái |
-| ---------- | :----------: | :----------: | :--------: |
-| AAA        | 0            | 1            | Valid      |
-| BBB        | 1            | 2            | Valid      |
-| CCC        | 2            | 3            | Valid      |
-| DDD        | 3            | 4            | Valid      |
-| EEE        | 4            | 5            | Valid      |
-| FFF        | 5            | 6            | Valid      |
-| GGG        | 6            | 7            | Valid      |
-
-### 7.2 React Compilation
-Replaced the NTFS directory junction for the Frontend with a physical directory copy, allowing Vite/Rollup production build to succeed perfectly.
-
-### 7.3 Sentiment Analysis
-- **Model**: Bidirectional LSTM network (BiLSTM).
-- **Classes**: 2 classes (`Negative`, `Positive`).
-- **Language**: English.
-- **Data Splitting**: 70% Train, 15% Validation, 15% Test.
-- **Dataset**: PyCaret Amazon reviews (20,000 samples).
-- **Domain Shift Limitation**: The model is trained on Amazon product reviews. Applying this to course reviews introduces a potential *domain shift* (linguistic style differences between product feedback and educational evaluation).
-- **Performance**:
-  - *Accuracy*: 0.9037
-  - *Macro F1*: 0.8671
-
-### 7.4 Course Classification
-- **Models evaluated**: TF-IDF + Linear SVM vs. TF-IDF + MLP.
-- **Production model**: MLP (chosen for deployment due to higher F1).
-  - *Accuracy*: 0.9746
-  - *Macro F1*: 0.9730
-
-### 7.5 Recommendation Models Evaluation
-- **Models evaluated**: Popularity baseline, GMF, NeuMF.
-- **Production model**: Popularity (currently loaded in FastAPI MLService).
-- **NeuMF Offline Metrics**:
-  - *HR@3*: 0.5330
-  - *NDCG@3*: 0.3404
-  - *MRR*: 0.3545
-  - *Coverage*: 0.4286
-
----
-
-## 8. Verification & Evidence Logs
-
-### 8.1 Build Logs
-- **Spring Boot 3.2.0 Build**: Maven compiled and packaged with 0 warnings, 0 errors.
-- **Vite React Build**: Compiled successfully in 862ms.
-
-### 8.2 FastAPI Health Response
-Querying `http://127.0.0.1:8000/recommendation/health`:
-```json
-{
-  "status": "healthy",
-  "sentimentLoaded": true,
-  "classificationLoaded": true,
-  "recommendationLoaded": true,
-  "recommendationModelLoaded": true,
-  "recommendationMappingLoaded": true,
-  "recommendationModel": "Popularity",
-  "mappedItems": 7,
-  "unmappedItems": 0,
-  "recommendationReady": true,
-  "modelVersion": "Popularity",
-  "uptime": 527.62,
-  "loadTimeMs": 1944
-}
-```
-
-### 8.3 End-to-End Test Responses
-- **Sentiment Analysis**:
-  `POST http://localhost:5150/api/MLTest/sentiment` -> `{"label":"Positive","score":0.9230689406394958}`
-- **Course Classification**:
-  `POST http://localhost:5150/api/MLTest/course-classification` -> `{"success":true,"suggestion":{"predictedCategory":"Development","category":"Development","confidence":0.9997478127479553,"confidenceAvailable":true,"modelType":"MLP","modelVersion":"1.0.0"}}`
-- **Recommendation**:
-  - FastAPI Response:
-    ```json
-    {
-      "modelVersion": "Popularity",
-      "trainingTimestamp": "2026-07-30T10:00:00Z",
-      "recommendations": [
-        {"courseId": "3", "score": 137.0, "scoreType": "interaction_count"},
-        {"courseId": "4", "score": 47.0, "scoreType": "interaction_count"},
-        {"courseId": "6", "score": 40.0, "scoreType": "interaction_count"}
-      ],
-      "recommendationType": "popularity",
-      "topK": 3,
-      "generatedAt": "2026-07-31T07:34:23Z"
-    }
-    ```
-  - C# Backend API Output: `POST http://localhost:5150/api/MLTest/recommend` -> `{"recommendedCourseIds":[3,4,6,5,2],"scores":[137,47,40,31,13]}`
-  - *Note*: The scores returned by the popularity baseline represent the raw **popularity/interaction count** (e.g., how many times students registered for that course in OULAD), which is why they are integers like 137 and 47. The API explicitly exposes `"scoreType": "interaction_count"` so that the client-side UI does not treat them as normalized probability percentages.
-
-### 8.4 ML Architecture Diagram
-
-```text
-                               FASTAPI INFERENCE LAYER
-                     ┌─────────────────────────────────────────┐
-                     │                                         │
-                     │  Sentiment Analysis (BiLSTM)            │
-                     │  - Text -> Cleaning -> Predict          │
-                     │  - Returns: label, score, confidence    │
-                     │                                         │
-                     ├─────────────────────────────────────────┤
-                     │                                         │
-                     │  Course Classification (TF-IDF + MLP)   │
-                     │  - Title + Desc -> TF-IDF -> Predict    │
-                     │  - Returns: suggested category, conf    │
-                     │                                         │
-                     ├─────────────────────────────────────────┤
-                     │                                         │
-                     │  Course Recommendation                  │
-                     │  - Offline evaluated: GMF / NeuMF       │
-                     │  - Production model: Popularity         │
-                     │  - Mapping Service: OULAD -> CourseId   │
-                     │  - Returns: topK, scores, scoreType     │
-                     │                                         │
-                     └─────────────────────────────────────────┘
-```
-
-### 8.5 Browser Verification Media
-We verified the complete visual and interactive layout of the React client application using a browser automated subagent:
-- **WebP Interactive Session Video**: ![Verification Video](C:/Users/bacle/.gemini/antigravity-ide/brain/e2ea3bdb-1c5b-4687-bfb8-ee042054e4c3/open_frontend_demo_1785483619178.webp)
-- **Home Page Screenshot**: ![Home Page Initial](C:/Users/bacle/.gemini/antigravity-ide/brain/e2ea3bdb-1c5b-4687-bfb8-ee042054e4c3/homepage_initial_1785483638385.png)
-- **Scrolled Course Catalog Screenshot**: ![Home Page Scrolled](C:/Users/bacle/.gemini/antigravity-ide/brain/e2ea3bdb-1c5b-4687-bfb8-ee042054e4c3/homepage_scrolled_1785483644878.png)
-
----
-
-## 9. Conclusion & Status
-
-- **ML implementation**: IMPLEMENTED
-- **Backend integration**: IMPLEMENTED
-- **Frontend build**: RESOLVED
-- **End-to-end verification**: VERIFIED
-- **Production readiness**: READY FOR DEMO
-
-> [!NOTE]
-> The EduMy ML subsystem is implemented and ready for academic demonstration. Sentiment analysis, course classification, and recommendation are served through FastAPI and orchestrated by Spring Boot 3.2.0 (Java 17). Remaining production considerations include real email delivery, broader recommendation identity coverage, domain-specific sentiment data, and continuous model monitoring.
+## 4. Tài Khoản Seed Mặc Định (Development)
+- **Admin**: `admin@edumy.com` / `Admin@123`
+- **Instructor**: `instructor@edumy.com` / `Admin@123`
+- **Student**: `student@edumy.com` / `Admin@123`

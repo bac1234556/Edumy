@@ -1,35 +1,46 @@
-# Test Execution Report — Sentiment Analysis
+# Test Inventory & Verification Guide — EduMy
 
-This report documents the test suites and verification results for the Sentiment Analysis integration.
-
----
-
-## 1. Test Suite Coverage (Critical Paths)
-
-To prevent regression bugs without requiring redundant work, testing focuses on the following critical integration paths:
-
-| Test ID | Path | Type | Input | Expected Output | Status |
-|---|---|---|---|---|---|
-| **TEST-01** | FastAPI Validation | Unit | `""` (Empty string) | `HTTP 400 Bad Request` | PASS |
-| **TEST-02** | FastAPI Validation | Unit | Long text (>5K chars) | `HTTP 400 Bad Request` | PASS |
-| **TEST-03** | FastAPI Validation | Unit | Script tags injection | `HTTP 400 Bad Request` | PASS |
-| **TEST-04** | API Polarity Contract | Unit | Positive review | `label: "Positive"`, score maps | PASS |
-| **TEST-05** | API Polarity Contract | Unit | Negative review | `label: "Negative"`, score maps | PASS |
-| **TEST-06** | API Polarity Contract | Unit | Neutral review | `label: "Neutral"`, score maps | PASS |
-| **TEST-07** | Polly Error Handlers | Integration | FastAPI service offline | Review saves, Label = `"Unavailable"` | PASS |
-| **TEST-08** | DB Persistence | Integration | Review submitted | Record has SentimentLabel | PASS |
-| **TEST-09** | React Review Badge | E2E | Rendering | Review card renders badge | PASS |
+**Updated**: 2026-11-17
 
 ---
 
-## 2. Mock Contract Test Sample (FastAPI Offline)
-Verification of the C# client resilience setup (Polly wait/retry and circuit breaker):
+## 1. Backend Unit & Architecture Tests (`Backend/src/test/java/com/edumy/`)
 
-1. **Step**: Stop FastAPI server.
-2. **Step**: Submit review via React frontend.
-3. **Log Output**:
-   ```
-   [2026-07-30 02:40:12 WRN] Polly Circuit Breaker triggered on http://localhost:8000/sentiment/analyze
-   [2026-07-30 02:40:12 INF] Review saved to database with SentimentLabel = "Unavailable" (HTTP 503 fallback path succeeded)
-   ```
-4. **Verification**: Checked SQL Server database. The review is present, `SentimentLabel` field is set to `"Unavailable"`, and no data is lost.
+Hệ thống Backend sử dụng **JUnit 5**, **Mockito**, **Spring Modulith Test** và **JaCoCo** để kiểm chứng kiến trúc và nghiệp vụ cốt lõi:
+
+| Test Class | File Path | Các ca kiểm thử (`@Test`) | Mục tiêu |
+|---|---|---|---|
+| `ModularityTest` | `Backend/src/test/java/com/edumy/ModularityTest.java` | `verifiesModularStructure` | Khởi tạo `ApplicationModules.of(Application.class)` kiểm tra cấu trúc 8 module Spring Modulith |
+| `AuthServiceImplTest` | `Backend/src/test/java/com/edumy/identity/auth/service/AuthServiceImplTest.java` | `testMobileRegister_Success`, `testMobileLogin_AccountLocked`, `testMobileRefresh_ReuseDetection`, `testMobileLogout_Success` | Kiểm thử đăng ký mobile, chặn tài khoản bị khóa, phát hiện dùng lại refresh token & đăng xuất |
+| `MobileAuthControllerTest` | `Backend/src/test/java/com/edumy/identity/auth/controller/MobileAuthControllerTest.java` | `testMobileRegister`, `testMobileLogin`, `testMobileRefresh`, `testMobileLogout` | Kiểm thử REST contract cho `/api/v1/auth/mobile/*` |
+| `EarningServiceImplTest` | `Backend/src/test/java/com/edumy/payout/service/EarningServiceImplTest.java` | `testAcM09RevenueSplit`, `testGetSummary` | Kiểm thử chia tách doanh thu (phí nền tảng + đồng giảng viên + giảng viên chính) và tổng hợp số dư |
+| `WithdrawalServiceImplTest` | `Backend/src/test/java/com/edumy/payout/service/WithdrawalServiceImplTest.java` | `testMissingPayoutAccount`, `testBelowMinimum`, `testAlreadyOpen`, `testExceedsBalance`, `testSuccess` | Kiểm thử các ràng buộc nghiệp vụ khi tạo yêu cầu rút tiền |
+
+### Lệnh chạy kiểm thử Backend
+```bash
+cd Edumy/Edumy/Backend
+.\mvnw.cmd test
+```
+
+---
+
+## 2. Frontend Checks (`Frontend/`)
+
+```bash
+cd Edumy/Edumy/Frontend
+npm run lint    # Kiểm tra mã nguồn với Oxlint
+npm run build   # Kiểm tra đóng gói production bundle với Vite
+```
+
+---
+
+## 3. Integration Verification Script (`scripts/verify_audit.ps1`)
+
+Script kiểm thử tích hợp end-to-end khi Backend và SQL Server đang chạy tại `http://localhost:5000`:
+1. Kiểm tra `/actuator/health`
+2. Đăng nhập đa vai trò (`Admin`, `Instructor`, `Student`) & Mobile Auth (`/api/v1/auth/mobile/login`)
+3. Kiểm tra Catalog, `recommend`, `similar` và ghi log tìm kiếm
+4. Kiểm tra Q&A (`/api/v1/courses/{id}/questions`) & Payout (`/api/v1/me/earnings/summary`)
+5. Kiểm tra định tuyến payment callback đa kiểu chữ (`/api/payment/callback`, `/api/Payment/callback`)
+6. Kiểm tra tạo Section & Quiz cho giảng viên
+7. Kiểm tra Audit Trail (`/api/admin/activities`)

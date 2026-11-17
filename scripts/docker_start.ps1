@@ -1,4 +1,4 @@
-﻿# ==============================================================
+# ==============================================================
 # Script khởi chạy EduMy trên Docker Desktop
 # ==============================================================
 $ErrorActionPreference = "Continue"
@@ -18,7 +18,7 @@ Write-Host "-> Docker Desktop dang hoat dong tot." -ForegroundColor Green
 
 # 3. Chay docker compose (tu thu muc chua docker-compose.yml)
 $composeDir = Join-Path $PSScriptRoot "..\Edumy"
-Write-Host "`nDang khoi dong cac container (database, backend, frontend, prometheus, grafana)..." -ForegroundColor Cyan
+Write-Host "`nDang khoi dong cac container (database, backend, mailpit, frontend, prometheus, grafana)..." -ForegroundColor Cyan
 Push-Location $composeDir
 docker compose up -d
 Pop-Location
@@ -29,6 +29,7 @@ if ($LASTEXITCODE -eq 0) {
     Write-Host "==========================================================" -ForegroundColor Green
     Write-Host " - Frontend UI : http://localhost:3000" -ForegroundColor Yellow
     Write-Host " - Backend API : http://localhost:5000" -ForegroundColor Yellow
+    Write-Host " - Mailpit UI  : http://localhost:8025 (SMTP :1025)" -ForegroundColor Yellow
     Write-Host " - Database    : SQL Server container (localhost:14333)" -ForegroundColor Yellow
     Write-Host " - Prometheus  : http://localhost:9090" -ForegroundColor Yellow
     Write-Host " - Grafana     : http://localhost:3001 (admin/admin)" -ForegroundColor Yellow

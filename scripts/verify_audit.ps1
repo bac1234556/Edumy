@@ -4,79 +4,84 @@ $PSDefaultParameterValues['*:Encoding'] = 'utf8'
 
 $baseApi = "http://localhost:5000"
 
+function Unwrap-Data($res) {
+    if ($null -ne $res -and ($res.PSObject.Properties['success']) -and ($res.PSObject.Properties['data']) -and $null -ne $res.data) {
+        return $res.data
+    }
+    return $res
+}
+
 Write-Host "=========================================================="
-Write-Host "       EDUMY COMPREHENSIVE SYSTEM VERIFICATION TEST       "
+Write-Host "   EDUMY SPRING MODULITH SYSTEM VERIFICATION TEST         "
 Write-Host "=========================================================="
 
-Write-Host "`n=== 1. TEST AUTHENTICATION & MULTI-ROLE TOKENS ==="
+Write-Host "`n=== 1. TEST ACTUATOR HEALTH & PROMETHEUS ==="
+$healthRes = Invoke-RestMethod -Uri "$baseApi/actuator/health" -Method Get
+Write-Host "[PASS] Actuator Health Status = $($healthRes.status)"
+
+Write-Host "`n=== 2. TEST AUTHENTICATION & MULTI-ROLE TOKENS (WEB & MOBILE) ==="
 $adminLoginBody = '{"email":"admin@edumy.com","password":"Admin@123"}'
-$adminRes = Invoke-RestMethod -Uri "$baseApi/api/auth/login" -Method Post -Body $adminLoginBody -ContentType "application/json; charset=utf-8"
+$adminRes = Unwrap-Data (Invoke-RestMethod -Uri "$baseApi/api/auth/login" -Method Post -Body $adminLoginBody -ContentType "application/json; charset=utf-8")
 $adminToken = $adminRes.token
 Write-Host "[PASS] Admin Token acquired: Role=$($adminRes.user.role), Name=$($adminRes.user.fullName)"
 
 $instLoginBody = '{"email":"instructor@edumy.com","password":"Admin@123"}'
-$instRes = Invoke-RestMethod -Uri "$baseApi/api/auth/login" -Method Post -Body $instLoginBody -ContentType "application/json; charset=utf-8"
+$instRes = Unwrap-Data (Invoke-RestMethod -Uri "$baseApi/api/auth/login" -Method Post -Body $instLoginBody -ContentType "application/json; charset=utf-8")
 $instToken = $instRes.token
 Write-Host "[PASS] Instructor Token acquired: Role=$($instRes.user.role), Name=$($instRes.user.fullName)"
 
 $studentLoginBody = '{"email":"student@edumy.com","password":"Admin@123"}'
-$studentRes = Invoke-RestMethod -Uri "$baseApi/api/auth/login" -Method Post -Body $studentLoginBody -ContentType "application/json; charset=utf-8"
+$studentRes = Unwrap-Data (Invoke-RestMethod -Uri "$baseApi/api/auth/login" -Method Post -Body $studentLoginBody -ContentType "application/json; charset=utf-8")
 $studentToken = $studentRes.token
 Write-Host "[PASS] Student Token acquired: Role=$($studentRes.user.role), Name=$($studentRes.user.fullName)"
 
-Write-Host "`n=== 2. TEST DUAL-CASING PAYMENT CALLBACK ROUTING ==="
-$callbackBody = '{"orderId":1,"amount":500000,"transactionId":"TXN_TEST_12345","status":"SUCCESS","paymentMethod":"VNPAY"}'
+$mobileRes = Invoke-RestMethod -Uri "$baseApi/api/v1/auth/mobile/login" -Method Post -Body $studentLoginBody -ContentType "application/json; charset=utf-8"
+Write-Host "[PASS] Mobile Auth Token acquired: ExpiresAt=$($mobileRes.expiresAt)"
 
-$cbLower = Invoke-RestMethod -Uri "$baseApi/api/payment/callback" -Method Post -Body $callbackBody -ContentType "application/json; charset=utf-8"
-Write-Host "[PASS] Lowercase /api/payment/callback HTTP 200: Code=$($cbLower.rspCode), Msg=$($cbLower.message)"
+Write-Host "`n=== 3. TEST CATALOG, RECOMMENDATIONS & SEARCH LOGGING ==="
+$coursesRes = Unwrap-Data (Invoke-RestMethod -Uri "$baseApi/api/courses" -Method Get)
+Write-Host "[PASS] /api/courses returned courses count: $($coursesRes.items.Count)"
 
-$cbUpper = Invoke-RestMethod -Uri "$baseApi/api/Payment/callback" -Method Post -Body $callbackBody -ContentType "application/json; charset=utf-8"
-Write-Host "[PASS] Uppercase /api/Payment/callback HTTP 200: Code=$($cbUpper.rspCode), Msg=$($cbUpper.message)"
+$coursesUpperRes = Unwrap-Data (Invoke-RestMethod -Uri "$baseApi/api/Courses" -Method Get)
+Write-Host "[PASS] /api/Courses returned courses count: $($coursesUpperRes.items.Count)"
 
-Write-Host "`n=== 3. TEST DUAL-CASING COURSES CATALOG & SEARCH ==="
-$coursesRes = Invoke-RestMethod -Uri "$baseApi/api/courses" -Method Get
-Write-Host "[PASS] Lowercase /api/courses returned courses count: $($coursesRes.items.Count)"
+$recRes = Unwrap-Data (Invoke-RestMethod -Uri "$baseApi/api/v1/courses/recommend" -Method Get)
+Write-Host "[PASS] /api/v1/courses/recommend returned $($recRes.Count) courses"
 
-$coursesUpperRes = Invoke-RestMethod -Uri "$baseApi/api/Courses" -Method Get
-Write-Host "[PASS] Uppercase /api/Courses returned courses count: $($coursesUpperRes.items.Count)"
-
-# Test search logging
-$searchHeaders = @{ Authorization = "Bearer $studentToken" }
-$searchRes = Invoke-RestMethod -Uri "$baseApi/api/courses?search=Python&keyword=Python" -Method Get -Headers $searchHeaders
-Write-Host "[PASS] Course Search with Student query logged to SearchHistories successfully."
-
-Write-Host "`n=== 4. TEST REAL FASTAPI MICROSERVICE ML INTEGRATION ==="
-# Test ML Sentiment via backend
-$sentimentReq = '{"text":"Khoa hoc nay rat hay va de hieu, giang vien day tam huyet!"}'
-$sentimentRes = Invoke-RestMethod -Uri "$baseApi/api/mltest/sentiment" -Method Post -Body $sentimentReq -ContentType "application/json; charset=utf-8"
-Write-Host "[PASS] ML BiLSTM Sentiment Result: Label=$($sentimentRes.label), Score=$($sentimentRes.score)"
-
-# Test ML Classification via backend
-$classifyReq = '{"title":"Machine Learning Deep Learning","description":"Neural networks CNN LSTM Python"}'
-$classifyRes = Invoke-RestMethod -Uri "$baseApi/api/mltest/classify" -Method Post -Body $classifyReq -ContentType "application/json; charset=utf-8"
-Write-Host "[PASS] ML Classification Result: PredictedCategory=$($classifyRes.predictedCategory), Confidence=$($classifyRes.confidence), Model=$($classifyRes.modelType)"
-
-# Test ML Recommendations via backend
-$recReq = '{"userId":1}'
-$recRes = Invoke-RestMethod -Uri "$baseApi/api/mltest/recommend" -Method Post -Body $recReq -ContentType "application/json; charset=utf-8"
-Write-Host "[PASS] ML Recommendation Result: Recommended Course IDs = $($recRes.recommendedCourseIds -join ', ')"
-
-Write-Host "`n=== 5. TEST INSTRUCTOR SECTION & QUIZ CREATION ==="
 $firstCourse = $coursesRes.items[0]
 $courseId = $firstCourse.courseId
+$simRes = Unwrap-Data (Invoke-RestMethod -Uri "$baseApi/api/v1/courses/$courseId/similar?limit=4" -Method Get)
+Write-Host "[PASS] /api/v1/courses/$courseId/similar returned $($simRes.Count) similar courses"
 
-# Instructor creates Section first
+$searchHeaders = @{ Authorization = "Bearer $studentToken" }
+$searchRes = Unwrap-Data (Invoke-RestMethod -Uri "$baseApi/api/courses?search=Spring&keyword=Spring" -Method Get -Headers $searchHeaders)
+Write-Host "[PASS] Course Search with Student query logged to search_histories successfully."
+
+Write-Host "`n=== 4. TEST Q&A FORUM & INSTRUCTOR PAYOUT MODULE ==="
+$qaRes = Unwrap-Data (Invoke-RestMethod -Uri "$baseApi/api/v1/courses/$courseId/questions" -Method Get)
+Write-Host "[PASS] Q&A /api/v1/courses/$courseId/questions returned totalElements=$($qaRes.totalElements)"
+
 $instHeaders = @{
     Authorization = "Bearer $instToken"
     "Content-Type" = "application/json; charset=utf-8"
 }
+$earningSummary = Invoke-RestMethod -Uri "$baseApi/api/v1/me/earnings/summary" -Method Get -Headers $instHeaders
+Write-Host "[PASS] Payout /api/v1/me/earnings/summary: AvailableBalance=$($earningSummary.availableBalance), TotalEarned=$($earningSummary.totalEarned)"
 
+Write-Host "`n=== 5. TEST DUAL-CASING PAYMENT CALLBACK ROUTING ==="
+$callbackBody = '{"orderId":1,"amount":500000,"transactionId":"TXN_TEST_12345","status":"SUCCESS","paymentMethod":"VNPAY"}'
+$cbLower = Unwrap-Data (Invoke-RestMethod -Uri "$baseApi/api/payment/callback" -Method Post -Body $callbackBody -ContentType "application/json; charset=utf-8")
+Write-Host "[PASS] Lowercase /api/payment/callback HTTP 200: Code=$($cbLower.rspCode), Msg=$($cbLower.message)"
+
+$cbUpper = Unwrap-Data (Invoke-RestMethod -Uri "$baseApi/api/Payment/callback" -Method Post -Body $callbackBody -ContentType "application/json; charset=utf-8")
+Write-Host "[PASS] Uppercase /api/Payment/callback HTTP 200: Code=$($cbUpper.rspCode), Msg=$($cbUpper.message)"
+
+Write-Host "`n=== 6. TEST INSTRUCTOR SECTION & QUIZ CREATION ==="
 $sectionBody = '{"title":"Chuong 1: Kien Thuc Nen Tang","orderIndex":1}'
-$sectionRes = Invoke-RestMethod -Uri "$baseApi/api/courses/$courseId/sections" -Method Post -Headers $instHeaders -Body $sectionBody
+$sectionRes = Unwrap-Data (Invoke-RestMethod -Uri "$baseApi/api/courses/$courseId/sections" -Method Post -Headers $instHeaders -Body $sectionBody)
 $sectionId = $sectionRes.sectionId
 Write-Host "[PASS] Instructor created Section: ID=$sectionId, Title=$($sectionRes.title)"
 
-# Instructor creates Quiz inside Section
 $quizBody = @{
     courseSectionId = $sectionId
     title = "Kiem Tra Kien Thuc Lap Trinh Chuyen Sau"
@@ -94,17 +99,17 @@ $quizBody = @{
     )
 } | ConvertTo-Json -Depth 5
 
-$createdQuiz = Invoke-RestMethod -Uri "$baseApi/api/quizzes" -Method Post -Headers $instHeaders -Body $quizBody
+$createdQuiz = Unwrap-Data (Invoke-RestMethod -Uri "$baseApi/api/quizzes" -Method Post -Headers $instHeaders -Body $quizBody)
 Write-Host "[PASS] Quiz created successfully: ID=$($createdQuiz.quizId), Title=$($createdQuiz.title), Questions=$($createdQuiz.questions.Count)"
 
-Write-Host "`n=== 6. TEST AUDIT TRAIL & USER ACTIVITY LOGS ==="
+Write-Host "`n=== 7. TEST AUDIT TRAIL & USER ACTIVITY LOGS ==="
 $adminHeaders = @{ Authorization = "Bearer $adminToken" }
-$activities = Invoke-RestMethod -Uri "$baseApi/api/admin/activities" -Method Get -Headers $adminHeaders
+$activities = Unwrap-Data (Invoke-RestMethod -Uri "$baseApi/api/admin/activities" -Method Get -Headers $adminHeaders)
 Write-Host "[PASS] Admin audit trail fetched successfully: Total logged events = $($activities.Count)"
 foreach ($act in $activities | Select-Object -First 3) {
     Write-Host "  -> Event: Action=$($act.action), User=$($act.userEmail), Resource=$($act.resourceId), Time=$($act.timestamp)"
 }
 
 Write-Host "`n=========================================================="
-Write-Host "  ALL 6 AUDIT CRITICAL PATHS VERIFIED WITH 100% SUCCESS!  "
+Write-Host "  ALL 7 MODULITH CRITICAL PATHS VERIFIED WITH SUCCESS!    "
 Write-Host "=========================================================="

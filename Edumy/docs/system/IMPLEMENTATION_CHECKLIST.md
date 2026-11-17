@@ -1,3 +1,6 @@
+> [!NOTE]
+> **Tài liệu lưu trữ lịch sử (Historical Archive)**: Checklist bên dưới thuộc giai đoạn tích hợp `MLService` (FastAPI) trước đây. Hiện tại hệ thống đã chuyển sang kiến trúc **Spring Modulith 1.1.5 + React 19 + SQL Server 2022 + Mailpit + Prometheus/Grafana** (xem [CURRENT_SYSTEM_AUDIT.md](./CURRENT_SYSTEM_AUDIT.md) và [walkthrough.md](./walkthrough.md)).
+
 # Implementation Checklist — EduMy ML Integration
 
 **Date**: 2026-07-30

@@ -1,134 +1,148 @@
-# Edumy - Nền Tảng E-Learning & Đào Tạo Trực Tuyến Tích Hợp AI
+# Edumy - Nền Tảng E-Learning & Đào Tạo Trực Tuyến (Spring Modulith + React 19)
 
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2.0-brightgreen.svg)](https://spring.io/projects/spring-boot)
-[![React](https://img.shields.io/badge/React-18-blue.svg)](https://react.dev/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-Python%203.11-teal.svg)](https://fastapi.tiangolo.com/)
-[![SQL Server](https://img.shields.io/badge/Database-SQL%20Server-red.svg)](https://www.microsoft.com/sql-server)
-[![Jenkins](https://img.shields.io/badge/CI%2FCD-Jenkins%20Pipeline-orange.svg)](https://www.jenkins.io/)
+[![Spring Modulith](https://img.shields.io/badge/Spring%20Modulith-1.1.5-6DB33F.svg)](https://spring.io/projects/spring-modulith)
+[![Java](https://img.shields.io/badge/Java-17-orange.svg)](https://openjdk.org/)
+[![React](https://img.shields.io/badge/React-19.2-blue.svg)](https://react.dev/)
+[![SQL Server](https://img.shields.io/badge/Database-SQL%20Server%202022-red.svg)](https://www.microsoft.com/sql-server)
+[![Observability](https://img.shields.io/badge/Monitoring-Prometheus%20%2B%20Grafana-E6522C.svg)](https://grafana.com/)
+[![Jenkins](https://img.shields.io/badge/CI%2FCD-Jenkins%20Pipeline-D24939.svg)](https://www.jenkins.io/)
 
-Edumy là nền tảng học trực tuyến hiện đại được xây dựng theo kiến trúc **Microservices**, tích hợp sâu các tính năng **Trí tuệ Nhân tạo (AI)** để hỗ trợ giảng viên soạn đề cương, phân loại danh mục tự động, gợi ý câu hỏi trắc nghiệm và đề xuất lộ trình học tập thông minh cho học viên.
+Edumy là nền tảng học trực tuyến (E-Learning Platform) được xây dựng theo kiến trúc **Modular Monolith (Spring Modulith 1.1.5)** trên nền tảng **Java 17 + Spring Boot 3.2.0**, phục vụ đồng thời **Web SPA (React 19 + Vite 8)** và **Mobile Client (Expo/REST Bearer Token)** trên một lõi nghiệp vụ thống nhất (*Single Source of Truth*), tích hợp thanh toán **VietQR / SePay Webhook / VNPay / Stripe**, cấp chứng chỉ PDF tiếng Việt (**OpenPDF**), gửi email bất đồng bộ (**Mailpit SMTP**), sổ cái doanh thu giảng viên (**Payout Ledger**) và giám sát hệ thống thời gian thực (**Prometheus + Grafana**).
 
 ---
 
-## 🏛️ Kiến Trúc Hệ Thống (Architecture)
+## 🏛️ Kiến Trúc Hệ Thống (Spring Modulith Architecture)
 
 ```text
-[ React 18 + Vite ] (Port 5173)
-        │
-        ▼ (REST API / JWT)
-[ Java Spring Boot 3.2 ] (Port 5000) ──────► [ SQL Server 2022 ] (Port 1433)
-        │                                         (Database: EduMyDb)
-        ▼ (HTTP REST / Microservice)
-[ Python 3.11 FastAPI ] (Port 8000)
-  ├── AI Category & Tag Classification (TF-IDF / Similarity)
-  ├── AI Curriculum & Syllabus Generator
-  ├── AI Quiz & Question Generator
-  └── AI Personalized Learning Path Recommendation
+  [ Web SPA: React 19 + Vite 8 / Nginx ] (Docker: 3000 | Dev: 5173)
+  [ Mobile App: Expo / Native Client   ] (/api/v1/auth/mobile/*)
+                    │
+                    ▼  (REST JSON + JWT / HttpOnly Refresh Cookie)
+  ┌─────────────────────────────────────────────────────────────────┐
+  │        Java 17 + Spring Boot 3.2.0 + Spring Modulith 1.1.5      │
+  │                     (Port 5000 | /api, /api/v1)                 │
+  ├─────────────┬─────────────┬──────────────┬──────────────────────┤
+  │ 01.identity │ 02.catalog  │ 03.authoring │ 04.commerce          │
+  │ 05.learning │ 06.payout   │ notification │ shared (Kernel)      │
+  └──────┬──────┴─────────────┴──────┬───────┴──────────┬───────────┘
+         │ JDBC (MSSQL)              │ SMTP             │ /actuator/prometheus
+         ▼                           ▼                  ▼
+  [ SQL Server 2022 ]       [ Mailpit SMTP ]   [ Prometheus + Grafana ]
+  (Docker: 14333->1433)     (UI: 8025 | 1025)  (9090 | 3001 + Telegram)
 ```
+
+### 8 Module Trong Spring Modulith (`com.edumy.*`)
+| Module | Vai trò & Nghiệp vụ chính | Phụ thuộc cho phép (`@ApplicationModule`) |
+| :--- | :--- | :--- |
+| **`identity`** (`01 Identity`) | Đăng ký, đăng nhập Web (Cookie Refresh) & Mobile (Opaque Refresh Token Rotation), Google OAuth, xác thực email, quên/đặt lại mật khẩu, quản lý User/Role, log hoạt động (`UserActivity`) & `SearchHistory` | `shared` |
+| **`catalog`** (`02 Catalog`) | Tìm kiếm khóa học tức thì (`instant-search`), duyệt danh mục/thẻ (`Categories`, `Tags`), gợi ý khóa học tương đồng (`similar`), combo (`bundle-recommendation`) & nổi bật (`recommend`) | `shared`, `authoring :: api`, `learning :: api` |
+| **`authoring`** (`03 Authoring`) | Tạo/chỉnh sửa khóa học, chương (`CourseSection`), bài học (`Lesson`), sắp xếp giáo trình, upload media, đồng giảng viên (`Co-Instructor` & lời mời), quy trình gửi duyệt/phê duyệt/ẩn khóa học | `shared` |
+| **`commerce`** (`04 Commerce`) | Giỏ hàng (`Cart`), mã giảm giá (`Coupon`), đơn hàng (`Order`, `buy-now`, `checkout`), thanh toán **VietQR động**, **SePay/Casso Webhook** tự kích hoạt khóa học, **VNPay**, **Stripe** | `shared`, `authoring :: api`, `learning :: api`, `payout :: api` |
+| **`learning`** (`05 Learning`) | Ghi danh (`Enrollment`), kiểm soát quyền truy cập/preview bài học, theo dõi tiến độ (`LessonProgress`), bài kiểm tra trắc nghiệm (`Quiz`, `QuizAttempt`), đánh giá (`Review`), diễn đàn hỏi đáp **Q&A** (`CourseQuestion`, `QuestionAnswer`), xuất & xác thực chứng chỉ PDF tiếng Việt (**OpenPDF**) | `shared`, `authoring :: api` |
+| **`payout`** (`06 Payout`) | Sổ cái doanh thu giảng viên (`EarningEntry`), tách phí nền tảng & chia sẻ đồng giảng viên, chính sách kỳ hạn (`maturity`), cấu hình tài khoản ngân hàng (`PayoutAccount`), yêu cầu & duyệt rút tiền (`WithdrawalRequest`) | `shared`, `identity :: api`, `authoring :: api` |
+| **`notification`** (`Notification`) | Lắng nghe Domain Events (`@Async` + `@TransactionalEventListener` AFTER_COMMIT) và gửi 10 mẫu email HTML tiếng Việt qua **Mailpit / SMTP** | `shared`, `identity :: api`, `authoring :: api`, `commerce :: api`, `learning :: api` |
+| **`shared`** (`Shared`) | Security JWT & CORS, `DataSeeder`, `ApiResponseAdvice` (chuẩn hóa envelope JSON), `GlobalExceptionHandler`, `PagedResultDto`, chuẩn hóa tiếng Việt & slug, validation giá khóa học | *(Shared Kernel)* |
 
 ---
 
-## 📁 Cấu Trúc Thư Mục Dự Án (Repository Structure)
+## 📁 Cấu Trúc Thư Mục Dự Án
 
 ```text
 Edumy/
-│
-├── 📂 Edumy/                         <-- Mã nguồn các dịch vụ lõi & hạ tầng
-│   ├── 📂 Backend/                   <-- Java 17 + Spring Boot 3.2.0 (REST API Server)
-│   ├── 📂 Frontend/                  <-- React 18 + Vite + Design System Tokens
-│   ├── 📂 MLService/                 <-- Python 3.11 + FastAPI (AI Microservice Engine)
-│   ├── 📂 Database/                  <-- SQL Server 2022 Docker setup & seed scripts
-│   ├── 📂 monitoring/                <-- Prometheus metrics & Grafana alert dashboards
-│   ├── 📂 ml-training/               <-- Jupyter notebooks & training pipeline
-│   ├── 📂 docs/                      <-- Tài liệu kỹ thuật phân nhóm (system, ml, design-system)
-│   │   ├── README.md                 (Mục lục điều hướng tài liệu)
-│   │   ├── system/                   (Kiến trúc, API_SPEC, luồng dữ liệu, walkthrough)
-│   │   ├── design-system/            (Tokens, bảng màu, typography UI)
-│   │   └── ml/                       (Classification, recommendation, sentiment, general)
-│   ├── 📄 docker-compose.yml         <-- Docker compose toàn bộ dịch vụ (Stack 6 containers)
-│   └── 📄 .env.example               <-- Cấu hình biến môi trường mẫu
-│
-├── 📂 scripts/                       <-- Các script vận hành & tự động hóa
-│   ├── 📄 docker_start.ps1           (Khởi chạy toàn bộ hệ thống bằng Docker)
-│   ├── 📄 docker_stop.ps1            (Dừng toàn bộ container hệ thống)
-│   ├── 📄 start_all.ps1              (Khởi chạy cục bộ từng service trên Windows)
-│   └── 📄 verify_audit.ps1           (Kiểm thử tích hợp & xác thực API đa vai trò)
-│
-├── 📄 Jenkinsfile                    <-- Pipeline CI/CD tự động (Checkout, Build, Test, Deploy)
-├── 📄 .gitignore & .gitattributes    <-- Cấu hình quản trị phiên bản Git chuẩn hóa
-└── 📄 README.md                      <-- Tài liệu tổng quan dự án
+├── 📂 Edumy/                          <-- Mã nguồn lõi & hạ tầng Docker
+│   ├── 📂 Backend/                    <-- Java 17 + Spring Boot 3.2.0 + Spring Modulith 1.1.5
+│   ├── 📂 Frontend/                   <-- React 19.2 + Vite 8.1 + Design System + Nginx
+│   ├── 📂 Database/                   <-- SQL Server 2022 Docker, EduMyDb.bak, DDL & Seed scripts
+│   ├── 📂 monitoring/                 <-- Prometheus scrape config & Grafana dashboards/alerts
+│   ├── 📂 docs/                       <-- Tài liệu kỹ thuật (system, design-system, ml legacy)
+│   ├── 📄 docker-compose.yml          <-- Stack 6 containers (database, backend, mailpit, frontend, prometheus, grafana)
+│   └── 📄 .env.example                <-- Biến môi trường Telegram Alerting cho Grafana
+├── 📂 scripts/                        <-- Script vận hành & kiểm thử trên Windows PowerShell
+│   ├── 📄 docker_start.ps1            <-- Khởi chạy toàn bộ stack 6 containers trên Docker Desktop
+│   ├── 📄 docker_stop.ps1             <-- Dừng toàn bộ containers
+│   ├── 📄 start_all.ps1               <-- Khởi chạy cục bộ Backend + Frontend trên Windows
+│   └── 📄 verify_audit.ps1            <-- Kiểm thử tích hợp các luồng API đa vai trò
+├── 📄 Jenkinsfile                     <-- Pipeline CI/CD tự động (Build, Test, Docker Compose Deploy)
+├── 📄 .gitignore & .gitattributes
+└── 📄 README.md                       <-- Tài liệu tổng quan dự án (file này)
 ```
 
 ---
 
 ## 🚀 Hướng Dẫn Khởi Chạy Nhanh (Quick Start)
 
-### Cách 1: Khởi chạy 1-Click (Khuyên dùng trên Windows)
-Mở PowerShell tại thư mục gốc và chạy:
+### Cách 1: Chạy toàn bộ hệ thống với Docker Desktop (Khuyên dùng)
+Mở PowerShell tại thư mục `Edumy/` và chạy:
 ```powershell
-.\start_all.ps1
+.\scripts\docker_start.ps1
 ```
-Script sẽ tự động:
-1. Kiểm tra trạng thái cổng SQL Server `1433`.
-2. Bật dịch vụ **AI Microservice (FastAPI)** tại `http://127.0.0.1:8000`.
-3. Bật dịch vụ **Backend API (Spring Boot)** tại `http://localhost:5000`.
-4. Bật giao diện **Frontend (React Vite)** tại `http://localhost:5173`.
+*(Hoặc chạy trực tiếp `cd Edumy; docker compose up -d --build` — tùy chọn copy `.env.example` thành `.env` nếu muốn bật cảnh báo Telegram cho Grafana).*
+
+Hệ thống gồm **6 containers** sẽ sẵn sàng tại:
+| Dịch vụ | URL / Port | Ghi chú |
+| :--- | :--- | :--- |
+| **Frontend UI (Nginx)** | `http://localhost:3000` | Giao diện React 19 production |
+| **Backend API (Spring Boot)** | `http://localhost:5000` | REST API + `/actuator/health` & `/actuator/prometheus` |
+| **SQL Server 2022** | `localhost:14333` (`sa` / `YourPassword123`) | Tự động restore `EduMyDb.bak` khi khởi tạo volume |
+| **Mailpit Web UI / SMTP** | `http://localhost:8025` (SMTP `1025`) | Hộp thư test nhận email xác thực, đơn hàng, Q&A |
+| **Prometheus** | `http://localhost:9090` | Thu thập metrics từ Backend mỗi 5 giây |
+| **Grafana** | `http://localhost:3001` (`admin` / `admin`) | Dashboard & Alerting (Backend Down, CPU > 85%, HTTP 5xx) |
+
+Để dừng toàn bộ container:
+```powershell
+.\scripts\docker_stop.ps1
+```
 
 ---
 
-### Cách 2: Khởi chạy thủ công từng dịch vụ
+### Cách 2: Khởi chạy cục bộ cho môi trường phát triển (Localhost)
 
-#### 1. Cơ sở dữ liệu (SQL Server)
-- Kết nối tới `127.0.0.1:1433`
-- Database: `EduMyDb`
-- Tài khoản mẫu: `sa` / `YourPassword123`
+#### Bước 1: Chuẩn bị SQL Server
+- Đảm bảo SQL Server đang chạy tại `127.0.0.1:1433` (tài khoản mặc định trong `application.yml`: `sa` / `YourPassword123`, database `EduMyDb`).
+- Có thể chạy script trong `Edumy/Database/scripts/06_Script_Tao_Database_EduMyDb.sql` và `07_Script_Seed_Data_EduMyDb.sql`, hoặc để `DataSeeder` & Hibernate `ddl-auto: update` tự khởi tạo schema và dữ liệu mẫu khi chạy Backend.
 
-#### 2. Dịch vụ AI (FastAPI)
-```bash
-cd Edumy/MLService
-python -m uvicorn main:app --host 127.0.0.1 --port 8000
+#### Bước 2: Chạy 1-Click hoặc thủ công
+Chạy nhanh cả Backend & Frontend trên Windows:
+```powershell
+.\scripts\start_all.ps1
 ```
-- Swagger API Docs: `http://127.0.0.1:8000/docs`
-
-#### 3. Backend (Spring Boot 3.2)
+Hoặc chạy thủ công từng thành phần:
 ```bash
+# Backend (Port 5000)
 cd Edumy/Backend
 .\mvnw.cmd spring-boot:run
-```
-- Base API URL: `http://localhost:5000/api`
 
-#### 4. Frontend (React 18)
-```bash
+# Frontend (Port 5173)
 cd Edumy/Frontend
 npm install
 npm run dev
 ```
-- Web Client URL: `http://localhost:5173`
 
 ---
 
-## 🤖 Các Tính Năng AI Nổi Bật
+## 👥 Tài Khoản Mẫu (Seed Accounts)
 
-1. **AI Curriculum & Syllabus Generation**: Tự động gợi ý dàn bài khóa học gồm các Section và bài học mẫu chi tiết ngay khi nhập tiêu đề.
-2. **AI Category & Tag Suggestion**: Phân tích tự động nội dung khóa học để gắn nhãn danh mục chuẩn xác.
-3. **AI Quiz Generator**: Tự động sinh bộ câu hỏi trắc nghiệm kèm đáp án đúng và giải thích theo từng chủ đề bài học.
-4. **AI Personalized Path**: Đề xuất khóa học tiếp theo dựa trên lịch sử học tập và sở thích của từng học viên.
+Theo `DataSeeder.java` và `07_Script_Seed_Data_EduMyDb.sql`, hệ thống tạo sẵn các tài khoản sau (chỉ dùng cho môi trường phát triển/demo):
 
----
-
-## 👥 Tài Khoản Mẫu Trải Nghiệm (Demo Accounts)
-
-| Phân vai | Email đăng nhập | Mật khẩu | Chức năng chính |
+| Vai trò | Email đăng nhập | Mật khẩu | Chức năng chính |
 | :--- | :--- | :--- | :--- |
-| **Học viên** | `student@edumy.com` | `123456` | Khám phá khóa học, xem video, làm bài kiểm tra, theo dõi tiến độ |
-| **Giảng viên** | `ádj@edumy.com` | `123456` | Quản lý khóa học, soạn giáo trình với AI, xem thống kê doanh thu |
-| **Quản trị viên** | `admin@edumy.com` | `123456` | Duyệt khóa học, quản lý người dùng, thống kê toàn hệ thống |
+| **Admin** | `admin@edumy.com` | `Admin@123` | Duyệt/ẩn khóa học, khóa/mở tài khoản, duyệt rút tiền giảng viên, kiểm duyệt Q&A, quản lý danh mục & đơn hàng |
+| **Instructor** | `instructor@edumy.com` | `Admin@123` | Tạo & biên tập giáo trình, mời đồng giảng viên, trả lời Q&A, xem doanh thu & gửi yêu cầu rút tiền |
+| **Student** | `student@edumy.com` | `Admin@123` | Tìm kiếm, giỏ hàng, thanh toán VietQR/VNPay, học bài giảng, làm Quiz, hỏi đáp Q&A, nhận chứng chỉ PDF |
 
 ---
 
-## 🔄 Quy Trình CI/CD (Jenkins)
-Dự án được cấu hình Pipeline chuẩn trong `Jenkinsfile` với các bước:
-1. **Checkout SCM**: Lấy mã nguồn mới nhất từ nhánh `main`.
-2. **Build Backend**: Biên dịch và chạy bộ kiểm thử Spring Boot với Maven Wrapper.
-3. **Build Frontend**: Kiểm tra cú pháp và đóng gói bundle React bằng Vite.
-4. **Test AI Service**: Xác thực các endpoint của FastAPI.
+## 🧪 Kiểm Thử & CI/CD
+
+- **Kiểm thử Unit & Kiến trúc Spring Modulith**:
+  ```bash
+  cd Edumy/Backend
+  .\mvnw.cmd test
+  ```
+  Bao gồm `ModularityTest`, `AuthServiceImplTest`, `MobileAuthControllerTest`, `EarningServiceImplTest`, `WithdrawalServiceImplTest` cùng JaCoCo coverage report.
+- **Kiểm thử tích hợp API**:
+  ```powershell
+  .\scripts\verify_audit.ps1
+  ```
+- **CI/CD (Jenkins)**: `Jenkinsfile` tự động hóa Checkout SCM → Build & Test Backend (`mvnw clean package`) & Frontend (`npm run lint && npm run build`) song song → Build Docker Images → Push Registry (tùy chọn) → Deploy Docker Compose.
