@@ -60,7 +60,7 @@ function InstructorDashboard() {
       setLoading(true);
       const [coursesRes, statsRes, invRes] = await Promise.allSettled([
         api.get('/courses/my-courses'),
-        api.get('/instructor/stats'),
+        api.get('/v1/instructor/overview'),
         api.get('/v1/instructor/invitations')
       ]);
 
@@ -289,7 +289,7 @@ function InstructorDashboard() {
                   <BookOpen size={20} />
                 </div>
               </div>
-              <div className="kpi-value">{stats.totalCourses || courses.length || 0}</div>
+              <div className="kpi-value">{stats.totals?.courses ?? courses.length ?? 0}</div>
             </div>
 
             {/* Active Students */}
@@ -300,29 +300,37 @@ function InstructorDashboard() {
                   <Users size={20} />
                 </div>
               </div>
-              <div className="kpi-value">{stats.totalStudents || 0}</div>
+              <div className="kpi-value">{stats.totals?.students ?? 0}</div>
             </div>
 
-            {/* Total Revenue */}
+            {/* Gross Sales & Net Earnings */}
             <div className="kpi-card">
               <div className="kpi-top-row">
-                <span className="kpi-label">Tổng doanh thu</span>
+                <span className="kpi-label">Doanh số bán</span>
                 <div className="kpi-icon-wrap amber">
                   <DollarSign size={20} />
                 </div>
               </div>
-              <div className="kpi-value">{formatPrice(stats.totalRevenue)}</div>
+              <div className="kpi-value">{formatPrice(stats.money?.grossSales ?? 0)}</div>
+              <div
+                className="text-muted small mt-1"
+                title="đã trừ 30% phí nền tảng và phần chia đồng giảng viên"
+              >
+                Thu nhập thực nhận: <strong>{formatPrice(stats.money?.netEarnings ?? 0)}</strong>
+              </div>
             </div>
 
             {/* Quality Rating */}
             <div className="kpi-card">
               <div className="kpi-top-row">
-                <span className="kpi-label">Tỷ lệ hài lòng</span>
+                <span className="kpi-label">Đánh giá trung bình</span>
                 <div className="kpi-icon-wrap indigo">
                   <Star size={20} />
                 </div>
               </div>
-              <div className="kpi-value">{stats.averageQualityScore || 96}%</div>
+              <div className="kpi-value">
+                {stats.totals?.averageRating ? `${Number(stats.totals.averageRating).toFixed(1)}★` : '—'}
+              </div>
             </div>
           </div>
         )}
@@ -698,48 +706,53 @@ function InstructorDashboard() {
             {/* Revenue Breakdown */}
             <div className="analytics-panel-card">
               <h4 className="analytics-panel-title d-flex align-items-center gap-2">
-                <TrendingUp size={20} className="text-success" /> Doanh thu 6 tháng gần nhất
+                <TrendingUp size={20} className="text-success" /> Thu nhập thực nhận 30 ngày gần nhất
               </h4>
-              {(!stats.revenueByDate || stats.revenueByDate.length === 0) ? (
-                <p className="text-muted small py-4 text-center">Chưa có bản ghi doanh thu.</p>
+              {(!stats.series30d || stats.series30d.length === 0) ? (
+                <p className="text-muted small py-4 text-center">Chưa có bản ghi thu nhập.</p>
               ) : (
                 <div className="revenue-bar-list">
-                  {stats.revenueByDate.map((rev) => (
+                  {stats.series30d.map((rev) => (
                     <div key={rev.date} className="revenue-bar-item">
-                      <span className="revenue-month-label">{rev.date}</span>
-                      <span className="revenue-amount-tag">{formatPrice(rev.revenue)}</span>
+                      <span className="revenue-month-label">{rev.date} ({rev.enrollments} học viên)</span>
+                      <span className="revenue-amount-tag">{formatPrice(rev.netEarnings)}</span>
                     </div>
                   ))}
                 </div>
               )}
             </div>
 
-            {/* Sentiment Breakdown */}
+            {/* Balance & Activity Breakdown */}
             <div className="analytics-panel-card">
               <h4 className="analytics-panel-title d-flex align-items-center gap-2">
-                <Sparkles size={20} className="text-warning" /> Phân bổ đánh giá học viên
+                <Sparkles size={20} className="text-warning" /> Tổng quan số dư & tương tác
               </h4>
-              {(!stats.sentimentStats || stats.sentimentStats.length === 0) ? (
-                <p className="text-muted small py-4 text-center">Chưa có dữ liệu cảm xúc đánh giá.</p>
-              ) : (
-                <div>
-                  {stats.sentimentStats.map((sent) => (
-                    <div key={sent.label} className="sentiment-row">
-                      <span className="fw-semibold small">{sent.label}</span>
-                      <span
-                        className={`sentiment-badge-pill ${sent.label === 'Positive'
-                            ? 'positive'
-                            : sent.label === 'Negative'
-                              ? 'negative'
-                              : 'neutral'
-                          }`}
-                      >
-                        {sent.count} phản hồi
-                      </span>
-                    </div>
-                  ))}
+              <div className="d-flex flex-column gap-2">
+                <div className="sentiment-row">
+                  <span className="fw-semibold small">Số dư khả dụng</span>
+                  <span className="sentiment-badge-pill positive">
+                    {formatPrice(stats.money?.availableBalance ?? 0)}
+                  </span>
                 </div>
-              )}
+                <div className="sentiment-row">
+                  <span className="fw-semibold small">Số dư đang giữ</span>
+                  <span className="sentiment-badge-pill neutral">
+                    {formatPrice(stats.money?.pendingBalance ?? 0)}
+                  </span>
+                </div>
+                <div className="sentiment-row">
+                  <span className="fw-semibold small">Câu hỏi chưa trả lời</span>
+                  <span className="sentiment-badge-pill neutral">
+                    {stats.unansweredQuestions ?? 0} câu hỏi
+                  </span>
+                </div>
+                <div className="sentiment-row">
+                  <span className="fw-semibold small">Lời mời đồng giảng viên</span>
+                  <span className="sentiment-badge-pill neutral">
+                    {stats.pendingInvitations ?? 0} lời mời
+                  </span>
+                </div>
+              </div>
             </div>
 
             {/* Recent Reviews Roster */}
@@ -748,7 +761,7 @@ function InstructorDashboard() {
                 <h4 className="analytics-panel-title">Đánh giá mới nhất từ học viên</h4>
                 <div className="d-flex flex-column gap-3">
                   {stats.recentReviews.map((r) => (
-                    <div key={r.reviewId} className="p-3 bg-light rounded-3 border">
+                    <div key={r.id} className="p-3 bg-light rounded-3 border">
                       <div className="d-flex justify-content-between align-items-center mb-1">
                         <div>
                           <strong className="text-dark">{r.studentName}</strong>{' '}

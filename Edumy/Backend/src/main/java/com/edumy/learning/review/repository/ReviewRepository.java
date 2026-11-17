@@ -19,4 +19,6 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
 
     @Query("SELECT r.courseId, COUNT(r) FROM Review r WHERE r.courseId IN :courseIds GROUP BY r.courseId")
     List<Object[]> countByCourseIds(@Param("courseIds") List<Integer> courseIds);
+
+    List<Review> findTop5ByCourseIdInOrderByCreatedAtDesc(List<Integer> courseIds);
 }

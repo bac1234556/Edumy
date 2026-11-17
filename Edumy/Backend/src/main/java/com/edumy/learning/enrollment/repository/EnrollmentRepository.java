@@ -40,6 +40,15 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Integer>
     List<Enrollment> findByUserId(Integer userId);
     Page<Enrollment> findByUserIdOrderByEnrolledAtDesc(Integer userId, Pageable pageable);
     List<Enrollment> findByCourseId(Integer courseId);
+    Page<Enrollment> findByCourseIdOrderByEnrolledAtDesc(Integer courseId, Pageable pageable);
     Enrollment findByUserIdAndCourseId(Integer userId, Integer courseId);
     Optional<Enrollment> findFirstByUserIdAndCourseId(Integer userId, Integer courseId);
+
+    @Query("SELECT COUNT(DISTINCT e.userId) FROM Enrollment e WHERE e.courseId IN :courseIds")
+    long countDistinctUsersByCourseIds(@Param("courseIds") List<Integer> courseIds);
+
+    @Query("SELECT e.courseId, COUNT(e) FROM Enrollment e WHERE e.courseId IN :courseIds GROUP BY e.courseId")
+    List<Object[]> countByCourseIdsGrouped(@Param("courseIds") List<Integer> courseIds);
+
+    List<Enrollment> findByCourseIdInAndEnrolledAtAfter(List<Integer> courseIds, java.time.LocalDateTime after);
 }

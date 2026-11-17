@@ -47,4 +47,8 @@ public interface CourseQuestionRepository extends JpaRepository<CourseQuestion, 
     List<CourseQuestion> findAllByOrderByCreatedAtDesc();
 
     long countByCourseIdAndVisibilityStatus(Integer courseId, String visibilityStatus);
+
+    @Query("SELECT COUNT(q) FROM CourseQuestion q WHERE q.courseId IN :courseIds AND q.visibilityStatus = 'VISIBLE' " +
+            "AND NOT EXISTS (SELECT a.id FROM QuestionAnswer a WHERE a.questionId = q.id AND a.authorType = 'INSTRUCTOR' AND a.visibilityStatus = 'VISIBLE')")
+    long countUnansweredByCourseIds(@Param("courseIds") Collection<Integer> courseIds);
 }

@@ -43,45 +43,41 @@ public class InstructorController {
         }
     }
 
+    @Deprecated
     @GetMapping("/stats")
     public ResponseEntity<?> getDashboardStats() {
         Integer instructorId = getCurrentUserId();
         if (instructorId == null) return ResponseEntity.status(401).build();
 
-        long totalCourses = courseRepository.findAll().stream().filter(c -> instructorId.equals(c.getInstructorId())).count();
-        
-        long totalStudents = enrollmentRepository.findAll().stream()
-                .filter(e -> e.getCourse() != null && instructorId.equals(e.getCourse().getInstructorId()))
-                .map(Enrollment::getUserId)
-                .distinct().count();
+        List<Course> courses = courseRepository.findByInstructorId(instructorId);
+        List<Integer> courseIds = courses.stream().map(Course::getCourseId).toList();
+        long totalCourses = courses.size();
 
-        // Tính doanh thu bao gồm cả trạng thái PAID và Completed
-        BigDecimal totalRevenue = orderItemRepository.findAll().stream()
-                .filter(oi -> oi.getCourse() != null && instructorId.equals(oi.getCourse().getInstructorId()) 
-                        && oi.getOrder() != null && ("PAID".equalsIgnoreCase(oi.getOrder().getStatus()) || "Completed".equalsIgnoreCase(oi.getOrder().getStatus())))
-                .map(OrderItem::getPrice)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        long totalStudents = courseIds.isEmpty() ? 0 : enrollmentRepository.countDistinctUsersByCourseIds(courseIds);
+        BigDecimal totalRevenue = courseIds.isEmpty()
+                ? BigDecimal.ZERO
+                : orderItemRepository.sumPaidGrossSalesByCourseIds(courseIds);
+        if (totalRevenue == null) totalRevenue = BigDecimal.ZERO;
 
-        double averageRating = courseRepository.findAll().stream()
-                .filter(c -> instructorId.equals(c.getInstructorId()) && c.getAverageRating() != null && c.getAverageRating() > 0)
+        double averageRating = courses.stream()
+                .filter(c -> c.getAverageRating() != null && c.getAverageRating() > 0)
                 .mapToDouble(Course::getAverageRating)
                 .average().orElse(0.0);
 
-        List<Map<String, Object>> recentReviews = reviewRepository.findAll().stream()
-                .filter(r -> r.getCourse() != null && instructorId.equals(r.getCourse().getInstructorId()))
-                .sorted(Comparator.comparing(Review::getCreatedAt).reversed())
-                .limit(5)
-                .map(r -> {
-                    Map<String, Object> m = new HashMap<>();
-                    m.put("reviewId", r.getReviewId());
-                    m.put("rating", r.getRating());
-                    m.put("comment", r.getComment());
-                    m.put("sentimentLabel", r.getSentimentLabel());
-                    m.put("courseTitle", r.getCourse().getTitle());
-                    m.put("studentName", r.getUser() != null ? r.getUser().getFullName() : null);
-                    m.put("createdAt", r.getCreatedAt());
-                    return m;
-                }).collect(Collectors.toList());
+        List<Map<String, Object>> recentReviews = courseIds.isEmpty()
+                ? Collections.emptyList()
+                : reviewRepository.findTop5ByCourseIdInOrderByCreatedAtDesc(courseIds).stream()
+                        .map(r -> {
+                            Map<String, Object> m = new HashMap<>();
+                            m.put("reviewId", r.getReviewId());
+                            m.put("rating", r.getRating());
+                            m.put("comment", r.getComment());
+                            m.put("sentimentLabel", r.getSentimentLabel());
+                            m.put("courseTitle", r.getCourse() != null ? r.getCourse().getTitle() : "");
+                            m.put("studentName", r.getUser() != null ? r.getUser().getFullName() : null);
+                            m.put("createdAt", r.getCreatedAt());
+                            return m;
+                        }).collect(Collectors.toList());
 
         List<Object> revenueByDate = new ArrayList<>();
         List<Object> enrollmentByDate = new ArrayList<>();

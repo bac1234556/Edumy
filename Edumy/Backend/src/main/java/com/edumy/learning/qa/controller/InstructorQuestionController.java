@@ -1,6 +1,8 @@
 package com.edumy.learning.qa.controller;
 
+import com.edumy.learning.qa.dto.QuestionSummaryResponse;
 import com.edumy.learning.qa.service.QaService;
+import com.edumy.shared.response.PageResponse;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
@@ -30,13 +32,14 @@ public class InstructorQuestionController {
      * @param status "all" to show all questions; default "unanswered" shows only unanswered questions
      */
     @GetMapping
-    public ResponseEntity<?> listForInstructor(
+    public ResponseEntity<PageResponse<QuestionSummaryResponse>> listForInstructor(
             @RequestParam(required = false) Integer courseId,
             @RequestParam(required = false, defaultValue = "unanswered") String status,
             @PageableDefault(size = 20) Pageable pageable) {
         Integer instructorId = getCurrentUserId();
         boolean unansweredOnly = !"all".equalsIgnoreCase(status);
-        return ResponseEntity.ok(qaService.listForInstructor(instructorId, courseId, unansweredOnly, pageable));
+        return ResponseEntity.ok(PageResponse.from(
+                qaService.listForInstructor(instructorId, courseId, unansweredOnly, pageable)));
     }
 
     private Integer getCurrentUserId() {
