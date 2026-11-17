@@ -3,12 +3,12 @@
    ============================================================== */
 
 :root {
-  --vietqr-primary: var(--color-primary, #0F766E);
-  --vietqr-primary-hover: var(--color-primary-hover, #115E59);
+  --vietqr-primary: var(--color-primary, #2563EB);
+  --vietqr-primary-hover: var(--color-primary-hover, #1D4ED8);
   --vietqr-dark: var(--text-primary, #0F172A);
-  --vietqr-accent: var(--color-accent, #EA580C);
+  --vietqr-accent: var(--color-primary, #2563EB);
   --vietqr-success: var(--color-success, #15803D);
-  --vietqr-success-bg: var(--color-success-bg, #DCFCE7);
+  --vietqr-success-bg: var(--color-success-bg, #F0FDF4);
   --vietqr-card-bg: var(--bg-surface, #FFFFFF);
   --vietqr-border: var(--border-subtle, #E2E8F0);
   --vietqr-text-muted: var(--text-muted, #64748B);
@@ -90,7 +90,7 @@
   align-items: center;
   gap: 6px;
   background: rgba(255, 255, 255, 0.12);
-  color: #5EEAD4;
+  color: #93C5FD;
   padding: 0.4rem 0.9rem;
   border-radius: 9999px;
   font-size: 0.825rem;

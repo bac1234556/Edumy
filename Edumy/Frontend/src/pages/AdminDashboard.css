@@ -599,8 +599,8 @@ thead tr th,
 }
 
 .admin-page-number.active {
-  background-color: var(--color-primary, #0F766E);
-  border-color: var(--color-primary, #0F766E);
+  background-color: var(--color-primary, #2563EB);
+  border-color: var(--color-primary, #2563EB);
   color: #ffffff;
 }
 

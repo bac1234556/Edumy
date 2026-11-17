@@ -158,7 +158,7 @@ const OrderHistory = () => {
             style={{
               display: 'inline-flex', alignItems: 'center', gap: 8,
               padding: '0.75rem 1.5rem', borderRadius: '0.75rem',
-              background: 'var(--color-primary, #0F766E)',
+              background: 'var(--color-primary, #2563EB)',
               color: '#fff', textDecoration: 'none', fontWeight: 600
             }}
           >

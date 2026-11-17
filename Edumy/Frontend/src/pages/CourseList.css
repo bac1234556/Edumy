@@ -19,8 +19,8 @@
 }
 
 .search-box-wrapper .input-group:focus-within {
-  border-color: var(--color-primary, #0F766E);
-  box-shadow: 0 0 0 2px rgba(15, 118, 110, 0.14);
+  border-color: var(--color-primary, #2563EB);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.14);
 }
 
 .filters-control-bar {
@@ -51,8 +51,8 @@
 }
 
 .filter-pill-btn.active {
-  background-color: var(--color-primary, #0F766E);
-  border-color: var(--color-primary, #0F766E);
+  background-color: var(--color-primary, #2563EB);
+  border-color: var(--color-primary, #2563EB);
   color: #ffffff;
 }
 

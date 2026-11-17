@@ -8,8 +8,8 @@
   --player-card: #151E2E;
   --player-border: var(--cinema-border, #1E293B);
   --player-border-light: #334155;
-  --player-primary: var(--color-primary, #0F766E);
-  --player-primary-hover: var(--color-primary-hover, #115E59);
+  --player-primary: var(--color-primary, #2563EB);
+  --player-primary-hover: var(--color-primary-hover, #1D4ED8);
   --player-emerald: var(--color-success, #15803D);
   --player-emerald-bg: rgba(21, 128, 61, 0.16);
   --player-text-main: var(--cinema-text-heading, #F8FAFC);

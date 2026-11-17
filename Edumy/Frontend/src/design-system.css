@@ -29,19 +29,19 @@
 
   --color-brand-primary: var(--color-primary);
   --color-brand-primary-hover: var(--color-primary-hover);
-  --color-brand-primary-active: #134E4A;
-  --color-brand-primary-light: var(--color-primary-light);
+  --color-brand-primary-active: var(--color-primary-active);
+  --color-brand-primary-light: var(--color-primary-soft);
   --color-brand-primary-border: var(--color-primary-border);
 
   --color-navy-dark: #0F172A;
   --color-navy-surface: #1E293B;
   --color-navy-muted: #334155;
 
-  --color-accent-amber: #D97706;
-  --color-accent-amber-hover: #B45309;
-  --color-accent-amber-bg: #FEF3C7;
+  --color-accent-amber: #F59E0B;
+  --color-accent-amber-hover: #D97706;
+  --color-accent-amber-bg: #FFFBEB;
   --color-accent-amber-text: #B45309;
-  --color-accent-orange: var(--color-accent);
+  --color-accent-orange: var(--color-primary);
 
   --color-bg-canvas: var(--bg-canvas);
   --color-bg-canvas-alt: var(--bg-muted);
@@ -69,7 +69,7 @@
 
   --card-radius: var(--radius-card);
   --btn-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
-  --input-ring: 0 0 0 3px rgba(15, 118, 110, 0.16);
+  --input-ring: 0 0 0 3px rgba(37, 99, 235, 0.16);
 }
 
 body {

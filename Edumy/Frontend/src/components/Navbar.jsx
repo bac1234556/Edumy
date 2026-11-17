@@ -26,15 +26,25 @@ const Navbar = () => {
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
 
-  // Đóng dropdown khi click ngoài
+  // Đóng dropdown khi click ngoài hoặc nhấn Escape
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsDropdownOpen(false);
       }
     };
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        setIsDropdownOpen(false);
+        setMobileMenuOpen(false);
+      }
+    };
     document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
   }, []);
 
   const handleLogout = async () => {
@@ -135,8 +145,6 @@ const Navbar = () => {
                     <span className="dropdown-user-role-badge">{user.role}</span>
                   </div>
 
-                  <div className="dropdown-divider" />
-
                   <div className="dropdown-links-list">
                     <Link
                       to="/profile"
@@ -187,8 +195,6 @@ const Navbar = () => {
                       </Link>
                     )}
                   </div>
-
-                  <div className="dropdown-divider" />
 
                   <button
                     type="button"

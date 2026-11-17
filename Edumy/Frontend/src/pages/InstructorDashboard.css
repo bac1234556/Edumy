@@ -128,10 +128,10 @@
   justify-content: center;
 }
 
-.kpi-icon-wrap.sky { background: var(--color-primary-light, #F0FDFA); color: var(--color-primary, #0F766E); }
-.kpi-icon-wrap.emerald { background: var(--color-success-bg, #DCFCE7); color: var(--color-success, #15803D); }
-.kpi-icon-wrap.amber { background: var(--color-warning-bg, #FEF3C7); color: var(--color-warning, #B45309); }
-.kpi-icon-wrap.indigo { background: var(--color-accent-light, #FFF7ED); color: var(--color-accent, #EA580C); }
+.kpi-icon-wrap.sky { background: var(--color-primary-soft, #EFF6FF); color: var(--color-primary, #2563EB); }
+.kpi-icon-wrap.emerald { background: var(--color-success-bg, #F0FDF4); color: var(--color-success, #15803D); }
+.kpi-icon-wrap.amber { background: var(--color-warning-bg, #FFFBEB); color: var(--color-warning, #B45309); }
+.kpi-icon-wrap.indigo { background: var(--color-primary-soft, #EFF6FF); color: var(--color-primary, #2563EB); }
 
 .kpi-value {
   font-size: 1.85rem;

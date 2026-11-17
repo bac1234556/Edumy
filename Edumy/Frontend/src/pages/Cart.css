@@ -70,8 +70,8 @@
   width: 84px;
   height: 84px;
   border-radius: 50%;
-  background: var(--color-primary-light, #F0FDFA);
-  color: var(--color-primary, #0F766E);
+  background: var(--color-primary-soft, #EFF6FF);
+  color: var(--color-primary, #2563EB);
   display: flex;
   align-items: center;
   justify-content: center;

@@ -100,7 +100,7 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: var(--color-primary, #0F766E);
+  color: #2563EB;
   margin-bottom: 0.35rem;
 }
 
@@ -111,13 +111,13 @@
   font-weight: 600;
   line-height: 1.38;
   letter-spacing: -0.015em;
-  color: var(--text-primary, #0F172A);
+  color: #0F172A;
   margin: 0 0 0.45rem 0;
   transition: color var(--transition-fast);
 }
 
 .edumy-course-card:hover .card-course-title {
-  color: var(--color-primary, #0F766E);
+  color: #2563EB;
 }
 
 /* Instructor row */
@@ -220,7 +220,11 @@
 }
 
 .price-main.price-free {
-  color: var(--color-primary, #0F766E);
+  background: #EFF6FF;
+  color: #2563EB;
+  padding: 0.15rem 0.6rem;
+  border-radius: 9999px;
+  font-size: 0.85rem;
 }
 
 .price-strikethrough {
@@ -264,17 +268,17 @@
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  background-color: var(--color-primary, #0F766E);
+  background-color: #2563EB;
   color: #ffffff;
   font-size: 0.78rem;
   font-weight: 600;
   padding: 0.35rem 0.75rem;
-  border-radius: var(--radius-btn, 8px);
+  border-radius: 8px;
   transition: background-color var(--transition-fast);
 }
 
 .btn-card-learn:hover {
-  background-color: var(--color-primary-hover, #115E59);
+  background-color: #1D4ED8;
   color: #ffffff;
 }
 

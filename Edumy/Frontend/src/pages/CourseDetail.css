@@ -283,7 +283,7 @@
 
 .deal-timer-notice {
   font-size: 0.8rem;
-  color: var(--color-accent-orange, #ea580c); /* Educational orange */
+  color: var(--color-primary, #2563EB);
   font-weight: 600;
   margin-bottom: 1.25rem;
   display: flex;

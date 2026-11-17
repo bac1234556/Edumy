@@ -89,107 +89,59 @@ function HomePage() {
             {/* Left Editorial Column */}
             <div className="hero-text-content">
               <div className="hero-eyebrow-tag">
-                <Terminal size={13} strokeWidth={2} />
-                <span>HỌC VIỆN KỸ THUẬT & QUẢN TRỊ THỰC CHIẾN</span>
+                <BookOpen size={14} strokeWidth={2} aria-hidden="true" />
+                <span>NỀN TẢNG HỌC TẬP TRỰC TUYẾN EDUMY</span>
               </div>
 
               <h1 className="hero-title">
-                Nền tảng kiến thức chuyên sâu cho kỹ sư và nhà quản trị.
+                Nâng tầm kỹ năng chuyên môn cùng chuyên gia thực chiến.
               </h1>
 
               <p className="hero-subtitle">
-                Giáo trình biên soạn bài bản theo tiêu chuẩn doanh nghiệp. Học qua dự án mã nguồn thực tế, thảo luận trực tiếp 1-1 cùng giảng viên và nhận chứng chỉ định danh.
+                Khám phá kho khóa học công nghệ, thiết kế và quản trị bài bản — học mọi lúc, thực hành qua dự án và nhận chứng chỉ hoàn thành.
               </p>
 
-              {/* Interactive Live Search Input + Primary CTA */}
-              <div className="hero-actions-row">
-                <div className="hero-search-box">
-                  <LiveCourseSearchBar variant="hero" placeholder="Tìm khóa học: Spring Boot, Next.js, Kubernetes, Tài chính..." />
-                </div>
+              {/* Interactive Live Search Input */}
+              <div className="hero-search-box">
+                <LiveCourseSearchBar variant="hero" placeholder="Bạn muốn học kỹ năng gì hôm nay?" />
+              </div>
+
+              {/* Primary & Secondary CTAs */}
+              <div className="hero-cta-group">
                 <Link to="/courses" className="hero-primary-cta">
                   <span>Khám phá khóa học</span>
                   <ArrowRight size={16} strokeWidth={2} aria-hidden="true" />
+                </Link>
+                <Link to="/courses?priceType=FREE" className="hero-secondary-cta">
+                  <span>Khóa học miễn phí</span>
                 </Link>
               </div>
 
               {/* Quick Topic Pills */}
               <div className="hero-quick-topics">
-                <span className="quick-topics-label">Chủ đề trọng tâm:</span>
+                <span className="quick-topics-label">Chủ đề phổ biến:</span>
                 <button type="button" onClick={() => navigate('/courses?search=Spring+Boot')} className="topic-chip">
-                  Spring Boot 3
+                  Spring Boot
                 </button>
                 <button type="button" onClick={() => navigate('/courses?search=React')} className="topic-chip">
-                  React & Next.js
+                  React &amp; Next.js
                 </button>
-                <button type="button" onClick={() => navigate('/courses?search=Kubernetes')} className="topic-chip">
-                  Docker & K8s
+                <button type="button" onClick={() => navigate('/courses?search=Docker')} className="topic-chip">
+                  Docker &amp; K8s
                 </button>
                 <button type="button" onClick={() => navigate('/courses?search=UI')} className="topic-chip">
-                  Design System
+                  UI/UX Design
                 </button>
               </div>
             </div>
 
-            {/* Right Architectural Dossier Card (No Stock Photo Cliché) */}
-            <div className="hero-dossier-panel">
-              <div className="dossier-card">
-                <div className="dossier-header">
-                  <span className="dossier-code">LỘ TRÌNH HỌC TẬP TIÊU CHUẨN</span>
-                  <span className="dossier-status">
-                    <BookOpen size={13} strokeWidth={2} aria-hidden="true" />
-                    <span>Thực hành theo dự án</span>
-                  </span>
-                </div>
-
-                <div className="dossier-featured-course">
-                  <div className="dossier-course-meta">LỘ TRÌNH KỸ SƯ HỆ THỐNG</div>
-                  <h3 className="dossier-course-title">
-                    Kiến trúc Phần mềm, Cloud-Native & Quản trị Sản phẩm Toàn diện
-                  </h3>
-                  <p className="dossier-course-desc">
-                    Từ thiết kế hệ thống phân tán, bảo mật thanh toán đến vận hành hạ tầng thực tế.
-                  </p>
-                </div>
-
-                <div className="dossier-modules-list">
-                  <div className="dossier-module-row">
-                    <span className="module-idx">01</span>
-                    <div className="module-info">
-                      <strong>Backend & Kiến trúc Modulith</strong>
-                      <span>Java Spring Boot, SQL Server, REST API</span>
-                    </div>
-                    <span className="module-hours">32.5h</span>
-                  </div>
-
-                  <div className="dossier-module-row">
-                    <span className="module-idx">02</span>
-                    <div className="module-info">
-                      <strong>Frontend & Hệ thống Thiết kế</strong>
-                      <span>React 18, TypeScript, Design Tokens</span>
-                    </div>
-                    <span className="module-hours">28.0h</span>
-                  </div>
-
-                  <div className="dossier-module-row">
-                    <span className="module-idx">03</span>
-                    <div className="module-info">
-                      <strong>DevOps, CI/CD & Giám sát</strong>
-                      <span>Docker, Kubernetes, Prometheus, Grafana</span>
-                    </div>
-                    <span className="module-hours">24.0h</span>
-                  </div>
-                </div>
-
-                <div className="dossier-footer">
-                  <div className="dossier-cert-badge">
-                    <Award size={16} strokeWidth={1.75} />
-                    <span>Cấp chứng chỉ PDF xác thực mã hồ sơ</span>
-                  </div>
-                  <Link to="/courses" className="dossier-cta-link">
-                    Xem danh mục <ArrowRight size={14} strokeWidth={2} />
-                  </Link>
-                </div>
-              </div>
+            {/* Right Clean Learning Visual (No fake stats/widgets) */}
+            <div className="hero-visual-panel">
+              <img
+                src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1000&q=80"
+                alt="Học viên cùng thảo luận và học tập trực tuyến trên Edumy"
+                className="hero-visual-image"
+              />
             </div>
           </div>
         </div>
