@@ -7,7 +7,8 @@ import { SkeletonBox } from '../components/Skeleton';
 import './CertificateView.css';
 
 function CertificateView() {
-  const { url } = useParams();
+  const { url, code } = useParams();
+  const certCode = code || url;
   const [cert, setCert] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -15,8 +16,12 @@ function CertificateView() {
   useEffect(() => {
     const fetchCert = async () => {
       try {
-        const response = await api.get(`/certificates/${url}`);
-        setCert(response.data);
+        const response = await api.get(`/certificates/verify/${certCode}`);
+        if (response.data && response.data.valid === false) {
+          setError(response.data.message || 'Không tìm thấy chứng chỉ hoặc liên kết không hợp lệ.');
+        } else {
+          setCert(response.data);
+        }
       } catch (err) {
         setError('Không tìm thấy chứng chỉ hoặc liên kết không hợp lệ.');
       } finally {
@@ -24,7 +29,7 @@ function CertificateView() {
       }
     };
     fetchCert();
-  }, [url]);
+  }, [certCode]);
 
   if (loading) {
     return (
@@ -114,7 +119,7 @@ function CertificateView() {
                   </div>
                   
                   <div className="mt-5 text-muted small text-center w-100 position-absolute bottom-0 start-0 mb-4">
-                    Verify at: EduMy.com/certificates/{cert.certificateUrl}
+                    Verify at: {window.location.origin}/certificates/verify/{cert.certificateUrl}
                   </div>
                 </div>
               </div>

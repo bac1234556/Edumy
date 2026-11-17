@@ -9,6 +9,7 @@ import com.edumy.learning.enrollment.repository.CertificateRepository;
 import com.edumy.identity.user.model.User;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +27,9 @@ public class CertificatesController {
 
     @Autowired
     private CertificatePdfRenderer certificatePdfRenderer;
+
+    @Value("${edumy.frontend.base-url:http://localhost:3000}")
+    private String frontendBaseUrl;
 
     /**
      * Tra cứu thông tin chứng chỉ bằng mã certificateUrl / code (JSON)
@@ -137,7 +141,8 @@ public class CertificatesController {
                 : "Ban Giảng huấn Edumy";
 
         String code = certificate.getCertificateUrl();
-        String verifyUrl = "http://localhost:3000/certificates/verify/" + code;
+        String base = frontendBaseUrl != null ? frontendBaseUrl.replaceAll("/+$", "") : "http://localhost:3000";
+        String verifyUrl = base + "/certificates/verify/" + code;
 
         CertificatePdfData pdfData = new CertificatePdfData(
                 code,

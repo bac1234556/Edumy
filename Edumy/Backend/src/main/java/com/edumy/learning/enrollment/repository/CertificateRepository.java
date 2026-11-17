@@ -2,6 +2,8 @@ package com.edumy.learning.enrollment.repository;
 
 import com.edumy.learning.enrollment.model.Certificate;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -11,4 +13,5 @@ public interface CertificateRepository extends JpaRepository<Certificate, Intege
     Certificate findByCertificateUrl(String certificateUrl);
     boolean existsByUserIdAndCourseId(Integer userId, Integer courseId);
     java.util.List<Certificate> findByUserId(Integer userId);
+    Page<Certificate> findByUserIdOrderByIssuedAtDesc(Integer userId, Pageable pageable);
 }

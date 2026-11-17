@@ -58,6 +58,9 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
     @Autowired
     private LessonProgressRepository lessonProgressRepository;
 
+    @Autowired
+    private com.edumy.learning.enrollment.service.LearningProgressService learningProgressService;
+
     private Integer getCurrentUserId() {
         try {
             String name = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -209,48 +212,6 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
         }
 
         Integer courseId = section.getCourseId();
-
-        // Kiểm tra tiến độ tổng thể thực tế
-        long totalLessons = lessonRepository.countLessonsByCourseId(courseId);
-        long completedLessons = lessonProgressRepository.countCompletedLessonsByUserAndCourse(userId, courseId);
-        long totalQuizzes = quizRepository.countQuizzesByCourseId(courseId);
-        java.util.List<Integer> quizIds = quizRepository.findQuizIdsByCourseId(courseId);
-        long completedQuizzes = (quizIds != null && !quizIds.isEmpty()) 
-                ? quizAttemptRepository.countByUserIdAndIsPassedTrueAndQuizIdIn(userId, quizIds) 
-                : 0;
-
-        long totalItems = totalLessons + totalQuizzes;
-        long completedItems = completedLessons + completedQuizzes;
-        int progressPercentage = totalItems > 0 
-                ? (int) Math.min(100, Math.round((double) completedItems / totalItems * 100)) 
-                : 100;
-
-        // Cập nhật tiến độ hoàn thành khóa học trong Enrollments
-        Enrollment enrollment = enrollmentRepository.findByUserIdAndCourseId(userId, courseId);
-        if (enrollment != null) {
-            enrollment.setProgressPercentage(progressPercentage);
-            if (progressPercentage >= 100) {
-                enrollment.setStatus("COMPLETED");
-                if (enrollment.getCompletedAt() == null) {
-                    enrollment.setCompletedAt(LocalDateTime.now());
-                }
-            }
-            enrollmentRepository.save(enrollment);
-        }
-
-        // CHỈ cấp chứng chỉ khi học viên ĐÃ HOÀN THÀNH 100% TẤT CẢ BÀI HỌC VÀ BÀI KIỂM TRA
-        if (totalItems > 0 && completedItems >= totalItems) {
-            boolean alreadyHasCertificate = certificateRepository.existsByUserIdAndCourseId(userId, courseId);
-            if (!alreadyHasCertificate) {
-                String certCode = "EDUMY-" + UUID.randomUUID().toString().replace("-", "").substring(0, 10).toUpperCase();
-                Certificate cert = Certificate.builder()
-                        .userId(userId)
-                        .courseId(courseId)
-                        .certificateUrl(certCode)
-                        .issuedAt(LocalDateTime.now())
-                        .build();
-                certificateRepository.save(cert);
-            }
-        }
+        learningProgressService.recalculateAndIssueCertificate(userId, courseId);
     }
 }

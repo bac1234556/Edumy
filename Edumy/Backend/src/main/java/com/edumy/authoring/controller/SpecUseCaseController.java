@@ -54,8 +54,10 @@ public class SpecUseCaseController {
     private static final Map<Integer, Map<String, Object>> LESSON_EXTRA_CONTENT = new ConcurrentHashMap<>();
     private static final Map<Integer, Map<String, Object>> REVIEW_MODERATION = new ConcurrentHashMap<>();
     public static final Map<Integer, List<Map<String, Object>>> COURSE_CO_INSTRUCTORS = new ConcurrentHashMap<>();
-    private static final Map<String, Integer> LAST_VISITED_LESSON = new ConcurrentHashMap<>();
     private static final AtomicInteger INVITATION_ID_SEQ = new AtomicInteger(100);
+
+    @org.springframework.beans.factory.annotation.Autowired
+    private com.edumy.learning.enrollment.service.LearningProgressService learningProgressService;
 
     @org.springframework.beans.factory.annotation.Autowired
     private com.edumy.authoring.repository.CategoryRepository categoryRepository;
@@ -755,9 +757,15 @@ public class SpecUseCaseController {
             throw new BusinessException(ErrorCode.BAD_REQUEST, "Thiếu mã khóa học cần ghi danh.");
         }
         Course course = courseRepository.findById(targetCourseId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "Không tìm thấy khóa học."));
+                .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND, "COURSE_NOT_FOUND", "Không tìm thấy khóa học."));
+        if (!"Published".equalsIgnoreCase(course.getStatus())) {
+            throw new BusinessException(HttpStatus.NOT_FOUND, "COURSE_NOT_FOUND", "Không tìm thấy khóa học.");
+        }
+        if (Objects.equals(course.getInstructorId(), userId)) {
+            throw new BusinessException(HttpStatus.UNPROCESSABLE_ENTITY, "OWN_COURSE", "Giảng viên không thể ghi danh khóa học của chính mình.");
+        }
         if (course.getPrice() != null && course.getPrice().compareTo(BigDecimal.ZERO) > 0) {
-            throw new BusinessException(ErrorCode.BAD_REQUEST, "Khóa học này là khóa trả phí, vui lòng thêm vào giỏ hàng để thanh toán.");
+            throw new BusinessException(HttpStatus.UNPROCESSABLE_ENTITY, "COURSE_NOT_FREE", "Khóa học này là khóa trả phí, vui lòng thêm vào giỏ hàng để thanh toán.");
         }
         Enrollment existing = enrollmentRepository.findByUserIdAndCourseId(userId, targetCourseId);
         if (existing != null) {
@@ -792,32 +800,13 @@ public class SpecUseCaseController {
                                                     @PathVariable Integer lessonId) {
         Integer userId = SecurityUtils.getCurrentUserId();
         if (userId == null) throw new BusinessException(ErrorCode.UNAUTHORIZED);
-        List<LessonProgress> progresses = lessonProgressRepository.findAll().stream()
-                .filter(lp -> userId.equals(lp.getUserId()) && lessonId.equals(lp.getLessonId()))
-                .toList();
-        if (!progresses.isEmpty()) {
-            Integer resolvedCourseId = progresses.get(0).getCourseId();
-            lessonProgressRepository.deleteAll(progresses);
-            updateEnrollmentProgress(userId, resolvedCourseId);
-        }
+        var res = learningProgressService.markLesson(userId, lessonId, false);
         return ResponseEntity.ok(Map.of(
                 "lessonId", lessonId,
                 "completed", false,
+                "progressPercent", res.progressPercent(),
                 "message", "Đã bỏ đánh dấu hoàn thành bài học."
         ));
-    }
-
-    private void updateEnrollmentProgress(Integer userId, Integer courseId) {
-        if (courseId == null) return;
-        long totalLessons = lessonRepository.countLessonsByCourseId(courseId);
-        long completedLessons = lessonProgressRepository.countCompletedLessonsByUserAndCourse(userId, courseId);
-        int progressPct = totalLessons > 0 ? (int) Math.min(100, (completedLessons * 100) / totalLessons) : 0;
-        Enrollment enrollment = enrollmentRepository.findByUserIdAndCourseId(userId, courseId);
-        if (enrollment != null) {
-            enrollment.setProgressPercentage(progressPct);
-            enrollment.setStatus("ACTIVE");
-            enrollmentRepository.save(enrollment);
-        }
     }
 
     // Admin Review Moderation (UC-A15)

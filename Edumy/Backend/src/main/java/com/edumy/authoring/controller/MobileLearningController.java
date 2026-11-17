@@ -6,12 +6,12 @@ import com.edumy.authoring.model.Lesson;
 import com.edumy.authoring.repository.CourseRepository;
 import com.edumy.authoring.repository.CourseSectionRepository;
 import com.edumy.authoring.repository.LessonRepository;
-import com.edumy.learning.enrollment.model.Certificate;
 import com.edumy.learning.enrollment.model.Enrollment;
-import com.edumy.learning.enrollment.model.LessonProgress;
-import com.edumy.learning.enrollment.repository.CertificateRepository;
 import com.edumy.learning.enrollment.repository.EnrollmentRepository;
-import com.edumy.learning.enrollment.repository.LessonProgressRepository;
+import com.edumy.learning.enrollment.service.LearningProgressService;
+import com.edumy.learning.quiz.model.Quiz;
+import com.edumy.learning.quiz.repository.QuizAttemptRepository;
+import com.edumy.learning.quiz.repository.QuizRepository;
 import com.edumy.shared.exception.BusinessException;
 import com.edumy.shared.exception.ErrorCode;
 import com.edumy.shared.response.PageResponse;
@@ -40,8 +40,9 @@ public class MobileLearningController {
     private final CourseSectionRepository courseSectionRepository;
     private final LessonRepository lessonRepository;
     private final EnrollmentRepository enrollmentRepository;
-    private final LessonProgressRepository lessonProgressRepository;
-    private final CertificateRepository certificateRepository;
+    private final LearningProgressService learningProgressService;
+    private final QuizRepository quizRepository;
+    private final QuizAttemptRepository quizAttemptRepository;
 
     @Value("${edumy.time-zone:Asia/Ho_Chi_Minh}")
     private String timeZone;
@@ -50,14 +51,16 @@ public class MobileLearningController {
                                     CourseSectionRepository courseSectionRepository,
                                     LessonRepository lessonRepository,
                                     EnrollmentRepository enrollmentRepository,
-                                    LessonProgressRepository lessonProgressRepository,
-                                    CertificateRepository certificateRepository) {
+                                    LearningProgressService learningProgressService,
+                                    QuizRepository quizRepository,
+                                    QuizAttemptRepository quizAttemptRepository) {
         this.courseRepository = courseRepository;
         this.courseSectionRepository = courseSectionRepository;
         this.lessonRepository = lessonRepository;
         this.enrollmentRepository = enrollmentRepository;
-        this.lessonProgressRepository = lessonProgressRepository;
-        this.certificateRepository = certificateRepository;
+        this.learningProgressService = learningProgressService;
+        this.quizRepository = quizRepository;
+        this.quizAttemptRepository = quizAttemptRepository;
     }
 
     public record EnrollmentCreatedDto(Integer enrollmentId, Integer courseId) {}
@@ -180,15 +183,9 @@ public class MobileLearningController {
 
         Page<MobileEnrollmentDto> mapped = enrollmentPage.map(e -> {
             Course c = e.getCourse() != null ? e.getCourse() : courseRepository.findById(e.getCourseId()).orElse(null);
-            long totalLessons = c != null ? lessonRepository.countLessonsByCourseId(c.getCourseId()) : 0;
-            long completedLessons = c != null ? lessonProgressRepository.countCompletedLessonsByUserAndCourse(userId, c.getCourseId()) : 0;
-            int pct = e.getProgressPercentage() != null ? e.getProgressPercentage() : 0;
-
-            String certCode = null;
-            if (c != null) {
-                Certificate cert = certificateRepository.findByUserIdAndCourseId(userId, c.getCourseId());
-                if (cert != null) certCode = cert.getCertificateUrl();
-            }
+            LearningProgressService.ProgressSnapshot snap = c != null
+                    ? learningProgressService.getProgress(userId, c.getCourseId())
+                    : null;
 
             CourseMiniDto courseMini = null;
             if (c != null) {
@@ -204,12 +201,12 @@ public class MobileLearningController {
             return new MobileEnrollmentDto(
                     e.getEnrollmentId(),
                     TimeUtils.toInstant(e.getEnrolledAt(), timeZone),
-                    pct,
-                    completedLessons,
-                    totalLessons,
-                    null,
-                    null,
-                    certCode,
+                    snap != null ? snap.progressPercentage() : (e.getProgressPercentage() != null ? e.getProgressPercentage() : 0),
+                    snap != null ? snap.completedItems() : 0L,
+                    snap != null ? snap.totalItems() : 0L,
+                    e.getLastAccessedLessonId(),
+                    TimeUtils.toInstant(e.getLastAccessedAt(), timeZone),
+                    snap != null ? snap.certificateUrl() : null,
                     courseMini
             );
         });
@@ -225,9 +222,9 @@ public class MobileLearningController {
                 .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND, "COURSE_NOT_FOUND", "Không tìm thấy khóa học."));
         requireCourseLearningAccess(course, userId);
 
-        Set<Integer> completedIds = lessonProgressRepository.findByUserIdAndCourseId(userId, courseId).stream()
-                .map(LessonProgress::getLessonId)
-                .collect(Collectors.toSet());
+        LearningProgressService.ProgressSnapshot snap = learningProgressService.getProgress(userId, courseId);
+        Set<Integer> completedLessonIds = new HashSet<>(snap.completedLessonIds());
+        Set<Integer> passedQuizIds = new HashSet<>(snap.completedQuizIds());
 
         List<CourseSection> sections = courseSectionRepository.findByCourseIdOrderByOrderIndexAsc(courseId);
         List<Integer> sectionIds = sections.stream().map(CourseSection::getSectionId).collect(Collectors.toList());
@@ -235,34 +232,42 @@ public class MobileLearningController {
                 ? Collections.emptyMap()
                 : lessonRepository.findBySectionIdInOrderByOrderIndexAsc(sectionIds).stream()
                         .collect(Collectors.groupingBy(Lesson::getSectionId, LinkedHashMap::new, Collectors.toList()));
+        Map<Integer, List<Quiz>> quizzesBySection = sectionIds.isEmpty()
+                ? Collections.emptyMap()
+                : quizRepository.findByCourseSectionIdIn(sectionIds).stream()
+                        .collect(Collectors.groupingBy(Quiz::getCourseSectionId, LinkedHashMap::new, Collectors.toList()));
 
-        int totalLessons = 0;
         List<LearnChapterDto> chapters = new ArrayList<>();
         for (CourseSection sec : sections) {
             List<Lesson> secLessons = lessonsBySection.getOrDefault(sec.getSectionId(), Collections.emptyList());
-            List<LearnLessonItemDto> lessonDtos = new ArrayList<>();
-            for (Lesson les : secLessons) {
-                totalLessons++;
-                lessonDtos.add(new LearnLessonItemDto(
-                        les.getLessonId(),
-                        les.getTitle(),
-                        (les.getVideoUrl() != null && !les.getVideoUrl().isBlank()) ? "video" : "article",
-                        les.getDuration() != null ? les.getDuration() * 60 : 300,
-                        completedIds.contains(les.getLessonId())
-                ));
-            }
-            chapters.add(new LearnChapterDto(sec.getSectionId(), sec.getTitle(), lessonDtos, Collections.emptyList()));
-        }
+            List<LearnLessonItemDto> lessonDtos = secLessons.stream()
+                    .map(les -> new LearnLessonItemDto(
+                            les.getLessonId(),
+                            les.getTitle(),
+                            (les.getVideoUrl() != null && !les.getVideoUrl().isBlank()) ? "video" : "article",
+                            les.getDuration() != null ? les.getDuration() * 60 : 300,
+                            completedLessonIds.contains(les.getLessonId())
+                    ))
+                    .toList();
 
-        int pct = totalLessons > 0 ? Math.min(100, (completedIds.size() * 100) / totalLessons) : 0;
-        Certificate cert = certificateRepository.findByUserIdAndCourseId(userId, courseId);
+            List<Quiz> secQuizzes = quizzesBySection.getOrDefault(sec.getSectionId(), Collections.emptyList());
+            List<LearnQuizItemDto> quizDtos = secQuizzes.stream()
+                    .map(q -> new LearnQuizItemDto(
+                            q.getQuizId(),
+                            q.getTitle(),
+                            passedQuizIds.contains(q.getQuizId())
+                    ))
+                    .toList();
+
+            chapters.add(new LearnChapterDto(sec.getSectionId(), sec.getTitle(), lessonDtos, quizDtos));
+        }
 
         return ResponseEntity.ok(new LearnRoomDto(
                 courseId,
                 course.getTitle(),
-                new ProgressSummaryDto(pct, completedIds.size(), totalLessons),
-                null,
-                cert != null ? cert.getCertificateUrl() : null,
+                new ProgressSummaryDto(snap.progressPercentage(), snap.completedItems(), snap.totalItems()),
+                snap.lastAccessedLessonId(),
+                snap.certificateUrl(),
                 chapters
         ));
     }
@@ -281,7 +286,8 @@ public class MobileLearningController {
         }
         requireCourseLearningAccess(course, userId);
 
-        boolean completed = lessonProgressRepository.existsByUserIdAndCourseIdAndLessonId(userId, courseId, lessonId);
+        LearningProgressService.ProgressSnapshot snap = learningProgressService.getProgress(userId, courseId);
+        boolean completed = snap.completedLessonIds().contains(lessonId);
         List<Integer> orderedLessonIds = getOrderedLessonIds(courseId);
         int idx = orderedLessonIds.indexOf(lessonId);
         Integer prevId = idx > 0 ? orderedLessonIds.get(idx - 1) : null;
@@ -314,6 +320,7 @@ public class MobileLearningController {
             throw new BusinessException(ErrorCode.NOT_FOUND, "Không tìm thấy khóa học cho bài học này.");
         }
         requireCourseLearningAccess(course, userId);
+        learningProgressService.recordVisit(userId, lessonId);
         return ResponseEntity.noContent().build();
     }
 
@@ -335,37 +342,13 @@ public class MobileLearningController {
         }
         requireCourseLearningAccess(course, userId);
 
-        List<LessonProgress> existing = lessonProgressRepository.findAllByUserIdAndLessonId(userId, lessonId);
-        if (completed) {
-            if (existing.isEmpty()) {
-                LessonProgress lp = new LessonProgress();
-                lp.setUserId(userId);
-                lp.setCourseId(courseId);
-                lp.setLessonId(lessonId);
-                lp.setCompletedAt(LocalDateTime.now());
-                lessonProgressRepository.save(lp);
-            }
-        } else if (!existing.isEmpty()) {
-            lessonProgressRepository.deleteAll(existing);
-        }
-
-        long totalLessons = lessonRepository.countLessonsByCourseId(courseId);
-        long completedLessons = lessonProgressRepository.countCompletedLessonsByUserAndCourse(userId, courseId);
-        int pct = totalLessons > 0 ? (int) Math.min(100, (completedLessons * 100) / totalLessons) : 0;
-
-        Enrollment enr = enrollmentRepository.findByUserIdAndCourseId(userId, courseId);
-        if (enr != null) {
-            enr.setProgressPercentage(pct);
-            enrollmentRepository.save(enr);
-        }
-
-        Certificate cert = certificateRepository.findByUserIdAndCourseId(userId, courseId);
+        LearningProgressService.MarkLessonResult res = learningProgressService.markLesson(userId, lessonId, completed);
         return ResponseEntity.ok(new LessonCompletionResponseDto(
-                lessonId,
-                completed,
-                pct,
-                cert != null ? cert.getCertificateUrl() : null,
-                false
+                res.lessonId(),
+                res.completed(),
+                res.progressPercent(),
+                res.certificateCode(),
+                res.certificateJustIssued()
         ));
     }
 

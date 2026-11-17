@@ -7,9 +7,9 @@ import com.edumy.authoring.repository.CategoryRepository;
 import com.edumy.authoring.repository.CourseRepository;
 import com.edumy.authoring.repository.CourseSectionRepository;
 import com.edumy.authoring.repository.LessonRepository;
-import com.edumy.learning.enrollment.repository.CertificateRepository;
 import com.edumy.learning.enrollment.repository.EnrollmentRepository;
-import com.edumy.learning.enrollment.repository.LessonProgressRepository;
+import com.edumy.learning.enrollment.service.LearningProgressService;
+import com.edumy.learning.quiz.repository.QuizAttemptRepository;
 import com.edumy.learning.quiz.repository.QuizRepository;
 import com.edumy.learning.review.repository.ReviewRepository;
 import com.edumy.shared.exception.BusinessException;
@@ -39,10 +39,10 @@ class Phase1PaywallTest {
     @Mock private CourseSectionRepository courseSectionRepository;
     @Mock private LessonRepository lessonRepository;
     @Mock private EnrollmentRepository enrollmentRepository;
-    @Mock private LessonProgressRepository lessonProgressRepository;
+    @Mock private LearningProgressService learningProgressService;
     @Mock private ReviewRepository reviewRepository;
     @Mock private QuizRepository quizRepository;
-    @Mock private CertificateRepository certificateRepository;
+    @Mock private QuizAttemptRepository quizAttemptRepository;
 
     private MobileCatalogController catalogController;
     private MobileLearningController learningController;
@@ -55,7 +55,7 @@ class Phase1PaywallTest {
         );
         learningController = new MobileLearningController(
                 courseRepository, courseSectionRepository, lessonRepository,
-                enrollmentRepository, lessonProgressRepository, certificateRepository
+                enrollmentRepository, learningProgressService, quizRepository, quizAttemptRepository
         );
     }
 

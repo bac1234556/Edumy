@@ -19,6 +19,7 @@ import PaymentCancel from './pages/PaymentCancel';
 import PaymentQR from './pages/PaymentQR';
 import CourseCurriculumEditor from './pages/CourseCurriculumEditor';
 import UserProfile from './pages/UserProfile';
+import CertificateView from './pages/CertificateView';
 import ProtectedRoute from './components/ProtectedRoute';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
@@ -40,6 +41,8 @@ function App() {
             <Route path="/verify-email" element={<VerifyEmail />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/certificates/verify/:code" element={<CertificateView />} />
+            <Route path="/certificates/:url" element={<CertificateView />} />
 
             {/* Sales & Payment Routes */}
             <Route path="/cart" element={<Cart />} />

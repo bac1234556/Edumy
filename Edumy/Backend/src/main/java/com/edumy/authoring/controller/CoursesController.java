@@ -103,6 +103,9 @@ public class CoursesController {
     @Autowired
     private com.edumy.identity.user.service.UserActivityService userActivityService;
 
+    @Autowired
+    private com.edumy.learning.enrollment.service.LearningProgressService learningProgressService;
+
     private Integer getCurrentUserId() {
         try {
             return Integer.parseInt(SecurityContextHolder.getContext().getAuthentication().getName());
@@ -436,57 +439,7 @@ public class CoursesController {
             return ResponseEntity.status(403).body(Map.of("message", "Bạn phải có lượt ghi danh để hoàn thành bài học."));
         }
 
-        boolean alreadyCompleted = lessonProgressRepository.existsByUserIdAndCourseIdAndLessonId(userId, courseId, lessonId);
-
-        if (!alreadyCompleted) {
-            LessonProgress progress = new LessonProgress();
-            progress.setUserId(userId);
-            progress.setCourseId(courseId);
-            progress.setLessonId(lessonId);
-            progress.setCompletedAt(LocalDateTime.now());
-            lessonProgressRepository.save(progress);
-
-            // Tổng số bài học và bài kiểm tra
-            long totalLessons = lessonRepository.countLessonsByCourseId(courseId);
-            long completedLessons = lessonProgressRepository.countCompletedLessonsByUserAndCourse(userId, courseId);
-            long totalQuizzes = quizRepository.countQuizzesByCourseId(courseId);
-            List<Integer> quizIds = quizRepository.findQuizIdsByCourseId(courseId);
-            long completedQuizzes = (quizIds != null && !quizIds.isEmpty()) 
-                    ? quizAttemptRepository.countByUserIdAndIsPassedTrueAndQuizIdIn(userId, quizIds) 
-                    : 0;
-
-            long totalItems = totalLessons + totalQuizzes;
-            long completedItems = completedLessons + completedQuizzes;
-            int progressPercentage = (totalItems > 0)
-                    ? (int) Math.min(100, Math.round((double) completedItems / totalItems * 100))
-                    : 100;
-
-            Enrollment enrollment = enrollmentRepository.findByUserIdAndCourseId(userId, courseId);
-            if (enrollment != null) {
-                enrollment.setProgressPercentage(progressPercentage);
-                if (progressPercentage >= 100) {
-                    enrollment.setStatus("COMPLETED");
-                    if (enrollment.getCompletedAt() == null) {
-                        enrollment.setCompletedAt(LocalDateTime.now());
-                    }
-                }
-                enrollmentRepository.save(enrollment);
-            }
-
-            // Chỉ cấp chứng chỉ khi HOÀN THÀNH 100% TẤT CẢ BÀI HỌC VÀ BÀI KIỂM TRA
-            if (totalItems > 0 && completedItems >= totalItems) {
-                boolean hasCert = certificateRepository.existsByUserIdAndCourseId(userId, courseId);
-                if (!hasCert) {
-                    Certificate cert = new Certificate();
-                    cert.setUserId(userId);
-                    cert.setCourseId(courseId);
-                    cert.setIssuedAt(LocalDateTime.now());
-                    cert.setCertificateUrl("EDUMY-" + UUID.randomUUID().toString().replace("-", "").substring(0, 10).toUpperCase());
-                    certificateRepository.save(cert);
-                }
-            }
-        }
-
+        learningProgressService.markLesson(userId, lessonId, true);
         return ResponseEntity.ok(Map.of("message", "Đã ghi nhận hoàn thành bài học thành công."));
     }
 
@@ -496,41 +449,20 @@ public class CoursesController {
         Integer userId = getCurrentUserId();
         if (userId == null) return ResponseEntity.status(401).build();
 
-        long totalLessons = lessonRepository.countLessonsByCourseId(courseId);
-        List<LessonProgress> progresses = lessonProgressRepository.findByUserIdAndCourseId(userId, courseId);
-        List<Integer> completedLessonIds = progresses.stream().map(LessonProgress::getLessonId).collect(Collectors.toList());
-        long completedLessons = completedLessonIds.size();
-
-        long totalQuizzes = quizRepository.countQuizzesByCourseId(courseId);
-        List<Integer> quizIds = quizRepository.findQuizIdsByCourseId(courseId);
-        List<Integer> completedQuizIds = (quizIds != null && !quizIds.isEmpty())
-                ? quizAttemptRepository.findPassedQuizIdsByUserAndQuizIds(userId, quizIds)
-                : Collections.emptyList();
-        long completedQuizzes = completedQuizIds.size();
-
-        long totalItems = totalLessons + totalQuizzes;
-        long completedItems = completedLessons + completedQuizzes;
-
-        double percentage = totalItems > 0 ? (double) completedItems / totalItems * 100 : 0;
-        int roundedPercentage = (int) Math.min(100, Math.round(percentage));
-
-        // Chỉ trả về chứng chỉ nếu đạt đúng 100%
-        Certificate cert = null;
-        if (roundedPercentage >= 100) {
-            cert = certificateRepository.findByUserIdAndCourseId(userId, courseId);
-        }
+        var snap = learningProgressService.getProgress(userId, courseId);
 
         Map<String, Object> res = new HashMap<>();
-        res.put("completedLessonIds", completedLessonIds);
-        res.put("completedQuizIds", completedQuizIds);
-        res.put("totalLessons", totalLessons);
-        res.put("totalQuizzes", totalQuizzes);
-        res.put("completedQuizzes", completedQuizzes);
-        res.put("totalItems", totalItems);
-        res.put("completedItems", completedItems);
-        res.put("progressPercentage", roundedPercentage);
-        res.put("certificateId", cert != null ? cert.getId() : null);
-        res.put("certificateUrl", cert != null ? cert.getCertificateUrl() : null);
+        res.put("completedLessonIds", snap.completedLessonIds());
+        res.put("completedQuizIds", snap.completedQuizIds());
+        res.put("totalLessons", snap.totalLessons());
+        res.put("totalQuizzes", snap.totalQuizzes());
+        res.put("completedQuizzes", snap.completedQuizzes());
+        res.put("totalItems", snap.totalItems());
+        res.put("completedItems", snap.completedItems());
+        res.put("progressPercentage", snap.progressPercentage());
+        res.put("certificateId", snap.progressPercentage() >= 100 ? snap.certificateId() : null);
+        res.put("certificateUrl", snap.progressPercentage() >= 100 ? snap.certificateUrl() : null);
+        res.put("lastAccessedLessonId", snap.lastAccessedLessonId());
 
         return ResponseEntity.ok(res);
     }

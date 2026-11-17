@@ -173,6 +173,7 @@ function CoursePlayer() {
     };
 
     verifyPlayback();
+    api.post(`/v1/learn/lessons/${activeLesson.lessonId}/visit`).catch(() => {});
   }, [activeLesson]);
 
   // Auto-scroll sidebar to active lesson
@@ -257,7 +258,7 @@ function CoursePlayer() {
           }, 450);
         }
       } else {
-        await api.delete(`/v1/learning/courses/${id}/lessons/${lessonId}/complete`);
+        await api.delete(`/courses/${id}/lessons/${lessonId}/complete`);
       }
       fetchProgress(false);
     } catch (err) {
