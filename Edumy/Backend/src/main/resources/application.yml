@@ -36,6 +36,8 @@ spring:
 edumy:
   frontend:
     base-url: ${FRONTEND_BASE_URL:http://localhost:3000}
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000,http://localhost:5173,http://localhost:8081,http://localhost:19006}
   mail:
     from: ${MAIL_FROM:Edumy Academy <no-reply@edumy.vn>}
 
@@ -51,6 +53,7 @@ jwt:
   key: ${JWT_SECRET:ThisIsASecretKeyForJwtAuthenticationInEduMyProject_PleaseChangeInProduction}
   issuer: ${JWT_ISSUER:EduMyBackend}
   audience: ${JWT_AUDIENCE:EduMyClient}
+  access-ttl-minutes: ${JWT_ACCESS_TTL_MINUTES:60}
   expire-days: ${JWT_EXPIRE_DAYS:7}
 
 stripe:
@@ -89,7 +92,7 @@ management:
       base-path: /actuator
   endpoint:
     health:
-      show-details: always
+      show-details: when-authorized
     prometheus:
       enabled: true
   metrics:

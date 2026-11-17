@@ -43,6 +43,12 @@ public class RefreshToken {
     @Column(name = "ReplacedByToken")
     private String replacedByToken;
 
+    @Column(name = "FamilyId", length = 64)
+    private String familyId;
+
+    @Column(name = "Client", length = 16)
+    private String client; // "WEB" | "MOBILE"
+
     @Transient
     public boolean isExpired() {
         return LocalDateTime.now().isAfter(expires) || LocalDateTime.now().isEqual(expires);

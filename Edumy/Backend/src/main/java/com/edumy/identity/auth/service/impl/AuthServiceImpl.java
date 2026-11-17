@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -56,13 +57,13 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public Map<String, Object> register(RegisterDto model) {
         if (userRepository.existsByEmail(model.getEmail())) {
-            throw new BusinessException(ErrorCode.BAD_REQUEST, "Email already in use.");
+            throw new BusinessException(HttpStatus.CONFLICT, "AUTH_EMAIL_TAKEN", "Email đã được sử dụng.");
         }
 
         User user = new User();
         user.setFullName(model.getFullName());
         user.setEmail(model.getEmail());
-        user.setRole(model.getRole() == null || model.getRole().isEmpty() ? "Student" : model.getRole());
+        user.setRole("Student");
         user.setPasswordHash(passwordEncoder.encode(model.getPassword()));
 
         String verificationCode = String.format("%06d", new SecureRandom().nextInt(1_000_000));
@@ -82,7 +83,11 @@ public class AuthServiceImpl implements AuthService {
     public AuthResponseDto login(LoginDto loginDto, HttpServletResponse response) {
         User user = userRepository.findByEmail(loginDto.getEmail());
         if (user == null || !passwordEncoder.matches(loginDto.getPassword(), user.getPasswordHash())) {
-            throw new BusinessException(ErrorCode.UNAUTHORIZED, "Invalid email or password.");
+            throw new BusinessException(HttpStatus.UNAUTHORIZED, "AUTH_INVALID_CREDENTIALS", "Email hoặc mật khẩu không chính xác.");
+        }
+
+        if (Boolean.FALSE.equals(user.getIsActive())) {
+            throw new BusinessException(HttpStatus.FORBIDDEN, "AUTH_ACCOUNT_LOCKED", "Tài khoản của bạn đã bị khóa. Vui lòng liên hệ quản trị viên.");
         }
 
         String token = generateJwtToken(user);
@@ -91,7 +96,9 @@ public class AuthServiceImpl implements AuthService {
         RefreshToken refreshToken = new RefreshToken();
         refreshToken.setToken(refreshTokenStr);
         refreshToken.setUserId(user.getUserId());
-        refreshToken.setExpires(LocalDateTime.now().plusDays(7));
+        refreshToken.setFamilyId(UUID.randomUUID().toString());
+        refreshToken.setClient("WEB");
+        refreshToken.setExpires(LocalDateTime.now().plusDays(jwtTokenProvider.getExpireDays()));
         refreshToken.setCreated(LocalDateTime.now());
         refreshTokenRepository.save(refreshToken);
 
@@ -102,7 +109,7 @@ public class AuthServiceImpl implements AuthService {
         authResponse.setEmail(user.getEmail());
         authResponse.setFullName(user.getFullName());
         authResponse.setRole(user.getRole());
-        authResponse.setMessage("Login successful.");
+        authResponse.setMessage("Đăng nhập thành công.");
 
         userActivityService.logActivity(user.getUserId(), "LOGIN_PASSWORD", "AUTH");
         return authResponse;
@@ -111,17 +118,29 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public AuthResponseDto refreshToken(String refreshToken, HttpServletResponse response) {
         if (refreshToken == null || refreshToken.isEmpty()) {
-            throw new BusinessException(ErrorCode.UNAUTHORIZED, "Token is required.");
+            throw new BusinessException(HttpStatus.UNAUTHORIZED, "AUTH_REFRESH_INVALID", "Refresh token không hợp lệ.");
         }
 
         RefreshToken refreshTokenEntity = refreshTokenRepository.findByToken(refreshToken);
         if (refreshTokenEntity == null) {
-            throw new BusinessException(ErrorCode.UNAUTHORIZED, "Invalid token.");
+            throw new BusinessException(HttpStatus.UNAUTHORIZED, "AUTH_REFRESH_INVALID", "Refresh token không hợp lệ.");
+        }
+
+        if (refreshTokenEntity.isRevoked() || refreshTokenEntity.getReplacedByToken() != null) {
+            revokeFamilyTokens(refreshTokenEntity.getFamilyId());
+            throw new BusinessException(HttpStatus.UNAUTHORIZED, "AUTH_REFRESH_REUSED", "Phát hiện sử dụng lại refresh token. Phiên đăng nhập đã bị thu hồi.");
+        }
+
+        if (refreshTokenEntity.isExpired()) {
+            throw new BusinessException(HttpStatus.UNAUTHORIZED, "AUTH_REFRESH_INVALID", "Refresh token đã hết hạn.");
         }
 
         User user = refreshTokenEntity.getUser();
-        if (!refreshTokenEntity.isActive()) {
-            throw new BusinessException(ErrorCode.UNAUTHORIZED, "Token is expired or revoked.");
+        if (user == null) {
+            throw new BusinessException(HttpStatus.UNAUTHORIZED, "AUTH_REFRESH_INVALID", "Refresh token không hợp lệ.");
+        }
+        if (Boolean.FALSE.equals(user.getIsActive())) {
+            throw new BusinessException(HttpStatus.FORBIDDEN, "AUTH_ACCOUNT_LOCKED", "Tài khoản của bạn đã bị khóa. Vui lòng liên hệ quản trị viên.");
         }
 
         refreshTokenEntity.setRevoked(LocalDateTime.now());
@@ -134,7 +153,9 @@ public class AuthServiceImpl implements AuthService {
         RefreshToken newRefreshToken = new RefreshToken();
         newRefreshToken.setToken(newRefreshTokenStr);
         newRefreshToken.setUserId(user.getUserId());
-        newRefreshToken.setExpires(LocalDateTime.now().plusDays(7));
+        newRefreshToken.setFamilyId(refreshTokenEntity.getFamilyId() != null ? refreshTokenEntity.getFamilyId() : UUID.randomUUID().toString());
+        newRefreshToken.setClient(refreshTokenEntity.getClient() != null ? refreshTokenEntity.getClient() : "WEB");
+        newRefreshToken.setExpires(LocalDateTime.now().plusDays(jwtTokenProvider.getExpireDays()));
         newRefreshToken.setCreated(LocalDateTime.now());
         refreshTokenRepository.save(newRefreshToken);
 
@@ -145,7 +166,7 @@ public class AuthServiceImpl implements AuthService {
         authResponse.setEmail(user.getEmail());
         authResponse.setFullName(user.getFullName());
         authResponse.setRole(user.getRole());
-        authResponse.setMessage("Token refreshed successfully.");
+        authResponse.setMessage("Làm mới phiên đăng nhập thành công.");
         return authResponse;
     }
 
@@ -238,13 +259,19 @@ public class AuthServiceImpl implements AuthService {
             }
         }
 
+        if (Boolean.FALSE.equals(user.getIsActive())) {
+            throw new BusinessException(HttpStatus.FORBIDDEN, "AUTH_ACCOUNT_LOCKED", "Tài khoản của bạn đã bị khóa. Vui lòng liên hệ quản trị viên.");
+        }
+
         String token = generateJwtToken(user);
         String refreshTokenStr = generateRefreshToken();
 
         RefreshToken refreshToken = new RefreshToken();
         refreshToken.setToken(refreshTokenStr);
         refreshToken.setUserId(user.getUserId());
-        refreshToken.setExpires(LocalDateTime.now().plusDays(7));
+        refreshToken.setFamilyId(UUID.randomUUID().toString());
+        refreshToken.setClient("WEB");
+        refreshToken.setExpires(LocalDateTime.now().plusDays(jwtTokenProvider.getExpireDays()));
         refreshToken.setCreated(LocalDateTime.now());
         refreshTokenRepository.save(refreshToken);
 
@@ -340,7 +367,7 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     public MobileTokensDto mobileRegister(MobileRegisterRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new BusinessException(ErrorCode.BAD_REQUEST, "Email already in use.");
+            throw new BusinessException(HttpStatus.CONFLICT, "AUTH_EMAIL_TAKEN", "Email đã được sử dụng.");
         }
 
         User user = new User();
@@ -349,17 +376,26 @@ public class AuthServiceImpl implements AuthService {
         user.setRole("Student");
         user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
         user.setIsActive(true);
-        user.setIsEmailVerified(true);
+        user.setIsEmailVerified(false);
+        String verificationCode = String.format("%06d", new SecureRandom().nextInt(1_000_000));
+        user.setVerificationCode(verificationCode);
+        user.setVerificationCodeExpiry(LocalDateTime.now().plusHours(24));
         user.setCreatedAt(LocalDateTime.now());
         userRepository.save(user);
 
+        mailService.sendEmailVerification(user.getEmail(), user.getFullName(), verificationCode);
+
         String jwtToken = generateJwtToken(user);
         String refreshTokenStr = generateRefreshToken();
+        int refreshDays = jwtTokenProvider.getExpireDays() > 0 ? jwtTokenProvider.getExpireDays() : 7;
+        long accessMinutes = jwtTokenProvider.getAccessTtlMinutes() > 0 ? jwtTokenProvider.getAccessTtlMinutes() : 60;
 
         RefreshToken refreshToken = new RefreshToken();
         refreshToken.setToken(refreshTokenStr);
         refreshToken.setUserId(user.getUserId());
-        refreshToken.setExpires(LocalDateTime.now().plusDays(7));
+        refreshToken.setFamilyId(UUID.randomUUID().toString());
+        refreshToken.setClient("MOBILE");
+        refreshToken.setExpires(LocalDateTime.now().plusDays(refreshDays));
         refreshToken.setCreated(LocalDateTime.now());
         refreshTokenRepository.save(refreshToken);
 
@@ -367,9 +403,9 @@ public class AuthServiceImpl implements AuthService {
 
         return MobileTokensDto.builder()
                 .accessToken(jwtToken)
-                .expiresAt(Instant.now().plus(7, ChronoUnit.DAYS).toString())
+                .expiresAt(Instant.now().plus(accessMinutes, ChronoUnit.MINUTES).toString())
                 .refreshToken(refreshTokenStr)
-                .refreshExpiresAt(Instant.now().plus(7, ChronoUnit.DAYS).toString())
+                .refreshExpiresAt(Instant.now().plus(refreshDays, ChronoUnit.DAYS).toString())
                 .build();
     }
 
@@ -378,20 +414,24 @@ public class AuthServiceImpl implements AuthService {
     public MobileTokensDto mobileLogin(MobileLoginRequest request) {
         User user = userRepository.findByEmail(request.getEmail());
         if (user == null || !passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
-            throw new BusinessException(ErrorCode.UNAUTHORIZED, "Invalid email or password.");
+            throw new BusinessException(HttpStatus.UNAUTHORIZED, "AUTH_INVALID_CREDENTIALS", "Email hoặc mật khẩu không chính xác.");
         }
 
         if (Boolean.FALSE.equals(user.getIsActive())) {
-            throw new BusinessException(ErrorCode.FORBIDDEN, "Tài khoản của bạn đã bị khóa. Vui lòng liên hệ quản trị viên.");
+            throw new BusinessException(HttpStatus.FORBIDDEN, "AUTH_ACCOUNT_LOCKED", "Tài khoản của bạn đã bị khóa. Vui lòng liên hệ quản trị viên.");
         }
 
         String jwtToken = generateJwtToken(user);
         String refreshTokenStr = generateRefreshToken();
+        int refreshDays = jwtTokenProvider.getExpireDays() > 0 ? jwtTokenProvider.getExpireDays() : 7;
+        long accessMinutes = jwtTokenProvider.getAccessTtlMinutes() > 0 ? jwtTokenProvider.getAccessTtlMinutes() : 60;
 
         RefreshToken refreshToken = new RefreshToken();
         refreshToken.setToken(refreshTokenStr);
         refreshToken.setUserId(user.getUserId());
-        refreshToken.setExpires(LocalDateTime.now().plusDays(7));
+        refreshToken.setFamilyId(UUID.randomUUID().toString());
+        refreshToken.setClient("MOBILE");
+        refreshToken.setExpires(LocalDateTime.now().plusDays(refreshDays));
         refreshToken.setCreated(LocalDateTime.now());
         refreshTokenRepository.save(refreshToken);
 
@@ -399,9 +439,9 @@ public class AuthServiceImpl implements AuthService {
 
         return MobileTokensDto.builder()
                 .accessToken(jwtToken)
-                .expiresAt(Instant.now().plus(7, ChronoUnit.DAYS).toString())
+                .expiresAt(Instant.now().plus(accessMinutes, ChronoUnit.MINUTES).toString())
                 .refreshToken(refreshTokenStr)
-                .refreshExpiresAt(Instant.now().plus(7, ChronoUnit.DAYS).toString())
+                .refreshExpiresAt(Instant.now().plus(refreshDays, ChronoUnit.DAYS).toString())
                 .build();
     }
 
@@ -409,37 +449,34 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     public MobileTokensDto mobileRefresh(MobileRefreshRequest request) {
         if (request == null || request.getRefreshToken() == null || request.getRefreshToken().trim().isEmpty()) {
-            throw new BusinessException(ErrorCode.UNAUTHORIZED, "Token is required.");
+            throw new BusinessException(HttpStatus.UNAUTHORIZED, "AUTH_REFRESH_INVALID", "Refresh token không hợp lệ.");
         }
 
         String tokenStr = request.getRefreshToken().trim();
         RefreshToken refreshTokenEntity = refreshTokenRepository.findByToken(tokenStr);
         if (refreshTokenEntity == null) {
-            throw new BusinessException(ErrorCode.UNAUTHORIZED, "Invalid token.");
+            throw new BusinessException(HttpStatus.UNAUTHORIZED, "AUTH_REFRESH_INVALID", "Refresh token không hợp lệ.");
         }
 
-        // Token reuse detection: if token is revoked or already replaced, revoke entire token family
+        // Token reuse detection: revoke only this token family (never affect other clients/sessions)
         if (refreshTokenEntity.isRevoked() || refreshTokenEntity.getReplacedByToken() != null) {
-            List<RefreshToken> allTokens = refreshTokenRepository.findByUserId(refreshTokenEntity.getUserId());
-            for (RefreshToken t : allTokens) {
-                if (t.isActive()) {
-                    t.setRevoked(LocalDateTime.now());
-                }
-            }
-            refreshTokenRepository.saveAll(allTokens);
-            throw new BusinessException(ErrorCode.UNAUTHORIZED, "Token reuse detected. All sessions revoked.");
+            revokeFamilyTokens(refreshTokenEntity.getFamilyId());
+            throw new BusinessException(HttpStatus.UNAUTHORIZED, "AUTH_REFRESH_REUSED", "Phát hiện sử dụng lại refresh token. Phiên đăng nhập đã bị thu hồi.");
         }
 
         if (refreshTokenEntity.isExpired()) {
-            throw new BusinessException(ErrorCode.UNAUTHORIZED, "Token is expired.");
+            throw new BusinessException(HttpStatus.UNAUTHORIZED, "AUTH_REFRESH_INVALID", "Refresh token đã hết hạn.");
         }
 
         User user = refreshTokenEntity.getUser();
         if (user == null || Boolean.FALSE.equals(user.getIsActive())) {
-            throw new BusinessException(ErrorCode.FORBIDDEN, "Tài khoản của bạn đã bị khóa.");
+            throw new BusinessException(HttpStatus.FORBIDDEN, "AUTH_ACCOUNT_LOCKED", "Tài khoản của bạn đã bị khóa. Vui lòng liên hệ quản trị viên.");
         }
 
-        // Rotate token
+        int refreshDays = jwtTokenProvider.getExpireDays() > 0 ? jwtTokenProvider.getExpireDays() : 7;
+        long accessMinutes = jwtTokenProvider.getAccessTtlMinutes() > 0 ? jwtTokenProvider.getAccessTtlMinutes() : 60;
+
+        // Rotate token within same family
         refreshTokenEntity.setRevoked(LocalDateTime.now());
         String newJwtToken = generateJwtToken(user);
         String newRefreshTokenStr = generateRefreshToken();
@@ -450,16 +487,32 @@ public class AuthServiceImpl implements AuthService {
         RefreshToken newRefreshToken = new RefreshToken();
         newRefreshToken.setToken(newRefreshTokenStr);
         newRefreshToken.setUserId(user.getUserId());
-        newRefreshToken.setExpires(LocalDateTime.now().plusDays(7));
+        newRefreshToken.setFamilyId(refreshTokenEntity.getFamilyId() != null ? refreshTokenEntity.getFamilyId() : UUID.randomUUID().toString());
+        newRefreshToken.setClient(refreshTokenEntity.getClient() != null ? refreshTokenEntity.getClient() : "MOBILE");
+        newRefreshToken.setExpires(LocalDateTime.now().plusDays(refreshDays));
         newRefreshToken.setCreated(LocalDateTime.now());
         refreshTokenRepository.save(newRefreshToken);
 
         return MobileTokensDto.builder()
                 .accessToken(newJwtToken)
-                .expiresAt(Instant.now().plus(7, ChronoUnit.DAYS).toString())
+                .expiresAt(Instant.now().plus(accessMinutes, ChronoUnit.MINUTES).toString())
                 .refreshToken(newRefreshTokenStr)
-                .refreshExpiresAt(Instant.now().plus(7, ChronoUnit.DAYS).toString())
+                .refreshExpiresAt(Instant.now().plus(refreshDays, ChronoUnit.DAYS).toString())
                 .build();
+    }
+
+    private void revokeFamilyTokens(String familyId) {
+        if (familyId == null || familyId.isBlank()) {
+            return;
+        }
+        List<RefreshToken> familyTokens = refreshTokenRepository.findByFamilyId(familyId);
+        LocalDateTime now = LocalDateTime.now();
+        for (RefreshToken t : familyTokens) {
+            if (t.isActive()) {
+                t.setRevoked(now);
+            }
+        }
+        refreshTokenRepository.saveAll(familyTokens);
     }
 
     @Override

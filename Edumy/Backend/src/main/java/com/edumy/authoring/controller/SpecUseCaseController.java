@@ -20,6 +20,7 @@ import com.edumy.learning.review.model.Review;
 import com.edumy.learning.review.repository.ReviewRepository;
 import com.edumy.identity.user.model.User;
 import com.edumy.identity.user.repository.UserRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -105,7 +106,7 @@ public class SpecUseCaseController {
         res.put("role", user.getRole());
         res.put("roles", buildRolesList(user.getRole()));
         res.put("status", Boolean.TRUE.equals(user.getIsActive()) ? "ACTIVE" : "LOCKED");
-        res.put("isEmailVerified", true);
+        res.put("isEmailVerified", Boolean.TRUE.equals(user.getIsEmailVerified()));
         res.put("createdAt", user.getCreatedAt());
         return ResponseEntity.ok(res);
     }
@@ -1131,12 +1132,30 @@ public class SpecUseCaseController {
     @GetMapping("/api/v1/catalog/courses/{slug}/lessons/{lessonId}/preview")
     public ResponseEntity<?> getCatalogLessonPreview(@PathVariable String slug, @PathVariable Integer lessonId) {
         Course course = resolveCourseBySlugOrId(slug);
+        if (course == null) {
+            throw new BusinessException(ErrorCode.NOT_FOUND, "Không tìm thấy khóa học.");
+        }
         Lesson lesson = lessonRepository.findById(lessonId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "Không tìm thấy bài học."));
+
+        CourseSection section = lesson.getSectionId() != null
+                ? courseSectionRepository.findById(lesson.getSectionId()).orElse(null)
+                : null;
+        if (section == null || !Objects.equals(section.getCourseId(), course.getCourseId())) {
+            throw new BusinessException(HttpStatus.FORBIDDEN, "LESSON_NOT_PREVIEWABLE", "Bài học không thuộc khóa học này hoặc không cho phép xem thử.");
+        }
+
+        Integer viewerId = SecurityUtils.getCurrentUserId();
+        boolean canAccess = Boolean.TRUE.equals(lesson.getIsPreview())
+                || (viewerId != null && hasCourseLearningAccess(course, viewerId));
+        if (!canAccess) {
+            throw new BusinessException(HttpStatus.FORBIDDEN, "LESSON_NOT_PREVIEWABLE", "Bài học này không cho phép xem thử miễn phí.");
+        }
+
         Map<String, Object> res = new LinkedHashMap<>();
         res.put("id", lesson.getLessonId());
-        res.put("courseSlug", course != null ? resolveCourseSlug(course) : slug);
-        res.put("courseTitle", course != null ? course.getTitle() : "Khóa học Edumy");
+        res.put("courseSlug", resolveCourseSlug(course));
+        res.put("courseTitle", course.getTitle());
         res.put("title", lesson.getTitle());
         res.put("contentType", (lesson.getVideoUrl() != null && !lesson.getVideoUrl().isBlank()) ? "video" : "article");
         res.put("videoUrl", lesson.getVideoUrl());
@@ -1206,6 +1225,7 @@ public class SpecUseCaseController {
         if (userId == null) throw new BusinessException(ErrorCode.UNAUTHORIZED);
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "Không tìm thấy khóa học."));
+        requireCourseLearningAccess(course, userId);
 
         Set<Integer> completedIds = lessonProgressRepository.findAll().stream()
                 .filter(lp -> Objects.equals(lp.getUserId(), userId) && Objects.equals(lp.getCourseId(), courseId))
@@ -1260,11 +1280,17 @@ public class SpecUseCaseController {
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> getLearnLessonDetail(@PathVariable Integer lessonId) {
         Integer userId = SecurityUtils.getCurrentUserId();
+        if (userId == null) throw new BusinessException(ErrorCode.UNAUTHORIZED);
         Lesson lesson = lessonRepository.findById(lessonId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "Không tìm thấy bài học."));
         CourseSection section = lesson.getSectionId() != null ? courseSectionRepository.findById(lesson.getSectionId()).orElse(null) : null;
         Integer courseId = section != null ? section.getCourseId() : null;
-        boolean completed = userId != null && lessonProgressRepository.findAll().stream()
+        Course course = courseId != null ? courseRepository.findById(courseId).orElse(null) : null;
+        if (course == null) {
+            throw new BusinessException(ErrorCode.NOT_FOUND, "Không tìm thấy khóa học cho bài học này.");
+        }
+        requireCourseLearningAccess(course, userId);
+        boolean completed = lessonProgressRepository.findAll().stream()
                 .anyMatch(lp -> Objects.equals(lp.getUserId(), userId) && Objects.equals(lp.getLessonId(), lessonId));
 
         Map<String, Object> res = new LinkedHashMap<>();
@@ -1283,15 +1309,17 @@ public class SpecUseCaseController {
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> recordLessonVisitV1(@PathVariable Integer lessonId) {
         Integer userId = SecurityUtils.getCurrentUserId();
-        lessonRepository.findById(lessonId).ifPresent(lesson -> {
-            if (lesson.getSectionId() != null) {
-                courseSectionRepository.findById(lesson.getSectionId()).ifPresent(sec -> {
-                    if (userId != null && sec.getCourseId() != null) {
-                        LAST_VISITED_LESSON.put(userId + ":" + sec.getCourseId(), lessonId);
-                    }
-                });
-            }
-        });
+        if (userId == null) throw new BusinessException(ErrorCode.UNAUTHORIZED);
+        Lesson lesson = lessonRepository.findById(lessonId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "Không tìm thấy bài học."));
+        CourseSection section = lesson.getSectionId() != null ? courseSectionRepository.findById(lesson.getSectionId()).orElse(null) : null;
+        Integer courseId = section != null ? section.getCourseId() : null;
+        Course course = courseId != null ? courseRepository.findById(courseId).orElse(null) : null;
+        if (course == null) {
+            throw new BusinessException(ErrorCode.NOT_FOUND, "Không tìm thấy khóa học cho bài học này.");
+        }
+        requireCourseLearningAccess(course, userId);
+        LAST_VISITED_LESSON.put(userId + ":" + courseId, lessonId);
         return ResponseEntity.noContent().build();
     }
 
@@ -1306,6 +1334,11 @@ public class SpecUseCaseController {
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "Không tìm thấy bài học."));
         CourseSection section = lesson.getSectionId() != null ? courseSectionRepository.findById(lesson.getSectionId()).orElse(null) : null;
         Integer courseId = section != null ? section.getCourseId() : null;
+        Course course = courseId != null ? courseRepository.findById(courseId).orElse(null) : null;
+        if (course == null) {
+            throw new BusinessException(ErrorCode.NOT_FOUND, "Không tìm thấy khóa học cho bài học này.");
+        }
+        requireCourseLearningAccess(course, userId);
 
         List<LessonProgress> existing = lessonProgressRepository.findAll().stream()
                 .filter(lp -> Objects.equals(lp.getUserId(), userId) && Objects.equals(lp.getLessonId(), lessonId))
@@ -1339,6 +1372,26 @@ public class SpecUseCaseController {
                 "progressPercent", pct,
                 "certificateIssued", pct >= 100
         ));
+    }
+
+    private boolean hasCourseLearningAccess(Course course, Integer userId) {
+        if (course == null || userId == null) return false;
+        if (SecurityUtils.hasRole("Admin")) return true;
+        if (Objects.equals(course.getInstructorId(), userId)) return true;
+        List<Map<String, Object>> coList = COURSE_CO_INSTRUCTORS.getOrDefault(course.getCourseId(), Collections.emptyList());
+        for (Map<String, Object> m : coList) {
+            if ("ACCEPTED".equalsIgnoreCase(String.valueOf(m.get("status")))
+                    && Objects.equals(m.get("instructorId"), userId)) {
+                return true;
+            }
+        }
+        return enrollmentRepository.isUserEnrolledActive(userId, course.getCourseId());
+    }
+
+    private void requireCourseLearningAccess(Course course, Integer userId) {
+        if (!hasCourseLearningAccess(course, userId)) {
+            throw new BusinessException(HttpStatus.FORBIDDEN, "NOT_ENROLLED", "Bạn chưa ghi danh khóa học này.");
+        }
     }
 
     private String resolveCourseSlug(Course c) {

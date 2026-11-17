@@ -10,4 +10,5 @@ import java.util.List;
 public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Integer> {
     RefreshToken findByToken(String token);
     List<RefreshToken> findByUserId(Integer userId);
+    List<RefreshToken> findByFamilyId(String familyId);
 }

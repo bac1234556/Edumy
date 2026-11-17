@@ -45,8 +45,7 @@ function Register() {
       await api.post('/auth/register', {
         fullName: fullName.trim(),
         email: normalizedEmail,
-        password,
-        role: 'Student'
+        password
       });
       navigate(`/verify-email?email=${encodeURIComponent(normalizedEmail)}&token=VERIFY-NEW-ACCOUNT`);
     } catch (err) {
