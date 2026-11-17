@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Data
 @Builder
@@ -21,6 +21,7 @@ public class EarningEntryDto {
     private Integer platformFeeBps;
     private Integer shareBps;
     private Long amount;
-    private LocalDateTime earnedAt;
-    private LocalDateTime maturesAt;
+    private Instant earnedAt;
+    private Instant maturesAt;
+    private boolean matured;
 }

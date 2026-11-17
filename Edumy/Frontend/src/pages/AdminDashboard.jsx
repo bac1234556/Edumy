@@ -4,6 +4,7 @@ import api from '../api/axiosConfig';
 import './AdminDashboard.css';
 import AdminCategoriesTab from '../components/admin/AdminCategoriesTab';
 import AdminOrdersTab from '../components/admin/AdminOrdersTab';
+import AdminWithdrawalsTab from '../components/admin/AdminWithdrawalsTab';
 
 function AdminDashboard() {
   const [stats, setStats] = useState({ totalUsers: 0, totalCourses: 0, totalRevenue: 0 });
@@ -310,6 +311,17 @@ function AdminDashboard() {
           </li>
           <li className="admin-nav-item">
             <button 
+              className={`admin-nav-btn ${activeTab === 'withdrawals' ? 'active' : ''}`}
+              onClick={() => setActiveTab('withdrawals')}
+            >
+              <span className="admin-nav-label">
+                <i className="bi bi-bank2"></i>
+                Rút tiền giảng viên
+              </span>
+            </button>
+          </li>
+          <li className="admin-nav-item">
+            <button 
               className={`admin-nav-btn ${activeTab === 'users' ? 'active' : ''}`}
               onClick={() => setActiveTab('users')}
             >
@@ -356,6 +368,7 @@ function AdminDashboard() {
               {activeTab === 'courses' && 'Kiểm duyệt & Quản lý Khóa học'}
               {activeTab === 'categories' && 'Quản trị Danh mục Khóa học'}
               {activeTab === 'orders' && 'Tra cứu Đơn hàng & Quản lý Doanh thu'}
+              {activeTab === 'withdrawals' && 'Duyệt Yêu cầu Rút tiền Giảng viên'}
               {activeTab === 'users' && 'Danh bạ & Phân quyền Người dùng'}
               {activeTab === 'reviews' && 'Kiểm duyệt Đánh giá Khóa học (UC-A15)'}
               {activeTab === 'qa' && 'Kiểm duyệt Hỏi & Đáp Học viên (UC-A19)'}
@@ -794,6 +807,11 @@ function AdminDashboard() {
         {/* TAB: QUẢN LÝ ĐƠN HÀNG & DOANH THU */}
         {activeTab === 'orders' && (
           <AdminOrdersTab showNotification={showNotification} />
+        )}
+
+        {/* TAB: RÚT TIỀN GIẢNG VIÊN */}
+        {activeTab === 'withdrawals' && (
+          <AdminWithdrawalsTab showNotification={showNotification} />
         )}
 
         {/* TAB: KIỂM DUYỆT ĐÁNH GIÁ */}

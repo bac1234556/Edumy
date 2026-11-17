@@ -12,8 +12,13 @@ import com.edumy.identity.user.model.User;
 import com.edumy.identity.user.repository.UserRepository;
 import com.edumy.identity.user.model.UserRole;
 import com.edumy.identity.user.repository.UserRoleRepository;
+import com.edumy.payout.model.EarningEntry;
+import com.edumy.payout.model.PayoutAccount;
+import com.edumy.payout.repository.EarningEntryRepository;
+import com.edumy.payout.repository.PayoutAccountRepository;
 
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -31,11 +36,15 @@ public class DataSeeder implements CommandLineRunner {
     @Autowired private PasswordEncoder passwordEncoder;
     @Autowired private CourseQuestionRepository courseQuestionRepository;
     @Autowired private QuestionAnswerRepository questionAnswerRepository;
+    @Autowired(required = false) private PayoutAccountRepository payoutAccountRepository;
+    @Autowired(required = false) private EarningEntryRepository earningEntryRepository;
+    @Autowired private Environment environment;
 
     @Override
     public void run(String... args) throws Exception {
         seedInitialUsersAndCategories();
         seedQaThreadsIfNeeded();
+        seedDemoPayoutIfNeeded();
     }
 
     private void seedInitialUsersAndCategories() {
@@ -192,6 +201,60 @@ public class DataSeeder implements CommandLineRunner {
             System.out.println("==> Seeded sample Q&A threads and instructor waiting queue items.");
         } catch (Exception e) {
             System.err.println("Failed to seed Q&A data: " + e.getMessage());
+        }
+    }
+
+    private void seedDemoPayoutIfNeeded() {
+        try {
+            if (payoutAccountRepository == null || earningEntryRepository == null) return;
+            boolean isDev = Arrays.asList(environment.getActiveProfiles()).contains("dev");
+            User instructor = userRepository.findByEmail("instructor@edumy.com");
+            if (instructor == null) return;
+            Integer instId = instructor.getUserId();
+
+            if (!isDev && !earningEntryRepository.findByInstructorId(instId).isEmpty()) {
+                return;
+            }
+
+            if (payoutAccountRepository.findById(instId).isEmpty()) {
+                payoutAccountRepository.save(PayoutAccount.builder()
+                        .instructorId(instId)
+                        .bankName("BIDV")
+                        .accountNumber("962470001234")
+                        .accountHolder("GIANG VIEN EDUMY")
+                        .createdAt(LocalDateTime.now())
+                        .updatedAt(LocalDateTime.now())
+                        .build());
+            }
+
+            if (earningEntryRepository.findByInstructorId(instId).isEmpty()) {
+                LocalDateTime now = LocalDateTime.now();
+                earningEntryRepository.saveAll(Arrays.asList(
+                        EarningEntry.builder()
+                                .orderId(9001).orderCode("ORD-DEMO-1").orderItemId(9001)
+                                .courseId(1).courseTitle("MERN Stack & Next.js Thực Chiến")
+                                .instructorId(instId).role("main")
+                                .unitPrice(300000L).platformFeeBps(3000).shareBps(10000).amount(210000L)
+                                .earnedAt(now.minusDays(10)).maturesAt(now.minusDays(3))
+                                .build(),
+                        EarningEntry.builder()
+                                .orderId(9002).orderCode("ORD-DEMO-2").orderItemId(9002)
+                                .courseId(2).courseTitle("Java Spring Boot Modular Monolith")
+                                .instructorId(instId).role("main")
+                                .unitPrice(200000L).platformFeeBps(3000).shareBps(10000).amount(140000L)
+                                .earnedAt(now.minusDays(8)).maturesAt(now.minusDays(1))
+                                .build(),
+                        EarningEntry.builder()
+                                .orderId(9003).orderCode("ORD-DEMO-3").orderItemId(9003)
+                                .courseId(3).courseTitle("ReactJS 18 & TypeScript")
+                                .instructorId(instId).role("main")
+                                .unitPrice(150000L).platformFeeBps(3000).shareBps(10000).amount(105000L)
+                                .earnedAt(now.minusDays(1)).maturesAt(now.plusDays(6))
+                                .build()
+                ));
+            }
+        } catch (Exception e) {
+            System.err.println("Failed to seed demo payout data: " + e.getMessage());
         }
     }
 }

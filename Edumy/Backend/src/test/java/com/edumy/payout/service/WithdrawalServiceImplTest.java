@@ -15,6 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -51,7 +52,7 @@ class WithdrawalServiceImplTest {
     @Test
     @DisplayName("Fails if payout account is missing")
     void testMissingPayoutAccount() {
-        when(payoutAccountRepository.findById(1)).thenReturn(Optional.empty());
+        when(payoutAccountRepository.findByIdForUpdate(1)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> withdrawalService.requestWithdrawal(1, 200000L))
                 .isInstanceOf(BusinessException.class)
@@ -65,7 +66,7 @@ class WithdrawalServiceImplTest {
         PayoutAccount account = PayoutAccount.builder()
                 .instructorId(1).bankName("BIDV").accountNumber("12345678").accountHolder("NGUYEN VAN A")
                 .build();
-        when(payoutAccountRepository.findById(1)).thenReturn(Optional.of(account));
+        when(payoutAccountRepository.findByIdForUpdate(1)).thenReturn(Optional.of(account));
 
         assertThatThrownBy(() -> withdrawalService.requestWithdrawal(1, 50000L))
                 .isInstanceOf(BusinessException.class)
@@ -79,7 +80,7 @@ class WithdrawalServiceImplTest {
         PayoutAccount account = PayoutAccount.builder()
                 .instructorId(1).bankName("BIDV").accountNumber("12345678").accountHolder("NGUYEN VAN A")
                 .build();
-        when(payoutAccountRepository.findById(1)).thenReturn(Optional.of(account));
+        when(payoutAccountRepository.findByIdForUpdate(1)).thenReturn(Optional.of(account));
         when(withdrawalRequestRepository.findByInstructorIdAndStatus(1, "requested"))
                 .thenReturn(List.of(WithdrawalRequest.builder().id(10).status("requested").build()));
 
@@ -93,12 +94,31 @@ class WithdrawalServiceImplTest {
     }
 
     @Test
+    @DisplayName("Concurrent duplicate request caught by unique index maps to 409 WITHDRAWAL_ALREADY_OPEN")
+    void testConcurrentUniqueConstraintMappedTo409() {
+        PayoutAccount account = PayoutAccount.builder()
+                .instructorId(1).bankName("BIDV").accountNumber("12345678").accountHolder("NGUYEN VAN A")
+                .build();
+        when(payoutAccountRepository.findByIdForUpdate(1)).thenReturn(Optional.of(account));
+        when(withdrawalRequestRepository.findByInstructorIdAndStatus(1, "requested")).thenReturn(Collections.emptyList());
+        when(earningService.getSummary(1)).thenReturn(EarningSummaryDto.builder().availableBalance(500000L).build());
+        when(withdrawalRequestRepository.save(any())).thenThrow(new DataIntegrityViolationException("UX_WithdrawalRequests_OpenPerInstructor"));
+
+        assertThatThrownBy(() -> withdrawalService.requestWithdrawal(1, 200000L))
+                .isInstanceOf(BusinessException.class)
+                .satisfies(ex -> {
+                    assertThat(((BusinessException) ex).getStatus()).isEqualTo(HttpStatus.CONFLICT);
+                    assertThat(((BusinessException) ex).getCode()).isEqualTo("WITHDRAWAL_ALREADY_OPEN");
+                });
+    }
+
+    @Test
     @DisplayName("Fails if amount exceeds available balance")
     void testExceedsBalance() {
         PayoutAccount account = PayoutAccount.builder()
                 .instructorId(1).bankName("BIDV").accountNumber("12345678").accountHolder("NGUYEN VAN A")
                 .build();
-        when(payoutAccountRepository.findById(1)).thenReturn(Optional.of(account));
+        when(payoutAccountRepository.findByIdForUpdate(1)).thenReturn(Optional.of(account));
         when(withdrawalRequestRepository.findByInstructorIdAndStatus(1, "requested")).thenReturn(Collections.emptyList());
         when(earningService.getSummary(1)).thenReturn(EarningSummaryDto.builder().availableBalance(150000L).build());
 
@@ -114,7 +134,7 @@ class WithdrawalServiceImplTest {
         PayoutAccount account = PayoutAccount.builder()
                 .instructorId(1).bankName("BIDV").accountNumber("12345678").accountHolder("NGUYEN VAN A")
                 .build();
-        when(payoutAccountRepository.findById(1)).thenReturn(Optional.of(account));
+        when(payoutAccountRepository.findByIdForUpdate(1)).thenReturn(Optional.of(account));
         when(withdrawalRequestRepository.findByInstructorIdAndStatus(1, "requested")).thenReturn(Collections.emptyList());
         when(earningService.getSummary(1)).thenReturn(EarningSummaryDto.builder().availableBalance(500000L).build());
 

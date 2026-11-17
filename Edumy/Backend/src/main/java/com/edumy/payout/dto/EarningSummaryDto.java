@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.Instant;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -17,5 +19,6 @@ public class EarningSummaryDto {
     private long withdrawn;
     private long availableBalance;
     private long minWithdrawal;
-    private String maturityPolicy;
+    private int holdDays;
+    private Instant nextMaturityAt;
 }

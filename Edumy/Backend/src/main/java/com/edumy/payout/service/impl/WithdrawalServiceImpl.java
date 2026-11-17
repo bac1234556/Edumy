@@ -11,6 +11,7 @@ import com.edumy.payout.service.WithdrawalService;
 import com.edumy.shared.exception.BusinessException;
 import com.edumy.shared.exception.ErrorCode;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -47,7 +48,7 @@ public class WithdrawalServiceImpl implements WithdrawalService {
             throw new BusinessException(HttpStatus.BAD_REQUEST, "INVALID_AMOUNT", "Vui lòng nhập số tiền hợp lệ.");
         }
 
-        PayoutAccount account = payoutAccountRepository.findById(instructorId).orElse(null);
+        PayoutAccount account = payoutAccountRepository.findByIdForUpdate(instructorId).orElse(null);
         if (account == null) {
             throw new BusinessException(HttpStatus.UNPROCESSABLE_ENTITY, "PAYOUT_ACCOUNT_REQUIRED",
                     "Vui lòng khai báo tài khoản ngân hàng nhận tiền trước khi rút.");
@@ -83,8 +84,13 @@ public class WithdrawalServiceImpl implements WithdrawalService {
                 .createdAt(LocalDateTime.now())
                 .build();
 
-        WithdrawalRequest saved = withdrawalRequestRepository.save(request);
-        return toDto(saved);
+        try {
+            WithdrawalRequest saved = withdrawalRequestRepository.save(request);
+            return toDto(saved);
+        } catch (DataIntegrityViolationException ex) {
+            throw new BusinessException(HttpStatus.CONFLICT, "WITHDRAWAL_ALREADY_OPEN",
+                    "Bạn đang có một yêu cầu rút tiền đang chờ xử lý.");
+        }
     }
 
     @Override
@@ -125,7 +131,12 @@ public class WithdrawalServiceImpl implements WithdrawalService {
     @Override
     @Transactional
     public WithdrawalResponseDto payWithdrawal(Integer withdrawalId, String transferReference) {
-        WithdrawalRequest req = withdrawalRequestRepository.findById(withdrawalId)
+        if (transferReference == null || transferReference.trim().isEmpty()) {
+            throw new BusinessException(HttpStatus.BAD_REQUEST, "BAD_REQUEST",
+                    "Vui lòng nhập mã giao dịch chuyển khoản.");
+        }
+
+        WithdrawalRequest req = withdrawalRequestRepository.findByIdForUpdate(withdrawalId)
                 .orElseThrow(() -> new NoSuchElementException("Không tìm thấy yêu cầu rút tiền."));
 
         if (!"requested".equalsIgnoreCase(req.getStatus())) {
@@ -134,7 +145,7 @@ public class WithdrawalServiceImpl implements WithdrawalService {
         }
 
         req.setStatus("paid");
-        req.setTransferReference(transferReference);
+        req.setTransferReference(transferReference.trim());
         req.setProcessedAt(LocalDateTime.now());
         WithdrawalRequest saved = withdrawalRequestRepository.save(req);
         return toDto(saved);
@@ -143,7 +154,12 @@ public class WithdrawalServiceImpl implements WithdrawalService {
     @Override
     @Transactional
     public WithdrawalResponseDto rejectWithdrawal(Integer withdrawalId, String reason) {
-        WithdrawalRequest req = withdrawalRequestRepository.findById(withdrawalId)
+        if (reason == null || reason.trim().isEmpty()) {
+            throw new BusinessException(HttpStatus.BAD_REQUEST, "BAD_REQUEST",
+                    "Vui lòng nhập lý do từ chối.");
+        }
+
+        WithdrawalRequest req = withdrawalRequestRepository.findByIdForUpdate(withdrawalId)
                 .orElseThrow(() -> new NoSuchElementException("Không tìm thấy yêu cầu rút tiền."));
 
         if (!"requested".equalsIgnoreCase(req.getStatus())) {
@@ -152,7 +168,7 @@ public class WithdrawalServiceImpl implements WithdrawalService {
         }
 
         req.setStatus("rejected");
-        req.setRejectReason(reason);
+        req.setRejectReason(reason.trim());
         req.setProcessedAt(LocalDateTime.now());
         WithdrawalRequest saved = withdrawalRequestRepository.save(req);
         return toDto(saved);

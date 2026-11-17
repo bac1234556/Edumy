@@ -1,0 +1,29 @@
+-- 08_Fix_Payout_And_Sync.sql
+-- Idempotent migration script for SQL Server:
+-- 1. Enforce at most 1 open ('requested') withdrawal request per instructor
+-- 2. Backfill MaturesAt = DATEADD(DAY, 7, EarnedAt) for unmatured payout entries
+
+IF OBJECT_ID('dbo.payout_withdrawals', 'U') IS NOT NULL
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1
+        FROM sys.indexes
+        WHERE name = 'UX_WithdrawalRequests_OpenPerInstructor'
+          AND object_id = OBJECT_ID('dbo.payout_withdrawals')
+    )
+    BEGIN
+        CREATE UNIQUE NONCLUSTERED INDEX UX_WithdrawalRequests_OpenPerInstructor
+            ON dbo.payout_withdrawals (InstructorId)
+            WHERE Status = 'requested';
+    END
+END
+GO
+
+IF OBJECT_ID('dbo.payout_earnings', 'U') IS NOT NULL
+BEGIN
+    UPDATE dbo.payout_earnings
+    SET MaturesAt = DATEADD(DAY, 7, EarnedAt)
+    WHERE EarnedAt IS NOT NULL
+      AND (MaturesAt IS NULL OR MaturesAt > GETDATE());
+END
+GO

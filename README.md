@@ -94,6 +94,12 @@ Hệ thống gồm **6 containers** sẽ sẵn sàng tại:
 .\scripts\docker_stop.ps1
 ```
 
+### Cập nhật Database (Payout & Sync)
+Chạy script idempotent `Edumy/Database/scripts/08_Fix_Payout_And_Sync.sql` trên SQL Server (`EduMyDb`) để tạo filtered unique index `UX_WithdrawalRequests_OpenPerInstructor` và backfill `MaturesAt`:
+```powershell
+sqlcmd -S 127.0.0.1,1433 -U sa -P YourPassword123 -d EduMyDb -i Edumy\Database\scripts\08_Fix_Payout_And_Sync.sql
+```
+
 ---
 
 ### Cách 2: Khởi chạy cục bộ cho môi trường phát triển (Localhost)

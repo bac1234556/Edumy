@@ -42,8 +42,9 @@ class EarningServiceImplTest {
     void setUp() {
         earningService = new EarningServiceImpl(earningEntryRepository, withdrawalRequestRepository, courseInstructorsApi);
         ReflectionTestUtils.setField(earningService, "platformFeeBps", 3000);
-        ReflectionTestUtils.setField(earningService, "maturityPolicy", "monthly");
+        ReflectionTestUtils.setField(earningService, "holdDays", 7);
         ReflectionTestUtils.setField(earningService, "minWithdrawal", 100000L);
+        ReflectionTestUtils.setField(earningService, "timeZone", "Asia/Ho_Chi_Minh");
     }
 
     @Test
@@ -93,6 +94,23 @@ class EarningServiceImplTest {
         EarningEntry main = saved.stream().filter(e -> e.getInstructorId().equals(1)).findFirst().orElseThrow();
         assertThat(main.getAmount()).isEqualTo(227045L);
         assertThat(main.getRole()).isEqualTo("main");
+        assertThat(main.getMaturesAt()).isAfter(main.getEarnedAt().plusDays(6));
+    }
+
+    @Test
+    @DisplayName("hold-days=0 makes earnings mature immediately")
+    void testHoldDaysZeroImmediate() {
+        ReflectionTestUtils.setField(earningService, "holdDays", 0);
+        when(courseInstructorsApi.getInstructorsForCourse(100))
+                .thenReturn(new CourseInstructorsApi.CourseInstructorsSnapshot(1, Collections.emptyList()));
+        when(earningEntryRepository.existsByOrderIdAndCourseIdAndInstructorId(any(), any(), any())).thenReturn(false);
+
+        earningService.recordForPaidOrder(new EarningApi.PaidOrderCommand(
+                11, "ORD-11", List.of(new EarningApi.OrderLine(2, 100, "Course", 200000L))));
+
+        ArgumentCaptor<EarningEntry> captor = ArgumentCaptor.forClass(EarningEntry.class);
+        verify(earningEntryRepository).save(captor.capture());
+        assertThat(captor.getValue().getMaturesAt()).isEqualTo(captor.getValue().getEarnedAt());
     }
 
     @Test
@@ -111,6 +129,8 @@ class EarningServiceImplTest {
         assertThat(summary.getTotalEarned()).isEqualTo(800000L);
         assertThat(summary.getPendingBalance()).isEqualTo(300000L);
         assertThat(summary.getAvailableBalance()).isEqualTo(500000L);
+        assertThat(summary.getHoldDays()).isEqualTo(7);
+        assertThat(summary.getNextMaturityAt()).isNotNull();
         assertThat(summary.isHasEarnings()).isTrue();
     }
 }

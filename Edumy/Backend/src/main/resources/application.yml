@@ -41,6 +41,10 @@ edumy:
     allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000,http://localhost:5173,http://localhost:8081,http://localhost:19006}
   mail:
     from: ${MAIL_FROM:Edumy Academy <no-reply@edumy.vn>}
+  payout:
+    platform-fee-bps: ${PAYOUT_PLATFORM_FEE_BPS:3000}
+    min-withdrawal: ${PAYOUT_MIN_WITHDRAWAL:100000}
+    hold-days: ${PAYOUT_HOLD_DAYS:7}
 
 springdoc:
   api-docs:

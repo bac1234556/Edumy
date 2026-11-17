@@ -7,6 +7,7 @@ import com.edumy.payout.model.WithdrawalRequest;
 import com.edumy.payout.repository.EarningEntryRepository;
 import com.edumy.payout.repository.WithdrawalRequestRepository;
 import com.edumy.payout.service.EarningService;
+import com.edumy.shared.time.TimeUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,8 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -30,11 +31,14 @@ public class EarningServiceImpl implements EarningService {
     @Value("${edumy.payout.platform-fee-bps:3000}")
     private int platformFeeBps;
 
-    @Value("${edumy.payout.maturity:monthly}")
-    private String maturityPolicy;
+    @Value("${edumy.payout.hold-days:7}")
+    private int holdDays;
 
     @Value("${edumy.payout.min-withdrawal:100000}")
     private long minWithdrawal;
+
+    @Value("${edumy.time-zone:Asia/Ho_Chi_Minh}")
+    private String timeZone;
 
     public EarningServiceImpl(EarningEntryRepository earningEntryRepository,
                               WithdrawalRequestRepository withdrawalRequestRepository,
@@ -52,9 +56,7 @@ public class EarningServiceImpl implements EarningService {
         }
 
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime maturesAt = "immediate".equalsIgnoreCase(maturityPolicy)
-                ? now
-                : YearMonth.from(now).plusMonths(1).atDay(1).atStartOfDay();
+        LocalDateTime maturesAt = now.plusDays(Math.max(0, holdDays));
 
         for (OrderLine line : command.lines()) {
             long unitPrice = line.unitPrice();
@@ -136,12 +138,16 @@ public class EarningServiceImpl implements EarningService {
         LocalDateTime now = LocalDateTime.now();
         long totalEarned = 0;
         long pendingBalance = 0;
+        LocalDateTime earliestPending = null;
 
         for (EarningEntry e : entries) {
             long amt = e.getAmount() != null ? e.getAmount() : 0;
             totalEarned += amt;
             if (e.getMaturesAt() != null && e.getMaturesAt().isAfter(now)) {
                 pendingBalance += amt;
+                if (earliestPending == null || e.getMaturesAt().isBefore(earliestPending)) {
+                    earliestPending = e.getMaturesAt();
+                }
             }
         }
 
@@ -158,6 +164,7 @@ public class EarningServiceImpl implements EarningService {
         }
 
         long availableBalance = Math.max(0, totalEarned - pendingBalance - inWithdrawal - withdrawn);
+        Instant nextMaturityAt = TimeUtils.toInstant(earliestPending, timeZone);
 
         return EarningSummaryDto.builder()
                 .hasEarnings(!entries.isEmpty())
@@ -167,7 +174,8 @@ public class EarningServiceImpl implements EarningService {
                 .withdrawn(withdrawn)
                 .availableBalance(availableBalance)
                 .minWithdrawal(minWithdrawal)
-                .maturityPolicy(maturityPolicy)
+                .holdDays(holdDays)
+                .nextMaturityAt(nextMaturityAt)
                 .build();
     }
 
@@ -223,18 +231,23 @@ public class EarningServiceImpl implements EarningService {
                 ? earningEntryRepository.findByInstructorIdAndCourseId(instructorId, courseId, pageable)
                 : earningEntryRepository.findByInstructorId(instructorId, pageable);
 
-        return page.map(e -> EarningEntryDto.builder()
-                .id(e.getId())
-                .orderCode(e.getOrderCode())
-                .courseId(e.getCourseId())
-                .courseTitle(e.getCourseTitle())
-                .role(e.getRole())
-                .unitPrice(e.getUnitPrice())
-                .platformFeeBps(e.getPlatformFeeBps())
-                .shareBps(e.getShareBps())
-                .amount(e.getAmount())
-                .earnedAt(e.getEarnedAt())
-                .maturesAt(e.getMaturesAt())
-                .build());
+        LocalDateTime now = LocalDateTime.now();
+        return page.map(e -> {
+            boolean matured = e.getMaturesAt() == null || !e.getMaturesAt().isAfter(now);
+            return EarningEntryDto.builder()
+                    .id(e.getId())
+                    .orderCode(e.getOrderCode())
+                    .courseId(e.getCourseId())
+                    .courseTitle(e.getCourseTitle())
+                    .role(e.getRole())
+                    .unitPrice(e.getUnitPrice())
+                    .platformFeeBps(e.getPlatformFeeBps())
+                    .shareBps(e.getShareBps())
+                    .amount(e.getAmount())
+                    .earnedAt(TimeUtils.toInstant(e.getEarnedAt(), timeZone))
+                    .maturesAt(TimeUtils.toInstant(e.getMaturesAt(), timeZone))
+                    .matured(matured)
+                    .build();
+        });
     }
 }
