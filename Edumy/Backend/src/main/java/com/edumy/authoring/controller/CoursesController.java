@@ -24,6 +24,9 @@ import com.edumy.identity.user.service.UserActivityService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -469,6 +472,7 @@ public class CoursesController {
 
     @PostMapping("/{id}/reviews")
     @PreAuthorize("hasRole('Student')")
+    @ApiResponse(responseCode = "200", description = "Review created", content = @Content(schema = @Schema(implementation = Review.class)))
     public ResponseEntity<?> addReview(@PathVariable Integer id, @RequestBody CreateReviewDto dto) {
         Integer userId = getCurrentUserId();
         if (userId == null) return ResponseEntity.status(401).build();

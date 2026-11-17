@@ -9,6 +9,8 @@ import com.edumy.shared.exception.ErrorCode;
 import com.edumy.shared.response.ApiResponse;
 import com.edumy.shared.security.SecurityUtils;
 import jakarta.servlet.http.HttpServletResponse;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -61,7 +63,11 @@ public class AuthController {
         return ResponseEntity.ok(authService.googleLogin(googleLoginDto, response));
     }
 
+    public record ResendVerificationRequest(String email) {}
+    public record AuthMessageResponse(String message) {}
+
     @PostMapping("/forgot-password")
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = AuthMessageResponse.class)))
     public ResponseEntity<?> forgotPassword(@RequestBody ForgotPasswordDto model) {
         return ResponseEntity.ok(authService.forgotPassword(model));
     }
@@ -83,8 +89,9 @@ public class AuthController {
     }
 
     @PostMapping({"/resend-verification", "/verification-email/resend"})
-    public ResponseEntity<?> resendVerification(@RequestBody(required = false) Map<String, String> body) {
-        String email = body != null ? body.get("email") : null;
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = AuthMessageResponse.class)))
+    public ResponseEntity<?> resendVerification(@RequestBody(required = false) ResendVerificationRequest body) {
+        String email = body != null ? body.email() : null;
         if (email == null || email.isBlank()) {
             Integer userId = SecurityUtils.getCurrentUserId();
             if (userId != null) {

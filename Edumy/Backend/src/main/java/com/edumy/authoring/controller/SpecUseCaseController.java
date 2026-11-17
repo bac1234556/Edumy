@@ -460,27 +460,46 @@ public class SpecUseCaseController {
         return ResponseEntity.ok(Map.of("message", "Đã gỡ đồng giảng viên khỏi khóa học."));
     }
 
+    public record CoInstructorInvitationDto(
+            Integer id,
+            Integer invitationId,
+            Integer courseId,
+            String courseTitle,
+            Integer instructorId,
+            String fullName,
+            String email,
+            String status,
+            Integer shareBps,
+            String invitedAt,
+            String respondedAt
+    ) {}
+
+    public record InvitationActionResponse(
+            CoInstructorInvitationDto invitation,
+            String message
+    ) {}
+
     @GetMapping({"/api/v1/instructor/invitations", "/api/instructor/invitations"})
     @PreAuthorize("hasAnyRole('Instructor', 'Admin')")
-    public ResponseEntity<?> getMyInvitations() {
+    public ResponseEntity<List<CoInstructorInvitationDto>> getMyInvitations() {
         Integer currentUserId = SecurityUtils.getCurrentUserId();
         List<CourseCoInstructor> rows = courseCoInstructorRepository.findByInstructorIdAndStatusNot(currentUserId, "REMOVED");
-        return ResponseEntity.ok(toCoInstructorDtos(rows));
+        return ResponseEntity.ok(toCoInstructorInvitationDtos(rows));
     }
 
     @PostMapping({"/api/v1/instructor/invitations/{invitationId}/accept", "/api/instructor/invitations/{invitationId}/accept"})
     @PreAuthorize("hasAnyRole('Instructor', 'Admin')")
-    public ResponseEntity<?> acceptInvitation(@PathVariable Integer invitationId) {
+    public ResponseEntity<InvitationActionResponse> acceptInvitation(@PathVariable Integer invitationId) {
         return updateInvitationStatus(invitationId, "ACCEPTED", "Đã chấp nhận lời mời đồng giảng viên.");
     }
 
     @PostMapping({"/api/v1/instructor/invitations/{invitationId}/decline", "/api/instructor/invitations/{invitationId}/decline"})
     @PreAuthorize("hasAnyRole('Instructor', 'Admin')")
-    public ResponseEntity<?> declineInvitation(@PathVariable Integer invitationId) {
+    public ResponseEntity<InvitationActionResponse> declineInvitation(@PathVariable Integer invitationId) {
         return updateInvitationStatus(invitationId, "DECLINED", "Đã từ chối lời mời đồng giảng viên.");
     }
 
-    private ResponseEntity<?> updateInvitationStatus(Integer invitationId, String status, String message) {
+    private ResponseEntity<InvitationActionResponse> updateInvitationStatus(Integer invitationId, String status, String message) {
         Integer currentUserId = SecurityUtils.getCurrentUserId();
         CourseCoInstructor inv = courseCoInstructorRepository.findById(invitationId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "Không tìm thấy lời mời cộng tác."));
@@ -493,7 +512,36 @@ public class SpecUseCaseController {
 
         Course course = courseRepository.findById(inv.getCourseId()).orElse(null);
         User user = userRepository.findById(inv.getInstructorId()).orElse(null);
-        return ResponseEntity.ok(Map.of("invitation", toCoInstructorDto(inv, course, user), "message", message));
+        return ResponseEntity.ok(new InvitationActionResponse(toCoInstructorInvitationDto(inv, course, user), message));
+    }
+
+    private List<CoInstructorInvitationDto> toCoInstructorInvitationDtos(List<CourseCoInstructor> rows) {
+        if (rows == null || rows.isEmpty()) return Collections.emptyList();
+        Set<Integer> courseIds = rows.stream().map(CourseCoInstructor::getCourseId).collect(Collectors.toSet());
+        Set<Integer> userIds = rows.stream().map(CourseCoInstructor::getInstructorId).collect(Collectors.toSet());
+        Map<Integer, Course> courseMap = courseRepository.findAllById(courseIds).stream()
+                .collect(Collectors.toMap(Course::getCourseId, c -> c));
+        Map<Integer, User> userMap = userRepository.findAllById(userIds).stream()
+                .collect(Collectors.toMap(User::getUserId, u -> u));
+        return rows.stream()
+                .map(r -> toCoInstructorInvitationDto(r, courseMap.get(r.getCourseId()), userMap.get(r.getInstructorId())))
+                .collect(Collectors.toList());
+    }
+
+    private CoInstructorInvitationDto toCoInstructorInvitationDto(CourseCoInstructor r, Course course, User user) {
+        return new CoInstructorInvitationDto(
+                r.getId(),
+                r.getId(),
+                r.getCourseId(),
+                course != null ? course.getTitle() : "Khóa học #" + r.getCourseId(),
+                r.getInstructorId(),
+                user != null ? user.getFullName() : null,
+                user != null ? user.getEmail() : null,
+                r.getStatus(),
+                r.getShareBps(),
+                r.getInvitedAt() != null ? r.getInvitedAt().toString() : null,
+                r.getRespondedAt() != null ? r.getRespondedAt().toString() : null
+        );
     }
 
     private int parseShareBps(Object s) {

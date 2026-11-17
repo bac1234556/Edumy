@@ -1,9 +1,13 @@
 package com.edumy.learning.qa.controller;
 
+import com.edumy.learning.qa.dto.AnswerResponse;
 import com.edumy.learning.qa.dto.CreateAnswerRequest;
 import com.edumy.learning.qa.dto.CreateQuestionRequest;
+import com.edumy.learning.qa.dto.QuestionSummaryResponse;
+import com.edumy.learning.qa.dto.QuestionThreadResponse;
 import com.edumy.learning.qa.service.QaService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -25,11 +29,16 @@ public class QuestionController {
         this.qaService = qaService;
     }
 
+    public record UpdateQuestionRequest(String title, String content) {}
+    public record UpdateAnswerRequest(String content) {}
+    public record ResolveQuestionRequest(Boolean resolved) {}
+    public record QaMessageResponse(String message) {}
+
     /**
      * UC-S18: List questions for a course (optionally filtered by lesson, mineOnly, unansweredOnly, keyword q), newest first.
      */
     @GetMapping("/courses/{courseId}/questions")
-    public ResponseEntity<?> listForCourse(
+    public ResponseEntity<Page<QuestionSummaryResponse>> listForCourse(
             @PathVariable Integer courseId,
             @RequestParam(required = false) Integer lessonId,
             @RequestParam(required = false, defaultValue = "false") boolean mineOnly,
@@ -44,7 +53,7 @@ public class QuestionController {
      * UC-S18: Get a single question thread with all replies.
      */
     @GetMapping("/questions/{questionId}")
-    public ResponseEntity<?> getThread(@PathVariable Long questionId) {
+    public ResponseEntity<QuestionThreadResponse> getThread(@PathVariable Long questionId) {
         return ResponseEntity.ok(qaService.getThread(questionId));
     }
 
@@ -53,7 +62,7 @@ public class QuestionController {
      */
     @PostMapping("/courses/{courseId}/questions")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<?> askQuestion(
+    public ResponseEntity<QuestionSummaryResponse> askQuestion(
             @PathVariable Integer courseId,
             @Valid @RequestBody CreateQuestionRequest request) {
         Integer userId = getCurrentUserId();
@@ -65,13 +74,13 @@ public class QuestionController {
      */
     @RequestMapping(value = "/questions/{questionId}", method = {RequestMethod.PUT, RequestMethod.PATCH})
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<?> updateQuestion(
+    public ResponseEntity<QuestionThreadResponse> updateQuestion(
             @PathVariable Long questionId,
-            @RequestBody Map<String, String> body) {
+            @RequestBody UpdateQuestionRequest body) {
         Integer userId = getCurrentUserId();
         String role = getCurrentUserRole();
-        String title = body != null ? body.get("title") : null;
-        String content = body != null ? body.get("content") : null;
+        String title = body != null ? body.title() : null;
+        String content = body != null ? body.content() : null;
         return ResponseEntity.ok(qaService.updateQuestion(userId, role, questionId, title, content));
     }
 
@@ -80,11 +89,11 @@ public class QuestionController {
      */
     @DeleteMapping("/questions/{questionId}")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<?> deleteQuestion(@PathVariable Long questionId) {
+    public ResponseEntity<QaMessageResponse> deleteQuestion(@PathVariable Long questionId) {
         Integer userId = getCurrentUserId();
         String role = getCurrentUserRole();
         qaService.deleteQuestion(userId, role, questionId);
-        return ResponseEntity.ok(Map.of("message", "Đã xóa câu hỏi thành công."));
+        return ResponseEntity.ok(new QaMessageResponse("Đã xóa câu hỏi thành công."));
     }
 
     /**
@@ -92,7 +101,7 @@ public class QuestionController {
      */
     @PostMapping("/questions/{questionId}/answers")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<?> postAnswer(
+    public ResponseEntity<AnswerResponse> postAnswer(
             @PathVariable Long questionId,
             @Valid @RequestBody CreateAnswerRequest request) {
         Integer userId = getCurrentUserId();
@@ -105,12 +114,12 @@ public class QuestionController {
      */
     @RequestMapping(value = "/answers/{answerId}", method = {RequestMethod.PUT, RequestMethod.PATCH})
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<?> updateAnswer(
+    public ResponseEntity<AnswerResponse> updateAnswer(
             @PathVariable Long answerId,
-            @RequestBody Map<String, String> body) {
+            @RequestBody UpdateAnswerRequest body) {
         Integer userId = getCurrentUserId();
         String role = getCurrentUserRole();
-        String content = body != null ? body.get("content") : null;
+        String content = body != null ? body.content() : null;
         return ResponseEntity.ok(qaService.updateAnswer(userId, role, answerId, content));
     }
 
@@ -119,11 +128,11 @@ public class QuestionController {
      */
     @DeleteMapping("/answers/{answerId}")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<?> deleteAnswer(@PathVariable Long answerId) {
+    public ResponseEntity<QaMessageResponse> deleteAnswer(@PathVariable Long answerId) {
         Integer userId = getCurrentUserId();
         String role = getCurrentUserRole();
         qaService.deleteAnswer(userId, role, answerId);
-        return ResponseEntity.ok(Map.of("message", "Đã xóa câu trả lời thành công."));
+        return ResponseEntity.ok(new QaMessageResponse("Đã xóa câu trả lời thành công."));
     }
 
     /**
@@ -131,10 +140,10 @@ public class QuestionController {
      */
     @RequestMapping(value = "/questions/{questionId}/resolve", method = {RequestMethod.POST, RequestMethod.PUT, RequestMethod.PATCH})
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<?> toggleResolve(@PathVariable Long questionId,
-                                           @RequestBody(required = false) Map<String, Boolean> body) {
+    public ResponseEntity<QuestionSummaryResponse> toggleResolve(@PathVariable Long questionId,
+                                           @RequestBody(required = false) ResolveQuestionRequest body) {
         Integer userId = getCurrentUserId();
-        Boolean resolved = body != null ? body.get("resolved") : null;
+        Boolean resolved = body != null ? body.resolved() : null;
         return ResponseEntity.ok(qaService.setResolved(userId, questionId, resolved));
     }
 

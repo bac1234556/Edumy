@@ -122,6 +122,7 @@ public class QaService {
                 .askerName(asker != null ? asker.getFullName() : "Học viên")
                 .askerAvatar(asker != null ? asker.getAvatarUrl() : null)
                 .isResolved(question.getIsResolved())
+                .visibilityStatus(question.getVisibilityStatus())
                 .createdAt(question.getCreatedAt())
                 .answers(answerDtos)
                 .build();

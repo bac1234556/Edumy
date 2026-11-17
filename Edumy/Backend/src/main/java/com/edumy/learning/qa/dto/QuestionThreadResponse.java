@@ -24,6 +24,7 @@ public class QuestionThreadResponse {
     private String askerName;
     private String askerAvatar;
     private Boolean isResolved;
+    private String visibilityStatus;
     private LocalDateTime createdAt;
     @Builder.Default
     private List<AnswerResponse> answers = new ArrayList<>();

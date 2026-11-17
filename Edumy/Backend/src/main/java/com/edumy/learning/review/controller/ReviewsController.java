@@ -8,6 +8,8 @@ import com.edumy.learning.review.repository.ReviewRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -95,6 +97,7 @@ public class ReviewsController {
 
     @PutMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
+    @ApiResponse(responseCode = "204", description = "Review updated", content = @Content)
     public ResponseEntity<?> updateReview(@PathVariable Integer id, @RequestBody Review review) {
         if (!id.equals(review.getReviewId())) return ResponseEntity.badRequest().build();
 
@@ -126,6 +129,7 @@ public class ReviewsController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
+    @ApiResponse(responseCode = "204", description = "Review deleted", content = @Content)
     public ResponseEntity<?> deleteReview(@PathVariable Integer id) {
         Review review = reviewRepository.findById(id).orElse(null);
         if (review == null) return ResponseEntity.notFound().build();
