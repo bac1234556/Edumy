@@ -29,7 +29,7 @@ pipeline {
         )
         string(
             name: 'DOCKER_CREDENTIALS_ID',
-            defaultValue: 'dockerhub-credentials',
+            defaultValue: 'docker-hub-credentials',
             description: 'Jenkins Username/Password credential dùng để push image'
         )
         choice(
@@ -226,7 +226,7 @@ pipeline {
                     echo "--> Đang gắn tag và push Docker Images lên Registry: ${params.DOCKER_REGISTRY}..."
                     def registry = params.DOCKER_REGISTRY
                     def tag = env.IMAGE_TAG
-                    def dockerServer = registry.startsWith('docker.io/') ? 'https://index.docker.io/v1/' : registry.tokenize('/')[0]
+                    def dockerServer = registry.startsWith('lynkenion/') ? 'https://index.docker.io/v1/' : registry.tokenize('/')[0]
 
                     withCredentials([usernamePassword(
                         credentialsId: params.DOCKER_CREDENTIALS_ID,
