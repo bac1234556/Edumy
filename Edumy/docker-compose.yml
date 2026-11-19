@@ -3,7 +3,7 @@ services:
     build:
       context: ./Database
       dockerfile: Dockerfile
-    image: ${DOCKER_REGISTRY:-edumy}/edumy-database:${IMAGE_TAG:-latest}
+    image: edumy-database:latest
     container_name: edumy_sqlserver
     restart: always
     environment:
@@ -25,7 +25,7 @@ services:
     build:
       context: ./Backend
       dockerfile: Dockerfile
-    image: ${DOCKER_REGISTRY:-edumy}/edumy-backend:${IMAGE_TAG:-latest}
+    image: ${DOCKER_REGISTRY:-docker.io/lynkenion/edumy}:backend-${IMAGE_TAG:-latest}
     container_name: edumy_backend
     ports:
       - "5000:5000"
@@ -53,7 +53,7 @@ services:
     build:
       context: ./Frontend
       dockerfile: Dockerfile
-    image: ${DOCKER_REGISTRY:-edumy}/edumy-frontend:${IMAGE_TAG:-latest}
+    image: ${DOCKER_REGISTRY:-docker.io/lynkenion/edumy}:frontend-${IMAGE_TAG:-latest}
     container_name: edumy_frontend
     ports:
       - "3000:80"

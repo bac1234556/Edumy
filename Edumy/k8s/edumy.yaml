@@ -139,7 +139,7 @@ spec:
             - until nc -z edumy-database 1433; do echo "Waiting for SQL Server"; sleep 5; done
       containers:
         - name: backend
-          image: docker.io/lynkenion/edumy-backend:latest
+          image: docker.io/lynkenion/edumy:backend-latest
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
@@ -243,7 +243,7 @@ spec:
         - name: edumy-registry
       containers:
         - name: frontend
-          image: docker.io/lynkenion/edumy-frontend:latest
+          image: docker.io/lynkenion/edumy:frontend-latest
           imagePullPolicy: IfNotPresent
           ports:
             - name: http

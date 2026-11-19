@@ -24,8 +24,8 @@ pipeline {
         )
         string(
             name: 'DOCKER_REGISTRY', 
-            defaultValue: 'docker.io/lynkenion',
-            description: 'Image prefix, ví dụ docker.io/lynkenion hoặc ghcr.io/team'
+            defaultValue: 'docker.io/lynkenion/edumy',
+            description: 'Docker Hub repo: docker.io/lynkenion/edumy'
         )
         string(
             name: 'DOCKER_CREDENTIALS_ID',
@@ -189,23 +189,23 @@ pipeline {
             steps {
                 script {
                     def projDir = env.PROJECT_DIR ?: (fileExists('Edumy/docker-compose.yml') ? 'Edumy' : '.')
-                    echo "--> Đang đóng gói Docker Images cho toàn bộ hệ thống..."
+                    echo "--> Đang đóng gói Docker Images cho Backend và Frontend (DB chỉ build nội bộ, không push)..."
                     dir("${projDir}") {
                         def registry = params.DOCKER_REGISTRY
                         def tag = env.IMAGE_TAG
                         if (isUnix()) {
                             sh """
-                                docker build -t ${registry}/edumy-database:${tag} -f Database/Dockerfile Database &&
-                                docker build -t ${registry}/edumy-backend:${tag} -f Backend/Dockerfile Backend &&
-                                docker build -t ${registry}/edumy-frontend:${tag} -f Frontend/Dockerfile Frontend
+                                docker build -t edumy-database:latest -f Database/Dockerfile Database &&
+                                docker build -t ${registry}:backend-${tag} -f Backend/Dockerfile Backend &&
+                                docker build -t ${registry}:frontend-${tag} -f Frontend/Dockerfile Frontend
                             """
                         } else {
                             bat """
-                                docker build -t ${registry}/edumy-database:${tag} -f Database/Dockerfile Database
+                                docker build -t edumy-database:latest -f Database/Dockerfile Database
                                 if %ERRORLEVEL% NEQ 0 exit /b %ERRORLEVEL%
-                                docker build -t ${registry}/edumy-backend:${tag} -f Backend/Dockerfile Backend
+                                docker build -t ${registry}:backend-${tag} -f Backend/Dockerfile Backend
                                 if %ERRORLEVEL% NEQ 0 exit /b %ERRORLEVEL%
-                                docker build -t ${registry}/edumy-frontend:${tag} -f Frontend/Dockerfile Frontend
+                                docker build -t ${registry}:frontend-${tag} -f Frontend/Dockerfile Frontend
                             """
                         }
                     }
@@ -223,10 +223,10 @@ pipeline {
             }
             steps {
                 script {
-                    echo "--> Đang gắn tag và push Docker Images lên Registry: ${params.DOCKER_REGISTRY}..."
+                    echo "--> Đang gắn tag và push Docker Images lên Registry repo: ${params.DOCKER_REGISTRY}..."
                     def registry = params.DOCKER_REGISTRY
                     def tag = env.IMAGE_TAG
-                    def dockerServer = registry.startsWith('lynkenion/') ? 'https://index.docker.io/v1/' : registry.tokenize('/')[0]
+                    def dockerServer = (registry.startsWith('docker.io/') || registry.startsWith('lynkenion/')) ? 'https://index.docker.io/v1/' : registry.tokenize('/')[0]
 
                     withCredentials([usernamePassword(
                         credentialsId: params.DOCKER_CREDENTIALS_ID,
@@ -241,10 +241,11 @@ pipeline {
                                     bat 'echo %DOCKER_PASSWORD%| docker login --username "%DOCKER_USER%" --password-stdin "%DOCKER_SERVER%"'
                                 }
 
-                                def services = ['edumy-database', 'edumy-backend', 'edumy-frontend']
-                                for (service in services) {
-                                    def remoteImg = "${registry}/${service}:${tag}"
-                                    def remoteLatest = "${registry}/${service}:latest"
+                                def components = ['backend', 'frontend']
+                                for (comp in components) {
+                                    def remoteImg = "${registry}:${comp}-${tag}"
+                                    def remoteLatest = "${registry}:${comp}-latest"
+                                    echo "--> Đang push ${comp} (${remoteImg} & ${remoteLatest})..."
                                     if (isUnix()) {
                                         sh "docker tag ${remoteImg} ${remoteLatest} && docker push ${remoteImg} && docker push ${remoteLatest}"
                                     } else {
@@ -375,10 +376,8 @@ pipeline {
                                       --docker-password="\$DOCKER_PASSWORD" \\
                                       --dry-run=client -o yaml | kubectl apply -f -
                                     kubectl apply -f ${projDir}/k8s/edumy.yaml
-                                    kubectl set image statefulset/edumy-database edumy-database="\$IMAGE_PREFIX/edumy-database:\$IMAGE_TAG" -n edumy
-                                    kubectl set image deployment/edumy-backend backend="\$IMAGE_PREFIX/edumy-backend:\$IMAGE_TAG" -n edumy
-                                    kubectl set image deployment/edumy-frontend frontend="\$IMAGE_PREFIX/edumy-frontend:\$IMAGE_TAG" -n edumy
-                                    kubectl rollout status statefulset/edumy-database -n edumy --timeout=10m
+                                    kubectl set image deployment/edumy-backend backend="\$IMAGE_PREFIX:backend-\$IMAGE_TAG" -n edumy
+                                    kubectl set image deployment/edumy-frontend frontend="\$IMAGE_PREFIX:frontend-\$IMAGE_TAG" -n edumy
                                     kubectl rollout status deployment/edumy-backend -n edumy --timeout=5m
                                     kubectl rollout status deployment/edumy-frontend -n edumy --timeout=5m
                                 """
@@ -393,13 +392,9 @@ pipeline {
                                     if %ERRORLEVEL% NEQ 0 exit /b %ERRORLEVEL%
                                     kubectl apply -f ${projDir}/k8s/edumy.yaml
                                     if %ERRORLEVEL% NEQ 0 exit /b %ERRORLEVEL%
-                                    kubectl set image statefulset/edumy-database edumy-database="%IMAGE_PREFIX%/edumy-database:%IMAGE_TAG%" -n edumy
+                                    kubectl set image deployment/edumy-backend backend="%IMAGE_PREFIX%:backend-%IMAGE_TAG%" -n edumy
                                     if %ERRORLEVEL% NEQ 0 exit /b %ERRORLEVEL%
-                                    kubectl set image deployment/edumy-backend backend="%IMAGE_PREFIX%/edumy-backend:%IMAGE_TAG%" -n edumy
-                                    if %ERRORLEVEL% NEQ 0 exit /b %ERRORLEVEL%
-                                    kubectl set image deployment/edumy-frontend frontend="%IMAGE_PREFIX%/edumy-frontend:%IMAGE_TAG%" -n edumy
-                                    if %ERRORLEVEL% NEQ 0 exit /b %ERRORLEVEL%
-                                    kubectl rollout status statefulset/edumy-database -n edumy --timeout=10m
+                                    kubectl set image deployment/edumy-frontend frontend="%IMAGE_PREFIX%:frontend-%IMAGE_TAG%" -n edumy
                                     if %ERRORLEVEL% NEQ 0 exit /b %ERRORLEVEL%
                                     kubectl rollout status deployment/edumy-backend -n edumy --timeout=5m
                                     if %ERRORLEVEL% NEQ 0 exit /b %ERRORLEVEL%
