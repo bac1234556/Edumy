@@ -386,12 +386,17 @@ pipeline {
                                     # Điều chỉnh kubeconfig nếu Jenkins chạy trong Docker container kết nối tới host K8s (127.0.0.1 -> host.docker.internal)
                                     cp "\$KUBECONFIG" /tmp/kubeconfig
                                     export KUBECONFIG=/tmp/kubeconfig
-                                    CURRENT_CLUSTER=\$(kubectl config view -o jsonpath='{.clusters[0].name}')
-                                    CURRENT_SERVER=\$(kubectl config view -o jsonpath='{.clusters[0].cluster.server}')
+                                    CURRENT_CLUSTER=\$(kubectl config view --minify -o jsonpath='{.clusters[0].name}')
+                                    CURRENT_SERVER=\$(kubectl config view --minify -o jsonpath='{.clusters[0].cluster.server}')
                                     NEW_SERVER=\$(echo "\$CURRENT_SERVER" | sed -e 's|127.0.0.1|host.docker.internal|g' -e 's|localhost|host.docker.internal|g')
                                     if [ "\$CURRENT_SERVER" != "\$NEW_SERVER" ]; then
                                         echo "--> [Fix K8s Network] Chuyển Kubernetes API Server từ \$CURRENT_SERVER sang \$NEW_SERVER"
                                         kubectl config set-cluster "\$CURRENT_CLUSTER" --server="\$NEW_SERVER" --insecure-skip-tls-verify=true
+                                    fi
+
+                                    if ! kubectl cluster-info; then
+                                        echo "Không thể kết nối Kubernetes API từ Jenkins agent. Hãy đảm bảo cluster đang chạy và endpoint trong kubeconfig truy cập được từ agent." >&2
+                                        exit 1
                                     fi
 
                                     # 1. Khởi tạo Namespace
@@ -420,6 +425,11 @@ pipeline {
                             } else {
                                 bat """
                                     @echo off
+                                    kubectl cluster-info
+                                    if %ERRORLEVEL% NEQ 0 (
+                                        echo Khong the ket noi Kubernetes API tu Jenkins agent. Hay dam bao cluster dang chay va endpoint trong kubeconfig truy cap duoc tu agent.
+                                        exit /b 1
+                                    )
                                     kubectl apply -f ${projDir}/k8s/namespace.yaml
                                     if %ERRORLEVEL% NEQ 0 exit /b %ERRORLEVEL%
                                     kubectl get secret edumy-runtime -n edumy

@@ -177,4 +177,6 @@ kubectl -n edumy port-forward service/edumy-frontend 8080:80
 ```
 Mở `http://localhost:8080`. Kubernetes cần một StorageClass mặc định cho PVC SQL Server 20Gi. Stack SQL Server `Developer` và bản backup đi kèm phù hợp môi trường development/demo; cấu hình production cần xem xét license, backup/restore và lưu trữ dữ liệu riêng.
 
+Nếu `kubectl apply` báo không tải được OpenAPI hoặc `connection refused` tới `127.0.0.1`, cluster API chưa chạy hoặc kubeconfig đang dùng endpoint chỉ truy cập được từ một máy/container khác. Kiểm tra `kubectl cluster-info` trên chính Jenkins agent và cấu hình kubeconfig với endpoint truy cập được từ agent; không dùng `--validate=false` để xử lý lỗi kết nối.
+
 Lưu ý: image `edumy-database` chứa file `EduMyDb.bak` được copy bởi Dockerfile, vì vậy chỉ push lên registry private nếu backup có dữ liệu không được phép công khai.
