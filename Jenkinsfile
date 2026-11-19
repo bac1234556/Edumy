@@ -367,6 +367,30 @@ pipeline {
                             if (isUnix()) {
                                 sh """
                                     set -eu
+
+                                    # Tự động tải kubectl nếu agent chưa có
+                                    if ! command -v kubectl >/dev/null 2>&1; then
+                                        echo "--> [Auto-Install] kubectl chưa có trên agent, đang tải kubectl binary..."
+                                        mkdir -p "\${WORKSPACE}/.tools"
+                                        if [ ! -f "\${WORKSPACE}/.tools/kubectl" ]; then
+                                            curl -fsSL "https://dl.k8s.io/release/v1.30.0/bin/linux/amd64/kubectl" -o "\${WORKSPACE}/.tools/kubectl" || \
+                                            wget -q "https://dl.k8s.io/release/v1.30.0/bin/linux/amd64/kubectl" -O "\${WORKSPACE}/.tools/kubectl"
+                                            chmod +x "\${WORKSPACE}/.tools/kubectl"
+                                        fi
+                                        export PATH="\${WORKSPACE}/.tools:\$PATH"
+                                    fi
+
+                                    # Điều chỉnh kubeconfig nếu Jenkins chạy trong Docker container kết nối tới host K8s (127.0.0.1 -> host.docker.internal)
+                                    cp "\$KUBECONFIG" /tmp/kubeconfig
+                                    export KUBECONFIG=/tmp/kubeconfig
+                                    CURRENT_CLUSTER=\$(kubectl config view -o jsonpath='{.clusters[0].name}')
+                                    CURRENT_SERVER=\$(kubectl config view -o jsonpath='{.clusters[0].cluster.server}')
+                                    NEW_SERVER=\$(echo "\$CURRENT_SERVER" | sed -e 's|127.0.0.1|host.docker.internal|g' -e 's|localhost|host.docker.internal|g')
+                                    if [ "\$CURRENT_SERVER" != "\$NEW_SERVER" ]; then
+                                        echo "--> [Fix K8s Network] Chuyển Kubernetes API Server từ \$CURRENT_SERVER sang \$NEW_SERVER"
+                                        kubectl config set-cluster "\$CURRENT_CLUSTER" --server="\$NEW_SERVER" --insecure-skip-tls-verify=true
+                                    fi
+
                                     kubectl apply -f ${projDir}/k8s/namespace.yaml
                                     kubectl get secret edumy-runtime -n edumy
                                     kubectl create secret docker-registry edumy-registry \\
