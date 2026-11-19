@@ -55,6 +55,7 @@ Edumy/
 │   ├── 📂 Frontend/                   <-- React 19.2 + Vite 8.1 + Design System + Nginx
 │   ├── 📂 Database/                   <-- SQL Server 2022 Docker, EduMyDb.bak, DDL & Seed scripts
 │   ├── 📂 monitoring/                 <-- Prometheus scrape config & Grafana dashboards/alerts
+│   ├── 📂 k8s/                        <-- Kubernetes Namespace, Database, Backend, Frontend & Mailpit
 │   ├── 📂 docs/                       <-- Tài liệu kỹ thuật (system, design-system, ml legacy)
 │   ├── 📄 docker-compose.yml          <-- Stack 6 containers (database, backend, mailpit, frontend, prometheus, grafana)
 │   └── 📄 .env.example                <-- Biến môi trường Telegram Alerting cho Grafana
@@ -151,4 +152,29 @@ Theo `DataSeeder.java` và `07_Script_Seed_Data_EduMyDb.sql`, hệ thống tạo
   ```powershell
   .\scripts\verify_audit.ps1
   ```
-- **CI/CD (Jenkins)**: `Jenkinsfile` tự động hóa Checkout SCM → Build & Test Backend (`mvnw clean package`) & Frontend (`npm run lint && npm run build`) song song → Build Docker Images → Push Registry (tùy chọn) → Deploy Docker Compose.
+- **CI/CD (Jenkins)**: `Jenkinsfile` tự động hóa Checkout SCM → Build & Test Backend & Frontend → Build/push các image `edumy-database`, `edumy-backend`, `edumy-frontend` với tag build và `latest` → Deploy Kubernetes (mặc định) hoặc Docker Compose.
+
+### Triển khai Kubernetes qua Jenkins
+
+Pipeline mặc định dùng image prefix `docker.io/lynkenion`; đổi `DOCKER_REGISTRY` nếu dùng namespace/registry khác. Jenkins agent cần Docker CLI + Compose v2, `kubectl`, quyền truy cập cluster và plugin Credentials Binding. Tạo các Jenkins credentials:
+
+| Credential ID (mặc định) | Loại | Giá trị |
+| :--- | :--- | :--- |
+| `dockerhub-credentials` | Username with password | Tài khoản Docker Hub và access token có quyền push |
+| `kubeconfig` | Secret file | File kubeconfig có quyền quản lý namespace `edumy` |
+
+Tạo secret runtime một lần trên cluster; không commit mật khẩu vào repository:
+```powershell
+kubectl create namespace edumy
+kubectl -n edumy create secret generic edumy-runtime `
+  --from-literal=database-password='<mật-khẩu-SQL-Server-mạnh>' `
+  --from-literal=jwt-secret='<JWT-secret-ngẫu-nhiên-dài, ít nhất 32 ký tự>'
+```
+
+Sau đó chạy Jenkins với `DEPLOY_TARGET=kubernetes`, `BUILD_DOCKER_IMAGES=true`, `PUSH_TO_REGISTRY=true` và `DEPLOY_APPLICATION=true`. Pipeline cập nhật registry pull secret, apply manifests trong `Edumy/k8s/`, cập nhật image tag theo build và đợi rollout. Frontend được expose qua Service `LoadBalancer`; nếu cluster local không cấp external IP, dùng:
+```powershell
+kubectl -n edumy port-forward service/edumy-frontend 8080:80
+```
+Mở `http://localhost:8080`. Kubernetes cần một StorageClass mặc định cho PVC SQL Server 20Gi. Stack SQL Server `Developer` và bản backup đi kèm phù hợp môi trường development/demo; cấu hình production cần xem xét license, backup/restore và lưu trữ dữ liệu riêng.
+
+Lưu ý: image `edumy-database` chứa file `EduMyDb.bak` được copy bởi Dockerfile, vì vậy chỉ push lên registry private nếu backup có dữ liệu không được phép công khai.

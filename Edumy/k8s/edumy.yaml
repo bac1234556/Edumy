@@ -1,0 +1,275 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: edumy-config
+  namespace: edumy
+data:
+  SPRING_DATASOURCE_URL: "jdbc:sqlserver://edumy-database:1433;databaseName=EduMyDb;encrypt=false;trustServerCertificate=true"
+  SPRING_DATASOURCE_USERNAME: "sa"
+  SPRING_MAIL_HOST: "mailpit"
+  SPRING_MAIL_PORT: "1025"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: edumy-database
+  namespace: edumy
+spec:
+  clusterIP: None
+  selector:
+    app: edumy-database
+  ports:
+    - name: sqlserver
+      port: 1433
+      targetPort: 1433
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: edumy-database
+  namespace: edumy
+spec:
+  serviceName: edumy-database
+  replicas: 1
+  selector:
+    matchLabels:
+      app: edumy-database
+  template:
+    metadata:
+      labels:
+        app: edumy-database
+    spec:
+      imagePullSecrets:
+        - name: edumy-registry
+      containers:
+        - name: edumy-database
+          image: docker.io/lynkenion/edumy-database:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: sqlserver
+              containerPort: 1433
+          env:
+            - name: ACCEPT_EULA
+              value: "Y"
+            - name: MSSQL_PID
+              value: Developer
+            - name: MSSQL_MEMORY_LIMIT_MB
+              value: "2048"
+            - name: MSSQL_SA_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: edumy-runtime
+                  key: database-password
+          resources:
+            requests:
+              cpu: "1"
+              memory: 2Gi
+            limits:
+              cpu: "2"
+              memory: 4Gi
+          startupProbe:
+            exec:
+              command:
+                - /bin/bash
+                - -c
+                - >-
+                  /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$MSSQL_SA_PASSWORD" -C -Q "SELECT 1"
+                  || /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "$MSSQL_SA_PASSWORD" -Q "SELECT 1"
+            periodSeconds: 10
+            failureThreshold: 60
+          readinessProbe:
+            exec:
+              command:
+                - /bin/bash
+                - -c
+                - >-
+                  /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$MSSQL_SA_PASSWORD" -C -b -Q "IF NOT EXISTS (SELECT 1 FROM sys.databases WHERE name = 'EduMyDb' AND state_desc = 'ONLINE') RAISERROR('EduMyDb is not ready', 16, 1)"
+                  || /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "$MSSQL_SA_PASSWORD" -b -Q "IF NOT EXISTS (SELECT 1 FROM sys.databases WHERE name = 'EduMyDb' AND state_desc = 'ONLINE') RAISERROR('EduMyDb is not ready', 16, 1)"
+            periodSeconds: 10
+            timeoutSeconds: 5
+          volumeMounts:
+            - name: sqlserver-data
+              mountPath: /var/opt/mssql
+  volumeClaimTemplates:
+    - metadata:
+        name: sqlserver-data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 20Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+  namespace: edumy
+spec:
+  selector:
+    app: edumy-backend
+  ports:
+    - name: http
+      port: 5000
+      targetPort: 5000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: edumy-backend
+  namespace: edumy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: edumy-backend
+  template:
+    metadata:
+      labels:
+        app: edumy-backend
+    spec:
+      imagePullSecrets:
+        - name: edumy-registry
+      initContainers:
+        - name: wait-for-database
+          image: busybox:1.36
+          command:
+            - sh
+            - -c
+            - until nc -z edumy-database 1433; do echo "Waiting for SQL Server"; sleep 5; done
+      containers:
+        - name: backend
+          image: docker.io/lynkenion/edumy-backend:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 5000
+          envFrom:
+            - configMapRef:
+                name: edumy-config
+          env:
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: edumy-runtime
+                  key: database-password
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: edumy-runtime
+                  key: jwt-secret
+          startupProbe:
+            httpGet:
+              path: /actuator/health
+              port: http
+            periodSeconds: 10
+            failureThreshold: 30
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: http
+            periodSeconds: 10
+            failureThreshold: 6
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: http
+            periodSeconds: 20
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+            limits:
+              cpu: "1"
+              memory: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: edumy-mailpit
+  namespace: edumy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: edumy-mailpit
+  template:
+    metadata:
+      labels:
+        app: edumy-mailpit
+    spec:
+      containers:
+        - name: mailpit
+          image: axllent/mailpit:v1.32.0
+          ports:
+            - name: smtp
+              containerPort: 1025
+            - name: web
+              containerPort: 8025
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mailpit
+  namespace: edumy
+spec:
+  selector:
+    app: edumy-mailpit
+  ports:
+    - name: smtp
+      port: 1025
+      targetPort: smtp
+    - name: web
+      port: 8025
+      targetPort: web
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: edumy-frontend
+  namespace: edumy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: edumy-frontend
+  template:
+    metadata:
+      labels:
+        app: edumy-frontend
+    spec:
+      imagePullSecrets:
+        - name: edumy-registry
+      containers:
+        - name: frontend
+          image: docker.io/lynkenion/edumy-frontend:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 80
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          resources:
+            requests:
+              cpu: 100m
+              memory: 64Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: edumy-frontend
+  namespace: edumy
+spec:
+  type: LoadBalancer
+  selector:
+    app: edumy-frontend
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
