@@ -367,18 +367,21 @@ pipeline {
                             if (isUnix()) {
                                 sh """
                                     set -eu
+                                    echo '=== BƯỚC 5: Triển khai lên cụm Kubernetes ==='
 
-                                    # Tự động tải kubectl nếu agent chưa có
+                                    # 0. Tự động kiểm tra và cài đặt kubectl nếu chưa có trên Jenkins agent (lưu vào \$HOME/bin để tái sử dụng)
                                     if ! command -v kubectl >/dev/null 2>&1; then
-                                        echo "--> [Auto-Install] kubectl chưa có trên agent, đang tải kubectl binary..."
-                                        mkdir -p "\${WORKSPACE}/.tools"
-                                        if [ ! -f "\${WORKSPACE}/.tools/kubectl" ]; then
-                                            curl -fsSL "https://dl.k8s.io/release/v1.30.0/bin/linux/amd64/kubectl" -o "\${WORKSPACE}/.tools/kubectl" || \
-                                            wget -q "https://dl.k8s.io/release/v1.30.0/bin/linux/amd64/kubectl" -O "\${WORKSPACE}/.tools/kubectl"
-                                            chmod +x "\${WORKSPACE}/.tools/kubectl"
+                                        if [ -f "\$HOME/bin/kubectl" ]; then
+                                            export PATH="\$HOME/bin:\$PATH"
+                                        else
+                                            echo "kubectl chưa có trên agent, đang tự động tải binary kubectl..."
+                                            mkdir -p "\$HOME/bin"
+                                            curl -sLo "\$HOME/bin/kubectl" "https://dl.k8s.io/release/v1.30.0/bin/linux/amd64/kubectl"
+                                            chmod +x "\$HOME/bin/kubectl"
+                                            export PATH="\$HOME/bin:\$PATH"
                                         fi
-                                        export PATH="\${WORKSPACE}/.tools:\$PATH"
                                     fi
+                                    echo "Sử dụng: \$(kubectl version --client --short 2>/dev/null || kubectl version --client)"
 
                                     # Điều chỉnh kubeconfig nếu Jenkins chạy trong Docker container kết nối tới host K8s (127.0.0.1 -> host.docker.internal)
                                     cp "\$KUBECONFIG" /tmp/kubeconfig
@@ -391,19 +394,28 @@ pipeline {
                                         kubectl config set-cluster "\$CURRENT_CLUSTER" --server="\$NEW_SERVER" --insecure-skip-tls-verify=true
                                     fi
 
+                                    # 1. Khởi tạo Namespace
                                     kubectl apply -f ${projDir}/k8s/namespace.yaml
-                                    kubectl get secret edumy-runtime -n edumy
+
+                                    # 2. Khởi tạo Secret (Docker Registry credentials & Secret runtime)
+                                    kubectl get secret edumy-runtime -n edumy || true
                                     kubectl create secret docker-registry edumy-registry \\
                                       --namespace edumy \\
                                       --docker-server="\$DOCKER_SERVER" \\
                                       --docker-username="\$DOCKER_USER" \\
                                       --docker-password="\$DOCKER_PASSWORD" \\
                                       --dry-run=client -o yaml | kubectl apply -f -
+
+                                    # 3. Khởi tạo Deployment, StatefulSet Database & Services cho Edumy
                                     kubectl apply -f ${projDir}/k8s/edumy.yaml
-                                    kubectl set image deployment/edumy-backend backend="\$IMAGE_PREFIX:backend-\$IMAGE_TAG" -n edumy
-                                    kubectl set image deployment/edumy-frontend frontend="\$IMAGE_PREFIX:frontend-\$IMAGE_TAG" -n edumy
-                                    kubectl rollout status deployment/edumy-backend -n edumy --timeout=5m
-                                    kubectl rollout status deployment/edumy-frontend -n edumy --timeout=5m
+
+                                    # 4. Cập nhật image mới nhất cho Backend & Frontend (Rolling Update không gián đoạn)
+                                    kubectl set image deployment/edumy-backend backend="\$IMAGE_PREFIX:backend-\$IMAGE_TAG" -n edumy || true
+                                    kubectl set image deployment/edumy-frontend frontend="\$IMAGE_PREFIX:frontend-\$IMAGE_TAG" -n edumy || true
+
+                                    # 5. Theo dõi tiến trình cập nhật Pod
+                                    kubectl rollout status deployment/edumy-backend -n edumy --timeout=180s
+                                    kubectl rollout status deployment/edumy-frontend -n edumy --timeout=180s
                                 """
                             } else {
                                 bat """
