@@ -191,12 +191,22 @@ pipeline {
                     def projDir = env.PROJECT_DIR ?: (fileExists('Edumy/docker-compose.yml') ? 'Edumy' : '.')
                     echo "--> Đang đóng gói Docker Images cho toàn bộ hệ thống..."
                     dir("${projDir}") {
-                        withEnv(["DOCKER_REGISTRY=${params.DOCKER_REGISTRY}", "IMAGE_TAG=${env.IMAGE_TAG}"]) {
-                            if (isUnix()) {
-                                sh 'docker compose -p edumy build'
-                            } else {
-                                bat 'docker compose -p edumy build'
-                            }
+                        def registry = params.DOCKER_REGISTRY
+                        def tag = env.IMAGE_TAG
+                        if (isUnix()) {
+                            sh """
+                                docker build -t ${registry}/edumy-database:${tag} -f Database/Dockerfile Database &&
+                                docker build -t ${registry}/edumy-backend:${tag} -f Backend/Dockerfile Backend &&
+                                docker build -t ${registry}/edumy-frontend:${tag} -f Frontend/Dockerfile Frontend
+                            """
+                        } else {
+                            bat """
+                                docker build -t ${registry}/edumy-database:${tag} -f Database/Dockerfile Database
+                                if %ERRORLEVEL% NEQ 0 exit /b %ERRORLEVEL%
+                                docker build -t ${registry}/edumy-backend:${tag} -f Backend/Dockerfile Backend
+                                if %ERRORLEVEL% NEQ 0 exit /b %ERRORLEVEL%
+                                docker build -t ${registry}/edumy-frontend:${tag} -f Frontend/Dockerfile Frontend
+                            """
                         }
                     }
                 }
@@ -270,31 +280,52 @@ pipeline {
 
                     withEnv(["DOCKER_REGISTRY=${params.DOCKER_REGISTRY}", "IMAGE_TAG=${env.IMAGE_TAG}"]) {
                         if (isUnix()) {
-                            sh "docker rm -f edumy_sqlserver edumy_backend edumy_frontend || true"
-                            sh "docker compose -p edumy -f ${composeFile} down --remove-orphans || docker-compose -p edumy -f ${composeFile} down || true"
-                            sh "docker compose -p edumy -f ${composeFile} up -d || docker-compose -p edumy -f ${composeFile} up -d"
-                            sh "docker compose -p edumy -f ${composeFile} ps || docker-compose -p edumy -f ${composeFile} ps"
+                            withEnv(["COMPOSE_FILE=${composeFile}"]) {
+                                sh '''
+                                    set -eu
+                                    if docker compose version >/dev/null 2>&1; then
+                                        COMPOSE="docker compose"
+                                    elif command -v docker-compose >/dev/null 2>&1; then
+                                        COMPOSE="docker-compose"
+                                    else
+                                        echo "Docker Compose is not installed on this Jenkins agent." >&2
+                                        exit 1
+                                    fi
+                                    docker rm -f edumy_sqlserver edumy_backend edumy_frontend || true
+                                    $COMPOSE -p edumy -f "$COMPOSE_FILE" down --remove-orphans || true
+                                    $COMPOSE -p edumy -f "$COMPOSE_FILE" up -d
+                                    $COMPOSE -p edumy -f "$COMPOSE_FILE" ps
+                                '''
+                            }
                         } else {
                             bat """
                                 @echo off
                                 where docker >nul 2>&1
                                 if %ERRORLEVEL% NEQ 0 (
                                     echo [CANH BAO] Docker chua duoc cai dat tren agent Windows nay.
-                                    exit /b 0
+                                    exit /b 1
                                 )
+                                docker compose version >nul 2>&1
+                                if not errorlevel 1 goto useComposeV2
+                                where docker-compose >nul 2>&1
+                                if errorlevel 1 goto composeUnavailable
+                                set "COMPOSE_COMMAND=docker-compose"
+                                goto composeReady
+                                :useComposeV2
+                                set "COMPOSE_COMMAND=docker compose"
+                                :composeReady
                                 echo [1/3] Don dep container cu tranh xung dot ten hoac port...
-                                docker rm -f edumy_sqlserver edumy_backend edumy_frontend 2>nul || ver > nul
-                                docker compose -p edumy -f ${composeFile} down --remove-orphans 2>nul || ver > nul
-
+                                docker rm -f edumy_sqlserver edumy_backend edumy_frontend 2>nul
+                                %COMPOSE_COMMAND% -p edumy -f ${composeFile} down --remove-orphans
                                 echo [2/3] Khoi dong he thong bang Docker Compose...
-                                docker compose -p edumy -f ${composeFile} up -d
-                                if %ERRORLEVEL% NEQ 0 (
-                                    echo [THU LAI] Thuc hien voi docker-compose...
-                                    docker-compose -p edumy -f ${composeFile} up -d
-                                )
-
+                                %COMPOSE_COMMAND% -p edumy -f ${composeFile} up -d
+                                if errorlevel 1 exit /b %ERRORLEVEL%
                                 echo [3/3] Kiem tra trang thai dich vu:
-                                docker compose -p edumy -f ${composeFile} ps
+                                %COMPOSE_COMMAND% -p edumy -f ${composeFile} ps
+                                exit /b %ERRORLEVEL%
+                                :composeUnavailable
+                                echo Docker Compose is not installed on this Jenkins agent.
+                                exit /b 1
                             """
                         }
                     }

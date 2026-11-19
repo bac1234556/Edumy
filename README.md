@@ -156,7 +156,7 @@ Theo `DataSeeder.java` và `07_Script_Seed_Data_EduMyDb.sql`, hệ thống tạo
 
 ### Triển khai Kubernetes qua Jenkins
 
-Pipeline mặc định dùng image prefix `docker.io/lynkenion`; đổi `DOCKER_REGISTRY` nếu dùng namespace/registry khác. Jenkins agent cần Docker CLI + Compose v2, `kubectl`, quyền truy cập cluster và plugin Credentials Binding. Tạo các Jenkins credentials:
+Pipeline mặc định dùng image prefix `docker.io/lynkenion`; đổi `DOCKER_REGISTRY` nếu dùng namespace/registry khác. Jenkins agent cần Docker CLI, `kubectl`, quyền truy cập cluster và plugin Credentials Binding. Chỉ cần Docker Compose v2 hoặc `docker-compose` nếu chọn deploy bằng Docker Compose. Tạo các Jenkins credentials:
 
 | Credential ID (mặc định) | Loại | Giá trị |
 | :--- | :--- | :--- |
