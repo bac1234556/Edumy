@@ -23,7 +23,7 @@ import {
 } from 'lucide-react';
 import './Cart.css';
 
-const BACKEND_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api').replace('/api', '');
+const BACKEND_URL = (import.meta.env.VITE_API_URL || '/api').replace('/api', '');
 
 function Cart() {
   const { user } = useContext(AuthContext);

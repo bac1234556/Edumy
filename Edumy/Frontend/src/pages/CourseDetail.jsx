@@ -38,7 +38,7 @@ import CourseBundleCard from '../components/CourseBundleCard';
 import CourseCard from '../components/CourseCard';
 import './CourseDetail.css';
 
-const BACKEND_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api').replace('/api', '');
+const BACKEND_URL = (import.meta.env.VITE_API_URL || '/api').replace('/api', '');
 
 function CourseDetail() {
   const { id } = useParams();

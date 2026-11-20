@@ -6,7 +6,7 @@ import { AuthContext } from '../context/AuthContext';
 import { Plus, Check, ShoppingCart, Sparkles } from 'lucide-react';
 import './CourseBundleCard.css';
 
-const BACKEND_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api').replace('/api', '');
+const BACKEND_URL = (import.meta.env.VITE_API_URL || '/api').replace('/api', '');
 
 const CourseBundleCard = ({ courseId }) => {
   const { addToCart } = useContext(CartContext);

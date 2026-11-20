@@ -4,7 +4,7 @@ import { Star, Clock, BookOpen, PlayCircle, CheckCircle2, Award } from 'lucide-r
 import { AuthContext } from '../context/AuthContext';
 import './CourseCard.css';
 
-const BACKEND_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api').replace('/api', '');
+const BACKEND_URL = (import.meta.env.VITE_API_URL || '/api').replace('/api', '');
 
 const CourseCard = ({ course }) => {
   const { isCourseEnrolled } = useContext(AuthContext);

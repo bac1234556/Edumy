@@ -7,7 +7,7 @@ import { Heart, Trash2, BookOpen, AlertTriangle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import './CourseList.css';
 
-const BACKEND_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api').replace('/api', '');
+const BACKEND_URL = (import.meta.env.VITE_API_URL || '/api').replace('/api', '');
 
 function Wishlist() {
   const [wishlist, setWishlist] = useState([]);

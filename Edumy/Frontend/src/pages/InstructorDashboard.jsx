@@ -29,7 +29,7 @@ import EmptyState from '../components/EmptyState';
 import { SkeletonBox } from '../components/Skeleton';
 import './InstructorDashboard.css';
 
-const BACKEND_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api').replace('/api', '');
+const BACKEND_URL = (import.meta.env.VITE_API_URL || '/api').replace('/api', '');
 
 function InstructorDashboard() {
   const [courses, setCourses] = useState([]);
