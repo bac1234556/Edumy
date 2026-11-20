@@ -152,7 +152,7 @@ Theo `DataSeeder.java` và `07_Script_Seed_Data_EduMyDb.sql`, hệ thống tạo
   ```powershell
   .\scripts\verify_audit.ps1
   ```
-- **CI/CD (Jenkins)**: `Jenkinsfile` tự động hóa Checkout SCM → Build & Test Backend & Frontend → Build/push các image `edumy-database`, `edumy-backend`, `edumy-frontend` với tag build và `latest` → Deploy Kubernetes (mặc định) hoặc Docker Compose.
+- **CI/CD (Jenkins)**: `Jenkinsfile` tự động hóa Checkout SCM → Build & Test Backend & Frontend → Build image database local và build/push image `edumy-backend`, `edumy-frontend` với tag build và `latest` → Deploy Kubernetes (mặc định) hoặc Docker Compose.
 
 ### Triển khai Kubernetes qua Jenkins
 
@@ -170,6 +170,9 @@ kubectl -n edumy create secret generic edumy-runtime `
   --from-literal=database-password='<mật-khẩu-SQL-Server-mạnh>' `
   --from-literal=jwt-secret='<JWT-secret-ngẫu-nhiên-dài, ít nhất 32 ký tự>'
 ```
+Tạo secret này trước lần deploy Kubernetes đầu tiên; pipeline sẽ dừng sớm nếu thiếu `edumy-runtime`. Pipeline cũng chờ StatefulSet SQL Server sẵn sàng trước khi kiểm tra rollout của Backend.
+
+Database image `docker.io/lynkenion/edumy-database:latest` được build và tag local, không push registry vì image chứa `EduMyDb.bak`. Kubernetes StatefulSet dùng `imagePullPolicy: Never`, nên image phải có sẵn trong image store của node trước khi deploy. Với Docker Desktop Kubernetes, Jenkins cần build image trên cùng Docker Desktop daemon; với Minikube hoặc Kind, nạp image vào cluster bằng `minikube image load docker.io/lynkenion/edumy-database:latest` hoặc `kind load docker-image docker.io/lynkenion/edumy-database:latest`. Nếu Jenkins và cluster không dùng chung image store, nạp image vào node/cluster trước khi chạy rollout.
 
 Sau đó chạy Jenkins với `DEPLOY_TARGET=kubernetes`, `BUILD_DOCKER_IMAGES=true`, `PUSH_TO_REGISTRY=true` và `DEPLOY_APPLICATION=true`. Pipeline cập nhật registry pull secret, apply manifests trong `Edumy/k8s/`, cập nhật image tag theo build và đợi rollout. Frontend được expose qua Service `LoadBalancer`; nếu cluster local không cấp external IP, dùng:
 ```powershell

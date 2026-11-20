@@ -189,19 +189,22 @@ pipeline {
             steps {
                 script {
                     def projDir = env.PROJECT_DIR ?: (fileExists('Edumy/docker-compose.yml') ? 'Edumy' : '.')
-                    echo "--> Đang đóng gói Docker Images cho Backend và Frontend (DB chỉ build nội bộ, không push)..."
+                    echo "--> Đang build Docker Images cho Database, Backend và Frontend (Database chỉ dùng local, không push)..."
                     dir("${projDir}") {
                         def registry = params.DOCKER_REGISTRY
                         def tag = env.IMAGE_TAG
                         if (isUnix()) {
                             sh """
                                 docker build -t edumy-database:latest -f Database/Dockerfile Database &&
+                                docker tag edumy-database:latest docker.io/lynkenion/edumy-database:latest &&
                                 docker build -t ${registry}:backend-${tag} -f Backend/Dockerfile Backend &&
                                 docker build -t ${registry}:frontend-${tag} -f Frontend/Dockerfile Frontend
                             """
                         } else {
                             bat """
                                 docker build -t edumy-database:latest -f Database/Dockerfile Database
+                                if %ERRORLEVEL% NEQ 0 exit /b %ERRORLEVEL%
+                                docker tag edumy-database:latest docker.io/lynkenion/edumy-database:latest
                                 if %ERRORLEVEL% NEQ 0 exit /b %ERRORLEVEL%
                                 docker build -t ${registry}:backend-${tag} -f Backend/Dockerfile Backend
                                 if %ERRORLEVEL% NEQ 0 exit /b %ERRORLEVEL%
@@ -403,7 +406,10 @@ pipeline {
                                     kubectl apply -f ${projDir}/k8s/namespace.yaml
 
                                     # 2. Khởi tạo Secret (Docker Registry credentials & Secret runtime)
-                                    kubectl get secret edumy-runtime -n edumy || true
+                                    if ! kubectl get secret edumy-runtime -n edumy -o go-template='{{if and (index .data "database-password") (index .data "jwt-secret")}}ok{{end}}' | grep -qx 'ok'; then
+                                        echo "Secret edumy-runtime bị thiếu hoặc không có đủ key database-password và jwt-secret trong namespace edumy. Hãy tạo/cập nhật secret trước khi deploy." >&2
+                                        exit 1
+                                    fi
                                     kubectl create secret docker-registry edumy-registry \\
                                       --namespace edumy \\
                                       --docker-server="\$DOCKER_SERVER" \\
@@ -418,7 +424,10 @@ pipeline {
                                     kubectl set image deployment/edumy-backend backend="\$IMAGE_PREFIX:backend-\$IMAGE_TAG" -n edumy || true
                                     kubectl set image deployment/edumy-frontend frontend="\$IMAGE_PREFIX:frontend-\$IMAGE_TAG" -n edumy || true
 
-                                    # 5. Theo dõi tiến trình cập nhật Pod
+                                    # 5. Đợi SQL Server và database EduMyDb sẵn sàng trước backend
+                                    kubectl rollout status statefulset/edumy-database -n edumy --timeout=10m
+
+                                    # 6. Theo dõi tiến trình cập nhật Pod
                                     kubectl rollout status deployment/edumy-backend -n edumy --timeout=180s
                                     kubectl rollout status deployment/edumy-frontend -n edumy --timeout=180s
                                 """
@@ -432,8 +441,16 @@ pipeline {
                                     )
                                     kubectl apply -f ${projDir}/k8s/namespace.yaml
                                     if %ERRORLEVEL% NEQ 0 exit /b %ERRORLEVEL%
-                                    kubectl get secret edumy-runtime -n edumy
-                                    if %ERRORLEVEL% NEQ 0 exit /b %ERRORLEVEL%
+                                    kubectl get secret edumy-runtime -n edumy -o yaml | findstr /C:"database-password:" >nul
+                                    if %ERRORLEVEL% NEQ 0 (
+                                        echo Secret edumy-runtime bi thieu hoac khong co key database-password. Hay tao/cap nhat secret truoc khi deploy.
+                                        exit /b 1
+                                    )
+                                    kubectl get secret edumy-runtime -n edumy -o yaml | findstr /C:"jwt-secret:" >nul
+                                    if %ERRORLEVEL% NEQ 0 (
+                                        echo Secret edumy-runtime bi thieu hoac khong co key jwt-secret. Hay tao/cap nhat secret truoc khi deploy.
+                                        exit /b 1
+                                    )
                                     kubectl create secret docker-registry edumy-registry --namespace edumy --docker-server="%DOCKER_SERVER%" --docker-username="%DOCKER_USER%" --docker-password="%DOCKER_PASSWORD%" --dry-run=client -o yaml | kubectl apply -f -
                                     if %ERRORLEVEL% NEQ 0 exit /b %ERRORLEVEL%
                                     kubectl apply -f ${projDir}/k8s/edumy.yaml
@@ -441,6 +458,8 @@ pipeline {
                                     kubectl set image deployment/edumy-backend backend="%IMAGE_PREFIX%:backend-%IMAGE_TAG%" -n edumy
                                     if %ERRORLEVEL% NEQ 0 exit /b %ERRORLEVEL%
                                     kubectl set image deployment/edumy-frontend frontend="%IMAGE_PREFIX%:frontend-%IMAGE_TAG%" -n edumy
+                                    if %ERRORLEVEL% NEQ 0 exit /b %ERRORLEVEL%
+                                    kubectl rollout status statefulset/edumy-database -n edumy --timeout=10m
                                     if %ERRORLEVEL% NEQ 0 exit /b %ERRORLEVEL%
                                     kubectl rollout status deployment/edumy-backend -n edumy --timeout=5m
                                     if %ERRORLEVEL% NEQ 0 exit /b %ERRORLEVEL%
