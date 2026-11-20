@@ -172,7 +172,7 @@ kubectl -n edumy create secret generic edumy-runtime `
 ```
 Tạo secret này trước lần deploy Kubernetes đầu tiên; pipeline sẽ dừng sớm nếu thiếu `edumy-runtime`. Pipeline cũng chờ StatefulSet SQL Server sẵn sàng trước khi kiểm tra rollout của Backend.
 
-Database image `docker.io/lynkenion/edumy-database:latest` được build và tag local, không push registry vì image chứa `EduMyDb.bak`. Kubernetes StatefulSet dùng `imagePullPolicy: Never`, nên image phải có sẵn trong image store của node trước khi deploy. Với Docker Desktop Kubernetes, Jenkins cần build image trên cùng Docker Desktop daemon; với Minikube hoặc Kind, nạp image vào cluster bằng `minikube image load docker.io/lynkenion/edumy-database:latest` hoặc `kind load docker-image docker.io/lynkenion/edumy-database:latest`. Nếu Jenkins và cluster không dùng chung image store, nạp image vào node/cluster trước khi chạy rollout.
+Database image `docker.io/lynkenion/edumy-database:latest` được build và tag local, không push registry vì image chứa `EduMyDb.bak`. Kubernetes StatefulSet dùng `imagePullPolicy: IfNotPresent`: node sẽ dùng image đã cache hoặc pull image hiện có từ registry, với `edumy-registry` làm pull secret. Image vừa build trên Jenkins không tự được chuyển sang containerd của node; muốn dùng bản build mới mà không push, cần import image vào node bằng công cụ phù hợp với cluster.
 
 Sau đó chạy Jenkins với `DEPLOY_TARGET=kubernetes`, `BUILD_DOCKER_IMAGES=true`, `PUSH_TO_REGISTRY=true` và `DEPLOY_APPLICATION=true`. Pipeline cập nhật registry pull secret, apply manifests trong `Edumy/k8s/`, cập nhật image tag theo build và đợi rollout. Frontend được expose qua Service `LoadBalancer`; nếu cluster local không cấp external IP, dùng:
 ```powershell

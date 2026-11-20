@@ -39,10 +39,12 @@ spec:
       labels:
         app: edumy-database
     spec:
+      imagePullSecrets:
+        - name: edumy-registry
       containers:
         - name: edumy-database
           image: docker.io/lynkenion/edumy-database:latest
-          imagePullPolicy: Never
+          imagePullPolicy: IfNotPresent
           ports:
             - name: sqlserver
               containerPort: 1433
