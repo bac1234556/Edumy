@@ -46,7 +46,9 @@ class WithdrawalServiceImplTest {
     @BeforeEach
     void setUp() {
         withdrawalService = new WithdrawalServiceImpl(withdrawalRequestRepository, payoutAccountRepository, earningService);
-        ReflectionTestUtils.setField(withdrawalService, "minWithdrawal", 100000L);
+        ReflectionTestUtils.setField(withdrawalService, "minWithdrawal", 1_000_000L);
+        ReflectionTestUtils.setField(withdrawalService, "maxWithdrawalsPerMonth", 1);
+        ReflectionTestUtils.setField(withdrawalService, "timeZone", "Asia/Ho_Chi_Minh");
     }
 
     @Test
@@ -54,21 +56,21 @@ class WithdrawalServiceImplTest {
     void testMissingPayoutAccount() {
         when(payoutAccountRepository.findByIdForUpdate(1)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> withdrawalService.requestWithdrawal(1, 200000L))
+        assertThatThrownBy(() -> withdrawalService.requestWithdrawal(1, 1_200_000L))
                 .isInstanceOf(BusinessException.class)
                 .hasMessageContaining("Vui lòng khai báo tài khoản ngân hàng")
                 .satisfies(ex -> assertThat(((BusinessException) ex).getCode()).isEqualTo("PAYOUT_ACCOUNT_REQUIRED"));
     }
 
     @Test
-    @DisplayName("Fails if amount is below minimum (100,000 VND)")
+    @DisplayName("Fails if amount is below minimum (1,000,000 VND)")
     void testBelowMinimum() {
         PayoutAccount account = PayoutAccount.builder()
                 .instructorId(1).bankName("BIDV").accountNumber("12345678").accountHolder("NGUYEN VAN A")
                 .build();
         when(payoutAccountRepository.findByIdForUpdate(1)).thenReturn(Optional.of(account));
 
-        assertThatThrownBy(() -> withdrawalService.requestWithdrawal(1, 50000L))
+        assertThatThrownBy(() -> withdrawalService.requestWithdrawal(1, 999_999L))
                 .isInstanceOf(BusinessException.class)
                 .hasMessageContaining("Số tiền rút tối thiểu")
                 .satisfies(ex -> assertThat(((BusinessException) ex).getCode()).isEqualTo("WITHDRAWAL_BELOW_MINIMUM"));
@@ -84,13 +86,34 @@ class WithdrawalServiceImplTest {
         when(withdrawalRequestRepository.findByInstructorIdAndStatus(1, "requested"))
                 .thenReturn(List.of(WithdrawalRequest.builder().id(10).status("requested").build()));
 
-        assertThatThrownBy(() -> withdrawalService.requestWithdrawal(1, 200000L))
+        assertThatThrownBy(() -> withdrawalService.requestWithdrawal(1, 1_200_000L))
                 .isInstanceOf(BusinessException.class)
                 .hasMessageContaining("đang chờ xử lý")
                 .satisfies(ex -> {
                     assertThat(((BusinessException) ex).getStatus()).isEqualTo(HttpStatus.CONFLICT);
                     assertThat(((BusinessException) ex).getCode()).isEqualTo("WITHDRAWAL_ALREADY_OPEN");
                 });
+    }
+
+    @Test
+    @DisplayName("Fails with 409 WITHDRAWAL_MONTHLY_LIMIT_REACHED when instructor already has a paid withdrawal in current month")
+    void testMonthlyLimitReachedWhenPaidInCurrentMonth() {
+        PayoutAccount account = PayoutAccount.builder()
+                .instructorId(1).bankName("BIDV").accountNumber("12345678").accountHolder("NGUYEN VAN A")
+                .build();
+        when(payoutAccountRepository.findByIdForUpdate(1)).thenReturn(Optional.of(account));
+        when(withdrawalRequestRepository.findByInstructorIdAndStatus(1, "requested")).thenReturn(Collections.emptyList());
+        when(withdrawalRequestRepository.countActiveInPeriod(eq(1), any(), any(), any())).thenReturn(1L);
+
+        assertThatThrownBy(() -> withdrawalService.requestWithdrawal(1, 1_200_000L))
+                .isInstanceOf(BusinessException.class)
+                .hasMessageContaining("Mỗi tháng chỉ được rút tiền 1 lần")
+                .satisfies(ex -> {
+                    assertThat(((BusinessException) ex).getStatus()).isEqualTo(HttpStatus.CONFLICT);
+                    assertThat(((BusinessException) ex).getCode()).isEqualTo("WITHDRAWAL_MONTHLY_LIMIT_REACHED");
+                });
+
+        verify(earningService, never()).getSummary(any());
     }
 
     @Test
@@ -101,10 +124,11 @@ class WithdrawalServiceImplTest {
                 .build();
         when(payoutAccountRepository.findByIdForUpdate(1)).thenReturn(Optional.of(account));
         when(withdrawalRequestRepository.findByInstructorIdAndStatus(1, "requested")).thenReturn(Collections.emptyList());
-        when(earningService.getSummary(1)).thenReturn(EarningSummaryDto.builder().availableBalance(500000L).build());
+        when(withdrawalRequestRepository.countActiveInPeriod(eq(1), any(), any(), any())).thenReturn(0L);
+        when(earningService.getSummary(1)).thenReturn(EarningSummaryDto.builder().availableBalance(2_500_000L).build());
         when(withdrawalRequestRepository.save(any())).thenThrow(new DataIntegrityViolationException("UX_WithdrawalRequests_OpenPerInstructor"));
 
-        assertThatThrownBy(() -> withdrawalService.requestWithdrawal(1, 200000L))
+        assertThatThrownBy(() -> withdrawalService.requestWithdrawal(1, 1_200_000L))
                 .isInstanceOf(BusinessException.class)
                 .satisfies(ex -> {
                     assertThat(((BusinessException) ex).getStatus()).isEqualTo(HttpStatus.CONFLICT);
@@ -120,36 +144,48 @@ class WithdrawalServiceImplTest {
                 .build();
         when(payoutAccountRepository.findByIdForUpdate(1)).thenReturn(Optional.of(account));
         when(withdrawalRequestRepository.findByInstructorIdAndStatus(1, "requested")).thenReturn(Collections.emptyList());
-        when(earningService.getSummary(1)).thenReturn(EarningSummaryDto.builder().availableBalance(150000L).build());
+        when(withdrawalRequestRepository.countActiveInPeriod(eq(1), any(), any(), any())).thenReturn(0L);
+        when(earningService.getSummary(1)).thenReturn(EarningSummaryDto.builder().availableBalance(1_100_000L).build());
 
-        assertThatThrownBy(() -> withdrawalService.requestWithdrawal(1, 300000L))
+        assertThatThrownBy(() -> withdrawalService.requestWithdrawal(1, 1_500_000L))
                 .isInstanceOf(BusinessException.class)
                 .hasMessageContaining("vượt quá số dư khả dụng")
                 .satisfies(ex -> assertThat(((BusinessException) ex).getCode()).isEqualTo("WITHDRAWAL_EXCEEDS_BALANCE"));
     }
 
     @Test
-    @DisplayName("Creates withdrawal successfully and masks account number")
+    @DisplayName("Creates withdrawal successfully when monthly active count is 0 (e.g. only cancelled/rejected in month or paid in previous month)")
     void testSuccess() {
         PayoutAccount account = PayoutAccount.builder()
                 .instructorId(1).bankName("BIDV").accountNumber("12345678").accountHolder("NGUYEN VAN A")
                 .build();
         when(payoutAccountRepository.findByIdForUpdate(1)).thenReturn(Optional.of(account));
         when(withdrawalRequestRepository.findByInstructorIdAndStatus(1, "requested")).thenReturn(Collections.emptyList());
-        when(earningService.getSummary(1)).thenReturn(EarningSummaryDto.builder().availableBalance(500000L).build());
+        when(withdrawalRequestRepository.countActiveInPeriod(eq(1), any(), any(), any())).thenReturn(0L);
+        when(earningService.getSummary(1)).thenReturn(EarningSummaryDto.builder().availableBalance(2_500_000L).build());
 
         when(withdrawalRequestRepository.save(any())).thenAnswer(invocation -> {
             WithdrawalRequest req = invocation.getArgument(0);
             req.setId(101);
-            req.setCreatedAt(LocalDateTime.now());
             return req;
         });
 
-        WithdrawalResponseDto result = withdrawalService.requestWithdrawal(1, 200000L);
+        WithdrawalResponseDto result = withdrawalService.requestWithdrawal(1, 1_000_000L);
 
         assertThat(result.getId()).isEqualTo(101);
-        assertThat(result.getAmount()).isEqualTo(200000L);
+        assertThat(result.getAmount()).isEqualTo(1_000_000L);
         assertThat(result.getAccountNumberLast4()).isEqualTo("5678");
         assertThat(result.getStatus()).isEqualTo("requested");
+
+        @SuppressWarnings("unchecked")
+        ArgumentCaptor<List<String>> statusesCaptor = ArgumentCaptor.forClass(List.class);
+        ArgumentCaptor<LocalDateTime> startCaptor = ArgumentCaptor.forClass(LocalDateTime.class);
+        ArgumentCaptor<LocalDateTime> endCaptor = ArgumentCaptor.forClass(LocalDateTime.class);
+        verify(withdrawalRequestRepository).countActiveInPeriod(
+                eq(1), statusesCaptor.capture(), startCaptor.capture(), endCaptor.capture());
+        assertThat(statusesCaptor.getValue()).containsExactlyInAnyOrder("requested", "paid");
+        assertThat(startCaptor.getValue().getDayOfMonth()).isEqualTo(1);
+        assertThat(startCaptor.getValue().toLocalTime()).isEqualTo(java.time.LocalTime.MIDNIGHT);
+        assertThat(endCaptor.getValue()).isEqualTo(startCaptor.getValue().plusMonths(1));
     }
 }

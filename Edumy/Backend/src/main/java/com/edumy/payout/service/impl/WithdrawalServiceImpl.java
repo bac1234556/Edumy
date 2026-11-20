@@ -10,6 +10,7 @@ import com.edumy.payout.service.EarningService;
 import com.edumy.payout.service.WithdrawalService;
 import com.edumy.shared.exception.BusinessException;
 import com.edumy.shared.exception.ErrorCode;
+import com.edumy.shared.time.TimeUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
@@ -26,12 +27,20 @@ import java.util.Objects;
 @Service
 public class WithdrawalServiceImpl implements WithdrawalService {
 
+    private static final List<String> ACTIVE_MONTHLY_STATUSES = List.of("requested", "paid");
+
     private final WithdrawalRequestRepository withdrawalRequestRepository;
     private final PayoutAccountRepository payoutAccountRepository;
     private final EarningService earningService;
 
-    @Value("${edumy.payout.min-withdrawal:100000}")
+    @Value("${edumy.payout.min-withdrawal:1000000}")
     private long minWithdrawal;
+
+    @Value("${edumy.payout.max-withdrawals-per-month:1}")
+    private int maxWithdrawalsPerMonth;
+
+    @Value("${edumy.time-zone:Asia/Ho_Chi_Minh}")
+    private String timeZone;
 
     public WithdrawalServiceImpl(WithdrawalRequestRepository withdrawalRequestRepository,
                                  PayoutAccountRepository payoutAccountRepository,
@@ -65,6 +74,18 @@ public class WithdrawalServiceImpl implements WithdrawalService {
                     "Bạn đang có một yêu cầu rút tiền đang chờ xử lý.");
         }
 
+        if (maxWithdrawalsPerMonth > 0) {
+            LocalDateTime startOfMonth = TimeUtils.startOfCurrentMonth(timeZone);
+            LocalDateTime startOfNextMonth = TimeUtils.startOfNextMonth(timeZone);
+            long usedInMonth = withdrawalRequestRepository.countActiveInPeriod(
+                    instructorId, ACTIVE_MONTHLY_STATUSES, startOfMonth, startOfNextMonth);
+            if (usedInMonth >= maxWithdrawalsPerMonth) {
+                throw new BusinessException(HttpStatus.CONFLICT, "WITHDRAWAL_MONTHLY_LIMIT_REACHED",
+                        "Mỗi tháng chỉ được rút tiền " + maxWithdrawalsPerMonth
+                                + " lần. Bạn đã thực hiện rút tiền trong tháng này, vui lòng thử lại vào tháng sau.");
+            }
+        }
+
         EarningSummaryDto summary = earningService.getSummary(instructorId);
         if (amount > summary.getAvailableBalance()) {
             throw new BusinessException(HttpStatus.UNPROCESSABLE_ENTITY, "WITHDRAWAL_EXCEEDS_BALANCE",
@@ -81,7 +102,7 @@ public class WithdrawalServiceImpl implements WithdrawalService {
                 .accountNumberLast4(last4)
                 .accountHolder(account.getAccountHolder())
                 .status("requested")
-                .createdAt(LocalDateTime.now())
+                .createdAt(TimeUtils.now(timeZone))
                 .build();
 
         try {

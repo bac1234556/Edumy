@@ -4,9 +4,11 @@ import com.edumy.authoring.api.CourseInstructorsApi;
 import com.edumy.payout.api.EarningApi;
 import com.edumy.payout.dto.EarningSummaryDto;
 import com.edumy.payout.model.EarningEntry;
+import com.edumy.payout.model.WithdrawalRequest;
 import com.edumy.payout.repository.EarningEntryRepository;
 import com.edumy.payout.repository.WithdrawalRequestRepository;
 import com.edumy.payout.service.impl.EarningServiceImpl;
+import com.edumy.shared.time.TimeUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -43,7 +45,8 @@ class EarningServiceImplTest {
         earningService = new EarningServiceImpl(earningEntryRepository, withdrawalRequestRepository, courseInstructorsApi);
         ReflectionTestUtils.setField(earningService, "platformFeeBps", 3000);
         ReflectionTestUtils.setField(earningService, "holdDays", 7);
-        ReflectionTestUtils.setField(earningService, "minWithdrawal", 100000L);
+        ReflectionTestUtils.setField(earningService, "minWithdrawal", 1_000_000L);
+        ReflectionTestUtils.setField(earningService, "maxWithdrawalsPerMonth", 1);
         ReflectionTestUtils.setField(earningService, "timeZone", "Asia/Ho_Chi_Minh");
     }
 
@@ -129,8 +132,48 @@ class EarningServiceImplTest {
         assertThat(summary.getTotalEarned()).isEqualTo(800000L);
         assertThat(summary.getPendingBalance()).isEqualTo(300000L);
         assertThat(summary.getAvailableBalance()).isEqualTo(500000L);
+        assertThat(summary.getMinWithdrawal()).isEqualTo(1_000_000L);
         assertThat(summary.getHoldDays()).isEqualTo(7);
         assertThat(summary.getNextMaturityAt()).isNotNull();
         assertThat(summary.isHasEarnings()).isTrue();
+        assertThat(summary.getMaxWithdrawalsPerMonth()).isEqualTo(1);
+        assertThat(summary.getWithdrawalsUsedThisMonth()).isZero();
+        assertThat(summary.isCanWithdrawThisMonth()).isTrue();
+        assertThat(summary.getNextWithdrawalAt()).isNull();
+    }
+
+    @Test
+    @DisplayName("Monthly withdrawal quota counts paid/requested in current month and ignores cancelled/rejected/previous month")
+    void testGetSummaryMonthlyQuota() {
+        LocalDateTime now = TimeUtils.now("Asia/Ho_Chi_Minh");
+        LocalDateTime startOfMonth = TimeUtils.startOfCurrentMonth("Asia/Ho_Chi_Minh");
+
+        when(earningEntryRepository.findByInstructorId(1)).thenReturn(List.of(
+                EarningEntry.builder().amount(5_000_000L).maturesAt(now.minusDays(20)).build()
+        ));
+
+        // 1. Paid in previous month + cancelled/rejected in current month -> still eligible this month
+        when(withdrawalRequestRepository.findByInstructorId(1)).thenReturn(List.of(
+                WithdrawalRequest.builder().amount(1_000_000L).status("paid").createdAt(startOfMonth.minusDays(1)).build(),
+                WithdrawalRequest.builder().amount(1_000_000L).status("cancelled").createdAt(startOfMonth.plusHours(1)).build(),
+                WithdrawalRequest.builder().amount(1_000_000L).status("rejected").createdAt(startOfMonth.plusHours(2)).build()
+        ));
+
+        EarningSummaryDto eligibleSummary = earningService.getSummary(1);
+        assertThat(eligibleSummary.getWithdrawalsUsedThisMonth()).isZero();
+        assertThat(eligibleSummary.isCanWithdrawThisMonth()).isTrue();
+        assertThat(eligibleSummary.getNextWithdrawalAt()).isNull();
+        assertThat(eligibleSummary.getAvailableBalance()).isEqualTo(4_000_000L);
+
+        // 2. Paid in current month -> quota exhausted until next month
+        when(withdrawalRequestRepository.findByInstructorId(1)).thenReturn(List.of(
+                WithdrawalRequest.builder().amount(1_200_000L).status("paid").createdAt(startOfMonth.plusHours(3)).build()
+        ));
+
+        EarningSummaryDto blockedSummary = earningService.getSummary(1);
+        assertThat(blockedSummary.getWithdrawalsUsedThisMonth()).isEqualTo(1);
+        assertThat(blockedSummary.isCanWithdrawThisMonth()).isFalse();
+        assertThat(blockedSummary.getNextWithdrawalAt())
+                .isEqualTo(TimeUtils.toInstant(TimeUtils.startOfNextMonth("Asia/Ho_Chi_Minh"), "Asia/Ho_Chi_Minh"));
     }
 }

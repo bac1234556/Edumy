@@ -34,8 +34,11 @@ public class EarningServiceImpl implements EarningService {
     @Value("${edumy.payout.hold-days:7}")
     private int holdDays;
 
-    @Value("${edumy.payout.min-withdrawal:100000}")
+    @Value("${edumy.payout.min-withdrawal:1000000}")
     private long minWithdrawal;
+
+    @Value("${edumy.payout.max-withdrawals-per-month:1}")
+    private int maxWithdrawalsPerMonth;
 
     @Value("${edumy.time-zone:Asia/Ho_Chi_Minh}")
     private String timeZone;
@@ -153,18 +156,31 @@ public class EarningServiceImpl implements EarningService {
 
         long inWithdrawal = 0;
         long withdrawn = 0;
+        int withdrawalsUsedThisMonth = 0;
+        LocalDateTime startOfMonth = TimeUtils.startOfCurrentMonth(timeZone);
+        LocalDateTime startOfNextMonth = TimeUtils.startOfNextMonth(timeZone);
 
         for (WithdrawalRequest w : withdrawals) {
             long amt = w.getAmount() != null ? w.getAmount() : 0;
-            if ("requested".equalsIgnoreCase(w.getStatus())) {
+            boolean isRequested = "requested".equalsIgnoreCase(w.getStatus());
+            boolean isPaid = "paid".equalsIgnoreCase(w.getStatus());
+            if (isRequested) {
                 inWithdrawal += amt;
-            } else if ("paid".equalsIgnoreCase(w.getStatus())) {
+            } else if (isPaid) {
                 withdrawn += amt;
+            }
+            if ((isRequested || isPaid)
+                    && w.getCreatedAt() != null
+                    && !w.getCreatedAt().isBefore(startOfMonth)
+                    && w.getCreatedAt().isBefore(startOfNextMonth)) {
+                withdrawalsUsedThisMonth++;
             }
         }
 
         long availableBalance = Math.max(0, totalEarned - pendingBalance - inWithdrawal - withdrawn);
         Instant nextMaturityAt = TimeUtils.toInstant(earliestPending, timeZone);
+        boolean canWithdrawThisMonth = maxWithdrawalsPerMonth <= 0 || withdrawalsUsedThisMonth < maxWithdrawalsPerMonth;
+        Instant nextWithdrawalAt = canWithdrawThisMonth ? null : TimeUtils.toInstant(startOfNextMonth, timeZone);
 
         return EarningSummaryDto.builder()
                 .hasEarnings(!entries.isEmpty())
@@ -176,6 +192,10 @@ public class EarningServiceImpl implements EarningService {
                 .minWithdrawal(minWithdrawal)
                 .holdDays(holdDays)
                 .nextMaturityAt(nextMaturityAt)
+                .maxWithdrawalsPerMonth(maxWithdrawalsPerMonth)
+                .withdrawalsUsedThisMonth(withdrawalsUsedThisMonth)
+                .canWithdrawThisMonth(canWithdrawThisMonth)
+                .nextWithdrawalAt(nextWithdrawalAt)
                 .build();
     }
 

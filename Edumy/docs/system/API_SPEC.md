@@ -71,7 +71,7 @@ Các nhóm endpoint trả về **raw JSON hoặc binary** (bỏ qua envelope):
 ### D. Instructor Payout (`/api/v1/me/**`, `/api/v1/admin/withdrawals/**`)
 - `GET /api/v1/me/earnings/{summary,monthly,courses,entries}` — Xem thống kê và sổ cái thu nhập.
 - `GET/PUT /api/v1/me/payout-account` — Quản lý tài khoản ngân hàng nhận tiền.
-- `GET/POST /api/v1/me/withdrawals` & `POST /api/v1/me/withdrawals/{id}/cancel` — Tạo/hủy yêu cầu rút tiền (tối thiểu 100.000 đ mặc định).
+- `GET/POST /api/v1/me/withdrawals` & `POST /api/v1/me/withdrawals/{id}/cancel` — Tạo/hủy yêu cầu rút tiền (tối thiểu 1.000.000 đ mặc định, tối đa 1 lần/tháng dương lịch).
 - `POST /api/v1/admin/withdrawals/{id}/{pay,reject}` — Admin duyệt chi trả hoặc từ chối.
 
 ---

@@ -21,4 +21,8 @@ public class EarningSummaryDto {
     private long minWithdrawal;
     private int holdDays;
     private Instant nextMaturityAt;
+    private int maxWithdrawalsPerMonth;
+    private int withdrawalsUsedThisMonth;
+    private boolean canWithdrawThisMonth;
+    private Instant nextWithdrawalAt;
 }
