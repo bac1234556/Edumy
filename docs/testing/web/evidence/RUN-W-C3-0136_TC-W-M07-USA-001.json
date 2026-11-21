@@ -1,0 +1,58 @@
+{
+  "runId": "RUN-W-C3-0136",
+  "tcId": "TC-W-M07-USA-001",
+  "cycle": "C3",
+  "commit": "Edumy-main@d83f0a0",
+  "browser": "Google Chrome 157.0.0.0 (Windows x64, Chrome DevTools MCP)",
+  "timestamp": "2026-11-22T00:50:55+07:00",
+  "status": "Pass",
+  "closedDefectId": "DEF-W-032",
+  "matrix": {
+    "/": {
+      "360": "Pass",
+      "768": "Pass",
+      "1366": "Pass"
+    },
+    "/courses": {
+      "360": "Pass",
+      "768": "Pass",
+      "1366": "Pass"
+    },
+    "/courses/49": {
+      "360": "Pass",
+      "768": "Pass",
+      "1366": "Pass"
+    },
+    "/instructor/courses/new": {
+      "360": "Pass",
+      "768": "Pass",
+      "1366": "Pass"
+    },
+    "/cart": {
+      "360": "Pass (0 overflow, price & CTA 100% visible)",
+      "768": "Pass",
+      "1366": "Pass"
+    },
+    "/my-courses/47/learn": {
+      "360": "Pass (auto-collapsed sidebar + clean 360px drawer)",
+      "768": "Pass (all 4 tabs incl. Q&A 100% visible)",
+      "1366": "Pass"
+    }
+  },
+  "vietnameseBadgesVerified": [
+    "Học viên",
+    "Giảng viên",
+    "Bản nháp",
+    "Chờ xét duyệt",
+    "Đã xuất bản",
+    "Cần chỉnh sửa",
+    "Đã ẩn"
+  ],
+  "screenshots": [
+    "evidence/RUN-W-C3-0136_TC-W-M07-USA-001_cart_360_PASS.png",
+    "evidence/RUN-W-C3-0136_TC-W-M07-USA-001_player_360_PASS.png",
+    "evidence/RUN-W-C3-0136_TC-W-M07-USA-001_player_360_drawer_PASS.png",
+    "evidence/RUN-W-C3-0136_TC-W-M07-USA-001_player_768_PASS.png",
+    "evidence/RUN-W-C3-0136_TC-W-M07-USA-001_vi_badges_PASS.png"
+  ]
+}

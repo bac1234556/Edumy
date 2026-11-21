@@ -6,13 +6,13 @@
 | :--- | :--- |
 | **Mã tài liệu** | `EDU-TCR-W-001` |
 | **Đối tượng kiểm thử** | **Edumy Web** (Spring Boot 3.2.0 Modulith + React 19/Vite 8 + SQL Server 2022 + Mailpit + Prometheus/Grafana) |
-| **Chuỗi Build kiểm thử** | C1: `Edumy-main@bf4ac6c` · C2: `Edumy-main@836460a` · C3 (Cuối): `Edumy-main@a44cb7d` (`Edumy-Project@f2f5240`) |
+| **Chuỗi Build kiểm thử** | C1: `Edumy-main@bf4ac6c` · C2: `Edumy-main@836460a` · C3 (Cuối): `Edumy-main@a44cb7d` → `Edumy-main@d83f0a0` (`Edumy-Project@f2f5240`) |
 | **Thời gian thực hiện** | `2026-11-21` – `2026-11-22` (Asia/Ho_Chi_Minh) |
 | **Môi trường thực thi** | Stack Docker cô lập `edumy-test` (6 containers: SQL Server 2022 `14334`, Backend `5001`, Frontend Nginx `3002`, Mailpit `1026/8026`, Prometheus `9091`, Grafana `3003`) |
 | **Công cụ kiểm thử** | JUnit 5 + MockMvc + Spring Modulith + JaCoCo (`47/47 PASS`), Node.js v24.16.0 (`fetch`), Mailpit API, SQL Server `sqlcmd`, Google Chrome `157.0.0.0` (Chrome DevTools MCP + Performance Trace + Lighthouse) |
-| **Kết quả cuối cùng** | **127 Pass / 5 Fail / 2 Blocked / 0 Not Run** (Tổng **134 TC**, **331 lượt chạy** qua 3 chu kỳ) |
-| **Pass rate** | **94.78%** trên toàn bộ 134 TC · **96.21%** trên 132 TC thực thi được (tăng từ **42.54%** ở C1) |
-| **Defect Resolution** | **28/32 Closed (87.5%)** — **0 S1 Open**, **2 S2 Open** (`DEF-W-027`, `DEF-W-032`), **1 S3 Open** (`DEF-W-031`), **1 S4 Deferred** (`DEF-W-030`) |
+| **Kết quả cuối cùng** | **129 Pass / 3 Fail / 2 Blocked / 0 Not Run** (Tổng **134 TC**, **333 lượt chạy** qua 3 chu kỳ) |
+| **Pass rate** | **96.27%** trên toàn bộ 134 TC · **97.73%** trên 132 TC thực thi được (tăng từ **42.54%** ở C1) |
+| **Defect Resolution** | **30/32 Closed (93.75%)** — **0 S1 Open (7/7 Closed)**, **1 S2 Open** (`DEF-W-027` dev secrets), **0 S3 Open (6/6 Closed)**, **1 S4 Deferred** (`DEF-W-030`) |
 | **QUYẾT ĐỊNH PHÁT HÀNH** | **CONDITIONAL GO (Đủ điều kiện phát hành có điều kiện)** |
 
 ---
@@ -23,7 +23,7 @@
 
 - **Chu kỳ C1 (`Edumy-main@bf4ac6c`)**: Phát hiện **30 Defect** (`7 S1 Critical`, `17 S2 Major`, `5 S3 Minor`, `1 S4 Trivial`), Pass rate chỉ đạt **42.54% (57/134)** → Quyết định **NO-GO** tại cổng dừng cuối C1.
 - **Giai đoạn khắc phục & Chu kỳ C2 (`Edumy-main@836460a`)**: Toàn bộ **7/7 lỗi S1 nghiêm trọng** và phần lớn lỗi S2/S3 (gồm cả 5 chức năng chưa hiện thực trong SRS: `UC-I18`, `D-21`, `UC-A18`, `UC-S16/@Scheduled`, `NFR-06/backup_daily.sh`) đã được triển khai, kiểm chứng lại bằng **47/47 JUnit 5 tests** (gồm `ModularityTest`) và chạy lại toàn bộ bộ kiểm thử hệ thống, nâng kết quả lên **118 Pass** trên 127 TC chạy được.
-- **Chu kỳ C3 (`Edumy-main@a44cb7d` — API + UI thực tế trên Chrome 157)**: Khắc phục triệt để 3 tồn đọng từ C2 (`CourseQueryDto.pageSize=20`, `@Transactional` cho `UC-A18 reconcilePayment`, khóa đồng bộ theo `orderId` chống gửi trùng email khi nhận 5 webhook song song) và thực thi trực tiếp toàn bộ **7 TC giao diện trình duyệt trên Google Chrome 157.0.0.0**. Kết quả cuối cùng: **7/8 module (`W-M01`..`W-M06` và `W-REG`) đạt 100% Pass (`115/115 TC`)**; tổng đạt **127/134 Pass (94.78% tổng thể; 96.21% trên 132 TC thực thi được)**; phát hiện thêm 2 lỗi UI thật (`DEF-W-031` S3 & `DEF-W-032` S2) để đội dự án xử lý trước Go-Live.
+- **Chu kỳ C3 (`Edumy-main@a44cb7d` → `Edumy-main@d83f0a0` — API + UI thực tế trên Chrome 157)**: Khắc phục triệt để 3 tồn đọng API từ C2 (`CourseQueryDto.pageSize=20`, `@Transactional` cho `UC-A18 reconcilePayment`, khóa đồng bộ theo `orderId` chống gửi trùng email khi nhận 5 webhook song song), thực thi trực tiếp toàn bộ **7 TC giao diện trình duyệt trên Google Chrome 157.0.0.0**, phát hiện và sửa luôn 2 lỗi UI (`DEF-W-031` S3 & `DEF-W-032` S2) rồi kiểm chứng lại đạt **100% PASS trên cả 6/6 TC UI chạy được**. Kết quả cuối cùng: **7/8 module (`W-M01`..`W-M06` và `W-REG`) đạt 100% Pass (`115/115 TC`)**; tổng đạt **129/134 Pass (96.27% tổng thể; 97.73% trên 132 TC thực thi được)**; đóng **30/32 Defect (93.75%)**.
 
 ---
 
@@ -43,13 +43,13 @@
 | EC-01 | Độ phủ yêu cầu trên RTM | 100% (0 khoảng trống) | **182/182 yêu cầu (100%)**, 0 khoảng trống, 0 UC < 2 TC | **ĐẠT** |
 | EC-02 | Tỷ lệ thực thi Test Case | 100% được xử lý (0 Not Run) | **134/134 TC (100%)** đã thực thi/đánh giá (`0 Not Run`, `2 Blocked` có lý do rõ) | **ĐẠT** |
 | EC-03 | Lỗi nghiêm trọng S1 Critical còn mở | **0 S1 Open** | **0 S1 Open** (`7/7 S1 Closed = 100%`) | **ĐẠT** |
-| EC-04 | Lỗi nghiêm trọng S2 Major còn mở | 0 S2 Open (hoặc có phương án giảm thiểu được phê duyệt) | **2 S2 Open** (`DEF-W-027` secret mặc định môi trường dev; `DEF-W-032` responsive tràn ngang `/cart` 360px & `/learn` 360/768px) | **ĐẠT CÓ ĐIỀU KIỆN** |
+| EC-04 | Lỗi nghiêm trọng S2 Major còn mở | 0 S2 Open (hoặc có phương án giảm thiểu được phê duyệt) | **1 S2 Open** (`DEF-W-027` secret mặc định môi trường dev trong `docker-compose.yml`/`application.yml`; `17/18 S2 Closed = 94.44%`) | **ĐẠT CÓ ĐIỀU KIỆN** |
 | EC-05 | Pass rate nhóm TC ưu tiên High | >= 95% trên TC chạy được | **98/100 (98.0%)** trên TC High thực thi được (`2` Fail chỉ thuộc `DEF-W-027` config secrets; `0` Blocked) | **ĐẠT** |
-| EC-06 | Pass rate tổng thể | >= 95% trên TC thực thi được | **127/132 (96.21%)** (`94.78%` tính cả 2 Blocked) | **ĐẠT** |
+| EC-06 | Pass rate tổng thể | >= 95% trên TC thực thi được | **129/132 (97.73%)** (`96.27%` tính cả 2 Blocked — cả 2 đều >= 95%) | **ĐẠT** |
 | EC-07 | Không có lỗ hổng IDOR / Bypass thanh toán / Upload độc hại | 0 vi phạm OWASP A01/A03/A07/A08 | **0 vi phạm** trên ma trận 8 vai trò × 13 nhóm API, SePay/VNPay ký bắt buộc, magic-bytes upload | **ĐẠT** |
-| EC-08 | Hiệu năng NFR-05 (50 CCU) & Phục hồi NFR-06 | p95 <= 3000ms, 0 lỗi 5xx; RTO <= 4h; có backup hằng ngày | p95 (`catalog`=620.5ms, `detail`=1169ms, `progress`=1797.3ms, `Q&A`=837.9ms), 0 lỗi 5xx; LCP Chrome `290–903ms`; RTO = **68.6s** (12/12 bảng khớp); có `backup_daily.sh` | **ĐẠT** |
+| EC-08 | Hiệu năng NFR-05 (50 CCU) & Phục hồi NFR-06 | p95 <= 3000ms, 0 lỗi 5xx; RTO <= 4h; có backup hằng ngày | p95 (`catalog`=620.5ms, `detail`=1169ms, `progress`=1797.3ms, `Q&A`=837.9ms), 0 lỗi 5xx; LCP Chrome `290–1016ms` (0 lỗi console); RTO = **68.6s** (12/12 bảng khớp); có `backup_daily.sh` | **ĐẠT** |
 | EC-09 | Unit test & Modularity Backend (`./mvnw verify`) | 100% Pass, 0 skipped | **47/47 tests PASS** (gồm `ModularityTest` + 3 bộ QA test mới), JaCoCo 362 lớp (`10.49%` line, `6.84%` branch) | **ĐẠT** |
-| EC-10 | Kiểm thử UI/Responsive/Lighthouse trên trình duyệt | Hoàn tất 7 TC UI | **6/7 TC UI đã chạy trọn vẹn trên Chrome 157** (4 PASS: `REG-FN-001..002`, `USA-002`, `USA-003` A11y `93/94/94`; 2 FAIL ghi defect `DEF-W-031`, `DEF-W-032`); `COMP-001` còn phần Edge/Firefox | **ĐẠT CÓ ĐIỀU KIỆN** |
+| EC-10 | Kiểm thử UI/Responsive/Lighthouse trên trình duyệt | Hoàn tất bộ TC UI | **6/6 TC UI đơn trình duyệt đạt 100% PASS trên Chrome 157** (`REG-FN-001..002`, `PERF-003`, `USA-001..003` A11y `93/94/94`); chỉ còn `COMP-001` phần Edge/Firefox | **ĐẠT (trên Chrome 157)** |
 
 ---
 
@@ -71,9 +71,9 @@
 | W-M04 | 18 | 18 | 18 | 0 | 0 | 0 | 54 | 3 | 100.0% | 100.0% | 27.78% | 2/2/1/0 |
 | W-M05 | 21 | 21 | 21 | 0 | 0 | 0 | 42 | 3 | 100.0% | 100.0% | 42.86% | 1/2/1/0 |
 | W-M06 | 9 | 9 | 9 | 0 | 0 | 0 | 18 | 3 | 100.0% | 100.0% | 100.0% | 0/0/0/0 |
-| W-M07 | 19 | 19 | 12 | 5 | 2 | 0 | 43 | 3 | 100.0% | 63.16% | 36.84% | 0/4/1/1 |
+| W-M07 | 19 | 19 | 14 | 3 | 2 | 0 | 45 | 3 | 100.0% | 73.68% | 36.84% | 0/4/1/1 |
 | W-REG | 3 | 3 | 3 | 0 | 0 | 0 | 8 | 3 | 100.0% | 100.0% | 0.0% | 0/0/1/0 |
-| **Tổng** | **134** | **134** | **127** | **5** | **2** | **0** | **331** | 3 | 100.0% | 94.78% | 42.54% | 7/18/6/1 |
+| **Tổng** | **134** | **134** | **129** | **3** | **2** | **0** | **333** | 3 | 100.0% | 96.27% | 42.54% | 7/18/6/1 |
 
 ### Bảng 2 — Thống kê kết quả kiểm thử theo Loại kiểm thử
 
@@ -81,15 +81,15 @@
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 | FN | 95 | 95 | 95 | 0 | 0 | 0 | 239 | 100.0% | 100.0% | 44.21% |
 | SEC | 19 | 19 | 17 | 2 | 0 | 0 | 44 | 100.0% | 89.47% | 42.11% |
-| PERF | 3 | 3 | 2 | 1 | 0 | 0 | 7 | 100.0% | 66.67% | 33.33% |
+| PERF | 3 | 3 | 3 | 0 | 0 | 0 | 8 | 100.0% | 100.0% | 33.33% |
 | REL | 4 | 4 | 4 | 0 | 0 | 0 | 11 | 100.0% | 100.0% | 25.0% |
 | REC | 2 | 2 | 2 | 0 | 0 | 0 | 4 | 100.0% | 100.0% | 50.0% |
 | OBS | 2 | 2 | 2 | 0 | 0 | 0 | 4 | 100.0% | 100.0% | 100.0% |
-| USA | 3 | 3 | 2 | 1 | 0 | 0 | 9 | 100.0% | 66.67% | 0.0% |
+| USA | 3 | 3 | 3 | 0 | 0 | 0 | 10 | 100.0% | 100.0% | 0.0% |
 | COMP | 1 | 1 | 0 | 0 | 1 | 0 | 3 | 100.0% | 0.0% | 0.0% |
 | MNT | 3 | 3 | 2 | 1 | 0 | 0 | 6 | 100.0% | 66.67% | 33.33% |
 | DEP | 2 | 2 | 1 | 0 | 1 | 0 | 4 | 100.0% | 50.0% | 50.0% |
-| **Tổng** | **134** | **134** | **127** | **5** | **2** | **0** | **331** | 100.0% | 94.78% | 42.54% |
+| **Tổng** | **134** | **134** | **129** | **3** | **2** | **0** | **333** | 100.0% | 96.27% | 42.54% |
 
 ### Bảng 3 — Thống kê theo Chu kỳ thực thi (`C1`, `C2`, `C3`)
 
@@ -97,7 +97,7 @@
 | :---: | :--- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 | **C1** | `Edumy-main@bf4ac6c` | 134 | 57 | 69 | 8 | 30 | 0 | 0 |
 | **C2** | `Edumy-main@836460a` | 134 | 118 | 8 | 8 | 0 | 24 | 0 |
-| **C3** | `Edumy-main@a44cb7d` | 63 | 60 | 2 | 1 | 2 | 4 | 0 |
+| **C3** | `Edumy-main@a44cb7d` | 65 | 62 | 2 | 1 | 2 | 6 | 0 |
 
 ### Bảng 4 — Lịch sử thực thi từng Test Case qua các chu kỳ (`134 TC`)
 
@@ -221,12 +221,12 @@
 | `TC-W-M07-SEC-002` | W-M07 | SEC | High | 2 | Fail | Fail | — | **Fail** | DEF-W-027 | `RUN-W-C2-0116` |
 | `TC-W-M07-PERF-001` | W-M07 | PERF | High | 2 | Fail | Pass | — | **Pass** | DEF-W-026 | `RUN-W-C2-0117` |
 | `TC-W-M07-PERF-002` | W-M07 | PERF | High | 2 | Pass | Pass | — | **Pass** | — | `RUN-W-C2-0118` |
-| `TC-W-M07-PERF-003` | W-M07 | PERF | Medium | 3 | Blocked | Blocked | Fail | **Fail** | DEF-W-031 | `RUN-W-C3-0130` |
+| `TC-W-M07-PERF-003` | W-M07 | PERF | Medium | 4 | Blocked | Blocked | Pass | **Pass** | DEF-W-031 | `RUN-W-C3-0135` |
 | `TC-W-M07-REC-001` | W-M07 | REC | High | 2 | Pass | Pass | — | **Pass** | — | `RUN-W-C2-0119` |
 | `TC-W-M07-REC-002` | W-M07 | REC | High | 2 | Fail | Pass | — | **Pass** | DEF-W-018 | `RUN-W-C2-0120` |
 | `TC-W-M07-OBS-001` | W-M07 | OBS | High | 2 | Pass | Pass | — | **Pass** | — | `RUN-W-C2-0121` |
 | `TC-W-M07-OBS-002` | W-M07 | OBS | High | 2 | Pass | Pass | — | **Pass** | — | `RUN-W-C2-0122` |
-| `TC-W-M07-USA-001` | W-M07 | USA | Medium | 3 | Blocked | Blocked | Fail | **Fail** | DEF-W-032 | `RUN-W-C3-0131` |
+| `TC-W-M07-USA-001` | W-M07 | USA | Medium | 4 | Blocked | Blocked | Pass | **Pass** | DEF-W-032 | `RUN-W-C3-0136` |
 | `TC-W-M07-USA-002` | W-M07 | USA | Medium | 3 | Blocked | Blocked | Pass | **Pass** | — | `RUN-W-C3-0132` |
 | `TC-W-M07-USA-003` | W-M07 | USA | Medium | 3 | Blocked | Blocked | Pass | **Pass** | — | `RUN-W-C3-0133` |
 | `TC-W-M07-COMP-001` | W-M07 | COMP | Medium | 3 | Blocked | Blocked | Blocked | **Blocked** | — | `RUN-W-C3-0134` |
@@ -243,10 +243,10 @@
 | Severity | Tổng phát hiện | Đã đóng (Closed) | Còn mở / Hoãn | Tỷ lệ đóng |
 | :---: | ---: | ---: | ---: | ---: |
 | **S1** | 7 | 7 | 0 | 100.0% |
-| **S2** | 18 | 16 | 2 | 88.89% |
-| **S3** | 6 | 5 | 1 | 83.33% |
+| **S2** | 18 | 17 | 1 | 94.44% |
+| **S3** | 6 | 6 | 0 | 100.0% |
 | **S4** | 1 | 0 | 1 | 0.0% |
-| **Tổng** | **32** | **28** | **4** | **87.5%** |
+| **Tổng** | **32** | **30** | **2** | **93.75%** |
 
 | Loại lỗi | Số lượng |
 | :--- | ---: |
@@ -264,7 +264,7 @@
 | **UC** | 75 | 75 | 100.0% | 75 | 0 | 0 |
 | **BR** | 41 | 41 | 100.0% | 41 | 0 | 0 |
 | **AC** | 37 | 37 | 100.0% | 37 | 0 | 0 |
-| **NFR** | 10 | 10 | 100.0% | 5 | 5 | 0 |
+| **NFR** | 10 | 10 | 100.0% | 7 | 3 | 0 |
 | **D** | 4 | 4 | 100.0% | 4 | 0 | 0 |
 | **CODE** | 13 | 13 | 100.0% | 13 | 0 | 0 |
 | **REG** | 2 | 2 | 100.0% | 2 | 0 | 0 |
@@ -277,9 +277,9 @@
 | **NFR-02** | Độ mạnh BCrypt cost ($2a$XX$) & 0 lộ mật khẩu/token/số TK đầy đủ | BCrypt cost >= 12; 0 dữ liệu rõ | `TC-W-M01-SEC-003`=Pass; `TC-W-M01-SEC-005`=Pass; `TC-W-M06-SEC-002`=Pass; `TC-W-M07-SEC-002`=Fail | **Không đạt** |
 | **NFR-03** | Khóa tạm đăng nhập sai lần 6/15 phút & chặn tra cứu chứng chỉ lần 31/phút | 429/Lock ở lần 6 (login) & lần 31 (verify) | `TC-W-M01-SEC-004`=Pass; `TC-W-M05-SEC-002`=Pass | **Đạt** |
 | **NFR-04** | Idempotency webhook 10x & toàn vẹn giao dịch khi crash/concurrent/double-click | 10 webhook -> 1 Enrollment & 1 Earning; 0 nửa vời | `TC-W-M04-REL-001`=Pass; `TC-W-M04-REL-002`=Pass; `TC-W-M06-REL-001`=Pass | **Đạt** |
-| **NFR-05** | Hiệu năng 50 CCU (3 lượt sau warm-up): p95 API, tạo PDF chứng chỉ, tạo khóa 5x3, Lighthouse | p95 API <= 3s; PDF <= 5s; ghi rõ LCP/TBT | `TC-W-M07-PERF-001`=Pass; `TC-W-M07-PERF-002`=Pass; `TC-W-M07-PERF-003`=Fail | **Không đạt** |
+| **NFR-05** | Hiệu năng 50 CCU (3 lượt sau warm-up): p95 API, tạo PDF chứng chỉ, tạo khóa 5x3, Lighthouse | p95 API <= 3s; PDF <= 5s; ghi rõ LCP/TBT | `TC-W-M07-PERF-001`=Pass; `TC-W-M07-PERF-002`=Pass; `TC-W-M07-PERF-003`=Pass | **Đạt** |
 | **NFR-06** | Khôi phục CSDL container tạm (RTO) & lịch sao lưu hằng ngày (RPO) | RTO <= 4h, khớp 100% row count; RPO <= 24h (có lịch tự động) | `TC-W-M07-REC-001`=Pass; `TC-W-M07-REC-002`=Pass | **Đạt** |
-| **NFR-07** | Khả dụng: Responsive 360/768/1366px, tiếng Việt, lỗi rõ trường, bàn phím, Lighthouse A11y | 0 vỡ layout; 100% tiếng Việt; A11y >= 90 | `TC-W-M07-USA-001`=Fail; `TC-W-M07-USA-002`=Pass; `TC-W-M07-USA-003`=Pass | **Không đạt** |
+| **NFR-07** | Khả dụng: Responsive 360/768/1366px, tiếng Việt, lỗi rõ trường, bàn phím, Lighthouse A11y | 0 vỡ layout; 100% tiếng Việt; A11y >= 90 | `TC-W-M07-USA-001`=Pass; `TC-W-M07-USA-002`=Pass; `TC-W-M07-USA-003`=Pass | **Đạt** |
 | **NFR-08** | Observability: truy vết 1 đơn qua log không lộ secret; Actuator/Prometheus/Grafana hoạt động | Truy đủ vòng đời đơn; 0 secret trong log; 200 UP & scrape OK | `TC-W-M07-OBS-001`=Pass; `TC-W-M07-OBS-002`=Pass; `TC-W-M07-SEC-001`=Fail | **Không đạt** |
 | **NFR-09** | Tự động đóng QR & hủy đơn chờ thanh toán quá hạn (Scheduled job) | Đơn quá hạn tự chuyển EXPIRED/CANCELLED đúng hạn | `TC-W-M04-REL-003`=Pass; `TC-W-M04-FN-010`=Pass | **Đạt** |
 | **NFR-10** | Độ phủ yêu cầu, Unit/Modularity/JaCoCo, Lint/Build, 3 trình duyệt, Deploy Docker sạch | Req cov 100%; mvnw verify & npm build PASS; 6/6 container healthy | `TC-W-M07-COMP-001`=Blocked; `TC-W-M07-MNT-001`=Pass; `TC-W-M07-MNT-002`=Fail; `TC-W-M07-DEP-001`=Pass; `TC-W-M07-DEP-002`=Blocked | **Không đạt** |
@@ -336,12 +336,10 @@
 ## 6. Yếu tố chặn (Blockers), Rủi ro tồn đọng (Residual Risks) & Khuyến nghị Go/No-Go
 
 ### Quyết định phát hành: **CONDITIONAL GO**
-Hệ thống Edumy Web **đã vượt qua 100% kiểm thử nghiệp vụ, thanh toán, phân quyền IDOR, tạo khóa 1 trang, gỡ AI/ML, hiệu năng 50 CCU, Lighthouse Accessibility và phục hồi dữ liệu** (`0 S1 Open`, **`7/8` module đạt 100% PASS = `115/115 TC`**, `47/47 JUnit 5 tests` PASS). Tuy nhiên, để **Go-Live Production**, đội dự án **bắt buộc hoàn thành 4 điều kiện sau**:
+Hệ thống Edumy Web **đã vượt qua 100% kiểm thử nghiệp vụ, thanh toán, phân quyền IDOR, tạo khóa 1 trang, gỡ AI/ML, hiệu năng 50 CCU, giao diện Responsive 360/768/1366px, Lighthouse Accessibility (`93/94/94 >= 90`) và phục hồi dữ liệu** (`0 S1 Open`, `0 S3 Open`, **`7/8` module đạt 100% PASS = `115/115 TC`**, **`6/6` TC UI đơn trình duyệt trên Chrome 157 đạt 100% PASS**, `47/47 JUnit 5 tests` PASS). Để **Go-Live Production**, đội dự án chỉ cần hoàn tất 2 điều kiện cấu hình/vận hành sau:
 
-1. **[Điều kiện bắt buộc — Bảo mật `DEF-W-027` / S2]**: Gỡ bỏ toàn bộ mật khẩu/secret fallback mặc định (`SA password`, `Grafana admin/admin`, `JWT/VNPay/SePay fallback key`) khỏi cấu hình Production; bắt buộc nạp qua Secret Manager / biến môi trường không có giá trị mặc định yếu.
-2. **[Điều kiện bắt buộc — Responsive UI `DEF-W-032` / S2]**: Sửa lỗi tràn ngang trên Mobile `360px` của trang Giỏ hàng (`/cart` bị cắt giá & nút thanh toán) và Phòng học (`/my-courses/{id}/learn` mở sẵn sidebar đè player; Tablet `768px` cắt tab `Hỏi & Đáp (Q&A)`), đồng thời Việt hóa các nhãn vai trò/trạng thái còn tiếng Anh.
-3. **[Điều kiện khuyến nghị mạnh — Frontend `DEF-W-031` / S3]**: Chặn `CourseDetail.jsx` gọi trái quyền `/api/v1/instructor/courses/{id}/co-instructors` khi người dùng là Student (tránh lỗi 403 trên console) và thay URL video mẫu `BigBuckBunny.mp4` bị Chrome chặn ORB.
-4. **[Điều kiện vận hành — Cross-browser & CI/CD]**: Chạy bổ sung 5 luồng High trên **Edge** & **Firefox** (`TC-W-M07-COMP-001`), chạy `Jenkinsfile` trên máy chủ Jenkins thực (`TC-W-M07-DEP-002`) và gắn crontab cho `Edumy/Database/scripts/backup_daily.sh`.
+1. **[Điều kiện bắt buộc — Bảo mật cấu hình `DEF-W-027` / S2]**: Gỡ bỏ toàn bộ mật khẩu/secret fallback mặc định (`SA password`, `Grafana admin/admin`, `JWT/VNPay/SePay fallback key`) khỏi cấu hình Production; bắt buộc nạp qua Secret Manager / biến môi trường không có giá trị mặc định yếu.
+2. **[Điều kiện vận hành — Cross-browser & CI/CD]**: Chạy bổ sung 5 luồng High trên **Edge** & **Firefox** (`TC-W-M07-COMP-001`, đã PASS 100% trên Chrome 157), chạy `Jenkinsfile` trên máy chủ Jenkins thực (`TC-W-M07-DEP-002`) và gắn crontab cho `Edumy/Database/scripts/backup_daily.sh`.
 
 ### Rủi ro tồn đọng chấp nhận được (Low / Deferred)
 - **`DEF-W-030` (S4 Deferred)**: Hai trang chưa gắn route (`Wishlist.jsx`, `MockPaymentGateway.jsx`), hai controller rỗng (`LessonController.java`, `QuizController.java`) và 64 cảnh báo `oxlint` — nên dọn dẹp ở sprint kỹ thuật kế tiếp.

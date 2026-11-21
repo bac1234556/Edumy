@@ -218,21 +218,89 @@ UI_RUNS = [
         "priority": "Medium",
         "status": "Blocked",
         "defectId": "",
-        "actual": "Đã chạy đủ 5 luồng High trên Google Chrome 157.0.0.0 (Login/CreateCourse/Detail/Cart/Player hoạt động trên desktop; phát hiện DEF-W-031 403 trên /courses/49 và DEF-W-032 responsive /cart & /learn). Còn BLOCKED phần Microsoft Edge và Mozilla Firefox do phiên DevTools MCP chỉ kết nối Chrome và máy chưa cài Firefox.",
-        "note": "Partial Chrome 157 hoàn tất; cần chạy bổ sung Edge & Firefox để đóng TC-W-M07-COMP-001.",
+        "actual": "Đã chạy và xác nhận PASS toàn bộ 5 luồng High trên Google Chrome 157.0.0.0 (Edumy-main@d83f0a0: Login, CreateCourse, Detail, Cart 360/768/1366px, Player/Q&A 360/768/1366px đều 0 lỗi console & 0 tràn ngang). Còn BLOCKED phần Microsoft Edge và Mozilla Firefox do phiên DevTools MCP chỉ kết nối Chrome và máy chưa cài Firefox.",
+        "note": "Chrome 157 PASS 100%; cần chạy bổ sung Edge & Firefox để đóng TC-W-M07-COMP-001.",
         "evidenceJson": {
             "runId": "RUN-W-C3-0134",
             "tcId": "TC-W-M07-COMP-001",
             "cycle": "C3",
-            "commit": COMMIT,
+            "commit": "Edumy-main@d83f0a0",
             "browser": BROWSER,
-            "timestamp": TS,
+            "timestamp": "2026-11-22T00:50:55+07:00",
             "status": "Blocked",
             "browsers": {
-                "Chrome 157.0.0.0": "Executed (5 High flows desktop PASS; DEF-W-031 & DEF-W-032 found)",
+                "Chrome 157.0.0.0": "Executed & 100% PASS across all 5 High flows on desktop/tablet/mobile after d83f0a0",
                 "Microsoft Edge": "Not Executed in Chrome DevTools session",
                 "Mozilla Firefox": "Not Installed on host"
             }
+        }
+    },
+    {
+        "runId": "RUN-W-C3-0135",
+        "tcId": "TC-W-M07-PERF-003",
+        "module": "W-M07",
+        "type": "PERF",
+        "priority": "Medium",
+        "status": "Pass",
+        "defectId": "DEF-W-031",
+        "commit": "Edumy-main@d83f0a0",
+        "ts": "2026-11-22T00:50:55+07:00",
+        "actual": "Sau commit d83f0a0 (index-lHoIBI9b.js): /(LCP=290ms,CLS=0.00,0 err), /courses(LCP=778ms,CLS=0.01,0 err), /courses/49(LCP=641ms,CLS=0.06, 20/20 req 200, 0 gọi /co-instructors cho Student, 0 console err), /my-courses/47/learn(LCP=1016ms,CLS=0.11, 16/16 req 200/204, 0 lỗi ORB, 0 console err). Đóng DEF-W-031.",
+        "note": "Re-test PASS trên Chrome 157 sau commit d83f0a0; đóng DEF-W-031.",
+        "evidenceJson": {
+            "runId": "RUN-W-C3-0135",
+            "tcId": "TC-W-M07-PERF-003",
+            "cycle": "C3",
+            "commit": "Edumy-main@d83f0a0",
+            "browser": BROWSER,
+            "timestamp": "2026-11-22T00:50:55+07:00",
+            "status": "Pass",
+            "closedDefectId": "DEF-W-031",
+            "pages": [
+                {"path": "/", "ttfbMs": 15, "lcpMs": 290, "cls": 0.00, "consoleErrors": 0, "failedNetwork": []},
+                {"path": "/courses", "ttfbMs": 6, "lcpMs": 778, "cls": 0.01, "consoleErrors": 0, "failedNetwork": []},
+                {"path": "/courses/49", "ttfbMs": 6, "lcpMs": 641, "cls": 0.06, "consoleErrors": 0, "failedNetwork": []},
+                {"path": "/my-courses/47/learn", "ttfbMs": 7, "lcpMs": 1016, "cls": 0.11, "consoleErrors": 0, "failedNetwork": []}
+            ]
+        }
+    },
+    {
+        "runId": "RUN-W-C3-0136",
+        "tcId": "TC-W-M07-USA-001",
+        "module": "W-M07",
+        "type": "USA",
+        "priority": "Medium",
+        "status": "Pass",
+        "defectId": "DEF-W-032",
+        "commit": "Edumy-main@d83f0a0",
+        "ts": "2026-11-22T00:50:55+07:00",
+        "actual": "Sau commit d83f0a0: cả 6/6 trang (/, /courses, /courses/49, /cart, /my-courses/47/learn, /instructor/courses/new) đạt 0 tràn ngang trên 360x800, 768x1024 và 1366x768; /cart 360px hiển thị trọn giá 300.000₫ & nút thanh toán; /learn tự thu gọn sidebar <1024px, hiển thị đủ 4 tab (gồm Hỏi & Đáp Q&A) và drawer 360px không tràn; badge vai trò ('Học viên', 'Giảng viên') và 5 trạng thái khóa học đã Việt hóa 100%. Đóng DEF-W-032.",
+        "note": "Re-test PASS trên Chrome 157 sau commit d83f0a0; đóng DEF-W-032.",
+        "evidenceJson": {
+            "runId": "RUN-W-C3-0136",
+            "tcId": "TC-W-M07-USA-001",
+            "cycle": "C3",
+            "commit": "Edumy-main@d83f0a0",
+            "browser": BROWSER,
+            "timestamp": "2026-11-22T00:50:55+07:00",
+            "status": "Pass",
+            "closedDefectId": "DEF-W-032",
+            "matrix": {
+                "/": {"360": "Pass", "768": "Pass", "1366": "Pass"},
+                "/courses": {"360": "Pass", "768": "Pass", "1366": "Pass"},
+                "/courses/49": {"360": "Pass", "768": "Pass", "1366": "Pass"},
+                "/instructor/courses/new": {"360": "Pass", "768": "Pass", "1366": "Pass"},
+                "/cart": {"360": "Pass (0 overflow, price & CTA 100% visible)", "768": "Pass", "1366": "Pass"},
+                "/my-courses/47/learn": {"360": "Pass (auto-collapsed sidebar + clean 360px drawer)", "768": "Pass (all 4 tabs incl. Q&A 100% visible)", "1366": "Pass"}
+            },
+            "vietnameseBadgesVerified": ["Học viên", "Giảng viên", "Bản nháp", "Chờ xét duyệt", "Đã xuất bản", "Cần chỉnh sửa", "Đã ẩn"],
+            "screenshots": [
+                "evidence/RUN-W-C3-0136_TC-W-M07-USA-001_cart_360_PASS.png",
+                "evidence/RUN-W-C3-0136_TC-W-M07-USA-001_player_360_PASS.png",
+                "evidence/RUN-W-C3-0136_TC-W-M07-USA-001_player_360_drawer_PASS.png",
+                "evidence/RUN-W-C3-0136_TC-W-M07-USA-001_player_768_PASS.png",
+                "evidence/RUN-W-C3-0136_TC-W-M07-USA-001_vi_badges_PASS.png"
+            ]
         }
     }
 ]
@@ -261,9 +329,9 @@ for u in UI_RUNS:
         "Kết quả thực tế": u["actual"],
         "Defect ID": u["defectId"],
         "Bằng chứng": ev_rel,
-        "Commit Hash": COMMIT,
+        "Commit Hash": u.get("commit", COMMIT),
         "Trình duyệt/Công cụ": BROWSER,
-        "Thời điểm (Asia/Ho_Chi_Minh)": TS,
+        "Thời điểm (Asia/Ho_Chi_Minh)": u.get("ts", TS),
         "Người thực hiện": "QA Lead",
         "Ghi chú": u["note"],
     })

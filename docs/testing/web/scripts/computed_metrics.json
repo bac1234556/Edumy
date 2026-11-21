@@ -112,14 +112,14 @@
       "key": "W-M07",
       "total": 19,
       "executed": 19,
-      "pass": 12,
-      "fail": 5,
+      "pass": 14,
+      "fail": 3,
       "blocked": 2,
       "notRun": 0,
-      "totalRuns": 43,
+      "totalRuns": 45,
       "cycles": 3,
       "execRate": 100.0,
-      "passRate": 63.16,
+      "passRate": 73.68,
       "firstTimePassRate": 36.84,
       "S1": 0,
       "S2": 4,
@@ -148,14 +148,14 @@
       "key": "Tổng",
       "total": 134,
       "executed": 134,
-      "pass": 127,
-      "fail": 5,
+      "pass": 129,
+      "fail": 3,
       "blocked": 2,
       "notRun": 0,
-      "totalRuns": 331,
+      "totalRuns": 333,
       "cycles": 3,
       "execRate": 100.0,
-      "passRate": 94.78,
+      "passRate": 96.27,
       "firstTimePassRate": 42.54,
       "S1": 7,
       "S2": 18,
@@ -196,14 +196,14 @@
       "key": "PERF",
       "total": 3,
       "executed": 3,
-      "pass": 2,
-      "fail": 1,
+      "pass": 3,
+      "fail": 0,
       "blocked": 0,
       "notRun": 0,
-      "totalRuns": 7,
+      "totalRuns": 8,
       "cycles": 3,
       "execRate": 100.0,
-      "passRate": 66.67,
+      "passRate": 100.0,
       "firstTimePassRate": 33.33
     },
     {
@@ -252,14 +252,14 @@
       "key": "USA",
       "total": 3,
       "executed": 3,
-      "pass": 2,
-      "fail": 1,
+      "pass": 3,
+      "fail": 0,
       "blocked": 0,
       "notRun": 0,
-      "totalRuns": 9,
+      "totalRuns": 10,
       "cycles": 3,
       "execRate": 100.0,
-      "passRate": 66.67,
+      "passRate": 100.0,
       "firstTimePassRate": 0.0
     },
     {
@@ -308,14 +308,14 @@
       "key": "Tổng",
       "total": 134,
       "executed": 134,
-      "pass": 127,
-      "fail": 5,
+      "pass": 129,
+      "fail": 3,
       "blocked": 2,
       "notRun": 0,
-      "totalRuns": 331,
+      "totalRuns": 333,
       "cycles": 3,
       "execRate": 100.0,
-      "passRate": 94.78,
+      "passRate": 96.27,
       "firstTimePassRate": 42.54
     }
   ],
@@ -342,12 +342,12 @@
     },
     {
       "cycle": "C3",
-      "executed": 63,
-      "pass": 60,
+      "executed": 65,
+      "pass": 62,
       "fail": 2,
       "blocked": 1,
       "defectsNew": 2,
-      "defectsClosed": 4,
+      "defectsClosed": 6,
       "defectsReopened": 0
     }
   ],
@@ -358,14 +358,13 @@
     "S4": 1
   },
   "table5_defects_open_by_sev": {
-    "S2": 2,
-    "S4": 1,
-    "S3": 1
+    "S2": 1,
+    "S4": 1
   },
   "table5_defects_closed_by_sev": {
     "S1": 7,
-    "S2": 16,
-    "S3": 5
+    "S2": 17,
+    "S3": 6
   },
   "table5_defects_by_type": {
     "Security": 11,
@@ -404,12 +403,10 @@
       "type": "NFR",
       "total": 10,
       "withTc": 10,
-      "allPass": 5,
+      "allPass": 7,
       "gaps": 0,
       "failedReqs": [
         "NFR-02",
-        "NFR-05",
-        "NFR-07",
         "NFR-08",
         "NFR-10"
       ]
@@ -2480,17 +2477,17 @@
       "module": "W-M07",
       "type": "PERF",
       "priority": "Medium",
-      "status": "Fail",
-      "runCount": 3,
+      "status": "Pass",
+      "runCount": 4,
       "firstPass": false,
-      "latestRunId": "RUN-W-C3-0130",
-      "latestActual": "Trace Chrome 157: /(LCP=290ms,CLS=0.00,0 err), /courses(LCP=778ms,CLS=0.01,0 err), /courses/49(LCP=903ms,CLS=0.06, 1 console err: GET /api/v1/instructor/courses/49/co-instructors 403 cho Student HV1), /my-courses/47/learn(LCP=616ms,CLS=0.10, BigBuckBunny.mp4 ERR_BLOCKED_BY_ORB). Không đạt tiêu chí 0 lỗi console/4xx.",
-      "latestEvidence": "evidence/RUN-W-C3-0130_TC-W-M07-PERF-003.json",
-      "latestDate": "2026-11-22T00:37:49+07:00",
+      "latestRunId": "RUN-W-C3-0135",
+      "latestActual": "Sau commit d83f0a0 (index-lHoIBI9b.js): /(LCP=290ms,CLS=0.00,0 err), /courses(LCP=778ms,CLS=0.01,0 err), /courses/49(LCP=641ms,CLS=0.06, 20/20 req 200, 0 gọi /co-instructors cho Student, 0 console err), /my-courses/47/learn(LCP=1016ms,CLS=0.11, 16/16 req 200/204, 0 lỗi ORB, 0 console err). Đóng DEF-W-031.",
+      "latestEvidence": "evidence/RUN-W-C3-0135_TC-W-M07-PERF-003.json",
+      "latestDate": "2026-11-22T00:50:55+07:00",
       "byCycle": {
         "C1": "Blocked",
         "C2": "Blocked",
-        "C3": "Fail"
+        "C3": "Pass"
       }
     },
     "TC-W-M07-REC-001": {
@@ -2561,17 +2558,17 @@
       "module": "W-M07",
       "type": "USA",
       "priority": "Medium",
-      "status": "Fail",
-      "runCount": 3,
+      "status": "Pass",
+      "runCount": 4,
       "firstPass": false,
-      "latestRunId": "RUN-W-C3-0131",
-      "latestActual": "4 trang (/, /courses, /courses/49, /instructor/courses/new) PASS cả 360/768/1366px; FAIL tràn ngang nghiêm trọng tại /cart (360px cắt giá 300.000₫, nút Áp dụng & Thanh toán) và /my-courses/47/learn (360px sidebar mở đè player cắt tiến độ; 768px cắt tab thứ 4 'Hỏi & Đáp (Q&A)'). Còn nhãn tiếng Anh (Instructor/Student/Draft/Published/NeedsReview).",
-      "latestEvidence": "evidence/RUN-W-C3-0131_TC-W-M07-USA-001.json",
-      "latestDate": "2026-11-22T00:37:49+07:00",
+      "latestRunId": "RUN-W-C3-0136",
+      "latestActual": "Sau commit d83f0a0: cả 6/6 trang (/, /courses, /courses/49, /cart, /my-courses/47/learn, /instructor/courses/new) đạt 0 tràn ngang trên 360x800, 768x1024 và 1366x768; /cart 360px hiển thị trọn giá 300.000₫ & nút thanh toán; /learn tự thu gọn sidebar <1024px, hiển thị đủ 4 tab (gồm Hỏi & Đáp Q&A) và drawer 360px không tràn; badge vai trò ('Học viên', 'Giảng viên') và 5 trạng thái khóa học đã Việt hóa 100%. Đóng DEF-W-032.",
+      "latestEvidence": "evidence/RUN-W-C3-0136_TC-W-M07-USA-001.json",
+      "latestDate": "2026-11-22T00:50:55+07:00",
       "byCycle": {
         "C1": "Blocked",
         "C2": "Blocked",
-        "C3": "Fail"
+        "C3": "Pass"
       }
     },
     "TC-W-M07-USA-002": {
@@ -2616,7 +2613,7 @@
       "runCount": 3,
       "firstPass": false,
       "latestRunId": "RUN-W-C3-0134",
-      "latestActual": "Đã chạy đủ 5 luồng High trên Google Chrome 157.0.0.0 (Login/CreateCourse/Detail/Cart/Player hoạt động trên desktop; phát hiện DEF-W-031 403 trên /courses/49 và DEF-W-032 responsive /cart & /learn). Còn BLOCKED phần Microsoft Edge và Mozilla Firefox do phiên DevTools MCP chỉ kết nối Chrome và máy chưa cài Firefox.",
+      "latestActual": "Đã chạy và xác nhận PASS toàn bộ 5 luồng High trên Google Chrome 157.0.0.0 (Edumy-main@d83f0a0: Login, CreateCourse, Detail, Cart 360/768/1366px, Player/Q&A 360/768/1366px đều 0 lỗi console & 0 tràn ngang). Còn BLOCKED phần Microsoft Edge và Mozilla Firefox do phiên DevTools MCP chỉ kết nối Chrome và máy chưa cài Firefox.",
       "latestEvidence": "evidence/RUN-W-C3-0134_TC-W-M07-COMP-001.json",
       "latestDate": "2026-11-22T00:37:49+07:00",
       "byCycle": {
@@ -3195,7 +3192,7 @@
     ]
   },
   "total_defects": 32,
-  "closed_defects": 28,
-  "open_defects": 4,
-  "defect_fix_rate": 87.5
+  "closed_defects": 30,
+  "open_defects": 2,
+  "defect_fix_rate": 93.75
 }

@@ -1,0 +1,44 @@
+{
+  "runId": "RUN-W-C3-0135",
+  "tcId": "TC-W-M07-PERF-003",
+  "cycle": "C3",
+  "commit": "Edumy-main@d83f0a0",
+  "browser": "Google Chrome 157.0.0.0 (Windows x64, Chrome DevTools MCP)",
+  "timestamp": "2026-11-22T00:50:55+07:00",
+  "status": "Pass",
+  "closedDefectId": "DEF-W-031",
+  "pages": [
+    {
+      "path": "/",
+      "ttfbMs": 15,
+      "lcpMs": 290,
+      "cls": 0.0,
+      "consoleErrors": 0,
+      "failedNetwork": []
+    },
+    {
+      "path": "/courses",
+      "ttfbMs": 6,
+      "lcpMs": 778,
+      "cls": 0.01,
+      "consoleErrors": 0,
+      "failedNetwork": []
+    },
+    {
+      "path": "/courses/49",
+      "ttfbMs": 6,
+      "lcpMs": 641,
+      "cls": 0.06,
+      "consoleErrors": 0,
+      "failedNetwork": []
+    },
+    {
+      "path": "/my-courses/47/learn",
+      "ttfbMs": 7,
+      "lcpMs": 1016,
+      "cls": 0.11,
+      "consoleErrors": 0,
+      "failedNetwork": []
+    }
+  ]
+}
