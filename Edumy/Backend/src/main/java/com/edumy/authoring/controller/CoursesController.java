@@ -630,9 +630,9 @@ public class CoursesController {
         Course course = courseRepository.findById(id).orElse(null);
         if (course == null) return ResponseEntity.notFound().build();
 
-        boolean isEnrolled = enrollmentRepository.existsByUserIdAndCourseIdAndStatus(userId, id, "ACTIVE");
+        boolean isEnrolled = enrollmentRepository.isUserEnrolledActive(userId, id);
         if (!isEnrolled) {
-            return ResponseEntity.status(403).body(Map.of("message", "Bạn phải đăng ký và có tài khoản ACTIVE mới được đánh giá khóa học."));
+            return ResponseEntity.status(403).body(Map.of("message", "Bạn phải ghi danh khóa học mới được đánh giá."));
         }
 
         boolean alreadyReviewed = reviewRepository.existsByUserIdAndCourseId(userId, id);

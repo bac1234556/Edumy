@@ -95,7 +95,7 @@ public class CouponsController {
                 .code(dto.getCode().trim().toUpperCase())
                 .discountPercentage(discount)
                 .expiryDate(dto.getExpiryDate() != null ? dto.getExpiryDate() : LocalDateTime.now().plusMonths(1))
-                .isActive(true)
+                .isActive(dto.getIsActive() != null ? dto.getIsActive() : true)
                 .build();
 
         Coupon saved = couponRepository.save(coupon);
@@ -135,4 +135,5 @@ class CreateCouponDto {
     private String code;
     private BigDecimal discountPercentage;
     private LocalDateTime expiryDate;
+    private Boolean isActive;
 }

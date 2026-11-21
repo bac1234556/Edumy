@@ -343,6 +343,7 @@ public class OrderServiceImpl implements OrderService {
         response.put("isFree", false);
         response.put("status", "Pending");
         response.put("amount", totalAmount);
+        response.put("totalAmount", totalAmount);
         if (qrData != null) {
             response.put("qrImageUrl", qrData.getQrImageUrl());
             response.put("transferContent", qrData.getTransferContent());

@@ -287,6 +287,7 @@ public class AdminController {
             m.put("name", cat.getName());
             m.put("description", cat.getDescription());
             m.put("parentCategoryId", cat.getParentCategoryId());
+            m.put("isActive", !Boolean.FALSE.equals(cat.getIsActive()));
             
             // Tính số lượng khóa học liên kết thực tế
             long coursesCount = courseRepository.countByCategoryId(cat.getCategoryId());

@@ -239,6 +239,9 @@ public class PaymentController {
         }
 
         PaymentWebhookResponseDto result = paymentService.processIpnWebhook(params);
+        if ("97".equals(result.getRspCode())) {
+            return ResponseEntity.status(401).body(result);
+        }
         return ResponseEntity.ok(result);
     }
 }

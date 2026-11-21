@@ -622,17 +622,22 @@ public class PaymentServiceImpl implements PaymentService {
                     .build();
         }
 
-        // Kiểm tra chữ ký bảo mật nếu là VNPay
+        // BẮT BUỘC kiểm tra chữ ký bảo mật VNPay / callback (chống giả mạo OWASP A08)
         String secureHash = params.get("vnp_SecureHash");
-        if (secureHash != null && !secureHash.isEmpty()) {
-            boolean isValidSignature = PaymentSecurityUtil.verifyChecksum(params, secureHash, vnpHashSecret);
-            if (!isValidSignature) {
-                logger.warn("Invalid VNPay secure hash signature received in IPN");
-                return PaymentWebhookResponseDto.builder()
-                        .rspCode("97")
-                        .message("Invalid Checksum (Chữ ký điện tử không hợp lệ)")
-                        .build();
-            }
+        if (secureHash == null || secureHash.trim().isEmpty()) {
+            logger.warn("Missing secure hash signature in payment IPN/callback");
+            return PaymentWebhookResponseDto.builder()
+                    .rspCode("97")
+                    .message("Missing Checksum (Thiếu chữ ký điện tử xác thực giao dịch)")
+                    .build();
+        }
+        boolean isValidSignature = PaymentSecurityUtil.verifyChecksum(params, secureHash, vnpHashSecret);
+        if (!isValidSignature) {
+            logger.warn("Invalid VNPay secure hash signature received in IPN");
+            return PaymentWebhookResponseDto.builder()
+                    .rspCode("97")
+                    .message("Invalid Checksum (Chữ ký điện tử không hợp lệ)")
+                    .build();
         }
 
         Integer orderId = null;

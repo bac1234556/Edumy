@@ -18,6 +18,10 @@ public class OrderResponseDto {
     private String status;
     private BigDecimal amount;
     private Boolean isFree;
+
+    public BigDecimal getTotalAmount() {
+        return this.amount;
+    }
     private Integer courseId;
     private String courseTitle;
 
