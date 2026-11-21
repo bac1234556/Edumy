@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, useLocation, Link } from 'react-router-dom';
 import api from '../api/axiosConfig';
 import {
   ArrowLeft,
@@ -13,19 +13,25 @@ import {
   ChevronDown,
   ChevronUp,
   AlertCircle,
+  AlertTriangle,
   CheckCircle2,
   Play
 } from 'lucide-react';
 import { SkeletonBox } from '../components/Skeleton';
+import { buildLessonPayload } from '../utils/lessonPayload';
 import './CourseCurriculumEditor.css';
 
 function CourseCurriculumEditor() {
   const { id } = useParams();
+  const location = useLocation();
   const [course, setCourse] = useState(null);
   const [sections, setSections] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
+  const [creationWarnings, setCreationWarnings] = useState(() =>
+    Array.isArray(location.state?.creationWarnings) ? location.state.creationWarnings : []
+  );
 
   // Modals / forms state
   const [newSectionTitle, setNewSectionTitle] = useState('');
@@ -214,22 +220,7 @@ function CourseCurriculumEditor() {
     try {
       const section = sections.find(s => s.sectionId === activeLessonModalSection);
       const currentLessonsCount = section?.lessons?.length || 0;
-
-      let resolvedVideoUrl = '';
-      if (lessonForm.contentType === 'VIDEO') {
-        resolvedVideoUrl = lessonForm.videoUrl.trim() || 'https://www.w3schools.com/html/mov_bbb.mp4';
-      } else if (lessonForm.contentType === 'PDF') {
-        resolvedVideoUrl = lessonForm.videoUrl.trim() || 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf';
-      }
-
-      const payload = {
-        title: lessonForm.title.trim(),
-        videoUrl: resolvedVideoUrl,
-        content: lessonForm.content?.trim() || `[${lessonForm.contentType}] ${lessonForm.title.trim()}`,
-        duration: Math.max(1, parseInt(lessonForm.durationMinutes, 10) || 5) * 60,
-        isPreview: Boolean(lessonForm.isPreview),
-        orderIndex: currentLessonsCount + 1
-      };
+      const payload = buildLessonPayload(lessonForm, currentLessonsCount + 1);
 
       await api.post(`/sections/${activeLessonModalSection}/lessons`, payload);
       setActiveLessonModalSection(null);
@@ -309,6 +300,29 @@ function CourseCurriculumEditor() {
       </div>
 
       {/* Notifications */}
+      {creationWarnings.length > 0 && (
+        <div className="alert alert-warning shadow-sm rounded-3 mb-4" role="alert">
+          <div className="d-flex justify-content-between align-items-start gap-2 mb-2">
+            <div className="d-flex align-items-center gap-2 fw-bold">
+              <AlertTriangle size={18} className="flex-shrink-0" />
+              <span>
+                Khóa học đã được tạo, nhưng một số mục chưa hoàn tất — vui lòng bổ sung thủ công bên dưới:
+              </span>
+            </div>
+            <button
+              type="button"
+              className="btn-close"
+              aria-label="Đóng cảnh báo"
+              onClick={() => setCreationWarnings([])}
+            />
+          </div>
+          <ul className="mb-0 ps-4 small">
+            {creationWarnings.map((warning, idx) => (
+              <li key={idx}>{warning}</li>
+            ))}
+          </ul>
+        </div>
+      )}
       {successMsg && (
         <div className="alert alert-success d-flex align-items-center gap-2 shadow-sm rounded-3">
           <CheckCircle2 size={18} /> {successMsg}

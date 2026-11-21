@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import api from '../api/axiosConfig';
 import {
   Users,
@@ -31,10 +31,14 @@ import './InstructorDashboard.css';
 const BACKEND_URL = (import.meta.env.VITE_API_URL || '/api').replace('/api', '');
 
 function InstructorDashboard() {
+  const location = useLocation();
   const [courses, setCourses] = useState([]);
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [flashMessage, setFlashMessage] = useState(
+    () => location.state?.successMessage || ''
+  );
 
   // Tabs: 'courses' | 'invitations' | 'qa' | 'analytics' | 'students'
   const [activeTab, setActiveTab] = useState('courses');
@@ -260,6 +264,19 @@ function InstructorDashboard() {
           </div>
         </div>
 
+        {flashMessage && (
+          <div className="alert alert-success d-flex justify-content-between align-items-center mb-4 shadow-sm">
+            <span className="d-inline-flex align-items-center gap-2">
+              <CheckCircle2 size={18} /> {flashMessage}
+            </span>
+            <button
+              type="button"
+              className="btn-close"
+              aria-label="Đóng thông báo"
+              onClick={() => setFlashMessage('')}
+            />
+          </div>
+        )}
         {error && <div className="alert alert-danger mb-4 shadow-sm">{error}</div>}
 
         {/* ------------------------------------------------------------------
