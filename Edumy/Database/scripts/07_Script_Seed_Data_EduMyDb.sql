@@ -168,7 +168,7 @@ BEGIN TRY
     IF NOT EXISTS (SELECT 1 FROM dbo.Courses WHERE CourseId = 1)
     BEGIN
         SET IDENTITY_INSERT dbo.Courses ON;
-        INSERT INTO dbo.Courses (CourseId, InstructorId, CategoryId, Title, Slug, Description, Price, ThumbnailUrl, Level, Status, AverageRating, StudentCount, NeedsReanalysis, CreatedAt, UpdatedAt) VALUES
+        INSERT INTO dbo.Courses (CourseId, InstructorId, CategoryId, Title, Slug, Description, Price, ThumbnailUrl, Level, Status, AverageRating, StudentCount, CreatedAt, UpdatedAt) VALUES
         -- Khóa 1: Spring Boot
         (1, 2, 1, 
          N'Lập trình Java Spring Boot 3 & Microservices Thực chiến', 
@@ -176,7 +176,7 @@ BEGIN TRY
          N'Khóa học chuyên sâu đưa bạn từ nền tảng Spring Core, Spring Data JPA, Spring Security JWT đến kiến trúc Microservices phân tán với Spring Cloud, Docker, Kafka và Microsoft SQL Server.', 
          1499000.00, 
          N'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=1000&q=80', 
-         N'Intermediate', N'Published', 4.9, 38, 0, DATEADD(MONTH, -6, SYSUTCDATETIME()), SYSUTCDATETIME()),
+         N'Intermediate', N'Published', 4.9, 38, DATEADD(MONTH, -6, SYSUTCDATETIME()), SYSUTCDATETIME()),
 
         -- Khóa 2: ReactJS
         (2, 2, 1, 
@@ -185,7 +185,7 @@ BEGIN TRY
          N'Làm chủ hệ sinh thái Frontend hiện đại: React Hooks nâng cao, Redux Toolkit, Next.js App Router, SSR/SSG, TailwindCSS và tối ưu hiệu năng điểm 100 Lighthouse.', 
          1290000.00, 
          N'https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=1000&q=80', 
-         N'All Levels', N'Published', 4.8, 45, 0, DATEADD(MONTH, -6, SYSUTCDATETIME()), SYSUTCDATETIME()),
+         N'All Levels', N'Published', 4.8, 45, DATEADD(MONTH, -6, SYSUTCDATETIME()), SYSUTCDATETIME()),
 
         -- Khóa 3: Python AI/ML
         (3, 3, 1, 
@@ -194,7 +194,7 @@ BEGIN TRY
          N'Nắm vững toán giải tích và đại số tuyến tính trong AI, xây dựng mô hình Phân loại, Hồi quy, Xử lý ngôn ngữ tự nhiên NLP (Sentiment Analysis) với Scikit-Learn và PyTorch. Đóng gói API FastAPI.', 
          1890000.00, 
          N'https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=1000&q=80', 
-         N'Advanced', N'Published', 4.9, 29, 0, DATEADD(MONTH, -5, SYSUTCDATETIME()), SYSUTCDATETIME()),
+         N'Advanced', N'Published', 4.9, 29, DATEADD(MONTH, -5, SYSUTCDATETIME()), SYSUTCDATETIME()),
 
         -- Khóa 4: DevOps
         (4, 4, 5, 
@@ -203,7 +203,7 @@ BEGIN TRY
          N'Tự động hóa toàn bộ vòng đời phát triển phần mềm với GitHub Actions, container hóa Docker đa tầng, quản lý cụm Kubernetes (EKS) và giám sát hạ tầng với Prometheus & Grafana.', 
          1650000.00, 
          N'https://images.unsplash.com/photo-1607799279861-4dd421887fb3?w=1000&q=80', 
-         N'Intermediate', N'Published', 4.7, 22, 0, DATEADD(MONTH, -5, SYSUTCDATETIME()), SYSUTCDATETIME()),
+         N'Intermediate', N'Published', 4.7, 22, DATEADD(MONTH, -5, SYSUTCDATETIME()), SYSUTCDATETIME()),
 
         -- Khóa 5: Flutter Mobile
         (5, 4, 1, 
@@ -212,7 +212,7 @@ BEGIN TRY
          N'Học viết ứng dụng di động cho cả iOS và Android chỉ với một lần viết mã. Quản lý trạng thái BLoC, tích hợp Firebase Auth, RESTful API và thanh toán qua cổng điện tử.', 
          990000.00, 
          N'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=1000&q=80', 
-         N'Beginner', N'Published', 4.6, 31, 0, DATEADD(MONTH, -4, SYSUTCDATETIME()), SYSUTCDATETIME()),
+         N'Beginner', N'Published', 4.6, 31, DATEADD(MONTH, -4, SYSUTCDATETIME()), SYSUTCDATETIME()),
 
         -- Khóa 6: UI/UX Figma
         (6, 2, 3, 
@@ -221,7 +221,7 @@ BEGIN TRY
          N'Nghiên cứu tâm lý hành vi người dùng (UX Research), xây dựng Wireframe, Auto Layout, Component biến thể và xuất bản Design System hoàn chỉnh cho dự án ứng dụng web và di động.', 
          850000.00, 
          N'https://images.unsplash.com/photo-1581291518857-4e27b48ff24e?w=1000&q=80', 
-         N'Beginner', N'Published', 4.8, 36, 0, DATEADD(MONTH, -4, SYSUTCDATETIME()), SYSUTCDATETIME()),
+         N'Beginner', N'Published', 4.8, 36, DATEADD(MONTH, -4, SYSUTCDATETIME()), SYSUTCDATETIME()),
 
         -- Khóa 7: Agile Scrum
         (7, 3, 2, 
@@ -230,16 +230,16 @@ BEGIN TRY
          N'Áp dụng linh hoạt quy trình Agile Scrum vào môi trường doanh nghiệp công nghệ. Quản lý Product Backlog, lập kế hoạch Sprint, ước lượng điểm Story Point trên Jira và Azure DevOps.', 
          750000.00, 
          N'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1000&q=80', 
-         N'All Levels', N'Published', 4.5, 18, 0, DATEADD(MONTH, -3, SYSUTCDATETIME()), SYSUTCDATETIME()),
+         N'All Levels', N'Published', 4.5, 18, DATEADD(MONTH, -3, SYSUTCDATETIME()), SYSUTCDATETIME()),
 
-        -- Khóa 8: Generative AI (Khóa mới đang chờ duyệt để test tính năng Admin / AI Moderation)
+        -- Khóa 8: Generative AI (Khóa mới đang chờ duyệt để test tính năng Admin Moderation)
         (8, 3, 1, 
          N'Xây dựng Ứng dụng Generative AI với OpenAI API & LangChain', 
          N'xay-dung-ung-dung-generative-ai-langchain', 
          N'Khóa học mới nhất năm 2026: Tích hợp mô hình ngôn ngữ lớn (LLM), kỹ thuật RAG (Retrieval-Augmented Generation) với Vector Database (Pinecone, ChromaDB) để tạo chatbot thông minh.', 
          1590000.00, 
          N'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1000&q=80', 
-         N'Intermediate', N'PendingReview', 0.0, 0, 1, DATEADD(DAY, -5, SYSUTCDATETIME()), SYSUTCDATETIME());
+         N'Intermediate', N'PendingReview', 0.0, 0, DATEADD(DAY, -5, SYSUTCDATETIME()), SYSUTCDATETIME());
         SET IDENTITY_INSERT dbo.Courses OFF;
     END
 
@@ -585,45 +585,9 @@ BEGIN TRY
     END
 
     -- ================================================================================
-    -- 11. SEED COURSE ML ANALYSES & RISK AUDITING (HỆ THỐNG GIÁM SÁT AI MICROSERVICE)
+    -- 11. SEED USER ACTIVITIES (NHẬT KÝ HÀNH VI HOẠT ĐỘNG THỜI GIAN THỰC)
     -- ================================================================================
-    PRINT N'11. Đang nạp Nhật ký Phân tích AI & Cảnh báo an toàn (CourseMlAnalyses)...';
-    IF NOT EXISTS (SELECT 1 FROM dbo.CourseMlAnalyses WHERE Id = 1)
-    BEGIN
-        SET IDENTITY_INSERT dbo.CourseMlAnalyses ON;
-        INSERT INTO dbo.CourseMlAnalyses (Id, CourseId, PrimaryCategory, SubCategory, SuggestedLevel, Confidence, QualityScore, RiskLevel, RawResponseJson, ModelVersion, Status, CreatedAt, ApprovedAt, ApprovedByUserId) VALUES
-        -- Khóa 1 -> 7: Đã duyệt, chất lượng cao, Low Risk
-        (1, 1, N'Lập trình phần mềm', N'Backend Development', N'Intermediate', 0.98, 96, N'Low', 
-         N'{"category": "Development", "confidence": 0.98, "quality_score": 96, "risk": "Low"}', N'ml-course-classifier-v2.1', N'Approved', DATEADD(MONTH, -6, SYSUTCDATETIME()), DATEADD(MONTH, -6, SYSUTCDATETIME()), 1),
-        
-        (2, 2, N'Lập trình phần mềm', N'Frontend Development', N'All Levels', 0.97, 94, N'Low', 
-         N'{"category": "Development", "confidence": 0.97, "quality_score": 94, "risk": "Low"}', N'ml-course-classifier-v2.1', N'Approved', DATEADD(MONTH, -6, SYSUTCDATETIME()), DATEADD(MONTH, -6, SYSUTCDATETIME()), 1),
-        
-        (3, 3, N'Lập trình phần mềm', N'Data Science & AI', N'Advanced', 0.99, 98, N'Low', 
-         N'{"category": "Development", "confidence": 0.99, "quality_score": 98, "risk": "Low"}', N'ml-course-classifier-v2.1', N'Approved', DATEADD(MONTH, -5, SYSUTCDATETIME()), DATEADD(MONTH, -5, SYSUTCDATETIME()), 1),
-        
-        (4, 4, N'Hạ tầng IT & Điện toán đám mây', N'DevOps & Cloud', N'Intermediate', 0.96, 92, N'Low', 
-         N'{"category": "IT & Software", "confidence": 0.96, "quality_score": 92, "risk": "Low"}', N'ml-course-classifier-v2.1', N'Approved', DATEADD(MONTH, -5, SYSUTCDATETIME()), DATEADD(MONTH, -5, SYSUTCDATETIME()), 1),
-        
-        (5, 5, N'Lập trình phần mềm', N'Mobile Development', N'Beginner', 0.95, 90, N'Low', 
-         N'{"category": "Development", "confidence": 0.95, "quality_score": 90, "risk": "Low"}', N'ml-course-classifier-v2.1', N'Approved', DATEADD(MONTH, -4, SYSUTCDATETIME()), DATEADD(MONTH, -4, SYSUTCDATETIME()), 1),
-        
-        (6, 6, N'Thiết kế đồ họa & UI/UX', N'User Experience Design', N'Beginner', 0.98, 95, N'Low', 
-         N'{"category": "Design", "confidence": 0.98, "quality_score": 95, "risk": "Low"}', N'ml-course-classifier-v2.1', N'Approved', DATEADD(MONTH, -4, SYSUTCDATETIME()), DATEADD(MONTH, -4, SYSUTCDATETIME()), 1),
-        
-        (7, 7, N'Kinh doanh & Quản lý', N'Project Management', N'All Levels', 0.94, 88, N'Low', 
-         N'{"category": "Business", "confidence": 0.94, "quality_score": 88, "risk": "Low"}', N'ml-course-classifier-v2.1', N'Approved', DATEADD(MONTH, -3, SYSUTCDATETIME()), DATEADD(MONTH, -3, SYSUTCDATETIME()), 1),
-
-        -- Khóa 8: Khóa mới đăng tải, độ tin cậy thấp (61%) và có cờ High Risk để Admin can thiệp duyệt thủ công
-        (8, 8, N'Lập trình phần mềm', N'Generative AI & LLM', N'Intermediate', 0.61, 65, N'High', 
-         N'{"category": "Development", "confidence": 0.61, "quality_score": 65, "risk": "High", "flags": ["new_instructor_topic", "rapid_content_upload"]}', N'ml-course-classifier-v2.1', N'NeedsManualReview', DATEADD(DAY, -2, SYSUTCDATETIME()), NULL, NULL);
-        SET IDENTITY_INSERT dbo.CourseMlAnalyses OFF;
-    END
-
-    -- ================================================================================
-    -- 12. SEED USER ACTIVITIES (NHẬT KÝ HÀNH VI HOẠT ĐỘNG THỜI GIAN THỰC)
-    -- ================================================================================
-    PRINT N'12. Đang nạp Nhật ký hành động người dùng (UserActivities)...';
+    PRINT N'11. Đang nạp Nhật ký hành động người dùng (UserActivities)...';
     IF NOT EXISTS (SELECT 1 FROM dbo.UserActivities WHERE Id = 1)
     BEGIN
         SET IDENTITY_INSERT dbo.UserActivities ON;
@@ -638,9 +602,9 @@ BEGIN TRY
     END
 
     -- ================================================================================
-    -- 13. SEED WISHLISTS (DANH SÁCH YÊU THÍCH MẪU)
+    -- 12. SEED WISHLISTS (DANH SÁCH YÊU THÍCH MẪU)
     -- ================================================================================
-    PRINT N'13. Đang nạp Danh sách khóa học yêu thích (Wishlists)...';
+    PRINT N'12. Đang nạp Danh sách khóa học yêu thích (Wishlists)...';
     IF NOT EXISTS (SELECT 1 FROM dbo.Wishlists WHERE Id = 1)
     BEGIN
         INSERT INTO dbo.Wishlists (UserId, CourseId, AddedAt) VALUES 
@@ -657,8 +621,7 @@ BEGIN TRY
     PRINT N'    - 30 Đơn hàng thanh toán thành công trải dài 6 tháng (Doanh thu > 55,000,000 VNĐ)';
     PRINT N'    - 16 Ghi danh học tập & Tiến độ học tập chi tiết';
     PRINT N'    - 3 Chứng chỉ tốt nghiệp cấp thực tế';
-    PRINT N'    - 18 Nhận xét đánh giá phân tích cảm xúc AI (Positive/Neutral/Negative)';
-    PRINT N'    - 8 Bản ghi phân tích AI giám sát chất lượng và cảnh báo rủi ro an toàn';
+    PRINT N'    - 18 Nhận xét đánh giá (Positive/Neutral/Negative)';
     PRINT N'====================================================================================';
 
 END TRY

@@ -2,7 +2,7 @@
 -- DỰ ÁN: EDUMY ELEARNING PLATFORM
 -- KỊCH BẢN TẠO CƠ SỞ DỮ LIỆU MICROSOFT SQL SERVER (DDL SCRIPT)
 -- HỆ QUẢN TRỊ: Microsoft SQL Server 2017 / 2019 / 2022 / Azure SQL Database
--- SỐ LƯỢNG BẢNG: 30 Bảng nghiệp vụ chuẩn 3NF
+-- SỐ LƯỢNG BẢNG: 28 Bảng nghiệp vụ chuẩn 3NF
 -- TÁC GIẢ: Antigravity AI & Edumy Engineering Team
 -- ====================================================================================
 
@@ -27,8 +27,6 @@ GO
 -- ====================================================================================
 -- BƯỚC 1: XÓA CÁC BẢNG CŨ NẾU ĐÃ TỒN TẠI (THEO THỨ TỰ PHỤ THUỘC TỪ DƯỚI LÊN)
 -- ====================================================================================
-DROP TABLE IF EXISTS dbo.CourseMlAnalysisTags;
-DROP TABLE IF EXISTS dbo.CourseMlAnalyses;
 DROP TABLE IF EXISTS dbo.UserActivities;
 DROP TABLE IF EXISTS dbo.SearchHistories;
 DROP TABLE IF EXISTS dbo.Wishlists;
@@ -169,7 +167,6 @@ CREATE TABLE dbo.Courses (
     Status NVARCHAR(50) NOT NULL CONSTRAINT DF_Courses_Status DEFAULT 'Draft',
     AverageRating FLOAT NOT NULL CONSTRAINT DF_Courses_AverageRating DEFAULT 0.0,
     StudentCount INT NOT NULL CONSTRAINT DF_Courses_StudentCount DEFAULT 0,
-    NeedsReanalysis BIT NOT NULL CONSTRAINT DF_Courses_NeedsReanalysis DEFAULT 0,
     CreatedAt DATETIME2 NOT NULL CONSTRAINT DF_Courses_CreatedAt DEFAULT SYSUTCDATETIME(),
     UpdatedAt DATETIME2 NOT NULL CONSTRAINT DF_Courses_UpdatedAt DEFAULT SYSUTCDATETIME(),
     CONSTRAINT PK_Courses PRIMARY KEY CLUSTERED (CourseId),
@@ -418,43 +415,10 @@ CREATE TABLE dbo.Wishlists (
 GO
 
 -- ====================================================================================
--- BƯỚC 7: TẠO CÁC BẢNG AI/ML & THEO DÕI HÀNH VI (NHÓM VII)
+-- BƯỚC 7: TẠO CÁC BẢNG THEO DÕI HÀNH VI (NHÓM VII)
 -- ====================================================================================
 
--- 27. BẢNG CourseMlAnalyses (Lịch sử phân tích của AI)
-CREATE TABLE dbo.CourseMlAnalyses (
-    Id INT IDENTITY(1,1) NOT NULL,
-    CourseId INT NOT NULL,
-    PrimaryCategory NVARCHAR(100) NULL,
-    SubCategory NVARCHAR(100) NULL,
-    SuggestedLevel NVARCHAR(50) NULL,
-    Confidence FLOAT NULL,
-    QualityScore INT NULL,
-    RiskLevel NVARCHAR(50) NULL,
-    RawResponseJson NVARCHAR(MAX) NULL,
-    ModelVersion NVARCHAR(100) NULL,
-    Status NVARCHAR(50) NOT NULL CONSTRAINT DF_CourseMlAnalyses_Status DEFAULT 'Pending',
-    CreatedAt DATETIME2 NOT NULL CONSTRAINT DF_CourseMlAnalyses_CreatedAt DEFAULT SYSUTCDATETIME(),
-    ApprovedAt DATETIME2 NULL,
-    ApprovedByUserId INT NULL,
-    CONSTRAINT PK_CourseMlAnalyses PRIMARY KEY CLUSTERED (Id),
-    CONSTRAINT FK_CourseMlAnalyses_Courses FOREIGN KEY (CourseId) REFERENCES dbo.Courses(CourseId) ON DELETE CASCADE,
-    CONSTRAINT FK_CourseMlAnalyses_Users FOREIGN KEY (ApprovedByUserId) REFERENCES dbo.Users(UserId) ON DELETE NO ACTION
-);
-GO
-
--- 28. BẢNG CourseMlAnalysisTags (Thẻ từ khóa do AI đề xuất)
-CREATE TABLE dbo.CourseMlAnalysisTags (
-    Id INT IDENTITY(1,1) NOT NULL,
-    CourseMlAnalysisId INT NOT NULL,
-    TagName NVARCHAR(100) NOT NULL,
-    Confidence FLOAT NULL,
-    CONSTRAINT PK_CourseMlAnalysisTags PRIMARY KEY CLUSTERED (Id),
-    CONSTRAINT FK_CourseMlAnalysisTags_Analysis FOREIGN KEY (CourseMlAnalysisId) REFERENCES dbo.CourseMlAnalyses(Id) ON DELETE CASCADE
-);
-GO
-
--- 29. BẢNG SearchHistories (Lịch sử tìm kiếm)
+-- 27. BẢNG SearchHistories (Lịch sử tìm kiếm)
 CREATE TABLE dbo.SearchHistories (
     Id INT IDENTITY(1,1) NOT NULL,
     UserId INT NULL,
@@ -465,7 +429,7 @@ CREATE TABLE dbo.SearchHistories (
 );
 GO
 
--- 30. BẢNG UserActivities (Nhật ký hành vi người dùng)
+-- 28. BẢNG UserActivities (Nhật ký hành vi người dùng)
 CREATE TABLE dbo.UserActivities (
     Id INT IDENTITY(1,1) NOT NULL,
     UserId INT NULL,
@@ -502,6 +466,6 @@ CREATE NONCLUSTERED INDEX IX_LessonProgresses_User_Course ON dbo.LessonProgresse
 CREATE NONCLUSTERED INDEX IX_RefreshTokens_Token ON dbo.RefreshTokens (Token);
 GO
 
-PRINT N'Đã tạo thành công 30 bảng và hệ thống Index tối ưu hóa.';
+PRINT N'Đã tạo thành công 28 bảng và hệ thống Index tối ưu hóa.';
 GO
 
