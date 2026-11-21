@@ -3,7 +3,6 @@ import { useNavigate, Link } from 'react-router-dom';
 import api from '../api/axiosConfig';
 import { AuthContext } from '../context/AuthContext';
 import {
-  Sparkles,
   ArrowRight,
   ArrowLeft,
   CheckCircle2,
@@ -32,11 +31,6 @@ function CourseCreate() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // AI Classification suggestion
-  const [suggestLoading, setSuggestLoading] = useState(false);
-  const [suggestion, setSuggestion] = useState(null);
-  const [suggestError, setSuggestError] = useState('');
-
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -64,49 +58,6 @@ function CourseCreate() {
     if (file) {
       setThumbnailFile(file);
       setThumbnailPreview(URL.createObjectURL(file));
-    }
-  };
-
-  // Trigger AI Category classification
-  const handleSuggestCategory = async () => {
-    if (!formData.title.trim()) {
-      setSuggestError('Vui lòng nhập Tiêu đề khóa học trước khi yêu cầu AI phân loại.');
-      return;
-    }
-    setSuggestLoading(true);
-    setSuggestError('');
-    setSuggestion(null);
-
-    try {
-      const res = await api.post('/MLTest/course-classification', {
-        title: formData.title,
-        description: formData.description
-      });
-      if (res.data?.success) {
-        setSuggestion(res.data.suggestion);
-      } else {
-        setSuggestError(res.data?.message || 'Không thể lấy đề xuất từ AI lúc này.');
-      }
-    } catch (err) {
-      setSuggestError('Dịch vụ AI đang bận. Bạn có thể chọn danh mục thủ công.');
-    } finally {
-      setSuggestLoading(false);
-    }
-  };
-
-  // Apply suggested category
-  const applySuggestion = () => {
-    if (!suggestion) return;
-    const matched = categories.find(
-      (c) => c.name.toLowerCase() === suggestion.predictedCategory.toLowerCase()
-    );
-    if (matched) {
-      setFormData((prev) => ({
-        ...prev,
-        categoryId: matched.categoryId.toString()
-      }));
-    } else {
-      setSuggestError(`Không tìm thấy danh mục '${suggestion.predictedCategory}' khớp trong cơ sở dữ liệu.`);
     }
   };
 
@@ -294,7 +245,7 @@ function CourseCreate() {
           )}
 
           {/* ----------------------------------------------------------------
-              STEP 2: MEDIA & AI CLASSIFICATION
+              STEP 2: MEDIA & CATEGORY
               ---------------------------------------------------------------- */}
           {step === 2 && (
             <div>
@@ -308,59 +259,13 @@ function CourseCreate() {
                   value={formData.categoryId}
                   onChange={handleInputChange}
                 >
-                  <option value="">-- Chọn danh mục thủ công hoặc dùng AI gợi ý --</option>
+                  <option value="">-- Chọn danh mục --</option>
                   {categories.map((cat) => (
                     <option key={cat.categoryId} value={cat.categoryId}>
                       {cat.name}
                     </option>
                   ))}
                 </select>
-
-                {/* AI Assistant Suggester Box */}
-                <div className="ai-suggester-panel">
-                  <div className="ai-suggester-header">
-                    <span className="fw-bold small text-dark d-flex align-items-center gap-1">
-                      <Sparkles size={16} className="text-primary" /> Trợ lý AI gợi ý Danh mục:
-                    </span>
-                    <button
-                      type="button"
-                      onClick={handleSuggestCategory}
-                      disabled={suggestLoading}
-                      className="btn-trigger-ai"
-                    >
-                      {suggestLoading ? 'AI đang phân tích...' : 'Phân tích tự động'}
-                    </button>
-                  </div>
-
-                  {suggestError && (
-                    <p className="text-danger small mb-0 mt-1">{suggestError}</p>
-                  )}
-
-                  {suggestion && (
-                    <div className="ai-recommendation-result">
-                      <div className="d-flex justify-content-between align-items-center mb-1">
-                        <div>
-                          <strong>Gợi ý:</strong> {suggestion.predictedCategory}
-                          {suggestion.confidenceAvailable && suggestion.confidence !== null && (
-                            <span className="badge bg-success bg-opacity-10 text-success ms-2">
-                              Độ tin cậy {(suggestion.confidence * 100).toFixed(0)}%
-                            </span>
-                          )}
-                        </div>
-                        <button
-                          type="button"
-                          onClick={applySuggestion}
-                          className="btn-apply-suggestion"
-                        >
-                          Áp dụng ngay
-                        </button>
-                      </div>
-                      <small className="text-muted d-block">
-                        Mô hình: {suggestion.modelType} ({suggestion.modelVersion})
-                      </small>
-                    </div>
-                  )}
-                </div>
               </div>
 
               {/* Thumbnail upload */}

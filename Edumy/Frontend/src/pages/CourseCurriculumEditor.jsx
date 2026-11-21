@@ -10,7 +10,6 @@ import {
   Eye,
   EyeOff,
   Layers,
-  Sparkles,
   ChevronDown,
   ChevronUp,
   AlertCircle,

@@ -35,14 +35,6 @@ function AdminDashboard() {
   const [stats, setStats] = useState({ totalUsers: 0, totalCourses: 0, totalRevenue: 0 });
   const [courses, setCourses] = useState([]);
   const [users, setUsers] = useState([]);
-  const [mlStats, setMlStats] = useState({ 
-    totalAnalyses: 0, 
-    highRiskCount: 0, 
-    pendingReviews: 0, 
-    totalReviews: 0, 
-    sentimentStats: [], 
-    analysesHistory: [] 
-  });
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [activeTab, setActiveTab] = useState('courses'); // 'courses', 'categories', 'orders', 'users', 'reviews', 'qa'
@@ -58,23 +50,7 @@ function AdminDashboard() {
   const [userSearch, setUserSearch] = useState('');
   const [userRoleFilter, setUserRoleFilter] = useState('ALL');
   const [userStatusFilter, setUserStatusFilter] = useState('ALL');
-
-  // Override Modal
-  const [showOverrideModal, setShowOverrideModal] = useState(false);
-  const [selectedAnalysisId, setSelectedAnalysisId] = useState(null);
-  const [overrideCategory, setOverrideCategory] = useState('Development');
   const [feedbackMsg, setFeedbackMsg] = useState(null);
-
-  const categoriesOptions = [
-    'Development', 
-    'Business', 
-    'Design', 
-    'Marketing', 
-    'IT & Software', 
-    'Office Productivity', 
-    'Personal Development', 
-    'Photography'
-  ];
 
   const showNotification = (msg, type = 'success') => {
     setFeedbackMsg({ text: msg, type });
@@ -193,31 +169,6 @@ function AdminDashboard() {
     } catch (error) {
       console.error('Failed to update user role', error);
       showNotification('Lỗi khi phân quyền người dùng', 'error');
-    }
-  };
-
-  const handleApproveMl = async (analysisId) => {
-    try {
-      await api.post(`/admin/ml-analyses/${analysisId}/approve`);
-      showNotification('Đã duyệt nhãn AI thành công!');
-      fetchDashboardData(true);
-    } catch (error) {
-      console.error('Failed to approve ML analysis', error);
-      showNotification('Lỗi duyệt nhãn AI', 'error');
-    }
-  };
-
-  const handleOverrideMlSubmit = async () => {
-    try {
-      await api.post(`/admin/ml-analyses/${selectedAnalysisId}/override`, {
-        categoryName: overrideCategory
-      });
-      showNotification('Đã ghi đè danh mục AI thành công!');
-      setShowOverrideModal(false);
-      fetchDashboardData(true);
-    } catch (error) {
-      console.error('Failed to override ML classification', error);
-      showNotification('Lỗi ghi đè danh mục', 'error');
     }
   };
 
@@ -983,60 +934,6 @@ function AdminDashboard() {
           </div>
         )}
       </main>
-
-      {/* Override Category Modal Dialog */}
-      {showOverrideModal && (
-        <div className="admin-modal-overlay" onClick={() => setShowOverrideModal(false)}>
-          <div className="admin-modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="admin-modal-header">
-              <h4 className="admin-modal-title">Ghi đè Danh mục Khóa học</h4>
-              <button 
-                type="button" 
-                className="admin-modal-close"
-                onClick={() => setShowOverrideModal(false)}
-              >
-                &times;
-              </button>
-            </div>
-            <div className="admin-modal-body">
-              <p style={{ fontSize: '0.88rem', color: '#64748b', marginBottom: '1.25rem' }}>
-                Chọn danh mục chính xác do chuyên viên quản trị viên thẩm định thay cho kết quả tự động của mô hình AI:
-              </p>
-              <div>
-                <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#334155', marginBottom: '0.5rem' }}>
-                  Danh mục chuẩn:
-                </label>
-                <select 
-                  value={overrideCategory} 
-                  onChange={(e) => setOverrideCategory(e.target.value)}
-                  className="admin-filter-select"
-                  style={{ width: '100%', padding: '0.6rem 0.75rem' }}
-                >
-                  {categoriesOptions.map(cat => (
-                    <option key={cat} value={cat}>{cat}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
-            <div className="admin-modal-footer">
-              <button 
-                type="button" 
-                className="btn-admin-action outline-secondary"
-                onClick={() => setShowOverrideModal(false)}
-              >
-                Hủy bỏ
-              </button>
-              <button 
-                type="button" 
-                className="btn-admin-action success"
-                onClick={handleOverrideMlSubmit}
-              >
-                Lưu ghi đè
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
