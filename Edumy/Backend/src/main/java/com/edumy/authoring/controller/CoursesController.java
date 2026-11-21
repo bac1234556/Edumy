@@ -151,8 +151,7 @@ public class CoursesController {
             // UC-G01: Only display public/published courses in public catalog (exclude Hidden, Draft, Rejected, PendingApproval)
             String st = c.getStatus();
             if (st != null && ("Hidden".equalsIgnoreCase(st) || "Draft".equalsIgnoreCase(st)
-                    || "Rejected".equalsIgnoreCase(st) || "PendingApproval".equalsIgnoreCase(st)
-                    || "Analyzing".equalsIgnoreCase(st))) {
+                    || "Rejected".equalsIgnoreCase(st) || "PendingApproval".equalsIgnoreCase(st))) {
                 return false;
             }
             boolean match = true;
@@ -348,12 +347,6 @@ public class CoursesController {
             return ResponseEntity.status(403).build();
         }
 
-        if (!Objects.equals(existing.getTitle(), course.getTitle()) || !Objects.equals(existing.getDescription(), course.getDescription())) {
-            course.setNeedsReanalysis(true);
-        } else {
-            course.setNeedsReanalysis(existing.getNeedsReanalysis());
-        }
-
         course.setUpdatedAt(LocalDateTime.now());
         courseRepository.save(course);
 
@@ -386,7 +379,7 @@ public class CoursesController {
             newStatus = body != null ? body.toString().replace("\"", "").trim() : "";
         }
 
-        List<String> validStatuses = Arrays.asList("Draft", "Analyzing", "NeedsReview", "PendingApproval", "Published");
+        List<String> validStatuses = Arrays.asList("Draft", "NeedsReview", "PendingApproval", "Published");
         if (!validStatuses.contains(newStatus)) {
             return ResponseEntity.badRequest().body("Invalid status.");
         }
@@ -401,18 +394,6 @@ public class CoursesController {
 
         if ("Published".equals(newStatus) && !isUserInRole("Admin")) {
             return ResponseEntity.status(403).body("Only admins can publish courses.");
-        }
-
-        if ("Analyzing".equals(newStatus)) {
-            course.setStatus("PendingApproval");
-            course.setNeedsReanalysis(false);
-            course.setUpdatedAt(LocalDateTime.now());
-            courseRepository.save(course);
-
-            Map<String, Object> response = new HashMap<>();
-            response.put("message", "Analysis completed. Course set to PendingApproval.");
-            response.put("categoryId", course.getCategoryId());
-            return ResponseEntity.ok(response);
         }
 
         course.setStatus(newStatus);

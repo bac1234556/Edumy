@@ -7,7 +7,6 @@ import {
   DollarSign,
   Star,
   Sparkles,
-  AlertTriangle,
   PlayCircle,
   Layers,
   Plus,
@@ -216,19 +215,6 @@ function InstructorDashboard() {
       fetchQaQueue();
     } catch (err) {
       alert('Không thể đổi trạng thái câu hỏi.');
-    }
-  };
-
-  // Trigger AI content reanalysis
-  const handleTriggerAnalysis = async (courseId) => {
-    try {
-      setLoading(true);
-      await api.put(`/courses/${courseId}/status`, { status: "Analyzing" });
-      alert('Đã kích hoạt phân tích nội dung AI thành công! Khóa học chuyển sang trạng thái Phân tích/Chờ duyệt.');
-      fetchData();
-    } catch (err) {
-      alert('Không thể kích hoạt AI phân tích: ' + (err.response?.data?.message || err.message));
-      setLoading(false);
     }
   };
 
@@ -642,12 +628,6 @@ function InstructorDashboard() {
                             </span>
                             <span>{course.enrollmentCount || 0} học viên</span>
                           </div>
-
-                          {course.needsReanalysis && (
-                            <div className="alert alert-warning py-1 px-2 small mb-3 d-flex align-items-center gap-1">
-                              <AlertTriangle size={14} /> Nội dung bài học vừa thay đổi
-                            </div>
-                          )}
 
                           {/* Action Buttons */}
                           <div className="studio-course-actions-row flex-wrap">

@@ -68,10 +68,6 @@ public class Course {
     @Builder.Default
     private Integer studentCount = 0;
 
-    @Column(name = "NeedsReanalysis")
-    @Builder.Default
-    private Boolean needsReanalysis = false;
-
     @Column(name = "ReviewNote", length = 1000)
     private String reviewNote;
 
