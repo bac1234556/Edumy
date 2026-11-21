@@ -1,0 +1,104 @@
+{
+  "wdPub": {
+    "status": 409,
+    "ok": false,
+    "elapsedMs": 42.9,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 246,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:27:23 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": false,
+      "message": "Chỉ có thể rút yêu cầu duyệt khi khóa học đang ở trạng thái chờ duyệt (PendingApproval).",
+      "data": null,
+      "errors": {
+        "code": "CONFLICT",
+        "fields": null,
+        "traceId": "d1ea640e-62b2-45c8-8590-949d04b0adb4"
+      }
+    },
+    "rawText": "{\"success\":false,\"message\":\"Chỉ có thể rút yêu cầu duyệt khi khóa học đang ở trạng thái chờ duyệt (PendingApproval).\",\"data\":null,\"errors\":{\"code\":\"CONFLICT\",\"fields\":null,\"traceId\":\"d1ea640e-62b2-45c8-8590-949d04b0adb4\"}}",
+    "data": null
+  },
+  "wdGvb": {
+    "status": 403,
+    "ok": false,
+    "elapsedMs": 53.5,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 233,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:27:23 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": false,
+      "message": "Bạn không có quyền thực hiện thao tác này trên khóa học của giảng viên khác.",
+      "data": null,
+      "errors": {
+        "code": "FORBIDDEN",
+        "fields": null,
+        "traceId": "fa400ba6-9585-4f72-a381-48ed4088ca55"
+      }
+    },
+    "rawText": "{\"success\":false,\"message\":\"Bạn không có quyền thực hiện thao tác này trên khóa học của giảng viên khác.\",\"data\":null,\"errors\":{\"code\":\"FORBIDDEN\",\"fields\":null,\"traceId\":\"fa400ba6-9585-4f72-a381-48ed4088ca55\"}}",
+    "data": null
+  },
+  "wd404": {
+    "status": 404,
+    "ok": false,
+    "elapsedMs": 31.3,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 166,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:27:23 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": false,
+      "message": "Không tìm thấy khóa học.",
+      "data": null,
+      "errors": {
+        "code": "NOT_FOUND",
+        "fields": null,
+        "traceId": "629ab572-9269-4e15-9ae6-15796ebb6d0d"
+      }
+    },
+    "rawText": "{\"success\":false,\"message\":\"Không tìm thấy khóa học.\",\"data\":null,\"errors\":{\"code\":\"NOT_FOUND\",\"fields\":null,\"traceId\":\"629ab572-9269-4e15-9ae6-15796ebb6d0d\"}}",
+    "data": null
+  }
+}

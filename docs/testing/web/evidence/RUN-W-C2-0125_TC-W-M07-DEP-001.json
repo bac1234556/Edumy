@@ -1,0 +1,35 @@
+{
+  "elapsedSec": 78,
+  "services": [
+    {
+      "name": "backend",
+      "state": "running",
+      "health": ""
+    },
+    {
+      "name": "database",
+      "state": "running",
+      "health": "healthy"
+    },
+    {
+      "name": "frontend",
+      "state": "running",
+      "health": ""
+    },
+    {
+      "name": "grafana",
+      "state": "running",
+      "health": ""
+    },
+    {
+      "name": "mailpit",
+      "state": "running",
+      "health": "healthy"
+    },
+    {
+      "name": "prometheus",
+      "state": "running",
+      "health": ""
+    }
+  ]
+}

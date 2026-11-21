@@ -1,0 +1,6 @@
+{
+  "status": "Blocked",
+  "cause": "BLOCKED_BROWSER_CONNECTION_FAILED",
+  "error": "Could not find DevToolsActivePort for chrome (ENOENT)",
+  "note": "Chrome DevTools remote debugging (DevToolsActivePort) chưa bật -> chưa kiểm tra visual Responsive 360/768/1366px trên trình duyệt trong C1."
+}

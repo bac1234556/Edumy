@@ -1,0 +1,48 @@
+{
+  "qzId": 79,
+  "qzFail": {
+    "quizAttemptId": 5,
+    "score": 2,
+    "totalPoints": 2,
+    "passed": true,
+    "results": [
+      {
+        "questionId": 91,
+        "selectedAnswerId": 355,
+        "correctAnswerId": 355,
+        "isCorrect": true,
+        "explanation": null
+      },
+      {
+        "questionId": 92,
+        "selectedAnswerId": 357,
+        "correctAnswerId": 357,
+        "isCorrect": true,
+        "explanation": null
+      }
+    ]
+  },
+  "qzPass": {
+    "quizAttemptId": 6,
+    "score": 2,
+    "totalPoints": 2,
+    "passed": true,
+    "results": [
+      {
+        "questionId": 91,
+        "selectedAnswerId": 355,
+        "correctAnswerId": 355,
+        "isCorrect": true,
+        "explanation": null
+      },
+      {
+        "questionId": 92,
+        "selectedAnswerId": 357,
+        "correctAnswerId": 357,
+        "isCorrect": true,
+        "explanation": null
+      }
+    ]
+  },
+  "qz404": 404
+}

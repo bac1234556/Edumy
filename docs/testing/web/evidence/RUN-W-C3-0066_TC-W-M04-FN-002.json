@@ -1,0 +1,188 @@
+{
+  "cpOk": {
+    "status": 200,
+    "ok": true,
+    "elapsedMs": 9.7,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 197,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:38:47 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": true,
+      "message": "Áp dụng mã giảm giá thành công!",
+      "data": {
+        "discountPercentage": 20,
+        "code": "QAGIAM20",
+        "id": 4,
+        "message": "Áp dụng mã giảm giá thành công!"
+      },
+      "errors": null
+    },
+    "rawText": "{\"success\":true,\"message\":\"Áp dụng mã giảm giá thành công!\",\"data\":{\"discountPercentage\":20.00,\"code\":\"QAGIAM20\",\"id\":4,\"message\":\"Áp dụng mã giảm giá thành công!\"},\"errors\":null}",
+    "data": {
+      "discountPercentage": 20,
+      "code": "QAGIAM20",
+      "id": 4,
+      "message": "Áp dụng mã giảm giá thành công!"
+    }
+  },
+  "cpExp": {
+    "status": 400,
+    "ok": false,
+    "elapsedMs": 9.8,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 101,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "close",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:38:47 GMT",
+      "expires": "0",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": false,
+      "message": "Mã giảm giá đã hết hạn sử dụng.",
+      "data": null,
+      "errors": null
+    },
+    "rawText": "{\"success\":false,\"message\":\"Mã giảm giá đã hết hạn sử dụng.\",\"data\":null,\"errors\":null}",
+    "data": null
+  },
+  "cpInact": {
+    "status": 400,
+    "ok": false,
+    "elapsedMs": 7.1,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 104,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "close",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:38:47 GMT",
+      "expires": "0",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": false,
+      "message": "Mã giảm giá này hiện không khả dụng.",
+      "data": null,
+      "errors": null
+    },
+    "rawText": "{\"success\":false,\"message\":\"Mã giảm giá này hiện không khả dụng.\",\"data\":null,\"errors\":null}",
+    "data": null
+  },
+  "cpMiss": {
+    "status": 404,
+    "ok": false,
+    "elapsedMs": 15.6,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 91,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:38:47 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": false,
+      "message": "Mã giảm giá không tồn tại.",
+      "data": null,
+      "errors": null
+    },
+    "rawText": "{\"success\":false,\"message\":\"Mã giảm giá không tồn tại.\",\"data\":null,\"errors\":null}",
+    "data": null
+  },
+  "coWithCpn": {
+    "status": 200,
+    "ok": true,
+    "elapsedMs": 44.8,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 681,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:38:47 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": true,
+      "message": "Đơn hàng đã được tạo. Vui lòng quét mã VietQR để thanh toán.",
+      "data": {
+        "amount": 240000,
+        "orderId": 2085,
+        "accountName": "LE VIET BAC",
+        "bankName": "BIDV (Ngân hàng TMCP Đầu tư và Phát triển Việt Nam)",
+        "paymentUrl": "/payment?orderId=2085&amount=240000.0000",
+        "message": "Đơn hàng đã được tạo. Vui lòng quét mã VietQR để thanh toán.",
+        "totalAmount": 240000,
+        "transferContent": "EDUMY 2085",
+        "bankId": "BIDV",
+        "isFree": false,
+        "qrImageUrl": "https://img.vietqr.io/image/BIDV-96247BAC206-compact2.png?amount=240000&addInfo=EDUMY+2085&accountName=LE+VIET+BAC",
+        "accountNo": "96247BAC206",
+        "status": "Pending"
+      },
+      "errors": null
+    },
+    "rawText": "{\"success\":true,\"message\":\"Đơn hàng đã được tạo. Vui lòng quét mã VietQR để thanh toán.\",\"data\":{\"amount\":240000.0000,\"orderId\":2085,\"accountName\":\"LE VIET BAC\",\"bankName\":\"BIDV (Ngân hàng TMCP Đầu tư và Phát triển Việt Nam)\",\"paymentUrl\":\"/payment?orderId=2085&amount=240000.0000\",\"message\":\"Đơn hàng đã được tạo. Vui lòng quét mã VietQR để thanh toán.\",\"totalAmount\":240000.0000,\"transferContent\":\"EDUMY 2085\",\"bankId\":\"BIDV\",\"isFree\":false,\"qrImageUrl\":\"https://img.vietqr.io/image/BIDV-96247BAC206-compact2.png?amount=240000&addInfo=EDUMY+2085&accountName=LE+VIET+BAC\",\"accountNo\":\"96247BAC206\",\"status\":\"Pending\"},\"errors\":null}",
+    "data": {
+      "amount": 240000,
+      "orderId": 2085,
+      "accountName": "LE VIET BAC",
+      "bankName": "BIDV (Ngân hàng TMCP Đầu tư và Phát triển Việt Nam)",
+      "paymentUrl": "/payment?orderId=2085&amount=240000.0000",
+      "message": "Đơn hàng đã được tạo. Vui lòng quét mã VietQR để thanh toán.",
+      "totalAmount": 240000,
+      "transferContent": "EDUMY 2085",
+      "bankId": "BIDV",
+      "isFree": false,
+      "qrImageUrl": "https://img.vietqr.io/image/BIDV-96247BAC206-compact2.png?amount=240000&addInfo=EDUMY+2085&accountName=LE+VIET+BAC",
+      "accountNo": "96247BAC206",
+      "status": "Pending"
+    }
+  }
+}

@@ -1,0 +1,101 @@
+{
+  "g1": {
+    "status": 400,
+    "ok": false,
+    "elapsedMs": 17.9,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 175,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "close",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 15:25:23 GMT",
+      "expires": "0",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": false,
+      "message": "Thiếu Google OAuth token hợp lệ.",
+      "data": null,
+      "errors": {
+        "code": "BAD_REQUEST",
+        "fields": null,
+        "traceId": "39847c5d-ae3e-4f24-8598-f362009210cc"
+      }
+    },
+    "rawText": "{\"success\":false,\"message\":\"Thiếu Google OAuth token hợp lệ.\",\"data\":null,\"errors\":{\"code\":\"BAD_REQUEST\",\"fields\":null,\"traceId\":\"39847c5d-ae3e-4f24-8598-f362009210cc\"}}",
+    "data": null
+  },
+  "g2": {
+    "status": 400,
+    "ok": false,
+    "elapsedMs": 11.6,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 175,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "close",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 15:25:23 GMT",
+      "expires": "0",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": false,
+      "message": "Thiếu Google OAuth token hợp lệ.",
+      "data": null,
+      "errors": {
+        "code": "BAD_REQUEST",
+        "fields": null,
+        "traceId": "8dafc36d-4191-4978-883b-2a069d2e82fa"
+      }
+    },
+    "rawText": "{\"success\":false,\"message\":\"Thiếu Google OAuth token hợp lệ.\",\"data\":null,\"errors\":{\"code\":\"BAD_REQUEST\",\"fields\":null,\"traceId\":\"8dafc36d-4191-4978-883b-2a069d2e82fa\"}}",
+    "data": null
+  },
+  "g3": {
+    "status": 400,
+    "ok": false,
+    "elapsedMs": 13.1,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 175,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "close",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 15:25:23 GMT",
+      "expires": "0",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": false,
+      "message": "Thiếu Google OAuth token hợp lệ.",
+      "data": null,
+      "errors": {
+        "code": "BAD_REQUEST",
+        "fields": null,
+        "traceId": "284602e5-eda4-4bbf-81b4-d85491b916ad"
+      }
+    },
+    "rawText": "{\"success\":false,\"message\":\"Thiếu Google OAuth token hợp lệ.\",\"data\":null,\"errors\":{\"code\":\"BAD_REQUEST\",\"fields\":null,\"traceId\":\"284602e5-eda4-4bbf-81b4-d85491b916ad\"}}",
+    "data": null
+  }
+}

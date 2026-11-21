@@ -1,0 +1,131 @@
+{
+  "wdNoAcc": {
+    "status": 422,
+    "ok": false,
+    "elapsedMs": 71.3,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 226,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 15:26:24 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": false,
+      "message": "Vui lòng khai báo tài khoản ngân hàng nhận tiền trước khi rút.",
+      "data": null,
+      "errors": {
+        "code": "PAYOUT_ACCOUNT_REQUIRED",
+        "fields": null,
+        "traceId": "d1514f7d-d7ef-474e-a528-0aebf6c32bf4"
+      }
+    },
+    "rawText": "{\"success\":false,\"message\":\"Vui lòng khai báo tài khoản ngân hàng nhận tiền trước khi rút.\",\"data\":null,\"errors\":{\"code\":\"PAYOUT_ACCOUNT_REQUIRED\",\"fields\":null,\"traceId\":\"d1514f7d-d7ef-474e-a528-0aebf6c32bf4\"}}",
+    "data": null
+  },
+  "wdLow": {
+    "status": 422,
+    "ok": false,
+    "elapsedMs": 18,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 196,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 15:26:24 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": false,
+      "message": "Số tiền rút tối thiểu là 1000000 đ.",
+      "data": null,
+      "errors": {
+        "code": "WITHDRAWAL_BELOW_MINIMUM",
+        "fields": null,
+        "traceId": "3389a155-1a2e-472e-a72e-8d3db736685e"
+      }
+    },
+    "rawText": "{\"success\":false,\"message\":\"Số tiền rút tối thiểu là 1000000 đ.\",\"data\":null,\"errors\":{\"code\":\"WITHDRAWAL_BELOW_MINIMUM\",\"fields\":null,\"traceId\":\"3389a155-1a2e-472e-a72e-8d3db736685e\"}}",
+    "data": null
+  },
+  "wdHigh": {
+    "status": 422,
+    "ok": false,
+    "elapsedMs": 38.5,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 230,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 15:26:24 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": false,
+      "message": "Số tiền rút (2870001 đ) vượt quá số dư khả dụng (2870000 đ).",
+      "data": null,
+      "errors": {
+        "code": "WITHDRAWAL_EXCEEDS_BALANCE",
+        "fields": null,
+        "traceId": "fff7be82-3ac6-4bec-9c9d-bb03be838a3c"
+      }
+    },
+    "rawText": "{\"success\":false,\"message\":\"Số tiền rút (2870001 đ) vượt quá số dư khả dụng (2870000 đ).\",\"data\":null,\"errors\":{\"code\":\"WITHDRAWAL_EXCEEDS_BALANCE\",\"fields\":null,\"traceId\":\"fff7be82-3ac6-4bec-9c9d-bb03be838a3c\"}}",
+    "data": null
+  },
+  "wdOk": {
+    "id": 1,
+    "amount": 1000000,
+    "bankName": "Vietcombank",
+    "accountNumberLast4": "***",
+    "accountHolder": "QA GVA",
+    "status": "requested",
+    "transferReference": null,
+    "rejectReason": null,
+    "createdAt": "2026-11-21T22:26:24.89470185",
+    "processedAt": null
+  },
+  "sumInWd": {
+    "hasEarnings": true,
+    "totalEarned": 2870000,
+    "pendingBalance": 0,
+    "inWithdrawal": 1000000,
+    "withdrawn": 0,
+    "availableBalance": 1870000,
+    "minWithdrawal": 1000000,
+    "holdDays": 7,
+    "nextMaturityAt": null,
+    "maxWithdrawalsPerMonth": 1,
+    "withdrawalsUsedThisMonth": 1,
+    "canWithdrawThisMonth": false,
+    "nextWithdrawalAt": "2026-11-30T17:00:00Z"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "status": "Blocked",
+  "cause": "BLOCKED_BROWSER_CONNECTION_FAILED",
+  "error": "Could not find DevToolsActivePort for chrome (ENOENT)",
+  "note": "Chrome DevTools remote debugging (DevToolsActivePort) chưa bật trên trình duyệt host -> không thể chạy Lighthouse Performance audit trong chu kỳ C1."
+}

@@ -1,0 +1,103 @@
+{
+  "rsEmpty": {
+    "status": 400,
+    "ok": false,
+    "elapsedMs": 22.1,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 177,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "close",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:26:44 GMT",
+      "expires": "0",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": false,
+      "message": "Vui lòng cung cấp địa chỉ email.",
+      "data": null,
+      "errors": {
+        "code": "BAD_REQUEST",
+        "fields": null,
+        "traceId": "9ac83add-eb61-4fc7-86e2-589b04a86ee9"
+      }
+    },
+    "rawText": "{\"success\":false,\"message\":\"Vui lòng cung cấp địa chỉ email.\",\"data\":null,\"errors\":{\"code\":\"BAD_REQUEST\",\"fields\":null,\"traceId\":\"9ac83add-eb61-4fc7-86e2-589b04a86ee9\"}}",
+    "data": null
+  },
+  "rsMiss": {
+    "status": 404,
+    "ok": false,
+    "elapsedMs": 57.6,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 186,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:26:44 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": false,
+      "message": "Không tìm thấy người dùng với email này.",
+      "data": null,
+      "errors": {
+        "code": "NOT_FOUND",
+        "fields": null,
+        "traceId": "6b550d52-d3fe-4529-952f-17d4734838c2"
+      }
+    },
+    "rawText": "{\"success\":false,\"message\":\"Không tìm thấy người dùng với email này.\",\"data\":null,\"errors\":{\"code\":\"NOT_FOUND\",\"fields\":null,\"traceId\":\"6b550d52-d3fe-4529-952f-17d4734838c2\"}}",
+    "data": null
+  },
+  "rsVer": {
+    "status": 200,
+    "ok": true,
+    "elapsedMs": 50,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 181,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:26:44 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": true,
+      "message": "Tài khoản này đã được xác thực trước đó.",
+      "data": {
+        "message": "Tài khoản này đã được xác thực trước đó."
+      },
+      "errors": null
+    },
+    "rawText": "{\"success\":true,\"message\":\"Tài khoản này đã được xác thực trước đó.\",\"data\":{\"message\":\"Tài khoản này đã được xác thực trước đó.\"},\"errors\":null}",
+    "data": {
+      "message": "Tài khoản này đã được xác thực trước đó."
+    }
+  }
+}

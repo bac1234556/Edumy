@@ -1,0 +1,155 @@
+{
+  "e1": {
+    "status": 200,
+    "ok": true,
+    "elapsedMs": 41.1,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 289,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:27:54 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": true,
+      "message": "Ghi danh khóa học miễn phí thành công! Bạn có thể vào học ngay.",
+      "data": {
+        "message": "Ghi danh khóa học miễn phí thành công! Bạn có thể vào học ngay.",
+        "status": "ACTIVE",
+        "enrollmentId": 15,
+        "courseId": 48,
+        "source": "FREE"
+      },
+      "errors": null
+    },
+    "rawText": "{\"success\":true,\"message\":\"Ghi danh khóa học miễn phí thành công! Bạn có thể vào học ngay.\",\"data\":{\"message\":\"Ghi danh khóa học miễn phí thành công! Bạn có thể vào học ngay.\",\"status\":\"ACTIVE\",\"enrollmentId\":15,\"courseId\":48,\"source\":\"FREE\"},\"errors\":null}",
+    "data": {
+      "message": "Ghi danh khóa học miễn phí thành công! Bạn có thể vào học ngay.",
+      "status": "ACTIVE",
+      "enrollmentId": 15,
+      "courseId": 48,
+      "source": "FREE"
+    }
+  },
+  "e2": {
+    "status": 200,
+    "ok": true,
+    "elapsedMs": 31,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 229,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:27:54 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": true,
+      "message": "Bạn đã ghi danh khóa học miễn phí này.",
+      "data": {
+        "message": "Bạn đã ghi danh khóa học miễn phí này.",
+        "status": "ACTIVE",
+        "enrollmentId": 15,
+        "courseId": 48,
+        "source": "FREE"
+      },
+      "errors": null
+    },
+    "rawText": "{\"success\":true,\"message\":\"Bạn đã ghi danh khóa học miễn phí này.\",\"data\":{\"message\":\"Bạn đã ghi danh khóa học miễn phí này.\",\"status\":\"ACTIVE\",\"enrollmentId\":15,\"courseId\":48,\"source\":\"FREE\"},\"errors\":null}",
+    "data": {
+      "message": "Bạn đã ghi danh khóa học miễn phí này.",
+      "status": "ACTIVE",
+      "enrollmentId": 15,
+      "courseId": 48,
+      "source": "FREE"
+    }
+  },
+  "enrCnt10": 1,
+  "ePaid": {
+    "status": 422,
+    "ok": false,
+    "elapsedMs": 25.6,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 231,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:27:54 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": false,
+      "message": "Khóa học này là khóa trả phí, vui lòng thêm vào giỏ hàng để thanh toán.",
+      "data": null,
+      "errors": {
+        "code": "COURSE_NOT_FREE",
+        "fields": null,
+        "traceId": "45725082-0383-493b-b4cd-0b371a5f60b6"
+      }
+    },
+    "rawText": "{\"success\":false,\"message\":\"Khóa học này là khóa trả phí, vui lòng thêm vào giỏ hàng để thanh toán.\",\"data\":null,\"errors\":{\"code\":\"COURSE_NOT_FREE\",\"fields\":null,\"traceId\":\"45725082-0383-493b-b4cd-0b371a5f60b6\"}}",
+    "data": null
+  },
+  "eOwn": {
+    "status": 422,
+    "ok": false,
+    "elapsedMs": 27.3,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 203,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:27:54 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": false,
+      "message": "Giảng viên không thể ghi danh khóa học của chính mình.",
+      "data": null,
+      "errors": {
+        "code": "OWN_COURSE",
+        "fields": null,
+        "traceId": "8f6376ee-f2de-4def-aa6a-791ecd5648f6"
+      }
+    },
+    "rawText": "{\"success\":false,\"message\":\"Giảng viên không thể ghi danh khóa học của chính mình.\",\"data\":null,\"errors\":{\"code\":\"OWN_COURSE\",\"fields\":null,\"traceId\":\"8f6376ee-f2de-4def-aa6a-791ecd5648f6\"}}",
+    "data": null
+  }
+}

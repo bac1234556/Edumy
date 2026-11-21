@@ -1,0 +1,251 @@
+{
+  "addOk": {
+    "status": 200,
+    "ok": true,
+    "elapsedMs": 69.2,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 171,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:27:26 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": true,
+      "message": "Đã thêm khóa học vào giỏ hàng thành công.",
+      "data": {
+        "message": "Đã thêm khóa học vào giỏ hàng thành công."
+      },
+      "errors": null
+    },
+    "rawText": "{\"success\":true,\"message\":\"Đã thêm khóa học vào giỏ hàng thành công.\",\"data\":{\"message\":\"Đã thêm khóa học vào giỏ hàng thành công.\"},\"errors\":null}",
+    "data": {
+      "message": "Đã thêm khóa học vào giỏ hàng thành công."
+    }
+  },
+  "addDup": {
+    "status": 409,
+    "ok": false,
+    "elapsedMs": 65.8,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 190,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:27:26 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": false,
+      "message": "Khóa học đã có sẵn trong giỏ hàng.",
+      "data": null,
+      "errors": {
+        "code": "CART_DUPLICATE_ITEM",
+        "fields": null,
+        "traceId": "55dcc4b5-3a19-47e9-a0d0-44e9da6c7c31"
+      }
+    },
+    "rawText": "{\"success\":false,\"message\":\"Khóa học đã có sẵn trong giỏ hàng.\",\"data\":null,\"errors\":{\"code\":\"CART_DUPLICATE_ITEM\",\"fields\":null,\"traceId\":\"55dcc4b5-3a19-47e9-a0d0-44e9da6c7c31\"}}",
+    "data": null
+  },
+  "addOwned": {
+    "status": 422,
+    "ok": false,
+    "elapsedMs": 46,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 236,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:27:26 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": false,
+      "message": "Khóa học miễn phí không thể thêm vào giỏ hàng. Vui lòng ghi danh trực tiếp.",
+      "data": null,
+      "errors": {
+        "code": "CART_FREE_COURSE",
+        "fields": null,
+        "traceId": "81c471c4-887c-41e9-a61a-88039c727774"
+      }
+    },
+    "rawText": "{\"success\":false,\"message\":\"Khóa học miễn phí không thể thêm vào giỏ hàng. Vui lòng ghi danh trực tiếp.\",\"data\":null,\"errors\":{\"code\":\"CART_FREE_COURSE\",\"fields\":null,\"traceId\":\"81c471c4-887c-41e9-a61a-88039c727774\"}}",
+    "data": null
+  },
+  "addFree": {
+    "status": 422,
+    "ok": false,
+    "elapsedMs": 35.1,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 236,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:27:26 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": false,
+      "message": "Khóa học miễn phí không thể thêm vào giỏ hàng. Vui lòng ghi danh trực tiếp.",
+      "data": null,
+      "errors": {
+        "code": "CART_FREE_COURSE",
+        "fields": null,
+        "traceId": "d91e5220-11e9-43a3-b886-11e9e4dd99a2"
+      }
+    },
+    "rawText": "{\"success\":false,\"message\":\"Khóa học miễn phí không thể thêm vào giỏ hàng. Vui lòng ghi danh trực tiếp.\",\"data\":null,\"errors\":{\"code\":\"CART_FREE_COURSE\",\"fields\":null,\"traceId\":\"d91e5220-11e9-43a3-b886-11e9e4dd99a2\"}}",
+    "data": null
+  },
+  "addOwnCourse": {
+    "status": 400,
+    "ok": false,
+    "elapsedMs": 56.2,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 129,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "close",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:27:26 GMT",
+      "expires": "0",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": false,
+      "message": "Giảng viên không thể mua khóa học do chính mình giảng dạy.",
+      "data": null,
+      "errors": null
+    },
+    "rawText": "{\"success\":false,\"message\":\"Giảng viên không thể mua khóa học do chính mình giảng dạy.\",\"data\":null,\"errors\":null}",
+    "data": null
+  },
+  "delOk": {
+    "status": 200,
+    "ok": true,
+    "elapsedMs": 74.2,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 173,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:27:26 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": true,
+      "message": "Đã xóa khóa học khỏi giỏ hàng thành công.",
+      "data": {
+        "message": "Đã xóa khóa học khỏi giỏ hàng thành công."
+      },
+      "errors": null
+    },
+    "rawText": "{\"success\":true,\"message\":\"Đã xóa khóa học khỏi giỏ hàng thành công.\",\"data\":{\"message\":\"Đã xóa khóa học khỏi giỏ hàng thành công.\"},\"errors\":null}",
+    "data": {
+      "message": "Đã xóa khóa học khỏi giỏ hàng thành công."
+    }
+  },
+  "cartAfter": {
+    "status": 200,
+    "ok": true,
+    "elapsedMs": 38.6,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 186,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:27:26 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": true,
+      "message": "OK",
+      "data": {
+        "id": 19,
+        "userId": 24,
+        "totalItems": 0,
+        "totalPrice": 0,
+        "totalAmount": 0,
+        "payableTotal": 0,
+        "payableItemsCount": 0,
+        "allPaid": false,
+        "items": []
+      },
+      "errors": null
+    },
+    "rawText": "{\"success\":true,\"message\":\"OK\",\"data\":{\"id\":19,\"userId\":24,\"totalItems\":0,\"totalPrice\":0,\"totalAmount\":0,\"payableTotal\":0,\"payableItemsCount\":0,\"allPaid\":false,\"items\":[]},\"errors\":null}",
+    "data": {
+      "id": 19,
+      "userId": 24,
+      "totalItems": 0,
+      "totalPrice": 0,
+      "totalAmount": 0,
+      "payableTotal": 0,
+      "payableItemsCount": 0,
+      "allPaid": false,
+      "items": []
+    }
+  }
+}

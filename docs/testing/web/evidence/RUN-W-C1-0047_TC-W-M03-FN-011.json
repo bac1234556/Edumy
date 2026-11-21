@@ -1,0 +1,7 @@
+{
+  "qz": 200,
+  "qzGet": 200,
+  "qzDel": 204,
+  "tagOk": 201,
+  "tagEmpty": 201
+}

@@ -1,0 +1,69 @@
+{
+  "catNew": 200,
+  "catUpd": 200,
+  "catDelEmpty": 200,
+  "catDelUsed": {
+    "status": 400,
+    "ok": false,
+    "elapsedMs": 21,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 217,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "close",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 15:25:54 GMT",
+      "expires": "0",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": false,
+      "message": "Không thể xóa danh mục 'Development' vì đang có 26 khóa học liên kết. Vui lòng chuyển các khóa học sang danh mục khác trước!",
+      "data": null,
+      "errors": "Bad Request"
+    },
+    "rawText": "{\"success\":false,\"message\":\"Không thể xóa danh mục 'Development' vì đang có 26 khóa học liên kết. Vui lòng chuyển các khóa học sang danh mục khác trước!\",\"data\":null,\"errors\":\"Bad Request\"}",
+    "data": null
+  },
+  "catDeact": {
+    "status": 404,
+    "ok": false,
+    "elapsedMs": 21.5,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 178,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 15:25:54 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": false,
+      "message": "Không tìm thấy tài nguyên yêu cầu.",
+      "data": null,
+      "errors": {
+        "code": "NOT_FOUND",
+        "fields": null,
+        "traceId": "4c7a15df-1fb1-4248-b6b2-37838398491d"
+      }
+    },
+    "rawText": "{\"success\":false,\"message\":\"Không tìm thấy tài nguyên yêu cầu.\",\"data\":null,\"errors\":{\"code\":\"NOT_FOUND\",\"fields\":null,\"traceId\":\"4c7a15df-1fb1-4248-b6b2-37838398491d\"}}",
+    "data": null
+  },
+  "hasActiveField": false
+}

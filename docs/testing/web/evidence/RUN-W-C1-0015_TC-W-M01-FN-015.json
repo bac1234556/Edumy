@@ -1,0 +1,147 @@
+{
+  "selfLock": {
+    "status": 400,
+    "ok": false,
+    "elapsedMs": 23,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 215,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "close",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 15:25:29 GMT",
+      "expires": "0",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": false,
+      "message": "Quản trị viên không được tự khóa tài khoản của chính mình.",
+      "data": null,
+      "errors": {
+        "code": "BAD_REQUEST",
+        "fields": null,
+        "traceId": "8041ac5f-48e0-4b1f-9f51-54d67ae58abc"
+      }
+    },
+    "rawText": "{\"success\":false,\"message\":\"Quản trị viên không được tự khóa tài khoản của chính mình.\",\"data\":null,\"errors\":{\"code\":\"BAD_REQUEST\",\"fields\":null,\"traceId\":\"8041ac5f-48e0-4b1f-9f51-54d67ae58abc\"}}",
+    "data": null
+  },
+  "selfToggle": {
+    "status": 200,
+    "ok": true,
+    "elapsedMs": 38.6,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 142,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 15:25:29 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": true,
+      "message": "User status updated to Blocked",
+      "data": {
+        "message": "User status updated to Blocked",
+        "isActive": false
+      },
+      "errors": null
+    },
+    "rawText": "{\"success\":true,\"message\":\"User status updated to Blocked\",\"data\":{\"message\":\"User status updated to Blocked\",\"isActive\":false},\"errors\":null}",
+    "data": {
+      "message": "User status updated to Blocked",
+      "isActive": false
+    }
+  },
+  "otherLock": {
+    "status": 200,
+    "ok": true,
+    "elapsedMs": 30.7,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 216,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 15:25:29 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": true,
+      "message": "Đã khóa tài khoản người dùng thành công.",
+      "data": {
+        "status": "LOCKED",
+        "isActive": false,
+        "message": "Đã khóa tài khoản người dùng thành công.",
+        "userId": 19
+      },
+      "errors": null
+    },
+    "rawText": "{\"success\":true,\"message\":\"Đã khóa tài khoản người dùng thành công.\",\"data\":{\"status\":\"LOCKED\",\"isActive\":false,\"message\":\"Đã khóa tài khoản người dùng thành công.\",\"userId\":19},\"errors\":null}",
+    "data": {
+      "status": "LOCKED",
+      "isActive": false,
+      "message": "Đã khóa tài khoản người dùng thành công.",
+      "userId": 19
+    }
+  },
+  "otherToggle": {
+    "status": 200,
+    "ok": true,
+    "elapsedMs": 24.2,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 139,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 15:25:29 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": true,
+      "message": "User status updated to Active",
+      "data": {
+        "message": "User status updated to Active",
+        "isActive": true
+      },
+      "errors": null
+    },
+    "rawText": "{\"success\":true,\"message\":\"User status updated to Active\",\"data\":{\"message\":\"User status updated to Active\",\"isActive\":true},\"errors\":null}",
+    "data": {
+      "message": "User status updated to Active",
+      "isActive": true
+    }
+  }
+}

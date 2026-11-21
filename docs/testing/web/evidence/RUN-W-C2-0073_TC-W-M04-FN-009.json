@@ -1,0 +1,140 @@
+{
+  "admOrdersLen": 54,
+  "admPaysLen": 54,
+  "reconNoNote": {
+    "status": 400,
+    "ok": false,
+    "elapsedMs": 35.7,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 204,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "close",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:27:33 GMT",
+      "expires": "0",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": false,
+      "message": "Bắt buộc nhập ghi chú đối soát khi xử lý đơn hàng.",
+      "data": null,
+      "errors": {
+        "code": "BAD_REQUEST",
+        "fields": null,
+        "traceId": "1f687b83-98ee-4c01-b74d-043710a27070"
+      }
+    },
+    "rawText": "{\"success\":false,\"message\":\"Bắt buộc nhập ghi chú đối soát khi xử lý đơn hàng.\",\"data\":null,\"errors\":{\"code\":\"BAD_REQUEST\",\"fields\":null,\"traceId\":\"1f687b83-98ee-4c01-b74d-043710a27070\"}}",
+    "data": null
+  },
+  "reconTry": {
+    "status": 500,
+    "ok": false,
+    "elapsedMs": 220.1,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 202,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "close",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:27:33 GMT",
+      "expires": "0",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": false,
+      "message": "Hệ thống đang gặp sự cố. Vui lòng thử lại sau.",
+      "data": null,
+      "errors": {
+        "code": "INTERNAL_ERROR",
+        "fields": null,
+        "traceId": "f548e144-bf8a-409e-b0a2-a5f617c23a52"
+      }
+    },
+    "rawText": "{\"success\":false,\"message\":\"Hệ thống đang gặp sự cố. Vui lòng thử lại sau.\",\"data\":null,\"errors\":{\"code\":\"INTERNAL_ERROR\",\"fields\":null,\"traceId\":\"f548e144-bf8a-409e-b0a2-a5f617c23a52\"}}",
+    "data": null
+  },
+  "reconDup": {
+    "status": 409,
+    "ok": false,
+    "elapsedMs": 53.2,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 260,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:27:33 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": false,
+      "message": "Đơn hàng này không ở trạng thái chờ đối soát (hiện tại: PAID) hoặc đã được xử lý trước đó.",
+      "data": null,
+      "errors": {
+        "code": "CONFLICT",
+        "fields": null,
+        "traceId": "d14ff859-082e-4e2c-a546-2d1482d9fcb6"
+      }
+    },
+    "rawText": "{\"success\":false,\"message\":\"Đơn hàng này không ở trạng thái chờ đối soát (hiện tại: PAID) hoặc đã được xử lý trước đó.\",\"data\":null,\"errors\":{\"code\":\"CONFLICT\",\"fields\":null,\"traceId\":\"d14ff859-082e-4e2c-a546-2d1482d9fcb6\"}}",
+    "data": null
+  },
+  "enrRecon": {
+    "status": 200,
+    "ok": true,
+    "elapsedMs": 32.2,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 90,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:27:33 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": true,
+      "message": "OK",
+      "data": {
+        "status": "ACTIVE",
+        "isEnrolled": true
+      },
+      "errors": null
+    },
+    "rawText": "{\"success\":true,\"message\":\"OK\",\"data\":{\"status\":\"ACTIVE\",\"isEnrolled\":true},\"errors\":null}",
+    "data": {
+      "status": "ACTIVE",
+      "isEnrolled": true
+    }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "status": "Blocked",
+  "cause": "BLOCKED_BROWSER_CONNECTION_FAILED",
+  "error": "Could not find DevToolsActivePort for chrome (ENOENT)",
+  "note": "Chrome DevTools remote debugging chưa bật -> chưa chạy UI E2E validation/partial-failure/double-submit trên CourseCreate.jsx."
+}

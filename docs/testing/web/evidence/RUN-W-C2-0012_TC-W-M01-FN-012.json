@@ -1,0 +1,82 @@
+{
+  "revSelf": {
+    "status": 403,
+    "ok": false,
+    "elapsedMs": 43.8,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 185,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:26:41 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": false,
+      "message": "Quyền giảng viên của tài khoản này đã bị Quản trị viên thu hồi. Bạn không thể tự kích hoạt lại.",
+      "data": null,
+      "errors": null
+    },
+    "rawText": "{\"success\":false,\"message\":\"Quyền giảng viên của tài khoản này đã bị Quản trị viên thu hồi. Bạn không thể tự kích hoạt lại.\",\"data\":null,\"errors\":null}",
+    "data": null
+  },
+  "gvrevAfter": {
+    "status": 200,
+    "ok": true,
+    "elapsedMs": 38.4,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 234,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:26:41 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": true,
+      "message": "OK",
+      "data": {
+        "id": 23,
+        "email": "qa.gvrevoked@edumy.test",
+        "fullName": "QA GVREV Tiếng Việt",
+        "emailVerified": true,
+        "roles": [
+          "STUDENT"
+        ],
+        "status": "ACTIVE",
+        "createdAt": "2026-11-21T09:25:42.507360Z"
+      },
+      "errors": null
+    },
+    "rawText": "{\"success\":true,\"message\":\"OK\",\"data\":{\"id\":23,\"email\":\"qa.gvrevoked@edumy.test\",\"fullName\":\"QA GVREV Tiếng Việt\",\"emailVerified\":true,\"roles\":[\"STUDENT\"],\"status\":\"ACTIVE\",\"createdAt\":\"2026-11-21T09:25:42.507360Z\"},\"errors\":null}",
+    "data": {
+      "id": 23,
+      "email": "qa.gvrevoked@edumy.test",
+      "fullName": "QA GVREV Tiếng Việt",
+      "emailVerified": true,
+      "roles": [
+        "STUDENT"
+      ],
+      "status": "ACTIVE",
+      "createdAt": "2026-11-21T09:25:42.507360Z"
+    }
+  }
+}

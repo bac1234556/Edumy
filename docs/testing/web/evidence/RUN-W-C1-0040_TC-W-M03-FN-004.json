@@ -1,0 +1,26 @@
+{
+  "0": {
+    "createStatus": 201,
+    "submitStatus": 200
+  },
+  "1": {
+    "createStatus": 201,
+    "submitStatus": 400
+  },
+  "9999": {
+    "createStatus": 201,
+    "submitStatus": 400
+  },
+  "10000": {
+    "createStatus": 201,
+    "submitStatus": 200
+  },
+  "10500": {
+    "createStatus": 201,
+    "submitStatus": 400
+  },
+  "-1000": {
+    "createStatus": 201,
+    "submitStatus": 200
+  }
+}

@@ -1,0 +1,72 @@
+{
+  "upImg": {
+    "status": 200,
+    "ok": true,
+    "elapsedMs": 135.6,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 108,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:27:11 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": true,
+      "message": "OK",
+      "data": {
+        "url": "/uploads/ceb7ae08d9cd4492b0196b1635069d14.png"
+      },
+      "errors": null
+    },
+    "rawText": "{\"success\":true,\"message\":\"OK\",\"data\":{\"url\":\"/uploads/ceb7ae08d9cd4492b0196b1635069d14.png\"},\"errors\":null}",
+    "data": {
+      "url": "/uploads/ceb7ae08d9cd4492b0196b1635069d14.png"
+    }
+  },
+  "imgFetchStatus": 200,
+  "upPdf": {
+    "status": 200,
+    "ok": true,
+    "elapsedMs": 47,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 108,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:27:11 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": true,
+      "message": "OK",
+      "data": {
+        "url": "/uploads/5778d4b85f4a4234818eda0e320af56b.pdf"
+      },
+      "errors": null
+    },
+    "rawText": "{\"success\":true,\"message\":\"OK\",\"data\":{\"url\":\"/uploads/5778d4b85f4a4234818eda0e320af56b.pdf\"},\"errors\":null}",
+    "data": {
+      "url": "/uploads/5778d4b85f4a4234818eda0e320af56b.pdf"
+    }
+  },
+  "upEmptyStatus": 400
+}

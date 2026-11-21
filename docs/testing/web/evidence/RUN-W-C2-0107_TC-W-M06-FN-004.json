@@ -1,0 +1,64 @@
+{
+  "wdDupOpen": {
+    "status": 409,
+    "ok": false,
+    "elapsedMs": 42.6,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 215,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:28:11 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": false,
+      "message": "Bạn đang có một yêu cầu rút tiền đang chờ xử lý.",
+      "data": null,
+      "errors": {
+        "code": "WITHDRAWAL_ALREADY_OPEN",
+        "fields": null,
+        "traceId": "b68700ca-2673-4866-8d60-82e574e06d39"
+      }
+    },
+    "rawText": "{\"success\":false,\"message\":\"Bạn đang có một yêu cầu rút tiền đang chờ xử lý.\",\"data\":null,\"errors\":{\"code\":\"WITHDRAWAL_ALREADY_OPEN\",\"fields\":null,\"traceId\":\"b68700ca-2673-4866-8d60-82e574e06d39\"}}",
+    "data": null
+  },
+  "wdCancel": 204,
+  "sumAfterCancel": {
+    "hasEarnings": true,
+    "totalEarned": 2450000,
+    "pendingBalance": 0,
+    "inWithdrawal": 0,
+    "withdrawn": 0,
+    "availableBalance": 2450000,
+    "minWithdrawal": 1000000,
+    "holdDays": 7,
+    "nextMaturityAt": null,
+    "maxWithdrawalsPerMonth": 1,
+    "withdrawalsUsedThisMonth": 0,
+    "canWithdrawThisMonth": true,
+    "nextWithdrawalAt": null
+  },
+  "wd2": {
+    "id": 2,
+    "amount": 1000000,
+    "bankName": "Vietcombank",
+    "accountNumberLast4": "***",
+    "accountHolder": "QA GVA",
+    "status": "requested",
+    "transferReference": null,
+    "rejectReason": null,
+    "createdAt": "2026-11-21T23:28:12.563845195",
+    "processedAt": null
+  }
+}

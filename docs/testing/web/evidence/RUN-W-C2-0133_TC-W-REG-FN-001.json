@@ -1,0 +1,7 @@
+{
+  "status": "Blocked",
+  "cycle": "C2",
+  "cause": "BLOCKED_BROWSER_CONNECTION_FAILED",
+  "error": "Could not find DevToolsActivePort for chrome (ENOENT)",
+  "note": "Chrome DevTools remote debugging chưa bật trong C2 -> chưa chạy UI E2E tạo khóa 1 trang trên CourseCreate.jsx (API tạo khóa/giáo trình/đồng GV đạt 28/28 PASS ở W-M03)."
+}

@@ -1,0 +1,12 @@
+{
+  "wlAdd": 200,
+  "wlAdd2": 400,
+  "wlChk1": {
+    "inWishlist": true
+  },
+  "wlDel": 200,
+  "wlChk2": {
+    "inWishlist": false
+  },
+  "wl999": 404
+}

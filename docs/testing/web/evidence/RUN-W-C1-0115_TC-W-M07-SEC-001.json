@@ -1,0 +1,18 @@
+{
+  "actEnv": 401,
+  "actBeans": 401,
+  "actHeap": 401,
+  "actMetrics": 401,
+  "swagDocs": 404,
+  "swagUi": 404,
+  "hasStack": false,
+  "missingSecHeaders": [
+    "x-content-type-options",
+    "x-frame-options",
+    "content-security-policy"
+  ],
+  "a05Issues": [
+    "Missing headers on Nginx: x-content-type-options, x-frame-options, content-security-policy",
+    "Default credentials in docker-compose.yml (Grafana admin/admin, SQL Server SA default)"
+  ]
+}

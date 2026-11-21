@@ -1,0 +1,14 @@
+{
+  "tamperedStatus": 401,
+  "algNoneStatus": 401,
+  "jwtTtlSeconds": 3600,
+  "jwtClaimsKeys": [
+    "sub",
+    "email",
+    "role",
+    "name",
+    "unique_name",
+    "iat",
+    "exp"
+  ]
+}

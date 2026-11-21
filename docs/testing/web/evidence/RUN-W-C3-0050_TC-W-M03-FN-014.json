@@ -1,0 +1,192 @@
+{
+  "sub14": {
+    "status": 200,
+    "ok": true,
+    "elapsedMs": 104.8,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 326,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:36:37 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": true,
+      "message": "Đã kiểm tra checklist thành công và gửi yêu cầu xét duyệt khóa học tới Quản trị viên.",
+      "data": {
+        "courseId": 66,
+        "status": "PendingApproval",
+        "message": "Đã kiểm tra checklist thành công và gửi yêu cầu xét duyệt khóa học tới Quản trị viên."
+      },
+      "errors": null
+    },
+    "rawText": "{\"success\":true,\"message\":\"Đã kiểm tra checklist thành công và gửi yêu cầu xét duyệt khóa học tới Quản trị viên.\",\"data\":{\"courseId\":66,\"status\":\"PendingApproval\",\"message\":\"Đã kiểm tra checklist thành công và gửi yêu cầu xét duyệt khóa học tới Quản trị viên.\"},\"errors\":null}",
+    "data": {
+      "courseId": 66,
+      "status": "PendingApproval",
+      "message": "Đã kiểm tra checklist thành công và gửi yêu cầu xét duyệt khóa học tới Quản trị viên."
+    }
+  },
+  "wd14": {
+    "status": 200,
+    "ok": true,
+    "elapsedMs": 222.4,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 270,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:36:37 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": true,
+      "message": "Đã rút yêu cầu duyệt, khóa học trở về trạng thái Bản nháp (DRAFT).",
+      "data": {
+        "courseId": 66,
+        "status": "Draft",
+        "message": "Đã rút yêu cầu duyệt, khóa học trở về trạng thái Bản nháp (DRAFT)."
+      },
+      "errors": null
+    },
+    "rawText": "{\"success\":true,\"message\":\"Đã rút yêu cầu duyệt, khóa học trở về trạng thái Bản nháp (DRAFT).\",\"data\":{\"courseId\":66,\"status\":\"Draft\",\"message\":\"Đã rút yêu cầu duyệt, khóa học trở về trạng thái Bản nháp (DRAFT).\"},\"errors\":null}",
+    "data": {
+      "courseId": 66,
+      "status": "Draft",
+      "message": "Đã rút yêu cầu duyệt, khóa học trở về trạng thái Bản nháp (DRAFT)."
+    }
+  },
+  "rej14": {
+    "status": 200,
+    "ok": true,
+    "elapsedMs": 223.8,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 289,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:36:38 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": true,
+      "message": "Đã từ chối khóa học và gửi phản hồi cho giảng viên.",
+      "data": {
+        "status": "NeedsReview",
+        "reviewNote": "Thiếu bài tập thực hành",
+        "courseId": 66,
+        "message": "Đã từ chối khóa học và gửi phản hồi cho giảng viên."
+      },
+      "errors": null
+    },
+    "rawText": "{\"success\":true,\"message\":\"Đã từ chối khóa học và gửi phản hồi cho giảng viên.\",\"data\":{\"status\":\"NeedsReview\",\"reviewNote\":\"Thiếu bài tập thực hành\",\"courseId\":66,\"message\":\"Đã từ chối khóa học và gửi phản hồi cho giảng viên.\"},\"errors\":null}",
+    "data": {
+      "status": "NeedsReview",
+      "reviewNote": "Thiếu bài tập thực hành",
+      "courseId": 66,
+      "message": "Đã từ chối khóa học và gửi phản hồi cho giảng viên."
+    }
+  },
+  "rn14": {
+    "status": 200,
+    "ok": true,
+    "elapsedMs": 75.6,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 115,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:36:38 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": true,
+      "message": "OK",
+      "data": {
+        "courseId": 66,
+        "reviewNote": "Thiếu bài tập thực hành"
+      },
+      "errors": null
+    },
+    "rawText": "{\"success\":true,\"message\":\"OK\",\"data\":{\"courseId\":66,\"reviewNote\":\"Thiếu bài tập thực hành\"},\"errors\":null}",
+    "data": {
+      "courseId": 66,
+      "reviewNote": "Thiếu bài tập thực hành"
+    }
+  },
+  "sub14c": {
+    "status": 200,
+    "ok": true,
+    "elapsedMs": 149,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 326,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:36:38 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": true,
+      "message": "Đã kiểm tra checklist thành công và gửi yêu cầu xét duyệt khóa học tới Quản trị viên.",
+      "data": {
+        "courseId": 66,
+        "status": "PendingApproval",
+        "message": "Đã kiểm tra checklist thành công và gửi yêu cầu xét duyệt khóa học tới Quản trị viên."
+      },
+      "errors": null
+    },
+    "rawText": "{\"success\":true,\"message\":\"Đã kiểm tra checklist thành công và gửi yêu cầu xét duyệt khóa học tới Quản trị viên.\",\"data\":{\"courseId\":66,\"status\":\"PendingApproval\",\"message\":\"Đã kiểm tra checklist thành công và gửi yêu cầu xét duyệt khóa học tới Quản trị viên.\"},\"errors\":null}",
+    "data": {
+      "courseId": 66,
+      "status": "PendingApproval",
+      "message": "Đã kiểm tra checklist thành công và gửi yêu cầu xét duyệt khóa học tới Quản trị viên."
+    }
+  }
+}

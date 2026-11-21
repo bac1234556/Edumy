@@ -1,0 +1,11 @@
+{
+  "bfStatuses": [
+    401,
+    401,
+    401,
+    401,
+    401,
+    429
+  ],
+  "seventhCorrectStatus": 429
+}

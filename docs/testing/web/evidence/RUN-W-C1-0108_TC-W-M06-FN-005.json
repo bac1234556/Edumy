@@ -1,0 +1,127 @@
+{
+  "rejEmpty": {
+    "status": 400,
+    "ok": false,
+    "elapsedMs": 17.4,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 173,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "close",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 15:26:24 GMT",
+      "expires": "0",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": false,
+      "message": "Vui lòng nhập lý do từ chối.",
+      "data": null,
+      "errors": {
+        "code": "BAD_REQUEST",
+        "fields": null,
+        "traceId": "23be2a82-504d-49ec-a456-833c3ea04c3e"
+      }
+    },
+    "rawText": "{\"success\":false,\"message\":\"Vui lòng nhập lý do từ chối.\",\"data\":null,\"errors\":{\"code\":\"BAD_REQUEST\",\"fields\":null,\"traceId\":\"23be2a82-504d-49ec-a456-833c3ea04c3e\"}}",
+    "data": null
+  },
+  "rejOk": {
+    "id": 2,
+    "amount": 1000000,
+    "bankName": "Vietcombank",
+    "accountNumberLast4": "***",
+    "accountHolder": "QA GVA",
+    "status": "rejected",
+    "transferReference": null,
+    "rejectReason": "Sai tên chủ tài khoản",
+    "createdAt": "2026-11-21T22:26:25.052562",
+    "processedAt": "2026-11-21T15:26:25.115599203"
+  },
+  "payOk": {
+    "id": 3,
+    "amount": 1000000,
+    "bankName": "Vietcombank",
+    "accountNumberLast4": "***",
+    "accountHolder": "QA GVA",
+    "status": "paid",
+    "transferReference": "FT261121QA001",
+    "rejectReason": null,
+    "createdAt": "2026-11-21T22:26:25.152323",
+    "processedAt": "2026-11-21T15:26:25.187480324"
+  },
+  "cancelPaid": {
+    "status": 409,
+    "ok": false,
+    "elapsedMs": 15.7,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 211,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 15:26:24 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": false,
+      "message": "Chỉ có thể hủy yêu cầu đang ở trạng thái chờ xử lý.",
+      "data": null,
+      "errors": {
+        "code": "CANNOT_CANCEL",
+        "fields": null,
+        "traceId": "72178c89-c277-4924-a599-e9f62a908598"
+      }
+    },
+    "rawText": "{\"success\":false,\"message\":\"Chỉ có thể hủy yêu cầu đang ở trạng thái chờ xử lý.\",\"data\":null,\"errors\":{\"code\":\"CANNOT_CANCEL\",\"fields\":null,\"traceId\":\"72178c89-c277-4924-a599-e9f62a908598\"}}",
+    "data": null
+  },
+  "wdSecondMonth": {
+    "status": 409,
+    "ok": false,
+    "elapsedMs": 22.8,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 301,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 15:26:24 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": false,
+      "message": "Mỗi tháng chỉ được rút tiền 1 lần. Bạn đã thực hiện rút tiền trong tháng này, vui lòng thử lại vào tháng sau.",
+      "data": null,
+      "errors": {
+        "code": "WITHDRAWAL_MONTHLY_LIMIT_REACHED",
+        "fields": null,
+        "traceId": "b2c5f5d0-3849-49ca-8e48-409eb603a56c"
+      }
+    },
+    "rawText": "{\"success\":false,\"message\":\"Mỗi tháng chỉ được rút tiền 1 lần. Bạn đã thực hiện rút tiền trong tháng này, vui lòng thử lại vào tháng sau.\",\"data\":null,\"errors\":{\"code\":\"WITHDRAWAL_MONTHLY_LIMIT_REACHED\",\"fields\":null,\"traceId\":\"b2c5f5d0-3849-49ca-8e48-409eb603a56c\"}}",
+    "data": null
+  }
+}

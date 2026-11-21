@@ -1,0 +1,31 @@
+{
+  "bypass": {
+    "status": 400,
+    "ok": false,
+    "elapsedMs": 31.9,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 138,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "close",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:27:15 GMT",
+      "expires": "0",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": false,
+      "message": "Mô tả khóa học phải có ít nhất 10 ký tự trước khi nộp duyệt.",
+      "data": null,
+      "errors": null
+    },
+    "rawText": "{\"success\":false,\"message\":\"Mô tả khóa học phải có ít nhất 10 ký tự trước khi nộp duyệt.\",\"data\":null,\"errors\":null}",
+    "data": null
+  }
+}

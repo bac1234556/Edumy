@@ -1,0 +1,72 @@
+{
+  "r1": {
+    "status": 200,
+    "ok": true,
+    "elapsedMs": 72.1,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 201,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:26:34 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": true,
+      "message": "Thư xác thực mới đã được gửi đến email của bạn.",
+      "data": {
+        "message": "Thư xác thực mới đã được gửi đến email của bạn."
+      },
+      "errors": null
+    },
+    "rawText": "{\"success\":true,\"message\":\"Thư xác thực mới đã được gửi đến email của bạn.\",\"data\":{\"message\":\"Thư xác thực mới đã được gửi đến email của bạn.\"},\"errors\":null}",
+    "data": {
+      "message": "Thư xác thực mới đã được gửi đến email của bạn."
+    }
+  },
+  "r2": {
+    "status": 429,
+    "ok": false,
+    "elapsedMs": 15.4,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 215,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:26:34 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "retry-after": "60",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": false,
+      "message": "Vui lòng chờ 60 giây trước khi gửi lại email xác thực.",
+      "data": null,
+      "errors": {
+        "code": "EMAIL_RESEND_TOO_SOON",
+        "fields": null,
+        "traceId": "df2f93a1-ed36-419d-a95c-fd21f9c2bd4d"
+      }
+    },
+    "rawText": "{\"success\":false,\"message\":\"Vui lòng chờ 60 giây trước khi gửi lại email xác thực.\",\"data\":null,\"errors\":{\"code\":\"EMAIL_RESEND_TOO_SOON\",\"fields\":null,\"traceId\":\"df2f93a1-ed36-419d-a95c-fd21f9c2bd4d\"}}",
+    "data": null
+  },
+  "mailFound": true
+}

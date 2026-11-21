@@ -1,0 +1,138 @@
+{
+  "fpOk": {
+    "status": 200,
+    "ok": true,
+    "elapsedMs": 43.9,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 233,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 15:25:23 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": true,
+      "message": "Hướng dẫn đặt lại mật khẩu đã được gửi về email của bạn.",
+      "data": {
+        "message": "Hướng dẫn đặt lại mật khẩu đã được gửi về email của bạn."
+      },
+      "errors": null
+    },
+    "rawText": "{\"success\":true,\"message\":\"Hướng dẫn đặt lại mật khẩu đã được gửi về email của bạn.\",\"data\":{\"message\":\"Hướng dẫn đặt lại mật khẩu đã được gửi về email của bạn.\"},\"errors\":null}",
+    "data": {
+      "message": "Hướng dẫn đặt lại mật khẩu đã được gửi về email của bạn."
+    }
+  },
+  "fpMiss": {
+    "status": 200,
+    "ok": true,
+    "elapsedMs": 20.1,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 301,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 15:25:23 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": true,
+      "message": "Nếu địa chỉ email tồn tại trong hệ thống, hướng dẫn đặt lại mật khẩu đã được gửi.",
+      "data": {
+        "message": "Nếu địa chỉ email tồn tại trong hệ thống, hướng dẫn đặt lại mật khẩu đã được gửi."
+      },
+      "errors": null
+    },
+    "rawText": "{\"success\":true,\"message\":\"Nếu địa chỉ email tồn tại trong hệ thống, hướng dẫn đặt lại mật khẩu đã được gửi.\",\"data\":{\"message\":\"Nếu địa chỉ email tồn tại trong hệ thống, hướng dẫn đặt lại mật khẩu đã được gửi.\"},\"errors\":null}",
+    "data": {
+      "message": "Nếu địa chỉ email tồn tại trong hệ thống, hướng dẫn đặt lại mật khẩu đã được gửi."
+    }
+  },
+  "rs1": {
+    "status": 200,
+    "ok": true,
+    "elapsedMs": 97.9,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 241,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 15:25:23 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": true,
+      "message": "Mật khẩu đã được thay đổi thành công. Bạn có thể đăng nhập ngay.",
+      "data": {
+        "message": "Mật khẩu đã được thay đổi thành công. Bạn có thể đăng nhập ngay."
+      },
+      "errors": null
+    },
+    "rawText": "{\"success\":true,\"message\":\"Mật khẩu đã được thay đổi thành công. Bạn có thể đăng nhập ngay.\",\"data\":{\"message\":\"Mật khẩu đã được thay đổi thành công. Bạn có thể đăng nhập ngay.\"},\"errors\":null}",
+    "data": {
+      "message": "Mật khẩu đã được thay đổi thành công. Bạn có thể đăng nhập ngay."
+    }
+  },
+  "rs2": {
+    "status": 400,
+    "ok": false,
+    "elapsedMs": 22,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 209,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "close",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 15:25:23 GMT",
+      "expires": "0",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": false,
+      "message": "Mã đặt lại mật khẩu không hợp lệ hoặc đã hết hạn.",
+      "data": null,
+      "errors": {
+        "code": "BAD_REQUEST",
+        "fields": null,
+        "traceId": "1262c977-fef6-4142-b87c-b5868ddd0987"
+      }
+    },
+    "rawText": "{\"success\":false,\"message\":\"Mã đặt lại mật khẩu không hợp lệ hoặc đã hết hạn.\",\"data\":null,\"errors\":{\"code\":\"BAD_REQUEST\",\"fields\":null,\"traceId\":\"1262c977-fef6-4142-b87c-b5868ddd0987\"}}",
+    "data": null
+  },
+  "loginNewStatus": 200
+}

@@ -1,0 +1,150 @@
+{
+  "admOrdersLen": 92,
+  "admPaysLen": 92,
+  "reconNoNote": {
+    "status": 400,
+    "ok": false,
+    "elapsedMs": 27.1,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 204,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "close",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:38:49 GMT",
+      "expires": "0",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": false,
+      "message": "Bắt buộc nhập ghi chú đối soát khi xử lý đơn hàng.",
+      "data": null,
+      "errors": {
+        "code": "BAD_REQUEST",
+        "fields": null,
+        "traceId": "f8c500aa-7d44-4902-a352-e1b3a664ff4c"
+      }
+    },
+    "rawText": "{\"success\":false,\"message\":\"Bắt buộc nhập ghi chú đối soát khi xử lý đơn hàng.\",\"data\":null,\"errors\":{\"code\":\"BAD_REQUEST\",\"fields\":null,\"traceId\":\"f8c500aa-7d44-4902-a352-e1b3a664ff4c\"}}",
+    "data": null
+  },
+  "reconTry": {
+    "status": 200,
+    "ok": true,
+    "elapsedMs": 109.8,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 325,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:38:49 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": true,
+      "message": "Đã đối soát kích hoạt quyền học cho học viên thành công.",
+      "data": {
+        "action": "ACTIVATE",
+        "message": "Đã đối soát kích hoạt quyền học cho học viên thành công.",
+        "reconciliationNote": "Đã đối soát sao kê ngân hàng",
+        "orderId": 2089,
+        "status": "PAID"
+      },
+      "errors": null
+    },
+    "rawText": "{\"success\":true,\"message\":\"Đã đối soát kích hoạt quyền học cho học viên thành công.\",\"data\":{\"action\":\"ACTIVATE\",\"message\":\"Đã đối soát kích hoạt quyền học cho học viên thành công.\",\"reconciliationNote\":\"Đã đối soát sao kê ngân hàng\",\"orderId\":2089,\"status\":\"PAID\"},\"errors\":null}",
+    "data": {
+      "action": "ACTIVATE",
+      "message": "Đã đối soát kích hoạt quyền học cho học viên thành công.",
+      "reconciliationNote": "Đã đối soát sao kê ngân hàng",
+      "orderId": 2089,
+      "status": "PAID"
+    }
+  },
+  "reconDup": {
+    "status": 409,
+    "ok": false,
+    "elapsedMs": 48.3,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 260,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:38:49 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": false,
+      "message": "Đơn hàng này không ở trạng thái chờ đối soát (hiện tại: PAID) hoặc đã được xử lý trước đó.",
+      "data": null,
+      "errors": {
+        "code": "CONFLICT",
+        "fields": null,
+        "traceId": "f1362f15-7f42-4cd4-b281-f18b595add59"
+      }
+    },
+    "rawText": "{\"success\":false,\"message\":\"Đơn hàng này không ở trạng thái chờ đối soát (hiện tại: PAID) hoặc đã được xử lý trước đó.\",\"data\":null,\"errors\":{\"code\":\"CONFLICT\",\"fields\":null,\"traceId\":\"f1362f15-7f42-4cd4-b281-f18b595add59\"}}",
+    "data": null
+  },
+  "enrRecon": {
+    "status": 200,
+    "ok": true,
+    "elapsedMs": 23.8,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 90,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:38:49 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": true,
+      "message": "OK",
+      "data": {
+        "status": "ACTIVE",
+        "isEnrolled": true
+      },
+      "errors": null
+    },
+    "rawText": "{\"success\":true,\"message\":\"OK\",\"data\":{\"status\":\"ACTIVE\",\"isEnrolled\":true},\"errors\":null}",
+    "data": {
+      "status": "ACTIVE",
+      "isEnrolled": true
+    }
+  },
+  "mailSubject": "Kết quả đối soát đơn hàng EDUMY2089 trên Edumy"
+}

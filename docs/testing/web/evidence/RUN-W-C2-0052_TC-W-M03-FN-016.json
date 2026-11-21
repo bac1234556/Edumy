@@ -1,0 +1,43 @@
+{
+  "aCoursesLen": 59,
+  "appRes": {
+    "status": 200,
+    "ok": true,
+    "elapsedMs": 177.8,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 216,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:27:21 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": true,
+      "message": "Đã phê duyệt và xuất bản khóa học công khai.",
+      "data": {
+        "courseId": 51,
+        "status": "Published",
+        "message": "Đã phê duyệt và xuất bản khóa học công khai."
+      },
+      "errors": null
+    },
+    "rawText": "{\"success\":true,\"message\":\"Đã phê duyệt và xuất bản khóa học công khai.\",\"data\":{\"courseId\":51,\"status\":\"Published\",\"message\":\"Đã phê duyệt và xuất bản khóa học công khai.\"},\"errors\":null}",
+    "data": {
+      "courseId": 51,
+      "status": "Published",
+      "message": "Đã phê duyệt và xuất bản khóa học công khai."
+    }
+  },
+  "inPub": true,
+  "mailSubject": "Khóa học “Khóa Học Spring Boot Đã Sửa Draft” của bạn đã được duyệt và phát hành"
+}

@@ -1,0 +1,109 @@
+{
+  "whUnder": {
+    "status": 200,
+    "ok": true,
+    "elapsedMs": 266.4,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 202,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:27:32 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "orderId": 2051,
+      "success": false,
+      "message": "Số tiền chuyển khoản (150000) chưa đủ tổng tiền đơn hàng (300000.00). Đơn hàng đã chuyển sang NEEDS_REVIEW.",
+      "status": "NEEDS_REVIEW"
+    },
+    "rawText": "{\"orderId\":2051,\"success\":false,\"message\":\"Số tiền chuyển khoản (150000) chưa đủ tổng tiền đơn hàng (300000.00). Đơn hàng đã chuyển sang NEEDS_REVIEW.\",\"status\":\"NEEDS_REVIEW\"}",
+    "data": {
+      "orderId": 2051,
+      "success": false,
+      "message": "Số tiền chuyển khoản (150000) chưa đủ tổng tiền đơn hàng (300000.00). Đơn hàng đã chuyển sang NEEDS_REVIEW.",
+      "status": "NEEDS_REVIEW"
+    }
+  },
+  "whLate": {
+    "status": 200,
+    "ok": true,
+    "elapsedMs": 83.6,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 182,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:27:32 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "orderId": 2051,
+      "success": false,
+      "message": "Đơn hàng đã CANCELLED; giao dịch đã được đánh dấu chờ đối soát thủ công (NEEDS_REVIEW).",
+      "status": "NEEDS_REVIEW"
+    },
+    "rawText": "{\"orderId\":2051,\"success\":false,\"message\":\"Đơn hàng đã CANCELLED; giao dịch đã được đánh dấu chờ đối soát thủ công (NEEDS_REVIEW).\",\"status\":\"NEEDS_REVIEW\"}",
+    "data": {
+      "orderId": 2051,
+      "success": false,
+      "message": "Đơn hàng đã CANCELLED; giao dịch đã được đánh dấu chờ đối soát thủ công (NEEDS_REVIEW).",
+      "status": "NEEDS_REVIEW"
+    }
+  },
+  "enrAfterLate": {
+    "status": 200,
+    "ok": true,
+    "elapsedMs": 28.8,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 89,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:27:32 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": true,
+      "message": "OK",
+      "data": {
+        "status": "NONE",
+        "isEnrolled": false
+      },
+      "errors": null
+    },
+    "rawText": "{\"success\":true,\"message\":\"OK\",\"data\":{\"status\":\"NONE\",\"isEnrolled\":false},\"errors\":null}",
+    "data": {
+      "status": "NONE",
+      "isEnrolled": false
+    }
+  },
+  "markedReconcile": true
+}

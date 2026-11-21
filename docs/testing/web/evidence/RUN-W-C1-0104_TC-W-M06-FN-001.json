@@ -1,0 +1,51 @@
+{
+  "baseGva": 1190000,
+  "baseCo": 140000,
+  "gvaDelta": 1680000,
+  "coDelta": 420000,
+  "sumBefore": {
+    "hasEarnings": true,
+    "totalEarned": 2870000,
+    "pendingBalance": 2870000,
+    "inWithdrawal": 0,
+    "withdrawn": 0,
+    "availableBalance": 0,
+    "minWithdrawal": 1000000,
+    "holdDays": 7,
+    "nextMaturityAt": "2026-11-28T08:25:58.236314Z",
+    "maxWithdrawalsPerMonth": 1,
+    "withdrawalsUsedThisMonth": 0,
+    "canWithdrawThisMonth": true,
+    "nextWithdrawalAt": null
+  },
+  "sumCoBefore": {
+    "hasEarnings": true,
+    "totalEarned": 560000,
+    "pendingBalance": 560000,
+    "inWithdrawal": 0,
+    "withdrawn": 0,
+    "availableBalance": 0,
+    "minWithdrawal": 1000000,
+    "holdDays": 7,
+    "nextMaturityAt": "2026-11-28T08:26:04.750343Z",
+    "maxWithdrawalsPerMonth": 1,
+    "withdrawalsUsedThisMonth": 0,
+    "canWithdrawThisMonth": true,
+    "nextWithdrawalAt": null
+  },
+  "sumAfterMat": {
+    "hasEarnings": true,
+    "totalEarned": 2870000,
+    "pendingBalance": 0,
+    "inWithdrawal": 0,
+    "withdrawn": 0,
+    "availableBalance": 2870000,
+    "minWithdrawal": 1000000,
+    "holdDays": 7,
+    "nextMaturityAt": null,
+    "maxWithdrawalsPerMonth": 1,
+    "withdrawalsUsedThisMonth": 0,
+    "canWithdrawThisMonth": true,
+    "nextWithdrawalAt": null
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "count": 10,
+  "locations": [
+    {
+      "file": "Edumy-main/Edumy/Backend/src/main/resources/application.yml",
+      "line": 5,
+      "masked": "password: ***"
+    },
+    {
+      "file": "Edumy-main/Edumy/Backend/src/main/resources/application.yml",
+      "line": 65,
+      "masked": "key: ***"
+    },
+    {
+      "file": "Edumy-main/Edumy/Backend/src/main/resources/application.yml",
+      "line": 72,
+      "masked": "secret-key: ***"
+    },
+    {
+      "file": "Edumy-main/Edumy/Backend/src/main/resources/application.yml",
+      "line": 73,
+      "masked": "publishable-key: ***"
+    },
+    {
+      "file": "Edumy-main/Edumy/Backend/src/main/resources/application.yml",
+      "line": 74,
+      "masked": "webhook-secret: ***"
+    },
+    {
+      "file": "Edumy-main/Edumy/Backend/src/main/resources/application.yml",
+      "line": 84,
+      "masked": "api-key: ***"
+    },
+    {
+      "file": "Edumy-main/Edumy/Backend/src/main/resources/application.yml",
+      "line": 87,
+      "masked": "hash-secret: ***"
+    },
+    {
+      "file": "Edumy-main/Edumy/docker-compose.yml",
+      "line": 11,
+      "masked": "- MSSQL_SA_PASSWORD= ***"
+    },
+    {
+      "file": "Edumy-main/Edumy/docker-compose.yml",
+      "line": 35,
+      "masked": "- SPRING_DATASOURCE_PASSWORD= ***"
+    },
+    {
+      "file": "Edumy-main/Edumy/docker-compose.yml",
+      "line": 92,
+      "masked": "- GF_SECURITY_ADMIN_PASSWORD= ***"
+    }
+  ]
+}

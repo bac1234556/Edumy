@@ -1,0 +1,69 @@
+{
+  "leaveMain": {
+    "status": 400,
+    "ok": false,
+    "elapsedMs": 48.5,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 213,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "close",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:36:43 GMT",
+      "expires": "0",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": false,
+      "message": "Giảng viên chính không thể tự rời khỏi khóa học của mình.",
+      "data": null,
+      "errors": {
+        "code": "BAD_REQUEST",
+        "fields": null,
+        "traceId": "77714c6d-419e-4d54-b94b-15827d77cf33"
+      }
+    },
+    "rawText": "{\"success\":false,\"message\":\"Giảng viên chính không thể tự rời khỏi khóa học của mình.\",\"data\":null,\"errors\":{\"code\":\"BAD_REQUEST\",\"fields\":null,\"traceId\":\"77714c6d-419e-4d54-b94b-15827d77cf33\"}}",
+    "data": null
+  },
+  "leaveOut": {
+    "status": 403,
+    "ok": false,
+    "elapsedMs": 53.5,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 221,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:36:43 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": false,
+      "message": "Bạn không phải đồng giảng viên đang hoạt động của khóa học này.",
+      "data": null,
+      "errors": {
+        "code": "FORBIDDEN",
+        "fields": null,
+        "traceId": "0b318e24-a1b9-4d83-abaf-0ecc8efbe419"
+      }
+    },
+    "rawText": "{\"success\":false,\"message\":\"Bạn không phải đồng giảng viên đang hoạt động của khóa học này.\",\"data\":null,\"errors\":{\"code\":\"FORBIDDEN\",\"fields\":null,\"traceId\":\"0b318e24-a1b9-4d83-abaf-0ecc8efbe419\"}}",
+    "data": null
+  }
+}

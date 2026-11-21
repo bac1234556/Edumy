@@ -1,0 +1,168 @@
+{
+  "lockRes": {
+    "status": 200,
+    "ok": true,
+    "elapsedMs": 31.6,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 216,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 15:25:29 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": true,
+      "message": "Đã khóa tài khoản người dùng thành công.",
+      "data": {
+        "status": "LOCKED",
+        "isActive": false,
+        "message": "Đã khóa tài khoản người dùng thành công.",
+        "userId": 28
+      },
+      "errors": null
+    },
+    "rawText": "{\"success\":true,\"message\":\"Đã khóa tài khoản người dùng thành công.\",\"data\":{\"status\":\"LOCKED\",\"isActive\":false,\"message\":\"Đã khóa tài khoản người dùng thành công.\",\"userId\":28},\"errors\":null}",
+    "data": {
+      "status": "LOCKED",
+      "isActive": false,
+      "message": "Đã khóa tài khoản người dùng thành công.",
+      "userId": 28
+    }
+  },
+  "jwtAfterLock": {
+    "status": 200,
+    "ok": true,
+    "elapsedMs": 16.1,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 249,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 15:25:29 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": true,
+      "message": "OK",
+      "data": {
+        "id": 28,
+        "email": "qa.m01.new.1795274720888@edumy.test",
+        "fullName": "Nguyễn Văn Cập Nhật",
+        "emailVerified": true,
+        "roles": [
+          "STUDENT"
+        ],
+        "status": "LOCKED",
+        "createdAt": "2026-11-21T08:25:20.979195Z"
+      },
+      "errors": null
+    },
+    "rawText": "{\"success\":true,\"message\":\"OK\",\"data\":{\"id\":28,\"email\":\"qa.m01.new.1795274720888@edumy.test\",\"fullName\":\"Nguyễn Văn Cập Nhật\",\"emailVerified\":true,\"roles\":[\"STUDENT\"],\"status\":\"LOCKED\",\"createdAt\":\"2026-11-21T08:25:20.979195Z\"},\"errors\":null}",
+    "data": {
+      "id": 28,
+      "email": "qa.m01.new.1795274720888@edumy.test",
+      "fullName": "Nguyễn Văn Cập Nhật",
+      "emailVerified": true,
+      "roles": [
+        "STUDENT"
+      ],
+      "status": "LOCKED",
+      "createdAt": "2026-11-21T08:25:20.979195Z"
+    }
+  },
+  "refAfterLock": {
+    "status": 403,
+    "ok": false,
+    "elapsedMs": 10,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 227,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 15:25:29 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": false,
+      "message": "Tài khoản của bạn đã bị khóa. Vui lòng liên hệ quản trị viên.",
+      "data": null,
+      "errors": {
+        "code": "AUTH_ACCOUNT_LOCKED",
+        "fields": null,
+        "traceId": "d52cb2f0-6409-4d3e-9448-19e12df5b123"
+      }
+    },
+    "rawText": "{\"success\":false,\"message\":\"Tài khoản của bạn đã bị khóa. Vui lòng liên hệ quản trị viên.\",\"data\":null,\"errors\":{\"code\":\"AUTH_ACCOUNT_LOCKED\",\"fields\":null,\"traceId\":\"d52cb2f0-6409-4d3e-9448-19e12df5b123\"}}",
+    "data": null
+  },
+  "loginLockedStatus": 403,
+  "unlockRes": {
+    "status": 200,
+    "ok": true,
+    "elapsedMs": 33.1,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 225,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 15:25:29 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": true,
+      "message": "Đã mở khóa tài khoản người dùng thành công.",
+      "data": {
+        "status": "ACTIVE",
+        "isActive": true,
+        "message": "Đã mở khóa tài khoản người dùng thành công.",
+        "userId": 28
+      },
+      "errors": null
+    },
+    "rawText": "{\"success\":true,\"message\":\"Đã mở khóa tài khoản người dùng thành công.\",\"data\":{\"status\":\"ACTIVE\",\"isActive\":true,\"message\":\"Đã mở khóa tài khoản người dùng thành công.\",\"userId\":28},\"errors\":null}",
+    "data": {
+      "status": "ACTIVE",
+      "isActive": true,
+      "message": "Đã mở khóa tài khoản người dùng thành công.",
+      "userId": 28
+    }
+  },
+  "loginUnlockedStatus": 200
+}

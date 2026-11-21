@@ -1,0 +1,51 @@
+{
+  "invSelf": 404,
+  "invStu": 404,
+  "invOver": 422,
+  "invOk": 200,
+  "mail": true,
+  "accCo": 200,
+  "decGvb": 200,
+  "updSh": 200,
+  "remCo": 200,
+  "leaveCo": {
+    "status": 200,
+    "ok": true,
+    "elapsedMs": 41.6,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 289,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:36:40 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": true,
+      "message": "Bạn đã rời khỏi danh sách đồng giảng viên của khóa học thành công.",
+      "data": {
+        "status": "LEFT",
+        "courseId": 50,
+        "message": "Bạn đã rời khỏi danh sách đồng giảng viên của khóa học thành công.",
+        "instructorId": 22
+      },
+      "errors": null
+    },
+    "rawText": "{\"success\":true,\"message\":\"Bạn đã rời khỏi danh sách đồng giảng viên của khóa học thành công.\",\"data\":{\"status\":\"LEFT\",\"courseId\":50,\"message\":\"Bạn đã rời khỏi danh sách đồng giảng viên của khóa học thành công.\",\"instructorId\":22},\"errors\":null}",
+    "data": {
+      "status": "LEFT",
+      "courseId": 50,
+      "message": "Bạn đã rời khỏi danh sách đồng giảng viên của khóa học thành công.",
+      "instructorId": 22
+    }
+  }
+}

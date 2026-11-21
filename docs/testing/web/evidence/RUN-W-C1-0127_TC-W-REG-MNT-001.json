@@ -1,0 +1,6 @@
+{
+  "aiHits": [
+    "C:\\Users\\bacle\\Downloads\\Edumy-Project\\Edumy-main\\Edumy\\Backend\\src\\main\\java\\com\\edumy\\identity\\user\\controller\\AdminController.java:352: @GetMapping(\"/ml-monitoring\")"
+  ],
+  "mlMonitoringEndpointStatus": 200
+}

@@ -1,0 +1,102 @@
+# Isolated QA Test Stack for Edumy Web (project name: edumy-test)
+# Runs completely separate from dev stack (edumy_*) on non-conflicting host ports and volumes.
+# Usage: docker compose -p edumy-test -f Edumy-main/docs/testing/web/scripts/docker-compose.test.yml up -d --build
+
+services:
+  database:
+    build:
+      context: ../../../../Edumy/Database
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=YourPassword123
+      - MSSQL_PID=Developer
+    ports:
+      - "14334:1433"
+    volumes:
+      - edumy_test_sqlserver_data:/var/opt/mssql
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'YourPassword123' -C -Q 'SELECT 1' || /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'YourPassword123' -Q 'SELECT 1'"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+
+  backend:
+    build:
+      context: ../../../../Edumy/Backend
+      dockerfile: Dockerfile
+    ports:
+      - "5001:5000"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:sqlserver://database:1433;databaseName=EduMyDb;encrypt=false;trustServerCertificate=true
+      - SPRING_DATASOURCE_USERNAME=sa
+      - SPRING_DATASOURCE_PASSWORD=YourPassword123
+      - SPRING_MAIL_HOST=mailpit
+      - SPRING_MAIL_PORT=1025
+      - FRONTEND_BASE_URL=http://localhost:3002
+      - CORS_ALLOWED_ORIGINS=http://localhost:3002,http://localhost:3000,http://localhost:5173
+      - EDUMY_ORDERS_EXPIRE_CHECK_MS=5000
+    depends_on:
+      database:
+        condition: service_healthy
+      mailpit:
+        condition: service_started
+
+  mailpit:
+    image: 'axllent/mailpit:v1.32.0'
+    restart: unless-stopped
+    ports:
+      - "1026:1025"
+      - "8026:8025"
+
+  frontend:
+    build:
+      context: ../../../../Edumy/Frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3002:80"
+    volumes:
+      - ../../../../Edumy/Frontend/dist:/usr/share/nginx/html:ro
+      - ../../../../Edumy/Frontend/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - backend
+
+  prometheus:
+    image: prom/prometheus:v2.51.0
+    restart: unless-stopped
+    ports:
+      - "9091:9090"
+    volumes:
+      - ../../../../Edumy/monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - edumy_test_prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    depends_on:
+      - backend
+
+  grafana:
+    image: grafana/grafana:10.4.1
+    restart: unless-stopped
+    ports:
+      - "3003:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SERVER_ROOT_URL=http://localhost:3003
+    volumes:
+      - ../../../../Edumy/monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - edumy_test_grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+
+volumes:
+  edumy_test_sqlserver_data:
+  edumy_test_prometheus_data:
+  edumy_test_grafana_data:

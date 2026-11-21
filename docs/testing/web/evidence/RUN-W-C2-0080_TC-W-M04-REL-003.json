@@ -1,0 +1,15 @@
+{
+  "scheduledCount": 2,
+  "oExpId": 2054,
+  "oExpStatus": {
+    "orderId": 2054,
+    "status": "EXPIRED",
+    "isPaid": false,
+    "totalAmount": 300000,
+    "courseIds": [
+      49
+    ],
+    "firstCourseId": 49,
+    "message": "Đang chờ học viên quét mã QR thanh toán."
+  }
+}

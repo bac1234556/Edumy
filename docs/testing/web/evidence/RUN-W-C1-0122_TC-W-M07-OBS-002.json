@@ -1,0 +1,42 @@
+{
+  "health": {
+    "status": "UP"
+  },
+  "promBackendTarget": {
+    "discoveredLabels": {
+      "__address__": "backend:5000",
+      "__metrics_path__": "/actuator/prometheus",
+      "__scheme__": "http",
+      "__scrape_interval__": "5s",
+      "__scrape_timeout__": "5s",
+      "application": "Edumy Backend",
+      "environment": "local-docker",
+      "job": "edumy-backend"
+    },
+    "labels": {
+      "application": "Edumy Backend",
+      "environment": "local-docker",
+      "instance": "backend:5000",
+      "job": "edumy-backend"
+    },
+    "scrapePool": "edumy-backend",
+    "scrapeUrl": "http://backend:5000/actuator/prometheus",
+    "globalUrl": "http://backend:5000/actuator/prometheus",
+    "lastError": "",
+    "lastScrape": "2026-11-21T15:30:22.245187658Z",
+    "lastScrapeDuration": 0.064712352,
+    "health": "up",
+    "scrapeInterval": "5s",
+    "scrapeTimeout": "5s"
+  },
+  "grafanaHealth": {
+    "commit": "d94d597d847c05085542c29dfad6b3f469cc77e1",
+    "database": "ok",
+    "version": "10.4.1"
+  },
+  "grafanaDashboards": [
+    "Edumy Alerts",
+    "Edumy Monitoring",
+    "Edumy - Spring Boot & System Overview"
+  ]
+}

@@ -1,0 +1,89 @@
+{
+  "p1": {
+    "totalQuizzes": 0,
+    "totalItems": 3,
+    "certificateId": null,
+    "completedItems": 1,
+    "progressPercentage": 33,
+    "certificateUrl": null,
+    "completedLessonIds": [
+      168
+    ],
+    "totalLessons": 3,
+    "completedQuizIds": [],
+    "completedQuizzes": 0,
+    "lastAccessedLessonId": null
+  },
+  "p2": {
+    "totalQuizzes": 0,
+    "totalItems": 3,
+    "certificateId": null,
+    "completedItems": 2,
+    "progressPercentage": 67,
+    "certificateUrl": null,
+    "completedLessonIds": [
+      168,
+      169
+    ],
+    "totalLessons": 3,
+    "completedQuizIds": [],
+    "completedQuizzes": 0,
+    "lastAccessedLessonId": null
+  },
+  "enrolledC3Progress": 67,
+  "unm": {
+    "status": 200,
+    "ok": true,
+    "elapsedMs": 81.3,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 213,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 15:26:17 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": true,
+      "message": "Đã bỏ đánh dấu hoàn thành bài học.",
+      "data": {
+        "progressPercent": 33,
+        "message": "Đã bỏ đánh dấu hoàn thành bài học.",
+        "completed": false,
+        "lessonId": 169
+      },
+      "errors": null
+    },
+    "rawText": "{\"success\":true,\"message\":\"Đã bỏ đánh dấu hoàn thành bài học.\",\"data\":{\"progressPercent\":33,\"message\":\"Đã bỏ đánh dấu hoàn thành bài học.\",\"completed\":false,\"lessonId\":169},\"errors\":null}",
+    "data": {
+      "progressPercent": 33,
+      "message": "Đã bỏ đánh dấu hoàn thành bài học.",
+      "completed": false,
+      "lessonId": 169
+    }
+  },
+  "p3": {
+    "totalQuizzes": 0,
+    "totalItems": 3,
+    "certificateId": null,
+    "completedItems": 1,
+    "progressPercentage": 33,
+    "certificateUrl": null,
+    "completedLessonIds": [
+      168
+    ],
+    "totalLessons": 3,
+    "completedQuizIds": [],
+    "completedQuizzes": 0,
+    "lastAccessedLessonId": null
+  }
+}

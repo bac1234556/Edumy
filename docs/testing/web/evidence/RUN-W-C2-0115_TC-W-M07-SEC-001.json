@@ -1,0 +1,13 @@
+{
+  "actEnv": 401,
+  "actBeans": 401,
+  "actHeap": 401,
+  "actMetrics": 401,
+  "swagDocs": 404,
+  "swagUi": 404,
+  "hasStack": false,
+  "missingSecHeaders": [],
+  "a05Issues": [
+    "Default credentials in docker-compose.yml (Grafana admin/admin, SQL Server SA default)"
+  ]
+}

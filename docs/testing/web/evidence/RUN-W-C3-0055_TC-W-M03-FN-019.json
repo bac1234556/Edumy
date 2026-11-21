@@ -1,0 +1,101 @@
+{
+  "catNew": 200,
+  "catUpd": 200,
+  "catDelEmpty": 200,
+  "catDelUsed": {
+    "status": 400,
+    "ok": false,
+    "elapsedMs": 21.6,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 217,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "close",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:36:43 GMT",
+      "expires": "0",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": false,
+      "message": "Không thể xóa danh mục 'Development' vì đang có 32 khóa học liên kết. Vui lòng chuyển các khóa học sang danh mục khác trước!",
+      "data": null,
+      "errors": "Bad Request"
+    },
+    "rawText": "{\"success\":false,\"message\":\"Không thể xóa danh mục 'Development' vì đang có 32 khóa học liên kết. Vui lòng chuyển các khóa học sang danh mục khác trước!\",\"data\":null,\"errors\":\"Bad Request\"}",
+    "data": null
+  },
+  "catDeact": {
+    "status": 200,
+    "ok": true,
+    "elapsedMs": 24.4,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 223,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:36:43 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": true,
+      "message": "Đã ngừng sử dụng danh mục 'Development' thành công.",
+      "data": {
+        "categoryId": 1,
+        "isActive": false,
+        "message": "Đã ngừng sử dụng danh mục 'Development' thành công."
+      },
+      "errors": null
+    },
+    "rawText": "{\"success\":true,\"message\":\"Đã ngừng sử dụng danh mục 'Development' thành công.\",\"data\":{\"categoryId\":1,\"isActive\":false,\"message\":\"Đã ngừng sử dụng danh mục 'Development' thành công.\"},\"errors\":null}",
+    "data": {
+      "categoryId": 1,
+      "isActive": false,
+      "message": "Đã ngừng sử dụng danh mục 'Development' thành công."
+    }
+  },
+  "createInDeact": {
+    "status": 400,
+    "ok": false,
+    "elapsedMs": 20.3,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 142,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "close",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:36:43 GMT",
+      "expires": "0",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": false,
+      "message": "Danh mục đã ngừng sử dụng, vui lòng chọn danh mục đang hoạt động.",
+      "data": null,
+      "errors": null
+    },
+    "rawText": "{\"success\":false,\"message\":\"Danh mục đã ngừng sử dụng, vui lòng chọn danh mục đang hoạt động.\",\"data\":null,\"errors\":null}",
+    "data": null
+  }
+}

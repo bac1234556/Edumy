@@ -1,0 +1,49 @@
+{
+  "aStats": {
+    "status": 200,
+    "ok": true,
+    "elapsedMs": 49.5,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 176,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 15:25:29 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": true,
+      "message": "OK",
+      "data": {
+        "totalUsers": 30,
+        "TotalRevenue": 48011000,
+        "totalCourses": 50,
+        "totalRevenue": 48011000,
+        "TotalUsers": 30,
+        "TotalCourses": 50
+      },
+      "errors": null
+    },
+    "rawText": "{\"success\":true,\"message\":\"OK\",\"data\":{\"totalUsers\":30,\"TotalRevenue\":48011000.00,\"totalCourses\":50,\"totalRevenue\":48011000.00,\"TotalUsers\":30,\"TotalCourses\":50},\"errors\":null}",
+    "data": {
+      "totalUsers": 30,
+      "TotalRevenue": 48011000,
+      "totalCourses": 50,
+      "totalRevenue": 48011000,
+      "TotalUsers": 30,
+      "TotalCourses": 50
+    }
+  },
+  "actCount": 50,
+  "userCount": 30,
+  "leakHash": false
+}

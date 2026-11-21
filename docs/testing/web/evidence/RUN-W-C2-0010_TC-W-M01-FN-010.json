@@ -1,0 +1,137 @@
+{
+  "profGet": {
+    "status": 200,
+    "ok": true,
+    "elapsedMs": 56.3,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 242,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:26:37 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": true,
+      "message": "OK",
+      "data": {
+        "id": 28,
+        "email": "qa.m01.new.1795278390309@edumy.test",
+        "fullName": "Nguyễn Văn Mới",
+        "emailVerified": true,
+        "roles": [
+          "STUDENT"
+        ],
+        "status": "ACTIVE",
+        "createdAt": "2026-11-21T09:26:30.625037Z"
+      },
+      "errors": null
+    },
+    "rawText": "{\"success\":true,\"message\":\"OK\",\"data\":{\"id\":28,\"email\":\"qa.m01.new.1795278390309@edumy.test\",\"fullName\":\"Nguyễn Văn Mới\",\"emailVerified\":true,\"roles\":[\"STUDENT\"],\"status\":\"ACTIVE\",\"createdAt\":\"2026-11-21T09:26:30.625037Z\"},\"errors\":null}",
+    "data": {
+      "id": 28,
+      "email": "qa.m01.new.1795278390309@edumy.test",
+      "fullName": "Nguyễn Văn Mới",
+      "emailVerified": true,
+      "roles": [
+        "STUDENT"
+      ],
+      "status": "ACTIVE",
+      "createdAt": "2026-11-21T09:26:30.625037Z"
+    }
+  },
+  "profOk": {
+    "status": 200,
+    "ok": true,
+    "elapsedMs": 58.1,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 249,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:26:37 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": true,
+      "message": "OK",
+      "data": {
+        "id": 28,
+        "email": "qa.m01.new.1795278390309@edumy.test",
+        "fullName": "Nguyễn Văn Cập Nhật",
+        "emailVerified": true,
+        "roles": [
+          "STUDENT"
+        ],
+        "status": "ACTIVE",
+        "createdAt": "2026-11-21T09:26:30.625037Z"
+      },
+      "errors": null
+    },
+    "rawText": "{\"success\":true,\"message\":\"OK\",\"data\":{\"id\":28,\"email\":\"qa.m01.new.1795278390309@edumy.test\",\"fullName\":\"Nguyễn Văn Cập Nhật\",\"emailVerified\":true,\"roles\":[\"STUDENT\"],\"status\":\"ACTIVE\",\"createdAt\":\"2026-11-21T09:26:30.625037Z\"},\"errors\":null}",
+    "data": {
+      "id": 28,
+      "email": "qa.m01.new.1795278390309@edumy.test",
+      "fullName": "Nguyễn Văn Cập Nhật",
+      "emailVerified": true,
+      "roles": [
+        "STUDENT"
+      ],
+      "status": "ACTIVE",
+      "createdAt": "2026-11-21T09:26:30.625037Z"
+    }
+  },
+  "profEmpty": {
+    "status": 400,
+    "ok": false,
+    "elapsedMs": 27.8,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 239,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "close",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:26:37 GMT",
+      "expires": "0",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": false,
+      "message": "Dữ liệu đầu vào không hợp lệ.",
+      "data": null,
+      "errors": {
+        "code": "VALIDATION_ERROR",
+        "fields": {
+          "fullName": "Họ và tên không được để trống."
+        },
+        "traceId": "a7d7bf44-3f3e-4fdc-9536-4bafae362aed"
+      }
+    },
+    "rawText": "{\"success\":false,\"message\":\"Dữ liệu đầu vào không hợp lệ.\",\"data\":null,\"errors\":{\"code\":\"VALIDATION_ERROR\",\"fields\":{\"fullName\":\"Họ và tên không được để trống.\"},\"traceId\":\"a7d7bf44-3f3e-4fdc-9536-4bafae362aed\"}}",
+    "data": null
+  }
+}

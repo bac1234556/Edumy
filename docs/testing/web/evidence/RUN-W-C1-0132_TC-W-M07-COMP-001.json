@@ -1,0 +1,6 @@
+{
+  "status": "Blocked",
+  "cause": "BLOCKED_BROWSER_CONNECTION_FAILED",
+  "error": "Could not find DevToolsActivePort for chrome (ENOENT)",
+  "note": "Chrome DevTools chưa kết nối (DevToolsActivePort ENOENT) và Mozilla Firefox chưa cài đặt trên máy host (chỉ có Chrome 157 & Edge 158)."
+}

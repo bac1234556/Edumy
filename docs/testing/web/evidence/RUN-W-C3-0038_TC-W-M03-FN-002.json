@@ -1,0 +1,11 @@
+{
+  "noCat1": {
+    "status": 400
+  },
+  "noCat2": {
+    "status": 400
+  },
+  "noCat3": {
+    "status": 400
+  }
+}

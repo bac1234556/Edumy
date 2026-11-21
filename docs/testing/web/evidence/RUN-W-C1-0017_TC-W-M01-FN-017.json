@@ -1,0 +1,69 @@
+{
+  "loNo": {
+    "status": 200,
+    "ok": true,
+    "elapsedMs": 5.5,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 173,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 15:25:29 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": true,
+      "message": "Đã đăng xuất và kết thúc phiên làm việc.",
+      "data": {
+        "message": "Đã đăng xuất và kết thúc phiên làm việc."
+      },
+      "errors": null
+    },
+    "rawText": "{\"success\":true,\"message\":\"Đã đăng xuất và kết thúc phiên làm việc.\",\"data\":{\"message\":\"Đã đăng xuất và kết thúc phiên làm việc.\"},\"errors\":null}",
+    "data": {
+      "message": "Đã đăng xuất và kết thúc phiên làm việc."
+    }
+  },
+  "rvNo": {
+    "status": 400,
+    "ok": false,
+    "elapsedMs": 5.1,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 155,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "close",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 15:25:29 GMT",
+      "expires": "0",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": false,
+      "message": "Token is required.",
+      "data": null,
+      "errors": {
+        "code": "BAD_REQUEST",
+        "fields": null,
+        "traceId": "6d1917e9-c142-4d73-be08-e092c17c29af"
+      }
+    },
+    "rawText": "{\"success\":false,\"message\":\"Token is required.\",\"data\":null,\"errors\":{\"code\":\"BAD_REQUEST\",\"fields\":null,\"traceId\":\"6d1917e9-c142-4d73-be08-e092c17c29af\"}}",
+    "data": null
+  }
+}

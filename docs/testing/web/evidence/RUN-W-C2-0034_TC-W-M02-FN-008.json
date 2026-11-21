@@ -1,0 +1,100 @@
+{
+  "prevLockGuest": {
+    "status": 403,
+    "ok": false,
+    "elapsedMs": 239.7,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 203,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:26:59 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": false,
+      "message": "Bài học này không cho phép xem thử miễn phí.",
+      "data": null,
+      "errors": {
+        "code": "LESSON_NOT_PREVIEWABLE",
+        "fields": null,
+        "traceId": "b5434648-465f-4a0b-96f9-b26c22298bd8"
+      }
+    },
+    "rawText": "{\"success\":false,\"message\":\"Bài học này không cho phép xem thử miễn phí.\",\"data\":null,\"errors\":{\"code\":\"LESSON_NOT_PREVIEWABLE\",\"fields\":null,\"traceId\":\"b5434648-465f-4a0b-96f9-b26c22298bd8\"}}",
+    "data": null
+  },
+  "prevHid": {
+    "status": 404,
+    "ok": false,
+    "elapsedMs": 30.4,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 173,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:26:59 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": false,
+      "message": "Không tìm thấy khóa học.",
+      "data": null,
+      "errors": {
+        "code": "COURSE_NOT_FOUND",
+        "fields": null,
+        "traceId": "20f82c7c-93d5-41d4-81ad-a470d0e2d3b4"
+      }
+    },
+    "rawText": "{\"success\":false,\"message\":\"Không tìm thấy khóa học.\",\"data\":null,\"errors\":{\"code\":\"COURSE_NOT_FOUND\",\"fields\":null,\"traceId\":\"20f82c7c-93d5-41d4-81ad-a470d0e2d3b4\"}}",
+    "data": null
+  },
+  "prevMiss": {
+    "status": 404,
+    "ok": false,
+    "elapsedMs": 22,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 102,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:26:59 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": false,
+      "message": "Bài học không tồn tại với ID: 999999",
+      "data": null,
+      "errors": null
+    },
+    "rawText": "{\"success\":false,\"message\":\"Bài học không tồn tại với ID: 999999\",\"data\":null,\"errors\":null}",
+    "data": null
+  }
+}

@@ -1,0 +1,3184 @@
+{
+  "table1_module": [
+    {
+      "key": "W-M01",
+      "total": 26,
+      "executed": 26,
+      "pass": 26,
+      "fail": 0,
+      "blocked": 0,
+      "notRun": 0,
+      "totalRuns": 52,
+      "cycles": 3,
+      "execRate": 100.0,
+      "passRate": 100.0,
+      "firstTimePassRate": 61.54,
+      "S1": 2,
+      "S2": 5,
+      "S3": 0,
+      "S4": 0
+    },
+    {
+      "key": "W-M02",
+      "total": 10,
+      "executed": 10,
+      "pass": 10,
+      "fail": 0,
+      "blocked": 0,
+      "notRun": 0,
+      "totalRuns": 30,
+      "cycles": 3,
+      "execRate": 100.0,
+      "passRate": 100.0,
+      "firstTimePassRate": 30.0,
+      "S1": 0,
+      "S2": 2,
+      "S3": 0,
+      "S4": 0
+    },
+    {
+      "key": "W-M03",
+      "total": 28,
+      "executed": 28,
+      "pass": 28,
+      "fail": 0,
+      "blocked": 0,
+      "notRun": 0,
+      "totalRuns": 84,
+      "cycles": 3,
+      "execRate": 100.0,
+      "passRate": 100.0,
+      "firstTimePassRate": 28.57,
+      "S1": 2,
+      "S2": 3,
+      "S3": 2,
+      "S4": 0
+    },
+    {
+      "key": "W-M04",
+      "total": 18,
+      "executed": 18,
+      "pass": 18,
+      "fail": 0,
+      "blocked": 0,
+      "notRun": 0,
+      "totalRuns": 54,
+      "cycles": 3,
+      "execRate": 100.0,
+      "passRate": 100.0,
+      "firstTimePassRate": 27.78,
+      "S1": 2,
+      "S2": 2,
+      "S3": 1,
+      "S4": 0
+    },
+    {
+      "key": "W-M05",
+      "total": 21,
+      "executed": 21,
+      "pass": 21,
+      "fail": 0,
+      "blocked": 0,
+      "notRun": 0,
+      "totalRuns": 42,
+      "cycles": 3,
+      "execRate": 100.0,
+      "passRate": 100.0,
+      "firstTimePassRate": 42.86,
+      "S1": 1,
+      "S2": 2,
+      "S3": 1,
+      "S4": 0
+    },
+    {
+      "key": "W-M06",
+      "total": 9,
+      "executed": 9,
+      "pass": 9,
+      "fail": 0,
+      "blocked": 0,
+      "notRun": 0,
+      "totalRuns": 18,
+      "cycles": 3,
+      "execRate": 100.0,
+      "passRate": 100.0,
+      "firstTimePassRate": 100.0,
+      "S1": 0,
+      "S2": 0,
+      "S3": 0,
+      "S4": 0
+    },
+    {
+      "key": "W-M07",
+      "total": 19,
+      "executed": 19,
+      "pass": 10,
+      "fail": 3,
+      "blocked": 6,
+      "notRun": 0,
+      "totalRuns": 38,
+      "cycles": 3,
+      "execRate": 100.0,
+      "passRate": 52.63,
+      "firstTimePassRate": 36.84,
+      "S1": 0,
+      "S2": 3,
+      "S3": 0,
+      "S4": 1
+    },
+    {
+      "key": "W-REG",
+      "total": 3,
+      "executed": 3,
+      "pass": 1,
+      "fail": 0,
+      "blocked": 2,
+      "notRun": 0,
+      "totalRuns": 6,
+      "cycles": 3,
+      "execRate": 100.0,
+      "passRate": 33.33,
+      "firstTimePassRate": 0.0,
+      "S1": 0,
+      "S2": 0,
+      "S3": 1,
+      "S4": 0
+    },
+    {
+      "key": "Tổng",
+      "total": 134,
+      "executed": 134,
+      "pass": 123,
+      "fail": 3,
+      "blocked": 8,
+      "notRun": 0,
+      "totalRuns": 324,
+      "cycles": 3,
+      "execRate": 100.0,
+      "passRate": 91.79,
+      "firstTimePassRate": 42.54,
+      "S1": 7,
+      "S2": 17,
+      "S3": 5,
+      "S4": 1
+    }
+  ],
+  "table2_type": [
+    {
+      "key": "FN",
+      "total": 95,
+      "executed": 95,
+      "pass": 93,
+      "fail": 0,
+      "blocked": 2,
+      "notRun": 0,
+      "totalRuns": 237,
+      "cycles": 3,
+      "execRate": 100.0,
+      "passRate": 97.89,
+      "firstTimePassRate": 44.21
+    },
+    {
+      "key": "SEC",
+      "total": 19,
+      "executed": 19,
+      "pass": 17,
+      "fail": 2,
+      "blocked": 0,
+      "notRun": 0,
+      "totalRuns": 44,
+      "cycles": 3,
+      "execRate": 100.0,
+      "passRate": 89.47,
+      "firstTimePassRate": 42.11
+    },
+    {
+      "key": "PERF",
+      "total": 3,
+      "executed": 3,
+      "pass": 2,
+      "fail": 0,
+      "blocked": 1,
+      "notRun": 0,
+      "totalRuns": 6,
+      "cycles": 3,
+      "execRate": 100.0,
+      "passRate": 66.67,
+      "firstTimePassRate": 33.33
+    },
+    {
+      "key": "REL",
+      "total": 4,
+      "executed": 4,
+      "pass": 4,
+      "fail": 0,
+      "blocked": 0,
+      "notRun": 0,
+      "totalRuns": 11,
+      "cycles": 3,
+      "execRate": 100.0,
+      "passRate": 100.0,
+      "firstTimePassRate": 25.0
+    },
+    {
+      "key": "REC",
+      "total": 2,
+      "executed": 2,
+      "pass": 2,
+      "fail": 0,
+      "blocked": 0,
+      "notRun": 0,
+      "totalRuns": 4,
+      "cycles": 3,
+      "execRate": 100.0,
+      "passRate": 100.0,
+      "firstTimePassRate": 50.0
+    },
+    {
+      "key": "OBS",
+      "total": 2,
+      "executed": 2,
+      "pass": 2,
+      "fail": 0,
+      "blocked": 0,
+      "notRun": 0,
+      "totalRuns": 4,
+      "cycles": 3,
+      "execRate": 100.0,
+      "passRate": 100.0,
+      "firstTimePassRate": 100.0
+    },
+    {
+      "key": "USA",
+      "total": 3,
+      "executed": 3,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 3,
+      "notRun": 0,
+      "totalRuns": 6,
+      "cycles": 3,
+      "execRate": 100.0,
+      "passRate": 0.0,
+      "firstTimePassRate": 0.0
+    },
+    {
+      "key": "COMP",
+      "total": 1,
+      "executed": 1,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 1,
+      "notRun": 0,
+      "totalRuns": 2,
+      "cycles": 3,
+      "execRate": 100.0,
+      "passRate": 0.0,
+      "firstTimePassRate": 0.0
+    },
+    {
+      "key": "MNT",
+      "total": 3,
+      "executed": 3,
+      "pass": 2,
+      "fail": 1,
+      "blocked": 0,
+      "notRun": 0,
+      "totalRuns": 6,
+      "cycles": 3,
+      "execRate": 100.0,
+      "passRate": 66.67,
+      "firstTimePassRate": 33.33
+    },
+    {
+      "key": "DEP",
+      "total": 2,
+      "executed": 2,
+      "pass": 1,
+      "fail": 0,
+      "blocked": 1,
+      "notRun": 0,
+      "totalRuns": 4,
+      "cycles": 3,
+      "execRate": 100.0,
+      "passRate": 50.0,
+      "firstTimePassRate": 50.0
+    },
+    {
+      "key": "Tổng",
+      "total": 134,
+      "executed": 134,
+      "pass": 123,
+      "fail": 3,
+      "blocked": 8,
+      "notRun": 0,
+      "totalRuns": 324,
+      "cycles": 3,
+      "execRate": 100.0,
+      "passRate": 91.79,
+      "firstTimePassRate": 42.54
+    }
+  ],
+  "table3_cycle": [
+    {
+      "cycle": "C1",
+      "executed": 134,
+      "pass": 57,
+      "fail": 69,
+      "blocked": 8,
+      "defectsNew": 30,
+      "defectsClosed": 0,
+      "defectsReopened": 0
+    },
+    {
+      "cycle": "C2",
+      "executed": 134,
+      "pass": 118,
+      "fail": 8,
+      "blocked": 8,
+      "defectsNew": 0,
+      "defectsClosed": 24,
+      "defectsReopened": 0
+    },
+    {
+      "cycle": "C3",
+      "executed": 56,
+      "pass": 56,
+      "fail": 0,
+      "blocked": 0,
+      "defectsNew": 0,
+      "defectsClosed": 4,
+      "defectsReopened": 0
+    }
+  ],
+  "table5_defects_by_sev": {
+    "S1": 7,
+    "S2": 17,
+    "S3": 5,
+    "S4": 1
+  },
+  "table5_defects_open_by_sev": {
+    "S2": 1,
+    "S4": 1
+  },
+  "table5_defects_closed_by_sev": {
+    "S1": 7,
+    "S2": 16,
+    "S3": 5
+  },
+  "table5_defects_by_type": {
+    "Security": 11,
+    "Functional": 14,
+    "Spec Mismatch": 3,
+    "Not Implemented": 1,
+    "Performance": 1
+  },
+  "table6_req": [
+    {
+      "type": "UC",
+      "total": 75,
+      "withTc": 75,
+      "allPass": 74,
+      "gaps": 0,
+      "failedReqs": []
+    },
+    {
+      "type": "BR",
+      "total": 41,
+      "withTc": 41,
+      "allPass": 41,
+      "gaps": 0,
+      "failedReqs": []
+    },
+    {
+      "type": "AC",
+      "total": 37,
+      "withTc": 37,
+      "allPass": 36,
+      "gaps": 0,
+      "failedReqs": []
+    },
+    {
+      "type": "NFR",
+      "total": 10,
+      "withTc": 10,
+      "allPass": 5,
+      "gaps": 0,
+      "failedReqs": [
+        "NFR-02",
+        "NFR-08",
+        "NFR-10"
+      ]
+    },
+    {
+      "type": "D",
+      "total": 4,
+      "withTc": 4,
+      "allPass": 4,
+      "gaps": 0,
+      "failedReqs": []
+    },
+    {
+      "type": "CODE",
+      "total": 13,
+      "withTc": 13,
+      "allPass": 13,
+      "gaps": 0,
+      "failedReqs": []
+    },
+    {
+      "type": "REG",
+      "total": 2,
+      "withTc": 2,
+      "allPass": 1,
+      "gaps": 0,
+      "failedReqs": []
+    }
+  ],
+  "table9_jacoco": [
+    {
+      "module": "authoring",
+      "classes": 66,
+      "lineCovered": 202,
+      "lineTotal": 1755,
+      "linePct": 11.51,
+      "branchCovered": 87,
+      "branchTotal": 1358,
+      "branchPct": 6.41
+    },
+    {
+      "module": "catalog",
+      "classes": 10,
+      "lineCovered": 0,
+      "lineTotal": 108,
+      "linePct": 0.0,
+      "branchCovered": 0,
+      "branchTotal": 62,
+      "branchPct": 0.0
+    },
+    {
+      "module": "commerce",
+      "classes": 58,
+      "lineCovered": 85,
+      "lineTotal": 969,
+      "linePct": 8.77,
+      "branchCovered": 42,
+      "branchTotal": 582,
+      "branchPct": 7.22
+    },
+    {
+      "module": "identity",
+      "classes": 66,
+      "lineCovered": 115,
+      "lineTotal": 1042,
+      "linePct": 11.04,
+      "branchCovered": 40,
+      "branchTotal": 584,
+      "branchPct": 6.85
+    },
+    {
+      "module": "learning",
+      "classes": 93,
+      "lineCovered": 0,
+      "lineTotal": 1442,
+      "linePct": 0.0,
+      "branchCovered": 0,
+      "branchTotal": 766,
+      "branchPct": 0.0
+    },
+    {
+      "module": "notification",
+      "classes": 6,
+      "lineCovered": 1,
+      "lineTotal": 210,
+      "linePct": 0.48,
+      "branchCovered": 0,
+      "branchTotal": 24,
+      "branchPct": 0.0
+    },
+    {
+      "module": "other",
+      "classes": 1,
+      "lineCovered": 0,
+      "lineTotal": 3,
+      "linePct": 0.0,
+      "branchCovered": 0,
+      "branchTotal": 0,
+      "branchPct": 0.0
+    },
+    {
+      "module": "payout",
+      "classes": 38,
+      "lineCovered": 170,
+      "lineTotal": 355,
+      "linePct": 47.89,
+      "branchCovered": 56,
+      "branchTotal": 164,
+      "branchPct": 34.15
+    },
+    {
+      "module": "shared",
+      "classes": 24,
+      "lineCovered": 109,
+      "lineTotal": 616,
+      "linePct": 17.69,
+      "branchCovered": 34,
+      "branchTotal": 244,
+      "branchPct": 13.93
+    }
+  ],
+  "tc_state": {
+    "TC-W-M01-FN-001": {
+      "module": "W-M01",
+      "type": "FN",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 2,
+      "firstPass": true,
+      "latestRunId": "RUN-W-C2-0001",
+      "latestActual": "register=200, mailFound=true, verify=200, emailVerified=true",
+      "latestEvidence": "evidence/RUN-W-C2-0001_TC-W-M01-FN-001.json",
+      "latestDate": "2026-11-21T23:26:31+07:00",
+      "byCycle": {
+        "C1": "Pass",
+        "C2": "Pass"
+      }
+    },
+    "TC-W-M01-FN-002": {
+      "module": "W-M01",
+      "type": "FN",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 2,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C2-0002",
+      "latestActual": "dupEmail=409, weakPwd=400, badEmail=400",
+      "latestEvidence": "evidence/RUN-W-C2-0002_TC-W-M01-FN-002.json",
+      "latestDate": "2026-11-21T23:26:31+07:00",
+      "byCycle": {
+        "C1": "Fail",
+        "C2": "Pass"
+      }
+    },
+    "TC-W-M01-FN-003": {
+      "module": "W-M01",
+      "type": "FN",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 2,
+      "firstPass": true,
+      "latestRunId": "RUN-W-C2-0003",
+      "latestActual": "wrongToken=400, usedToken=400 (Users cols checked)",
+      "latestEvidence": "evidence/RUN-W-C2-0003_TC-W-M01-FN-003.json",
+      "latestDate": "2026-11-21T23:26:34+07:00",
+      "byCycle": {
+        "C1": "Pass",
+        "C2": "Pass"
+      }
+    },
+    "TC-W-M01-FN-004": {
+      "module": "W-M01",
+      "type": "FN",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 2,
+      "firstPass": true,
+      "latestRunId": "RUN-W-C2-0004",
+      "latestActual": "resend1=200, mailSent=true, resend2=429, Retry-After=60",
+      "latestEvidence": "evidence/RUN-W-C2-0004_TC-W-M01-FN-004.json",
+      "latestDate": "2026-11-21T23:26:34+07:00",
+      "byCycle": {
+        "C1": "Pass",
+        "C2": "Pass"
+      }
+    },
+    "TC-W-M01-FN-005": {
+      "module": "W-M01",
+      "type": "FN",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 2,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C2-0005",
+      "latestActual": "login=200, httpOnly=true, refresh=200, revoke=200, logout=200, refreshAfterRevoke=401",
+      "latestEvidence": "evidence/RUN-W-C2-0005_TC-W-M01-FN-005.json",
+      "latestDate": "2026-11-21T23:26:35+07:00",
+      "byCycle": {
+        "C1": "Fail",
+        "C2": "Pass"
+      }
+    },
+    "TC-W-M01-FN-006": {
+      "module": "W-M01",
+      "type": "FN",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 2,
+      "firstPass": true,
+      "latestRunId": "RUN-W-C2-0006",
+      "latestActual": "wrongPwd=401, missingEmail=401, lockedUser=403",
+      "latestEvidence": "evidence/RUN-W-C2-0006_TC-W-M01-FN-006.json",
+      "latestDate": "2026-11-21T23:26:36+07:00",
+      "byCycle": {
+        "C1": "Pass",
+        "C2": "Pass"
+      }
+    },
+    "TC-W-M01-FN-007": {
+      "module": "W-M01",
+      "type": "FN",
+      "priority": "Medium",
+      "status": "Pass",
+      "runCount": 2,
+      "firstPass": true,
+      "latestRunId": "RUN-W-C2-0007",
+      "latestActual": "emptyToken=400, fakeToken=400, emptyBody=400",
+      "latestEvidence": "evidence/RUN-W-C2-0007_TC-W-M01-FN-007.json",
+      "latestDate": "2026-11-21T23:26:36+07:00",
+      "byCycle": {
+        "C1": "Pass",
+        "C2": "Pass"
+      }
+    },
+    "TC-W-M01-FN-008": {
+      "module": "W-M01",
+      "type": "FN",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 2,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C2-0008",
+      "latestActual": "neutralSameMsg=true (ok=200,miss=200), mail=true, reset1=200, reuseReset2=400, loginNewPwd=200",
+      "latestEvidence": "evidence/RUN-W-C2-0008_TC-W-M01-FN-008.json",
+      "latestDate": "2026-11-21T23:26:38+07:00",
+      "byCycle": {
+        "C1": "Fail",
+        "C2": "Pass"
+      }
+    },
+    "TC-W-M01-FN-009": {
+      "module": "W-M01",
+      "type": "FN",
+      "priority": "Medium",
+      "status": "Pass",
+      "runCount": 2,
+      "firstPass": true,
+      "latestRunId": "RUN-W-C2-0009",
+      "latestActual": "wrongToken=400, weakPwd=400",
+      "latestEvidence": "evidence/RUN-W-C2-0009_TC-W-M01-FN-009.json",
+      "latestDate": "2026-11-21T23:26:38+07:00",
+      "byCycle": {
+        "C1": "Pass",
+        "C2": "Pass"
+      }
+    },
+    "TC-W-M01-FN-010": {
+      "module": "W-M01",
+      "type": "FN",
+      "priority": "Medium",
+      "status": "Pass",
+      "runCount": 2,
+      "firstPass": true,
+      "latestRunId": "RUN-W-C2-0010",
+      "latestActual": "getMe=200, patchValid=200 name=Nguyễn Văn Cập Nhật, patchEmpty=400",
+      "latestEvidence": "evidence/RUN-W-C2-0010_TC-W-M01-FN-010.json",
+      "latestDate": "2026-11-21T23:26:38+07:00",
+      "byCycle": {
+        "C1": "Pass",
+        "C2": "Pass"
+      }
+    },
+    "TC-W-M01-FN-011": {
+      "module": "W-M01",
+      "type": "FN",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 2,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C2-0011",
+      "latestActual": "wrongCur=422, changeOk=204, mailSent=true, otherSessionRefresh=401",
+      "latestEvidence": "evidence/RUN-W-C2-0011_TC-W-M01-FN-011.json",
+      "latestDate": "2026-11-21T23:26:41+07:00",
+      "byCycle": {
+        "C1": "Fail",
+        "C2": "Pass"
+      }
+    },
+    "TC-W-M01-FN-012": {
+      "module": "W-M01",
+      "type": "FN",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 2,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C2-0012",
+      "latestActual": "GV-REVOKED become-instructor=403, rolesAfter=[\"STUDENT\"]",
+      "latestEvidence": "evidence/RUN-W-C2-0012_TC-W-M01-FN-012.json",
+      "latestDate": "2026-11-21T23:26:41+07:00",
+      "byCycle": {
+        "C1": "Fail",
+        "C2": "Pass"
+      }
+    },
+    "TC-W-M01-FN-013": {
+      "module": "W-M01",
+      "type": "FN",
+      "priority": "Medium",
+      "status": "Pass",
+      "runCount": 2,
+      "firstPass": true,
+      "latestRunId": "RUN-W-C2-0013",
+      "latestActual": "stats=200, activities=200, users=200 count=28, leakHash=false",
+      "latestEvidence": "evidence/RUN-W-C2-0013_TC-W-M01-FN-013.json",
+      "latestDate": "2026-11-21T23:26:41+07:00",
+      "byCycle": {
+        "C1": "Pass",
+        "C2": "Pass"
+      }
+    },
+    "TC-W-M01-FN-014": {
+      "module": "W-M01",
+      "type": "FN",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 2,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C2-0014",
+      "latestActual": "lock=200, oldJwtAfterLock=401, oldRefreshAfterLock=401, loginLocked=403, unlock=200, loginUnlocked=200",
+      "latestEvidence": "evidence/RUN-W-C2-0014_TC-W-M01-FN-014.json",
+      "latestDate": "2026-11-21T23:26:44+07:00",
+      "byCycle": {
+        "C1": "Fail",
+        "C2": "Pass"
+      }
+    },
+    "TC-W-M01-FN-015": {
+      "module": "W-M01",
+      "type": "FN",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 2,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C2-0015",
+      "latestActual": "selfLock=400, selfToggle=400, lockADM2=403, toggleADM2=403",
+      "latestEvidence": "evidence/RUN-W-C2-0015_TC-W-M01-FN-015.json",
+      "latestDate": "2026-11-21T23:26:44+07:00",
+      "byCycle": {
+        "C1": "Fail",
+        "C2": "Pass"
+      }
+    },
+    "TC-W-M01-FN-016": {
+      "module": "W-M01",
+      "type": "FN",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 2,
+      "firstPass": true,
+      "latestRunId": "RUN-W-C2-0016",
+      "latestActual": "grant=200, revoke=200, missingUser=404",
+      "latestEvidence": "evidence/RUN-W-C2-0016_TC-W-M01-FN-016.json",
+      "latestDate": "2026-11-21T23:26:44+07:00",
+      "byCycle": {
+        "C1": "Pass",
+        "C2": "Pass"
+      }
+    },
+    "TC-W-M01-FN-017": {
+      "module": "W-M01",
+      "type": "FN",
+      "priority": "Low",
+      "status": "Pass",
+      "runCount": 2,
+      "firstPass": true,
+      "latestRunId": "RUN-W-C2-0017",
+      "latestActual": "logoutNoCookie=200, revokeNoCookie=200",
+      "latestEvidence": "evidence/RUN-W-C2-0017_TC-W-M01-FN-017.json",
+      "latestDate": "2026-11-21T23:26:44+07:00",
+      "byCycle": {
+        "C1": "Pass",
+        "C2": "Pass"
+      }
+    },
+    "TC-W-M01-FN-018": {
+      "module": "W-M01",
+      "type": "FN",
+      "priority": "Medium",
+      "status": "Pass",
+      "runCount": 2,
+      "firstPass": true,
+      "latestRunId": "RUN-W-C2-0018",
+      "latestActual": "empty=400, missing=404, alreadyVerified=200",
+      "latestEvidence": "evidence/RUN-W-C2-0018_TC-W-M01-FN-018.json",
+      "latestDate": "2026-11-21T23:26:44+07:00",
+      "byCycle": {
+        "C1": "Pass",
+        "C2": "Pass"
+      }
+    },
+    "TC-W-M01-FN-019": {
+      "module": "W-M01",
+      "type": "FN",
+      "priority": "Medium",
+      "status": "Pass",
+      "runCount": 2,
+      "firstPass": true,
+      "latestRunId": "RUN-W-C2-0019",
+      "latestActual": "freshStudentUpgrade=200, alreadyInstructor=200",
+      "latestEvidence": "evidence/RUN-W-C2-0019_TC-W-M01-FN-019.json",
+      "latestDate": "2026-11-21T23:26:46+07:00",
+      "byCycle": {
+        "C1": "Pass",
+        "C2": "Pass"
+      }
+    },
+    "TC-W-M01-FN-020": {
+      "module": "W-M01",
+      "type": "FN",
+      "priority": "Low",
+      "status": "Pass",
+      "runCount": 2,
+      "firstPass": true,
+      "latestRunId": "RUN-W-C2-0020",
+      "latestActual": "loginRoute=200, oauthRejectGraceful=400",
+      "latestEvidence": "evidence/RUN-W-C2-0020_TC-W-M01-FN-020.json",
+      "latestDate": "2026-11-21T23:26:46+07:00",
+      "byCycle": {
+        "C1": "Pass",
+        "C2": "Pass"
+      }
+    },
+    "TC-W-M01-SEC-001": {
+      "module": "W-M01",
+      "type": "SEC",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 2,
+      "firstPass": true,
+      "latestRunId": "RUN-W-C2-0021",
+      "latestActual": "admin/* IDOR 8 roles x 4 endpoints: breaches=0",
+      "latestEvidence": "evidence/RUN-W-C2-0021_TC-W-M01-SEC-001.json",
+      "latestDate": "2026-11-21T23:26:47+07:00",
+      "byCycle": {
+        "C1": "Pass",
+        "C2": "Pass"
+      }
+    },
+    "TC-W-M01-SEC-002": {
+      "module": "W-M01",
+      "type": "SEC",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 2,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C2-0022",
+      "latestActual": "mobile-api /learn/courses IDOR 8 roles: breaches=0, matrix={\"Khách\":401,\"HV1\":200,\"HV2\":403,\"GV-A\":200,\"GV-B\":403,\"Đồng GV\":403,\"GV bị thu hồi\":403,\"Admin\":200}",
+      "latestEvidence": "evidence/RUN-W-C2-0022_TC-W-M01-SEC-002.json",
+      "latestDate": "2026-11-21T23:26:49+07:00",
+      "byCycle": {
+        "C1": "Fail",
+        "C2": "Pass"
+      }
+    },
+    "TC-W-M01-SEC-003": {
+      "module": "W-M01",
+      "type": "SEC",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 2,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C2-0023",
+      "latestActual": "BCrypt prefix='$2a$12$hyQ' -> cost=12 (NFR-02 yêu cầu >= 12); ResetTokenCheck=64 defba9",
+      "latestEvidence": "evidence/RUN-W-C2-0023_TC-W-M01-SEC-003.json",
+      "latestDate": "2026-11-21T23:26:50+07:00",
+      "byCycle": {
+        "C1": "Fail",
+        "C2": "Pass"
+      }
+    },
+    "TC-W-M01-SEC-004": {
+      "module": "W-M01",
+      "type": "SEC",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 2,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C2-0024",
+      "latestActual": "6 wrong logins statuses=[401,401,401,401,401,429], 7th correct login=429 (NFR-03 yêu cầu khóa tạm ở lần 6)",
+      "latestEvidence": "evidence/RUN-W-C2-0024_TC-W-M01-SEC-004.json",
+      "latestDate": "2026-11-21T23:26:53+07:00",
+      "byCycle": {
+        "C1": "Fail",
+        "C2": "Pass"
+      }
+    },
+    "TC-W-M01-SEC-005": {
+      "module": "W-M01",
+      "type": "SEC",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 2,
+      "firstPass": true,
+      "latestRunId": "RUN-W-C2-0025",
+      "latestActual": "tampered=401, algNone=401, actualAccessTtlSec=3600 (1h; ASVS L1 note: refresh/expire-days=7d)",
+      "latestEvidence": "evidence/RUN-W-C2-0025_TC-W-M01-SEC-005.json",
+      "latestDate": "2026-11-21T23:26:53+07:00",
+      "byCycle": {
+        "C1": "Pass",
+        "C2": "Pass"
+      }
+    },
+    "TC-W-M01-SEC-006": {
+      "module": "W-M01",
+      "type": "SEC",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 2,
+      "firstPass": true,
+      "latestRunId": "RUN-W-C2-0026",
+      "latestActual": "SQLi login=401 (token=false); XSS stored update=200 (React auto-escapes; verified in browser too)",
+      "latestEvidence": "evidence/RUN-W-C2-0026_TC-W-M01-SEC-006.json",
+      "latestDate": "2026-11-21T23:26:53+07:00",
+      "byCycle": {
+        "C1": "Pass",
+        "C2": "Pass"
+      }
+    },
+    "TC-W-M02-FN-001": {
+      "module": "W-M02",
+      "type": "FN",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 3,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C3-0027",
+      "latestActual": "webStatus=200, items=20, nonPublishedLeaked=0 (statuses=Published), webPageSize=20 (SRS yêu cầu 20), v1CatalogPageSize=20",
+      "latestEvidence": "evidence/RUN-W-C3-0027_TC-W-M02-FN-001.json",
+      "latestDate": "2026-11-21T23:36:20+07:00",
+      "byCycle": {
+        "C1": "Fail",
+        "C2": "Fail",
+        "C3": "Pass"
+      }
+    },
+    "TC-W-M02-FN-002": {
+      "module": "W-M02",
+      "type": "FN",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 3,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C3-0028",
+      "latestActual": "GET /api/courses/{hidden}: guest=404, HV2=404; /v1/catalog/{hidden}=404; /api/courses/{draft}=404",
+      "latestEvidence": "evidence/RUN-W-C3-0028_TC-W-M02-FN-002.json",
+      "latestDate": "2026-11-21T23:36:20+07:00",
+      "byCycle": {
+        "C1": "Fail",
+        "C2": "Pass",
+        "C3": "Pass"
+      }
+    },
+    "TC-W-M02-FN-003": {
+      "module": "W-M02",
+      "type": "FN",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 3,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C3-0029",
+      "latestActual": "/api/courses D-09 hits: unaccented=true, UPPER=true, accented=true, mixedUnaccented=true; /v1/catalog unaccented=true",
+      "latestEvidence": "evidence/RUN-W-C3-0029_TC-W-M02-FN-003.json",
+      "latestDate": "2026-11-21T23:36:20+07:00",
+      "byCycle": {
+        "C1": "Fail",
+        "C2": "Pass",
+        "C3": "Pass"
+      }
+    },
+    "TC-W-M02-FN-004": {
+      "module": "W-M02",
+      "type": "FN",
+      "priority": "Medium",
+      "status": "Pass",
+      "runCount": 3,
+      "firstPass": true,
+      "latestRunId": "RUN-W-C3-0030",
+      "latestActual": "instant(1char)=0, instant(2char)=3, emptyWebItems=0, emptyV1Suggestions=4",
+      "latestEvidence": "evidence/RUN-W-C3-0030_TC-W-M02-FN-004.json",
+      "latestDate": "2026-11-21T23:36:21+07:00",
+      "byCycle": {
+        "C1": "Pass",
+        "C2": "Pass",
+        "C3": "Pass"
+      }
+    },
+    "TC-W-M02-FN-005": {
+      "module": "W-M02",
+      "type": "FN",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 3,
+      "firstPass": true,
+      "latestRunId": "RUN-W-C3-0031",
+      "latestActual": "freeCatOk=true (n=3), priceAscOk=true, priceDescOk=true, ratingSort=200",
+      "latestEvidence": "evidence/RUN-W-C3-0031_TC-W-M02-FN-005.json",
+      "latestDate": "2026-11-21T23:36:21+07:00",
+      "byCycle": {
+        "C1": "Pass",
+        "C2": "Pass",
+        "C3": "Pass"
+      }
+    },
+    "TC-W-M02-FN-006": {
+      "module": "W-M02",
+      "type": "FN",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 3,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C3-0032",
+      "latestActual": "detail=200, previewAccess=200, enrolledAfterPreview=false, lockedLessonAccess=403",
+      "latestEvidence": "evidence/RUN-W-C3-0032_TC-W-M02-FN-006.json",
+      "latestDate": "2026-11-21T23:36:21+07:00",
+      "byCycle": {
+        "C1": "Fail",
+        "C2": "Pass",
+        "C3": "Pass"
+      }
+    },
+    "TC-W-M02-FN-007": {
+      "module": "W-M02",
+      "type": "FN",
+      "priority": "Medium",
+      "status": "Pass",
+      "runCount": 3,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C3-0033",
+      "latestActual": "recommend=200(n=4), similar=200, bundle=200, tags=200(n=7)",
+      "latestEvidence": "evidence/RUN-W-C3-0033_TC-W-M02-FN-007.json",
+      "latestDate": "2026-11-21T23:36:22+07:00",
+      "byCycle": {
+        "C1": "Fail",
+        "C2": "Pass",
+        "C3": "Pass"
+      }
+    },
+    "TC-W-M02-FN-008": {
+      "module": "W-M02",
+      "type": "FN",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 3,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C3-0034",
+      "latestActual": "nonPreviewGuest=403, hiddenCoursePreview=404, missingLesson=404",
+      "latestEvidence": "evidence/RUN-W-C3-0034_TC-W-M02-FN-008.json",
+      "latestDate": "2026-11-21T23:36:22+07:00",
+      "byCycle": {
+        "C1": "Fail",
+        "C2": "Pass",
+        "C3": "Pass"
+      }
+    },
+    "TC-W-M02-FN-009": {
+      "module": "W-M02",
+      "type": "FN",
+      "priority": "Medium",
+      "status": "Pass",
+      "runCount": 3,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C3-0035",
+      "latestActual": "recNonPub=0, similar999=200, tagMiss=200(n=0)",
+      "latestEvidence": "evidence/RUN-W-C3-0035_TC-W-M02-FN-009.json",
+      "latestDate": "2026-11-21T23:36:22+07:00",
+      "byCycle": {
+        "C1": "Fail",
+        "C2": "Pass",
+        "C3": "Pass"
+      }
+    },
+    "TC-W-M02-SEC-001": {
+      "module": "W-M02",
+      "type": "SEC",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 3,
+      "firstPass": true,
+      "latestRunId": "RUN-W-C3-0036",
+      "latestActual": "SQLi statuses=[200,200,200,400], waitforMs=48.3ms, noSqlLeak=true",
+      "latestEvidence": "evidence/RUN-W-C3-0036_TC-W-M02-SEC-001.json",
+      "latestDate": "2026-11-21T23:36:22+07:00",
+      "byCycle": {
+        "C1": "Pass",
+        "C2": "Pass",
+        "C3": "Pass"
+      }
+    },
+    "TC-W-M03-FN-001": {
+      "module": "W-M03",
+      "type": "FN",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 3,
+      "firstPass": true,
+      "latestRunId": "RUN-W-C3-0037",
+      "latestActual": "c1=201(status=Draft,slug=khoa-hoc-spring-boot-thuc-chien-4274dd), c2=201(slug=khoa-hoc-spring-boot-thuc-chien-47f47d)",
+      "latestEvidence": "evidence/RUN-W-C3-0037_TC-W-M03-FN-001.json",
+      "latestDate": "2026-11-21T23:36:25+07:00",
+      "byCycle": {
+        "C1": "Pass",
+        "C2": "Pass",
+        "C3": "Pass"
+      }
+    },
+    "TC-W-M03-FN-002": {
+      "module": "W-M03",
+      "type": "FN",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 3,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C3-0038",
+      "latestActual": "missingCat=400(catAssigned=undefined), nullCat=400(catAssigned=undefined), zeroCat=400(catAssigned=undefined)",
+      "latestEvidence": "evidence/RUN-W-C3-0038_TC-W-M03-FN-002.json",
+      "latestDate": "2026-11-21T23:36:25+07:00",
+      "byCycle": {
+        "C1": "Fail",
+        "C2": "Pass",
+        "C3": "Pass"
+      }
+    },
+    "TC-W-M03-FN-003": {
+      "module": "W-M03",
+      "type": "FN",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 3,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C3-0039",
+      "latestActual": "categoryId=999999 -> HTTP 400; Category supports inactive status field=true",
+      "latestEvidence": "evidence/RUN-W-C3-0039_TC-W-M03-FN-003.json",
+      "latestDate": "2026-11-21T23:36:26+07:00",
+      "byCycle": {
+        "C1": "Fail",
+        "C2": "Pass",
+        "C3": "Pass"
+      }
+    },
+    "TC-W-M03-FN-004": {
+      "module": "W-M03",
+      "type": "FN",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 3,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C3-0040",
+      "latestActual": "Price BVA create vs submit: {\"0\":{\"createStatus\":201,\"submitStatus\":200},\"1\":{\"createStatus\":400,\"submitStatus\":null},\"9999\":{\"createStatus\":400,\"submitStatus\":null},\"10000\":{\"createStatus\":201,\"submitStatus\":200},\"10500\":{\"createStatus\":400,\"submitStatus\":null},\"-1000\":{\"createStatus\":400,\"submitStatus\":null}}",
+      "latestEvidence": "evidence/RUN-W-C3-0040_TC-W-M03-FN-004.json",
+      "latestDate": "2026-11-21T23:36:26+07:00",
+      "byCycle": {
+        "C1": "Fail",
+        "C2": "Pass",
+        "C3": "Pass"
+      }
+    },
+    "TC-W-M03-FN-005": {
+      "module": "W-M03",
+      "type": "FN",
+      "priority": "Medium",
+      "status": "Pass",
+      "runCount": 3,
+      "firstPass": true,
+      "latestRunId": "RUN-W-C3-0041",
+      "latestActual": "myCourses=200(n=23), stats=200, overview=200, students=200, students999=404",
+      "latestEvidence": "evidence/RUN-W-C3-0041_TC-W-M03-FN-005.json",
+      "latestDate": "2026-11-21T23:36:28+07:00",
+      "byCycle": {
+        "C1": "Pass",
+        "C2": "Pass",
+        "C3": "Pass"
+      }
+    },
+    "TC-W-M03-FN-006": {
+      "module": "W-M03",
+      "type": "FN",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 3,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C3-0042",
+      "latestActual": "updateDraft=204, updatePendingApproval=409 (AC-27 yêu cầu chặn sửa khi PendingApproval)",
+      "latestEvidence": "evidence/RUN-W-C3-0042_TC-W-M03-FN-006.json",
+      "latestDate": "2026-11-21T23:36:28+07:00",
+      "byCycle": {
+        "C1": "Fail",
+        "C2": "Pass",
+        "C3": "Pass"
+      }
+    },
+    "TC-W-M03-FN-007": {
+      "module": "W-M03",
+      "type": "FN",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 3,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C3-0043",
+      "latestActual": "deleteDraft=204, deletePublished=409, deleteHidden=409 (AC-31 yêu cầu chặn xóa khóa đã từng công khai)",
+      "latestEvidence": "evidence/RUN-W-C3-0043_TC-W-M03-FN-007.json",
+      "latestDate": "2026-11-21T23:36:31+07:00",
+      "byCycle": {
+        "C1": "Fail",
+        "C2": "Pass",
+        "C3": "Pass"
+      }
+    },
+    "TC-W-M03-FN-008": {
+      "module": "W-M03",
+      "type": "FN",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 3,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C3-0044",
+      "latestActual": "add1=200, add2=200, upd=200, reorder=200, del=204, emptyTitle=400",
+      "latestEvidence": "evidence/RUN-W-C3-0044_TC-W-M03-FN-008.json",
+      "latestDate": "2026-11-21T23:36:32+07:00",
+      "byCycle": {
+        "C1": "Fail",
+        "C2": "Pass",
+        "C3": "Pass"
+      }
+    },
+    "TC-W-M03-FN-009": {
+      "module": "W-M03",
+      "type": "FN",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 3,
+      "firstPass": true,
+      "latestRunId": "RUN-W-C3-0045",
+      "latestActual": "add1=200, add2=200, upd=200, reorder=200, del=204, upd999=404",
+      "latestEvidence": "evidence/RUN-W-C3-0045_TC-W-M03-FN-009.json",
+      "latestDate": "2026-11-21T23:36:33+07:00",
+      "byCycle": {
+        "C1": "Pass",
+        "C2": "Pass",
+        "C3": "Pass"
+      }
+    },
+    "TC-W-M03-FN-010": {
+      "module": "W-M03",
+      "type": "FN",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 3,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C3-0046",
+      "latestActual": "upImg=200(fetch=200), upPdf=200, emptyUpload=400",
+      "latestEvidence": "evidence/RUN-W-C3-0046_TC-W-M03-FN-010.json",
+      "latestDate": "2026-11-21T23:36:33+07:00",
+      "byCycle": {
+        "C1": "Fail",
+        "C2": "Pass",
+        "C3": "Pass"
+      }
+    },
+    "TC-W-M03-FN-011": {
+      "module": "W-M03",
+      "type": "FN",
+      "priority": "Medium",
+      "status": "Pass",
+      "runCount": 3,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C3-0047",
+      "latestActual": "quizCreate=200, quizGet=200, quizDel=204, tagOk=201, tagEmpty=400",
+      "latestEvidence": "evidence/RUN-W-C3-0047_TC-W-M03-FN-011.json",
+      "latestDate": "2026-11-21T23:36:34+07:00",
+      "byCycle": {
+        "C1": "Fail",
+        "C2": "Pass",
+        "C3": "Pass"
+      }
+    },
+    "TC-W-M03-FN-012": {
+      "module": "W-M03",
+      "type": "FN",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 3,
+      "firstPass": true,
+      "latestRunId": "RUN-W-C3-0048",
+      "latestActual": "BR-07 checklist: 6 invalid blocked=400,400,create:400,400,400,400, valid=200",
+      "latestEvidence": "evidence/RUN-W-C3-0048_TC-W-M03-FN-012.json",
+      "latestDate": "2026-11-21T23:36:37+07:00",
+      "byCycle": {
+        "C1": "Pass",
+        "C2": "Fail",
+        "C3": "Pass"
+      }
+    },
+    "TC-W-M03-FN-013": {
+      "module": "W-M03",
+      "type": "FN",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 3,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C3-0049",
+      "latestActual": "PUT /courses/{emptyId}/status PendingApproval -> HTTP 400 (body=null)",
+      "latestEvidence": "evidence/RUN-W-C3-0049_TC-W-M03-FN-013.json",
+      "latestDate": "2026-11-21T23:36:37+07:00",
+      "byCycle": {
+        "C1": "Fail",
+        "C2": "Pass",
+        "C3": "Pass"
+      }
+    },
+    "TC-W-M03-FN-014": {
+      "module": "W-M03",
+      "type": "FN",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 3,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C3-0050",
+      "latestActual": "submit=200, withdraw=200, resubmit=200, reject=200, reviewNote='Thiếu bài tập thực hành', resubmit2=200",
+      "latestEvidence": "evidence/RUN-W-C3-0050_TC-W-M03-FN-014.json",
+      "latestDate": "2026-11-21T23:36:38+07:00",
+      "byCycle": {
+        "C1": "Fail",
+        "C2": "Pass",
+        "C3": "Pass"
+      }
+    },
+    "TC-W-M03-FN-015": {
+      "module": "W-M03",
+      "type": "FN",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 3,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C3-0051",
+      "latestActual": "self=404, stu=404, over10000=422, inv=200, mail=true, acc=200, dec=200, updShare=200, remove=200, leave(UC-I18)=200",
+      "latestEvidence": "evidence/RUN-W-C3-0051_TC-W-M03-FN-015.json",
+      "latestDate": "2026-11-21T23:36:40+07:00",
+      "byCycle": {
+        "C1": "Fail",
+        "C2": "Pass",
+        "C3": "Pass"
+      }
+    },
+    "TC-W-M03-FN-016": {
+      "module": "W-M03",
+      "type": "FN",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 3,
+      "firstPass": true,
+      "latestRunId": "RUN-W-C3-0052",
+      "latestActual": "adminCourses=200(n=70), approve=200, inPublicCatalog=true, emailGVA=true",
+      "latestEvidence": "evidence/RUN-W-C3-0052_TC-W-M03-FN-016.json",
+      "latestDate": "2026-11-21T23:36:42+07:00",
+      "byCycle": {
+        "C1": "Pass",
+        "C2": "Pass",
+        "C3": "Pass"
+      }
+    },
+    "TC-W-M03-FN-017": {
+      "module": "W-M03",
+      "type": "FN",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 3,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C3-0053",
+      "latestActual": "rejectEmpty=400, rejectValid=200(status=NeedsReview), mail=true, mailHasReason=true",
+      "latestEvidence": "evidence/RUN-W-C3-0053_TC-W-M03-FN-017.json",
+      "latestDate": "2026-11-21T23:36:43+07:00",
+      "byCycle": {
+        "C1": "Fail",
+        "C2": "Pass",
+        "C3": "Pass"
+      }
+    },
+    "TC-W-M03-FN-018": {
+      "module": "W-M03",
+      "type": "FN",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 3,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C3-0054",
+      "latestActual": "hide=200, mail=true, hiddenFromCat=true, unhide=200, backInCat=true",
+      "latestEvidence": "evidence/RUN-W-C3-0054_TC-W-M03-FN-018.json",
+      "latestDate": "2026-11-21T23:36:43+07:00",
+      "byCycle": {
+        "C1": "Fail",
+        "C2": "Pass",
+        "C3": "Pass"
+      }
+    },
+    "TC-W-M03-FN-019": {
+      "module": "W-M03",
+      "type": "FN",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 3,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C3-0055",
+      "latestActual": "add=200, upd=200, delEmpty=200, delUsed=400, deactivateUsed(D-21)=200, createInInactive=400",
+      "latestEvidence": "evidence/RUN-W-C3-0055_TC-W-M03-FN-019.json",
+      "latestDate": "2026-11-21T23:36:43+07:00",
+      "byCycle": {
+        "C1": "Fail",
+        "C2": "Pass",
+        "C3": "Pass"
+      }
+    },
+    "TC-W-M03-FN-020": {
+      "module": "W-M03",
+      "type": "FN",
+      "priority": "Medium",
+      "status": "Pass",
+      "runCount": 3,
+      "firstPass": true,
+      "latestRunId": "RUN-W-C3-0056",
+      "latestActual": "GV-B GET /v1/instructor/courses/{GVA}/students=403, legacy /instructor/.../students=403",
+      "latestEvidence": "evidence/RUN-W-C3-0056_TC-W-M03-FN-020.json",
+      "latestDate": "2026-11-21T23:36:43+07:00",
+      "byCycle": {
+        "C1": "Pass",
+        "C2": "Pass",
+        "C3": "Pass"
+      }
+    },
+    "TC-W-M03-FN-021": {
+      "module": "W-M03",
+      "type": "FN",
+      "priority": "Medium",
+      "status": "Pass",
+      "runCount": 3,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C3-0057",
+      "latestActual": "quizBadSec=404, quizStudent=403, tagStudent=403, delQuiz999=404",
+      "latestEvidence": "evidence/RUN-W-C3-0057_TC-W-M03-FN-021.json",
+      "latestDate": "2026-11-21T23:36:43+07:00",
+      "byCycle": {
+        "C1": "Fail",
+        "C2": "Pass",
+        "C3": "Pass"
+      }
+    },
+    "TC-W-M03-FN-022": {
+      "module": "W-M03",
+      "type": "FN",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 3,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C3-0058",
+      "latestActual": "withdrawPublished=409, GVB_withdrawGVA=403, withdraw999=404",
+      "latestEvidence": "evidence/RUN-W-C3-0058_TC-W-M03-FN-022.json",
+      "latestDate": "2026-11-21T23:36:44+07:00",
+      "byCycle": {
+        "C1": "Fail",
+        "C2": "Pass",
+        "C3": "Pass"
+      }
+    },
+    "TC-W-M03-FN-023": {
+      "module": "W-M03",
+      "type": "FN",
+      "priority": "Medium",
+      "status": "Pass",
+      "runCount": 3,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C3-0059",
+      "latestActual": "leaveMain=400, leaveOutsider=403 (chức năng đồng GV rời khóa UC-I18 chưa có endpoint)",
+      "latestEvidence": "evidence/RUN-W-C3-0059_TC-W-M03-FN-023.json",
+      "latestDate": "2026-11-21T23:36:44+07:00",
+      "byCycle": {
+        "C1": "Fail",
+        "C2": "Pass",
+        "C3": "Pass"
+      }
+    },
+    "TC-W-M03-FN-024": {
+      "module": "W-M03",
+      "type": "FN",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 3,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C3-0060",
+      "latestActual": "approve999=404, reject999=404, unhideDraft=409 (D-13 chỉ cho unhide từ Hidden)",
+      "latestEvidence": "evidence/RUN-W-C3-0060_TC-W-M03-FN-024.json",
+      "latestDate": "2026-11-21T23:36:44+07:00",
+      "byCycle": {
+        "C1": "Fail",
+        "C2": "Pass",
+        "C3": "Pass"
+      }
+    },
+    "TC-W-M03-FN-025": {
+      "module": "W-M03",
+      "type": "FN",
+      "priority": "Medium",
+      "status": "Pass",
+      "runCount": 3,
+      "firstPass": true,
+      "latestRunId": "RUN-W-C3-0061",
+      "latestActual": "emptyName=400, upd999=404, del999=404",
+      "latestEvidence": "evidence/RUN-W-C3-0061_TC-W-M03-FN-025.json",
+      "latestDate": "2026-11-21T23:36:44+07:00",
+      "byCycle": {
+        "C1": "Pass",
+        "C2": "Pass",
+        "C3": "Pass"
+      }
+    },
+    "TC-W-M03-SEC-001": {
+      "module": "W-M03",
+      "type": "SEC",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 3,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C3-0062",
+      "latestActual": "IDOR authoring checks (all must be 403): {\"gvbPutCourse\":403,\"gvbDelCourse\":403,\"gvbSubmitCourse\":403,\"gvbAddSection\":403,\"gvbUpdLesson\":403,\"gvbInviteCo\":403,\"gvbRemoveCo\":403,\"coUpdateShare\":403,\"hv1PutCourse\":403,\"revokedPutCourse\":403}",
+      "latestEvidence": "evidence/RUN-W-C3-0062_TC-W-M03-SEC-001.json",
+      "latestDate": "2026-11-21T23:36:44+07:00",
+      "byCycle": {
+        "C1": "Fail",
+        "C2": "Pass",
+        "C3": "Pass"
+      }
+    },
+    "TC-W-M03-SEC-002": {
+      "module": "W-M03",
+      "type": "SEC",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 3,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C3-0063",
+      "latestActual": "exe=400, svgXSS=400, pathTrav=200(url=/uploads/6ddd0834cccc4223b8e3e33b59fbb750.png), fakeJpg=400, mediaSh=400",
+      "latestEvidence": "evidence/RUN-W-C3-0063_TC-W-M03-SEC-002.json",
+      "latestDate": "2026-11-21T23:36:44+07:00",
+      "byCycle": {
+        "C1": "Fail",
+        "C2": "Pass",
+        "C3": "Pass"
+      }
+    },
+    "TC-W-M03-SEC-003": {
+      "module": "W-M03",
+      "type": "SEC",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 3,
+      "firstPass": true,
+      "latestRunId": "RUN-W-C3-0064",
+      "latestActual": "Stored XSS payload accepted=201 (React escapes JSX by default; checked no innerHTML execution in browser E2E)",
+      "latestEvidence": "evidence/RUN-W-C3-0064_TC-W-M03-SEC-003.json",
+      "latestDate": "2026-11-21T23:36:44+07:00",
+      "byCycle": {
+        "C1": "Pass",
+        "C2": "Pass",
+        "C3": "Pass"
+      }
+    },
+    "TC-W-M04-FN-001": {
+      "module": "W-M04",
+      "type": "FN",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 3,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C3-0065",
+      "latestActual": "addOk=200, dup=409, owned=422, free=422, ownCourseGVA=400, remove=200",
+      "latestEvidence": "evidence/RUN-W-C3-0065_TC-W-M04-FN-001.json",
+      "latestDate": "2026-11-21T23:38:47+07:00",
+      "byCycle": {
+        "C1": "Fail",
+        "C2": "Pass",
+        "C3": "Pass"
+      }
+    },
+    "TC-W-M04-FN-002": {
+      "module": "W-M04",
+      "type": "FN",
+      "priority": "Medium",
+      "status": "Pass",
+      "runCount": 3,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C3-0066",
+      "latestActual": "valid=200, expired=400, inactive=400, missing=404, checkoutWith20%=200 total=240000 (exp=240000)",
+      "latestEvidence": "evidence/RUN-W-C3-0066_TC-W-M04-FN-002.json",
+      "latestDate": "2026-11-21T23:38:47+07:00",
+      "byCycle": {
+        "C1": "Fail",
+        "C2": "Pass",
+        "C3": "Pass"
+      }
+    },
+    "TC-W-M04-FN-003": {
+      "module": "W-M04",
+      "type": "FN",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 3,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C3-0067",
+      "latestActual": "o1TotalAfterCoursePriceChange=300000 (snapshotOk=true), pendingCountAfterO2=1 (BR-29 yêu cầu <= 1)",
+      "latestEvidence": "evidence/RUN-W-C3-0067_TC-W-M04-FN-003.json",
+      "latestDate": "2026-11-21T23:38:47+07:00",
+      "byCycle": {
+        "C1": "Fail",
+        "C2": "Pass",
+        "C3": "Pass"
+      }
+    },
+    "TC-W-M04-FN-004": {
+      "module": "W-M04",
+      "type": "FN",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 3,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C3-0070",
+      "latestActual": "cancelPending=200, cancelPaid=409, emptyCartCheckout=400",
+      "latestEvidence": "evidence/RUN-W-C3-0070_TC-W-M04-FN-004.json",
+      "latestDate": "2026-11-21T23:38:48+07:00",
+      "byCycle": {
+        "C1": "Fail",
+        "C2": "Pass",
+        "C3": "Pass"
+      }
+    },
+    "TC-W-M04-FN-005": {
+      "module": "W-M04",
+      "type": "FN",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 3,
+      "firstPass": true,
+      "latestRunId": "RUN-W-C3-0068",
+      "latestActual": "createQR=200, getVietQR=200, vnpayUrl=200, statusPoll=200(Pending)",
+      "latestEvidence": "evidence/RUN-W-C3-0068_TC-W-M04-FN-005.json",
+      "latestDate": "2026-11-21T23:38:48+07:00",
+      "byCycle": {
+        "C1": "Pass",
+        "C2": "Pass",
+        "C3": "Pass"
+      }
+    },
+    "TC-W-M04-FN-006": {
+      "module": "W-M04",
+      "type": "FN",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 3,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C3-0069",
+      "latestActual": "sepayWebhook=200(success=true), orderStatus=PAID, enrolled=true, earningRows=1, mail=true",
+      "latestEvidence": "evidence/RUN-W-C3-0069_TC-W-M04-FN-006.json",
+      "latestDate": "2026-11-21T23:38:48+07:00",
+      "byCycle": {
+        "C1": "Fail",
+        "C2": "Pass",
+        "C3": "Pass"
+      }
+    },
+    "TC-W-M04-FN-007": {
+      "module": "W-M04",
+      "type": "FN",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 3,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C3-0071",
+      "latestActual": "sepayNoAuth=401(sigStuEnrolled=false), sepayBadAuth=401, vnpBadHash=97",
+      "latestEvidence": "evidence/RUN-W-C3-0071_TC-W-M04-FN-007.json",
+      "latestDate": "2026-11-21T23:38:49+07:00",
+      "byCycle": {
+        "C1": "Fail",
+        "C2": "Pass",
+        "C3": "Pass"
+      }
+    },
+    "TC-W-M04-FN-008": {
+      "module": "W-M04",
+      "type": "FN",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 3,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C3-0072",
+      "latestActual": "underpaid=200(Số tiền chuyển khoản (150000) chưa đủ tổng tiền đơn hàng (300000.00). Đơn hàng đã chuyển sang NEEDS_REVIEW.), lateOnCancelled=200(Đơn hàng đã CANCELLED; giao dịch đã được đánh dấu chờ đối soát thủ công (NEEDS_REVIEW).), hv2Enrolled=false, markedNeedsReconcile=true",
+      "latestEvidence": "evidence/RUN-W-C3-0072_TC-W-M04-FN-008.json",
+      "latestDate": "2026-11-21T23:38:49+07:00",
+      "byCycle": {
+        "C1": "Fail",
+        "C2": "Pass",
+        "C3": "Pass"
+      }
+    },
+    "TC-W-M04-FN-009": {
+      "module": "W-M04",
+      "type": "FN",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 3,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C3-0073",
+      "latestActual": "adminOrders=200(n=92), adminPayments=200, reconNoNote=400, reconActivate=200(enrolled=true,mail=true), reconAgain=409",
+      "latestEvidence": "evidence/RUN-W-C3-0073_TC-W-M04-FN-009.json",
+      "latestDate": "2026-11-21T23:38:49+07:00",
+      "byCycle": {
+        "C1": "Fail",
+        "C2": "Fail",
+        "C3": "Pass"
+      }
+    },
+    "TC-W-M04-FN-010": {
+      "module": "W-M04",
+      "type": "FN",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 3,
+      "firstPass": true,
+      "latestRunId": "RUN-W-C3-0074",
+      "latestActual": "create-qr response fields=[\"orderId\",\"amount\",\"transferContent\",\"bankId\",\"bankName\",\"accountNo\",\"accountName\",\"qrImageUrl\",\"status\",\"expiresAt\",\"firstCourseId\",\"message\"], hasExpirationField=true",
+      "latestEvidence": "evidence/RUN-W-C3-0074_TC-W-M04-FN-010.json",
+      "latestDate": "2026-11-21T23:38:49+07:00",
+      "byCycle": {
+        "C1": "Pass",
+        "C2": "Pass",
+        "C3": "Pass"
+      }
+    },
+    "TC-W-M04-FN-011": {
+      "module": "W-M04",
+      "type": "FN",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 3,
+      "firstPass": true,
+      "latestRunId": "RUN-W-C3-0075",
+      "latestActual": "guest=401, add999=404, addDraft=404, addHidden=404, delItem999=200",
+      "latestEvidence": "evidence/RUN-W-C3-0075_TC-W-M04-FN-011.json",
+      "latestDate": "2026-11-21T23:38:50+07:00",
+      "byCycle": {
+        "C1": "Pass",
+        "C2": "Pass",
+        "C3": "Pass"
+      }
+    },
+    "TC-W-M04-FN-012": {
+      "module": "W-M04",
+      "type": "FN",
+      "priority": "Medium",
+      "status": "Pass",
+      "runCount": 3,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C3-0076",
+      "latestActual": "dupCode=400, pct0=400, pct101=400, studentCreate=403",
+      "latestEvidence": "evidence/RUN-W-C3-0076_TC-W-M04-FN-012.json",
+      "latestDate": "2026-11-21T23:38:50+07:00",
+      "byCycle": {
+        "C1": "Fail",
+        "C2": "Pass",
+        "C3": "Pass"
+      }
+    },
+    "TC-W-M04-FN-013": {
+      "module": "W-M04",
+      "type": "FN",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 3,
+      "firstPass": true,
+      "latestRunId": "RUN-W-C3-0077",
+      "latestActual": "filterTrue=200(n=5), filterFalse=200(n=87), reconcile999=404",
+      "latestEvidence": "evidence/RUN-W-C3-0077_TC-W-M04-FN-013.json",
+      "latestDate": "2026-11-21T23:38:50+07:00",
+      "byCycle": {
+        "C1": "Pass",
+        "C2": "Pass",
+        "C3": "Pass"
+      }
+    },
+    "TC-W-M04-SEC-001": {
+      "module": "W-M04",
+      "type": "SEC",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 3,
+      "firstPass": true,
+      "latestRunId": "RUN-W-C3-0081",
+      "latestActual": "IDOR order/payment: {\"hv2GetHv1Order\":403,\"hv2CancelHv1Order\":403,\"hv2CreateQrHv1\":403,\"hv2GetVietQrHv1\":403,\"guestGetOrder\":401}",
+      "latestEvidence": "evidence/RUN-W-C3-0081_TC-W-M04-SEC-001.json",
+      "latestDate": "2026-11-21T23:39:01+07:00",
+      "byCycle": {
+        "C1": "Pass",
+        "C2": "Pass",
+        "C3": "Pass"
+      }
+    },
+    "TC-W-M04-SEC-002": {
+      "module": "W-M04",
+      "type": "SEC",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 3,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C3-0082",
+      "latestActual": "clientPriceTamperTotal=300000 (exp 300000); unsigned /api/payment/callback=401(rsp=undefined), hv2EnrolledAfterUnsignedCallback=false",
+      "latestEvidence": "evidence/RUN-W-C3-0082_TC-W-M04-SEC-002.json",
+      "latestDate": "2026-11-21T23:39:01+07:00",
+      "byCycle": {
+        "C1": "Fail",
+        "C2": "Pass",
+        "C3": "Pass"
+      }
+    },
+    "TC-W-M04-REL-001": {
+      "module": "W-M04",
+      "type": "REL",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 3,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C3-0078",
+      "latestActual": "10x webhook: any500=false, enrollments=1 (exp 1), earningRows=2 sum=700000 (exp 2 rows = 700000), emails=1 (exp 1)",
+      "latestEvidence": "evidence/RUN-W-C3-0078_TC-W-M04-REL-001.json",
+      "latestDate": "2026-11-21T23:38:52+07:00",
+      "byCycle": {
+        "C1": "Fail",
+        "C2": "Fail",
+        "C3": "Pass"
+      }
+    },
+    "TC-W-M04-REL-002": {
+      "module": "W-M04",
+      "type": "REL",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 3,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C3-0079",
+      "latestActual": "doubleClickCheckout statuses=[500,200] (200 count=1, exp 1), orphanPaidOrders=0",
+      "latestEvidence": "evidence/RUN-W-C3-0079_TC-W-M04-REL-002.json",
+      "latestDate": "2026-11-21T23:38:53+07:00",
+      "byCycle": {
+        "C1": "Fail",
+        "C2": "Fail",
+        "C3": "Pass"
+      }
+    },
+    "TC-W-M04-REL-003": {
+      "module": "W-M04",
+      "type": "REL",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 3,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C3-0080",
+      "latestActual": "@Scheduled occurrences in codebase=2; 48h-old pending order status=EXPIRED (NFR-09 yêu cầu tự hủy/đóng QR quá hạn)",
+      "latestEvidence": "evidence/RUN-W-C3-0080_TC-W-M04-REL-003.json",
+      "latestDate": "2026-11-21T23:39:01+07:00",
+      "byCycle": {
+        "C1": "Fail",
+        "C2": "Pass",
+        "C3": "Pass"
+      }
+    },
+    "TC-W-M05-FN-001": {
+      "module": "W-M05",
+      "type": "FN",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 2,
+      "firstPass": true,
+      "latestRunId": "RUN-W-C2-0083",
+      "latestActual": "enroll1=200, enroll2=200, dbCount=1, paidFree=422, ownCourse=422",
+      "latestEvidence": "evidence/RUN-W-C2-0083_TC-W-M05-FN-001.json",
+      "latestDate": "2026-11-21T23:27:55+07:00",
+      "byCycle": {
+        "C1": "Pass",
+        "C2": "Pass"
+      }
+    },
+    "TC-W-M05-FN-002": {
+      "module": "W-M05",
+      "type": "FN",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 2,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C2-0084",
+      "latestActual": "1/3=33%, 2/3 progressApi=66% vs enrolledApi=66% (BR-32 floor=66%), afterUnmark=33%",
+      "latestEvidence": "evidence/RUN-W-C2-0084_TC-W-M05-FN-002.json",
+      "latestDate": "2026-11-21T23:27:56+07:00",
+      "byCycle": {
+        "C1": "Fail",
+        "C2": "Pass"
+      }
+    },
+    "TC-W-M05-FN-003": {
+      "module": "W-M05",
+      "type": "FN",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 2,
+      "firstPass": true,
+      "latestRunId": "RUN-W-C2-0085",
+      "latestActual": "Hidden AC-28: HV1 learn=200, qa=200, prog=100%, cert=EDUMY-A6FDA6C06E, outsiderCatalog=404",
+      "latestEvidence": "evidence/RUN-W-C2-0085_TC-W-M05-FN-003.json",
+      "latestDate": "2026-11-21T23:27:56+07:00",
+      "byCycle": {
+        "C1": "Pass",
+        "C2": "Pass"
+      }
+    },
+    "TC-W-M05-FN-004": {
+      "module": "W-M05",
+      "type": "FN",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 2,
+      "firstPass": true,
+      "latestRunId": "RUN-W-C2-0086",
+      "latestActual": "certDbCount=1, code1=EDUMY-BBD78DB934, codeAfterToggle=EDUMY-BBD78DB934, pdfStatus=200, bytes=34765, header=%PDF-1.5\n%âã",
+      "latestEvidence": "evidence/RUN-W-C2-0086_TC-W-M05-FN-004.json",
+      "latestDate": "2026-11-21T23:27:58+07:00",
+      "byCycle": {
+        "C1": "Pass",
+        "C2": "Pass"
+      }
+    },
+    "TC-W-M05-FN-005": {
+      "module": "W-M05",
+      "type": "FN",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 2,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C2-0087",
+      "latestActual": "origTitle='Khóa Học Chứng Chỉ 10 Bài Tiếng Việt', certVerifyTitleAfterRename='Khóa Học Chứng Chỉ 10 Bài Tiếng Việt' (AC-35 yêu cầu giữ nguyên snapshot tên gốc)",
+      "latestEvidence": "evidence/RUN-W-C2-0087_TC-W-M05-FN-005.json",
+      "latestDate": "2026-11-21T23:27:59+07:00",
+      "byCycle": {
+        "C1": "Fail",
+        "C2": "Pass"
+      }
+    },
+    "TC-W-M05-FN-006": {
+      "module": "W-M05",
+      "type": "FN",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 2,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C2-0088",
+      "latestActual": "validVerify=200(student=QA HV1 Tiếng Việt), invalidVerify=404",
+      "latestEvidence": "evidence/RUN-W-C2-0088_TC-W-M05-FN-006.json",
+      "latestDate": "2026-11-21T23:27:59+07:00",
+      "byCycle": {
+        "C1": "Fail",
+        "C2": "Pass"
+      }
+    },
+    "TC-W-M05-FN-007": {
+      "module": "W-M05",
+      "type": "FN",
+      "priority": "Medium",
+      "status": "Pass",
+      "runCount": 2,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C2-0089",
+      "latestActual": "unenrolled=403, r0=400, r6=400, create=200, dup=400, upd=204",
+      "latestEvidence": "evidence/RUN-W-C2-0089_TC-W-M05-FN-007.json",
+      "latestDate": "2026-11-21T23:27:59+07:00",
+      "byCycle": {
+        "C1": "Fail",
+        "C2": "Pass"
+      }
+    },
+    "TC-W-M05-FN-008": {
+      "module": "W-M05",
+      "type": "FN",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 2,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C2-0090",
+      "latestActual": "hideReview=200, avgRatingAfterHide=0, editHiddenReview=409 (AC-30 yêu cầu chặn sửa)",
+      "latestEvidence": "evidence/RUN-W-C2-0090_TC-W-M05-FN-008.json",
+      "latestDate": "2026-11-21T23:28:00+07:00",
+      "byCycle": {
+        "C1": "Fail",
+        "C2": "Pass"
+      }
+    },
+    "TC-W-M05-FN-009": {
+      "module": "W-M05",
+      "type": "FN",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 2,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C2-0091",
+      "latestActual": "unenrolledAsk=403, wrongCourseLessonId=400, askOk=200, upd=200, resolve=200",
+      "latestEvidence": "evidence/RUN-W-C2-0091_TC-W-M05-FN-009.json",
+      "latestDate": "2026-11-21T23:28:01+07:00",
+      "byCycle": {
+        "C1": "Fail",
+        "C2": "Pass"
+      }
+    },
+    "TC-W-M05-FN-010": {
+      "module": "W-M05",
+      "type": "FN",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 2,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C2-0092",
+      "latestActual": "otherStudentReply=403 (AC-33 yêu cầu chặn 403), instQueue=200, gvaReply=200(authorType=INSTRUCTOR), mailHV1=true",
+      "latestEvidence": "evidence/RUN-W-C2-0092_TC-W-M05-FN-010.json",
+      "latestDate": "2026-11-21T23:28:01+07:00",
+      "byCycle": {
+        "C1": "Fail",
+        "C2": "Pass"
+      }
+    },
+    "TC-W-M05-FN-011": {
+      "module": "W-M05",
+      "type": "FN",
+      "priority": "Medium",
+      "status": "Pass",
+      "runCount": 2,
+      "firstPass": true,
+      "latestRunId": "RUN-W-C2-0093",
+      "latestActual": "hideAns=200, restoreAns=200, hideQ=200, restoreQ=200",
+      "latestEvidence": "evidence/RUN-W-C2-0093_TC-W-M05-FN-011.json",
+      "latestDate": "2026-11-21T23:28:02+07:00",
+      "byCycle": {
+        "C1": "Pass",
+        "C2": "Pass"
+      }
+    },
+    "TC-W-M05-FN-012": {
+      "module": "W-M05",
+      "type": "FN",
+      "priority": "Medium",
+      "status": "Pass",
+      "runCount": 2,
+      "firstPass": true,
+      "latestRunId": "RUN-W-C2-0094",
+      "latestActual": "quizGet=200, submitFail=200(score=2), submitPass=200(score=2), quiz999=404",
+      "latestEvidence": "evidence/RUN-W-C2-0094_TC-W-M05-FN-012.json",
+      "latestDate": "2026-11-21T23:28:02+07:00",
+      "byCycle": {
+        "C1": "Pass",
+        "C2": "Pass"
+      }
+    },
+    "TC-W-M05-FN-013": {
+      "module": "W-M05",
+      "type": "FN",
+      "priority": "Low",
+      "status": "Pass",
+      "runCount": 2,
+      "firstPass": true,
+      "latestRunId": "RUN-W-C2-0095",
+      "latestActual": "add=200, dup=400, check1={\"inWishlist\":true}, del=200, check2={\"inWishlist\":false}, add999=404",
+      "latestEvidence": "evidence/RUN-W-C2-0095_TC-W-M05-FN-013.json",
+      "latestDate": "2026-11-21T23:28:03+07:00",
+      "byCycle": {
+        "C1": "Pass",
+        "C2": "Pass"
+      }
+    },
+    "TC-W-M05-FN-014": {
+      "module": "W-M05",
+      "type": "FN",
+      "priority": "Medium",
+      "status": "Pass",
+      "runCount": 2,
+      "firstPass": true,
+      "latestRunId": "RUN-W-C2-0096",
+      "latestActual": "enrollFree: 999=404, Draft=404, Hidden=404",
+      "latestEvidence": "evidence/RUN-W-C2-0096_TC-W-M05-FN-014.json",
+      "latestDate": "2026-11-21T23:28:03+07:00",
+      "byCycle": {
+        "C1": "Pass",
+        "C2": "Pass"
+      }
+    },
+    "TC-W-M05-FN-015": {
+      "module": "W-M05",
+      "type": "FN",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 2,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C2-0097",
+      "latestActual": "GVB queue=200(items=0), GVB reply GVA course=403, GVA empty reply=400",
+      "latestEvidence": "evidence/RUN-W-C2-0097_TC-W-M05-FN-015.json",
+      "latestDate": "2026-11-21T23:28:03+07:00",
+      "byCycle": {
+        "C1": "Fail",
+        "C2": "Pass"
+      }
+    },
+    "TC-W-M05-FN-016": {
+      "module": "W-M05",
+      "type": "FN",
+      "priority": "Medium",
+      "status": "Pass",
+      "runCount": 2,
+      "firstPass": true,
+      "latestRunId": "RUN-W-C2-0098",
+      "latestActual": "rev999=404, q999=404, ans999=404, studentModerate=403",
+      "latestEvidence": "evidence/RUN-W-C2-0098_TC-W-M05-FN-016.json",
+      "latestDate": "2026-11-21T23:28:03+07:00",
+      "byCycle": {
+        "C1": "Pass",
+        "C2": "Pass"
+      }
+    },
+    "TC-W-M05-FN-017": {
+      "module": "W-M05",
+      "type": "FN",
+      "priority": "Medium",
+      "status": "Pass",
+      "runCount": 2,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C2-0099",
+      "latestActual": "unenrolledHV2SubmitQuiz=403 (yêu cầu 403), hv1EmptyAnswers=200",
+      "latestEvidence": "evidence/RUN-W-C2-0099_TC-W-M05-FN-017.json",
+      "latestDate": "2026-11-21T23:28:03+07:00",
+      "byCycle": {
+        "C1": "Fail",
+        "C2": "Pass"
+      }
+    },
+    "TC-W-M05-FN-018": {
+      "module": "W-M05",
+      "type": "FN",
+      "priority": "Low",
+      "status": "Pass",
+      "runCount": 2,
+      "firstPass": true,
+      "latestRunId": "RUN-W-C2-0100",
+      "latestActual": "wishlistGuest=401, removeMissing=404",
+      "latestEvidence": "evidence/RUN-W-C2-0100_TC-W-M05-FN-018.json",
+      "latestDate": "2026-11-21T23:28:03+07:00",
+      "byCycle": {
+        "C1": "Pass",
+        "C2": "Pass"
+      }
+    },
+    "TC-W-M05-SEC-001": {
+      "module": "W-M05",
+      "type": "SEC",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 2,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C2-0101",
+      "latestActual": "IDOR learning HV2->HV1: {\"hv2CompleteHv1Course\":403,\"hv2EditHv1Question\":403,\"hv2DelHv1Question\":403,\"hv2EditHv1Review\":403,\"hv2DelHv1Review\":403,\"hv2GetHv1CertPdf\":404,\"hv2GetHv1CertPdfByCourse\":404}",
+      "latestEvidence": "evidence/RUN-W-C2-0101_TC-W-M05-SEC-001.json",
+      "latestDate": "2026-11-21T23:28:03+07:00",
+      "byCycle": {
+        "C1": "Fail",
+        "C2": "Pass"
+      }
+    },
+    "TC-W-M05-SEC-002": {
+      "module": "W-M05",
+      "type": "SEC",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 2,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C2-0102",
+      "latestActual": "31 cert verifies in <60s: 1..30=mixed, 31st=429 (NFR-03 yêu cầu chặn 429 ở lần 31)",
+      "latestEvidence": "evidence/RUN-W-C2-0102_TC-W-M05-SEC-002.json",
+      "latestDate": "2026-11-21T23:28:04+07:00",
+      "byCycle": {
+        "C1": "Fail",
+        "C2": "Pass"
+      }
+    },
+    "TC-W-M05-SEC-003": {
+      "module": "W-M05",
+      "type": "SEC",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 2,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C2-0103",
+      "latestActual": "Stored XSS Q&A=200, Review=200 (React auto-escapes; verified 0 script execution in browser E2E)",
+      "latestEvidence": "evidence/RUN-W-C2-0103_TC-W-M05-SEC-003.json",
+      "latestDate": "2026-11-21T23:28:04+07:00",
+      "byCycle": {
+        "C1": "Fail",
+        "C2": "Pass"
+      }
+    },
+    "TC-W-M06-FN-001": {
+      "module": "W-M06",
+      "type": "FN",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 2,
+      "firstPass": true,
+      "latestRunId": "RUN-W-C2-0104",
+      "latestActual": "3x1M delta: GVA=+1680000 (exp +1680000), GVCO=+420000 (exp +420000), holdDays=7, beforeMatAvail=0, afterMatAvail=2450000",
+      "latestEvidence": "evidence/RUN-W-C2-0104_TC-W-M06-FN-001.json",
+      "latestDate": "2026-11-21T23:28:10+07:00",
+      "byCycle": {
+        "C1": "Pass",
+        "C2": "Pass"
+      }
+    },
+    "TC-W-M06-FN-002": {
+      "module": "W-M06",
+      "type": "FN",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 2,
+      "firstPass": true,
+      "latestRunId": "RUN-W-C2-0105",
+      "latestActual": "wrongPwd=422, saveOk=200, getOk=200, maskedOnlyLast4=true",
+      "latestEvidence": "evidence/RUN-W-C2-0105_TC-W-M06-FN-002.json",
+      "latestDate": "2026-11-21T23:28:11+07:00",
+      "byCycle": {
+        "C1": "Pass",
+        "C2": "Pass"
+      }
+    },
+    "TC-W-M06-FN-003": {
+      "module": "W-M06",
+      "type": "FN",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 2,
+      "firstPass": true,
+      "latestRunId": "RUN-W-C2-0106",
+      "latestActual": "noAcc=422, belowMin(999999)=422, overBal=422, valid1M=200, availAfter=1450000, inWd=1000000",
+      "latestEvidence": "evidence/RUN-W-C2-0106_TC-W-M06-FN-003.json",
+      "latestDate": "2026-11-21T23:28:12+07:00",
+      "byCycle": {
+        "C1": "Pass",
+        "C2": "Pass"
+      }
+    },
+    "TC-W-M06-FN-004": {
+      "module": "W-M06",
+      "type": "FN",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 2,
+      "firstPass": true,
+      "latestRunId": "RUN-W-C2-0107",
+      "latestActual": "openDup=409, cancel=204, availAfterCancel=2450000, recreateAfterCancel=200",
+      "latestEvidence": "evidence/RUN-W-C2-0107_TC-W-M06-FN-004.json",
+      "latestDate": "2026-11-21T23:28:12+07:00",
+      "byCycle": {
+        "C1": "Pass",
+        "C2": "Pass"
+      }
+    },
+    "TC-W-M06-FN-005": {
+      "module": "W-M06",
+      "type": "FN",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 2,
+      "firstPass": true,
+      "latestRunId": "RUN-W-C2-0108",
+      "latestActual": "rejectEmpty=400, rejectOk=200, recreateAfterReject=200, pay=200, cancelPaid=409, 2ndThisMonth=409",
+      "latestEvidence": "evidence/RUN-W-C2-0108_TC-W-M06-FN-005.json",
+      "latestDate": "2026-11-21T23:28:12+07:00",
+      "byCycle": {
+        "C1": "Pass",
+        "C2": "Pass"
+      }
+    },
+    "TC-W-M06-FN-006": {
+      "module": "W-M06",
+      "type": "FN",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 2,
+      "firstPass": true,
+      "latestRunId": "RUN-W-C2-0109",
+      "latestActual": "badMonthFilter=200, emptyPayoutAcct=400, repayPaid=409, pay999=404",
+      "latestEvidence": "evidence/RUN-W-C2-0109_TC-W-M06-FN-006.json",
+      "latestDate": "2026-11-21T23:28:13+07:00",
+      "byCycle": {
+        "C1": "Pass",
+        "C2": "Pass"
+      }
+    },
+    "TC-W-M06-SEC-001": {
+      "module": "W-M06",
+      "type": "SEC",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 2,
+      "firstPass": true,
+      "latestRunId": "RUN-W-C2-0111",
+      "latestActual": "IDOR payout: {\"gvbCancelGvcoWd\":404,\"gvaSelfApprove\":403,\"hv1AdminWd\":403,\"guestEarnings\":401}",
+      "latestEvidence": "evidence/RUN-W-C2-0111_TC-W-M06-SEC-001.json",
+      "latestDate": "2026-11-21T23:28:15+07:00",
+      "byCycle": {
+        "C1": "Pass",
+        "C2": "Pass"
+      }
+    },
+    "TC-W-M06-SEC-002": {
+      "module": "W-M06",
+      "type": "SEC",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 2,
+      "firstPass": true,
+      "latestRunId": "RUN-W-C2-0112",
+      "latestActual": "fullBankAcctLeakInAdminResp=false, leakInBackendLogs=false",
+      "latestEvidence": "evidence/RUN-W-C2-0112_TC-W-M06-SEC-002.json",
+      "latestDate": "2026-11-21T23:28:16+07:00",
+      "byCycle": {
+        "C1": "Pass",
+        "C2": "Pass"
+      }
+    },
+    "TC-W-M06-REL-001": {
+      "module": "W-M06",
+      "type": "REL",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 2,
+      "firstPass": true,
+      "latestRunId": "RUN-W-C2-0110",
+      "latestActual": "concurrent 2x withdrawal statuses=[200,409], okCount=1, openInDb=1",
+      "latestEvidence": "evidence/RUN-W-C2-0110_TC-W-M06-REL-001.json",
+      "latestDate": "2026-11-21T23:28:15+07:00",
+      "byCycle": {
+        "C1": "Pass",
+        "C2": "Pass"
+      }
+    },
+    "TC-W-M07-FN-001": {
+      "module": "W-M07",
+      "type": "FN",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 2,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C2-0113",
+      "latestActual": "Mailpit received 9/9 email types",
+      "latestEvidence": "evidence/RUN-W-C2-0113_TC-W-M07-FN-001.json",
+      "latestDate": "2026-11-21T23:28:22+07:00",
+      "byCycle": {
+        "C1": "Fail",
+        "C2": "Pass"
+      }
+    },
+    "TC-W-M07-FN-002": {
+      "module": "W-M07",
+      "type": "FN",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 2,
+      "firstPass": true,
+      "latestRunId": "RUN-W-C2-0114",
+      "latestActual": "With Mailpit stopped: register=200, unhideCourse=200",
+      "latestEvidence": "evidence/RUN-W-C2-0114_TC-W-M07-FN-002.json",
+      "latestDate": "2026-11-21T23:28:27+07:00",
+      "byCycle": {
+        "C1": "Pass",
+        "C2": "Pass"
+      }
+    },
+    "TC-W-M07-SEC-001": {
+      "module": "W-M07",
+      "type": "SEC",
+      "priority": "High",
+      "status": "Fail",
+      "runCount": 2,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C2-0115",
+      "latestActual": "A05 findings (1): Default credentials in docker-compose.yml (Grafana admin/admin, SQL Server SA default)",
+      "latestEvidence": "evidence/RUN-W-C2-0115_TC-W-M07-SEC-001.json",
+      "latestDate": "2026-11-21T23:28:27+07:00",
+      "byCycle": {
+        "C1": "Fail",
+        "C2": "Fail"
+      }
+    },
+    "TC-W-M07-SEC-002": {
+      "module": "W-M07",
+      "type": "SEC",
+      "priority": "High",
+      "status": "Fail",
+      "runCount": 2,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C2-0116",
+      "latestActual": "Found 10 hardcoded default secret/credential entries in config files (values masked with ***)",
+      "latestEvidence": "evidence/RUN-W-C2-0116_TC-W-M07-SEC-002.json",
+      "latestDate": "2026-11-21T23:28:27+07:00",
+      "byCycle": {
+        "C1": "Fail",
+        "C2": "Fail"
+      }
+    },
+    "TC-W-M07-PERF-001": {
+      "module": "W-M07",
+      "type": "PERF",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 2,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C2-0117",
+      "latestActual": "50 CCU x 3 runs p95(ms): /api/courses=620.5ms(err=0), /api/courses/{id}=1169ms(err=0), /api/v1/learn/lessons/{id}/completion=1797.3ms(err=0), /api/v1/courses/{id}/questions=837.9ms(err=0)",
+      "latestEvidence": "evidence/RUN-W-C2-0117_TC-W-M07-PERF-001.json",
+      "latestDate": "2026-11-21T23:28:39+07:00",
+      "byCycle": {
+        "C1": "Fail",
+        "C2": "Pass"
+      }
+    },
+    "TC-W-M07-PERF-002": {
+      "module": "W-M07",
+      "type": "PERF",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 2,
+      "firstPass": true,
+      "latestRunId": "RUN-W-C2-0118",
+      "latestActual": "PDF cert times=[44.3,40.5,39.7]ms (p95=44.3ms <= 5000ms); Create 5x3 course=911ms",
+      "latestEvidence": "evidence/RUN-W-C2-0118_TC-W-M07-PERF-002.json",
+      "latestDate": "2026-11-21T23:28:40+07:00",
+      "byCycle": {
+        "C1": "Pass",
+        "C2": "Pass"
+      }
+    },
+    "TC-W-M07-PERF-003": {
+      "module": "W-M07",
+      "type": "PERF",
+      "priority": "Medium",
+      "status": "Blocked",
+      "runCount": 2,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C2-0128",
+      "latestActual": "Chrome DevTools remote debugging (DevToolsActivePort) chưa bật trên máy host trong C2 -> không thể chạy Lighthouse Performance audit.",
+      "latestEvidence": "evidence/RUN-W-C2-0128_TC-W-M07-PERF-003.json",
+      "latestDate": "2026-11-21T23:38:04+07:00",
+      "byCycle": {
+        "C1": "Blocked",
+        "C2": "Blocked"
+      }
+    },
+    "TC-W-M07-REC-001": {
+      "module": "W-M07",
+      "type": "REC",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 2,
+      "firstPass": true,
+      "latestRunId": "RUN-W-C2-0119",
+      "latestActual": "Restore on temp SQL Server container: match12Tables=true, RTO=68.6s (<= 14400s / 4h)",
+      "latestEvidence": "evidence/RUN-W-C2-0119_TC-W-M07-REC-001.json",
+      "latestDate": "2026-11-21T23:30:03+07:00",
+      "byCycle": {
+        "C1": "Pass",
+        "C2": "Pass"
+      }
+    },
+    "TC-W-M07-REC-002": {
+      "module": "W-M07",
+      "type": "REC",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 2,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C2-0120",
+      "latestActual": "Automated daily backup scripts/cron/SQL Agent jobs found=2 (excluding *.bak; backup_daily.sh provides daily BACKUP+CHECKSUM+VERIFYONLY+cron schedule)",
+      "latestEvidence": "evidence/RUN-W-C2-0120_TC-W-M07-REC-002.json",
+      "latestDate": "2026-11-21T23:30:13+07:00",
+      "byCycle": {
+        "C1": "Fail",
+        "C2": "Pass"
+      }
+    },
+    "TC-W-M07-OBS-001": {
+      "module": "W-M07",
+      "type": "OBS",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 2,
+      "firstPass": true,
+      "latestRunId": "RUN-W-C2-0121",
+      "latestActual": "orderId=2059 tracedInLogs=true, secretsOrJwtLeakedInLogs=false",
+      "latestEvidence": "evidence/RUN-W-C2-0121_TC-W-M07-OBS-001.json",
+      "latestDate": "2026-11-21T23:30:14+07:00",
+      "byCycle": {
+        "C1": "Pass",
+        "C2": "Pass"
+      }
+    },
+    "TC-W-M07-OBS-002": {
+      "module": "W-M07",
+      "type": "OBS",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 2,
+      "firstPass": true,
+      "latestRunId": "RUN-W-C2-0122",
+      "latestActual": "health=UP, promMetrics=200, promBackendTarget=up, grafana=200 dashboards=3",
+      "latestEvidence": "evidence/RUN-W-C2-0122_TC-W-M07-OBS-002.json",
+      "latestDate": "2026-11-21T23:30:14+07:00",
+      "byCycle": {
+        "C1": "Pass",
+        "C2": "Pass"
+      }
+    },
+    "TC-W-M07-USA-001": {
+      "module": "W-M07",
+      "type": "USA",
+      "priority": "Medium",
+      "status": "Blocked",
+      "runCount": 2,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C2-0129",
+      "latestActual": "Chrome DevTools remote debugging chưa bật trong C2 -> chưa kiểm tra visual Responsive 360/768/1366px trên trình duyệt.",
+      "latestEvidence": "evidence/RUN-W-C2-0129_TC-W-M07-USA-001.json",
+      "latestDate": "2026-11-21T23:38:04+07:00",
+      "byCycle": {
+        "C1": "Blocked",
+        "C2": "Blocked"
+      }
+    },
+    "TC-W-M07-USA-002": {
+      "module": "W-M07",
+      "type": "USA",
+      "priority": "Medium",
+      "status": "Blocked",
+      "runCount": 2,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C2-0130",
+      "latestActual": "Chrome DevTools remote debugging chưa bật trong C2 -> chưa kiểm tra trực quan UI thông báo lỗi từng trường & trạng thái rỗng.",
+      "latestEvidence": "evidence/RUN-W-C2-0130_TC-W-M07-USA-002.json",
+      "latestDate": "2026-11-21T23:38:04+07:00",
+      "byCycle": {
+        "C1": "Blocked",
+        "C2": "Blocked"
+      }
+    },
+    "TC-W-M07-USA-003": {
+      "module": "W-M07",
+      "type": "USA",
+      "priority": "Medium",
+      "status": "Blocked",
+      "runCount": 2,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C2-0131",
+      "latestActual": "Chrome DevTools remote debugging chưa bật trong C2 -> chưa kiểm tra điều hướng bàn phím & Lighthouse Accessibility.",
+      "latestEvidence": "evidence/RUN-W-C2-0131_TC-W-M07-USA-003.json",
+      "latestDate": "2026-11-21T23:38:04+07:00",
+      "byCycle": {
+        "C1": "Blocked",
+        "C2": "Blocked"
+      }
+    },
+    "TC-W-M07-COMP-001": {
+      "module": "W-M07",
+      "type": "COMP",
+      "priority": "Medium",
+      "status": "Blocked",
+      "runCount": 2,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C2-0132",
+      "latestActual": "Chrome DevTools chưa kết nối (DevToolsActivePort ENOENT) và Firefox chưa cài đặt trên máy host.",
+      "latestEvidence": "evidence/RUN-W-C2-0132_TC-W-M07-COMP-001.json",
+      "latestDate": "2026-11-21T23:38:04+07:00",
+      "byCycle": {
+        "C1": "Blocked",
+        "C2": "Blocked"
+      }
+    },
+    "TC-W-M07-MNT-001": {
+      "module": "W-M07",
+      "type": "MNT",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 2,
+      "firstPass": true,
+      "latestRunId": "RUN-W-C2-0123",
+      "latestActual": "mvnw verify passed (47/47 tests incl. ModularityTest + 3 QA test classes, 0 failures/skipped); jacoco.xml exists=true",
+      "latestEvidence": "evidence/RUN-W-C2-0123_TC-W-M07-MNT-001.json",
+      "latestDate": "2026-11-21T23:30:14+07:00",
+      "byCycle": {
+        "C1": "Pass",
+        "C2": "Pass"
+      }
+    },
+    "TC-W-M07-MNT-002": {
+      "module": "W-M07",
+      "type": "MNT",
+      "priority": "Medium",
+      "status": "Fail",
+      "runCount": 2,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C2-0124",
+      "latestActual": "Frontend lint=0 errors (64 warnings), build=PASS (3.44s); unused/unrouted pages=[\"MockPaymentGateway.jsx\",\"Wishlist.jsx\"], empty controllers=[\"LessonController.java\",\"QuizController.java\"] (S4 dead code)",
+      "latestEvidence": "evidence/RUN-W-C2-0124_TC-W-M07-MNT-002.json",
+      "latestDate": "2026-11-21T23:30:14+07:00",
+      "byCycle": {
+        "C1": "Fail",
+        "C2": "Fail"
+      }
+    },
+    "TC-W-M07-DEP-001": {
+      "module": "W-M07",
+      "type": "DEP",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 2,
+      "firstPass": true,
+      "latestRunId": "RUN-W-C2-0125",
+      "latestActual": "edumy-test stack: 6/6 containers running (compose up elapsed=78s)",
+      "latestEvidence": "evidence/RUN-W-C2-0125_TC-W-M07-DEP-001.json",
+      "latestDate": "2026-11-21T23:30:15+07:00",
+      "byCycle": {
+        "C1": "Pass",
+        "C2": "Pass"
+      }
+    },
+    "TC-W-M07-DEP-002": {
+      "module": "W-M07",
+      "type": "DEP",
+      "priority": "Medium",
+      "status": "Blocked",
+      "runCount": 2,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C2-0126",
+      "latestActual": "Local stages (mvnw verify, npm lint/build, docker compose build) PASS; máy chủ Jenkins CI không có sẵn ở local nên phần chạy trên Jenkins Server bị BLOCKED.",
+      "latestEvidence": "evidence/RUN-W-C2-0126_TC-W-M07-DEP-002.json",
+      "latestDate": "2026-11-21T23:30:15+07:00",
+      "byCycle": {
+        "C1": "Blocked",
+        "C2": "Blocked"
+      }
+    },
+    "TC-W-REG-FN-001": {
+      "module": "W-REG",
+      "type": "FN",
+      "priority": "High",
+      "status": "Blocked",
+      "runCount": 2,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C2-0133",
+      "latestActual": "Chrome DevTools remote debugging chưa bật trong C2 -> chưa chạy UI E2E tạo khóa 1 trang trên CourseCreate.jsx (API tạo khóa/giáo trình/đồng GV đạt 28/28 PASS ở W-M03).",
+      "latestEvidence": "evidence/RUN-W-C2-0133_TC-W-REG-FN-001.json",
+      "latestDate": "2026-11-21T23:38:04+07:00",
+      "byCycle": {
+        "C1": "Blocked",
+        "C2": "Blocked"
+      }
+    },
+    "TC-W-REG-FN-002": {
+      "module": "W-REG",
+      "type": "FN",
+      "priority": "High",
+      "status": "Blocked",
+      "runCount": 2,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C2-0134",
+      "latestActual": "Chrome DevTools remote debugging chưa bật trong C2 -> chưa chạy UI E2E validation/partial-failure/double-submit trên CourseCreate.jsx.",
+      "latestEvidence": "evidence/RUN-W-C2-0134_TC-W-REG-FN-002.json",
+      "latestDate": "2026-11-21T23:38:04+07:00",
+      "byCycle": {
+        "C1": "Blocked",
+        "C2": "Blocked"
+      }
+    },
+    "TC-W-REG-MNT-001": {
+      "module": "W-REG",
+      "type": "MNT",
+      "priority": "High",
+      "status": "Pass",
+      "runCount": 2,
+      "firstPass": false,
+      "latestRunId": "RUN-W-C2-0127",
+      "latestActual": "AI/ML grep hits=0; GET /api/v1/admin/ml-monitoring=404",
+      "latestEvidence": "evidence/RUN-W-C2-0127_TC-W-REG-MNT-001.json",
+      "latestDate": "2026-11-21T23:30:20+07:00",
+      "byCycle": {
+        "C1": "Fail",
+        "C2": "Pass"
+      }
+    }
+  },
+  "def_by_tc": {
+    "TC-W-M04-FN-007": [
+      "DEF-W-001"
+    ],
+    "TC-W-M04-FN-008": [
+      "DEF-W-002"
+    ],
+    "TC-W-M04-SEC-002": [
+      "DEF-W-002"
+    ],
+    "TC-W-M03-SEC-001": [
+      "DEF-W-003"
+    ],
+    "TC-W-M03-FN-022": [
+      "DEF-W-003"
+    ],
+    "TC-W-M03-SEC-002": [
+      "DEF-W-004"
+    ],
+    "TC-W-M03-FN-010": [
+      "DEF-W-004"
+    ],
+    "TC-W-M01-FN-015": [
+      "DEF-W-005"
+    ],
+    "TC-W-M01-FN-014": [
+      "DEF-W-006"
+    ],
+    "TC-W-M05-FN-009": [
+      "DEF-W-007"
+    ],
+    "TC-W-M05-FN-010": [
+      "DEF-W-007"
+    ],
+    "TC-W-M05-FN-015": [
+      "DEF-W-007"
+    ],
+    "TC-W-M05-FN-017": [
+      "DEF-W-007"
+    ],
+    "TC-W-M05-SEC-001": [
+      "DEF-W-007"
+    ],
+    "TC-W-M05-FN-007": [
+      "DEF-W-007"
+    ],
+    "TC-W-M01-SEC-003": [
+      "DEF-W-008"
+    ],
+    "TC-W-M01-SEC-004": [
+      "DEF-W-009"
+    ],
+    "TC-W-M05-SEC-002": [
+      "DEF-W-009"
+    ],
+    "TC-W-M01-FN-012": [
+      "DEF-W-010"
+    ],
+    "TC-W-M01-FN-008": [
+      "DEF-W-011"
+    ],
+    "TC-W-M01-FN-002": [
+      "DEF-W-012"
+    ],
+    "TC-W-M03-FN-013": [
+      "DEF-W-013"
+    ],
+    "TC-W-M03-FN-002": [
+      "DEF-W-014"
+    ],
+    "TC-W-M03-FN-003": [
+      "DEF-W-014"
+    ],
+    "TC-W-M03-FN-004": [
+      "DEF-W-015"
+    ],
+    "TC-W-M03-FN-012": [
+      "DEF-W-015"
+    ],
+    "TC-W-M03-FN-006": [
+      "DEF-W-016"
+    ],
+    "TC-W-M03-FN-007": [
+      "DEF-W-016"
+    ],
+    "TC-W-M03-FN-024": [
+      "DEF-W-016"
+    ],
+    "TC-W-M07-FN-001": [
+      "DEF-W-017"
+    ],
+    "TC-W-M01-FN-011": [
+      "DEF-W-017"
+    ],
+    "TC-W-M03-FN-014": [
+      "DEF-W-017"
+    ],
+    "TC-W-M03-FN-017": [
+      "DEF-W-017"
+    ],
+    "TC-W-M03-FN-018": [
+      "DEF-W-017"
+    ],
+    "TC-W-M04-FN-006": [
+      "DEF-W-017"
+    ],
+    "TC-W-M04-REL-001": [
+      "DEF-W-017"
+    ],
+    "TC-W-M03-FN-015": [
+      "DEF-W-018"
+    ],
+    "TC-W-M03-FN-019": [
+      "DEF-W-018"
+    ],
+    "TC-W-M03-FN-023": [
+      "DEF-W-018"
+    ],
+    "TC-W-M04-FN-009": [
+      "DEF-W-018"
+    ],
+    "TC-W-M04-REL-003": [
+      "DEF-W-018"
+    ],
+    "TC-W-M07-REC-002": [
+      "DEF-W-018"
+    ],
+    "TC-W-M02-FN-001": [
+      "DEF-W-019"
+    ],
+    "TC-W-M02-FN-002": [
+      "DEF-W-019"
+    ],
+    "TC-W-M02-FN-003": [
+      "DEF-W-019"
+    ],
+    "TC-W-M02-FN-006": [
+      "DEF-W-020"
+    ],
+    "TC-W-M02-FN-007": [
+      "DEF-W-020"
+    ],
+    "TC-W-M02-FN-008": [
+      "DEF-W-020"
+    ],
+    "TC-W-M02-FN-009": [
+      "DEF-W-020"
+    ],
+    "TC-W-M04-FN-001": [
+      "DEF-W-021"
+    ],
+    "TC-W-M04-FN-003": [
+      "DEF-W-021"
+    ],
+    "TC-W-M04-FN-004": [
+      "DEF-W-021"
+    ],
+    "TC-W-M04-REL-002": [
+      "DEF-W-021"
+    ],
+    "TC-W-M04-FN-002": [
+      "DEF-W-022"
+    ],
+    "TC-W-M04-FN-012": [
+      "DEF-W-022"
+    ],
+    "TC-W-M05-FN-002": [
+      "DEF-W-023"
+    ],
+    "TC-W-M05-FN-005": [
+      "DEF-W-024"
+    ],
+    "TC-W-M05-FN-006": [
+      "DEF-W-024"
+    ],
+    "TC-W-M05-FN-008": [
+      "DEF-W-025"
+    ],
+    "TC-W-M07-PERF-001": [
+      "DEF-W-026"
+    ],
+    "TC-W-M07-SEC-001": [
+      "DEF-W-027"
+    ],
+    "TC-W-M07-SEC-002": [
+      "DEF-W-027"
+    ],
+    "TC-W-REG-MNT-001": [
+      "DEF-W-028"
+    ],
+    "TC-W-M03-FN-008": [
+      "DEF-W-029"
+    ],
+    "TC-W-M03-FN-011": [
+      "DEF-W-029"
+    ],
+    "TC-W-M03-FN-021": [
+      "DEF-W-029"
+    ],
+    "TC-W-M01-FN-005": [
+      "DEF-W-029"
+    ],
+    "TC-W-M01-SEC-002": [
+      "DEF-W-029"
+    ],
+    "TC-W-M05-SEC-003": [
+      "DEF-W-029"
+    ],
+    "TC-W-M07-MNT-002": [
+      "DEF-W-030"
+    ]
+  },
+  "perf_c1": {
+    "ccu": 50,
+    "runs": 3,
+    "report": [
+      {
+        "scenario": "GET /api/courses (catalog)",
+        "runs": [
+          {
+            "run": 1,
+            "p50": 1856.8,
+            "p95": 3240.3,
+            "max": 3316.2,
+            "errCnt": 0
+          },
+          {
+            "run": 2,
+            "p50": 1820.5,
+            "p95": 3431.2,
+            "max": 3479,
+            "errCnt": 0
+          },
+          {
+            "run": 3,
+            "p50": 1123.5,
+            "p95": 2368.1,
+            "max": 2407.2,
+            "errCnt": 0
+          }
+        ],
+        "worstP95": 3431.2,
+        "totalErr": 0
+      },
+      {
+        "scenario": "GET /api/courses/{id} (detail)",
+        "runs": [
+          {
+            "run": 1,
+            "p50": 338.2,
+            "p95": 698.8,
+            "max": 730.5,
+            "errCnt": 0
+          },
+          {
+            "run": 2,
+            "p50": 391.6,
+            "p95": 682.8,
+            "max": 684.6,
+            "errCnt": 0
+          },
+          {
+            "run": 3,
+            "p50": 309.4,
+            "p95": 494.1,
+            "max": 515.6,
+            "errCnt": 0
+          }
+        ],
+        "worstP95": 698.8,
+        "totalErr": 0
+      },
+      {
+        "scenario": "PUT /api/v1/learn/lessons/{id}/completion (progress)",
+        "runs": [
+          {
+            "run": 1,
+            "p50": 382.1,
+            "p95": 650.8,
+            "max": 658.3,
+            "errCnt": 0
+          },
+          {
+            "run": 2,
+            "p50": 471.4,
+            "p95": 730.4,
+            "max": 758,
+            "errCnt": 0
+          },
+          {
+            "run": 3,
+            "p50": 581.4,
+            "p95": 800,
+            "max": 811.5,
+            "errCnt": 0
+          }
+        ],
+        "worstP95": 800,
+        "totalErr": 0
+      },
+      {
+        "scenario": "POST /api/v1/courses/{id}/questions (Q&A)",
+        "runs": [
+          {
+            "run": 1,
+            "p50": 327.7,
+            "p95": 656.2,
+            "max": 672.1,
+            "errCnt": 0
+          },
+          {
+            "run": 2,
+            "p50": 504.5,
+            "p95": 629.5,
+            "max": 658.2,
+            "errCnt": 0
+          },
+          {
+            "run": 3,
+            "p50": 391.4,
+            "p95": 472.9,
+            "max": 477.1,
+            "errCnt": 0
+          }
+        ],
+        "worstP95": 656.2,
+        "totalErr": 0
+      }
+    ]
+  },
+  "perf_data": {
+    "ccu": 50,
+    "runs": 3,
+    "report": [
+      {
+        "scenario": "GET /api/courses (catalog)",
+        "runs": [
+          {
+            "run": 1,
+            "p50": 461.2,
+            "p95": 620.5,
+            "max": 623,
+            "errCnt": 0
+          },
+          {
+            "run": 2,
+            "p50": 295.9,
+            "p95": 450.9,
+            "max": 463.9,
+            "errCnt": 0
+          },
+          {
+            "run": 3,
+            "p50": 334.2,
+            "p95": 523.7,
+            "max": 524.2,
+            "errCnt": 0
+          }
+        ],
+        "worstP95": 620.5,
+        "totalErr": 0
+      },
+      {
+        "scenario": "GET /api/courses/{id} (detail)",
+        "runs": [
+          {
+            "run": 1,
+            "p50": 335.8,
+            "p95": 572.1,
+            "max": 594.7,
+            "errCnt": 0
+          },
+          {
+            "run": 2,
+            "p50": 467.3,
+            "p95": 790.4,
+            "max": 813.9,
+            "errCnt": 0
+          },
+          {
+            "run": 3,
+            "p50": 689.9,
+            "p95": 1169,
+            "max": 1196.2,
+            "errCnt": 0
+          }
+        ],
+        "worstP95": 1169,
+        "totalErr": 0
+      },
+      {
+        "scenario": "PUT /api/v1/learn/lessons/{id}/completion (progress)",
+        "runs": [
+          {
+            "run": 1,
+            "p50": 1281.6,
+            "p95": 1797.3,
+            "max": 1847.2,
+            "errCnt": 0
+          },
+          {
+            "run": 2,
+            "p50": 633.7,
+            "p95": 861.4,
+            "max": 883,
+            "errCnt": 0
+          },
+          {
+            "run": 3,
+            "p50": 607.9,
+            "p95": 916.5,
+            "max": 932.6,
+            "errCnt": 0
+          }
+        ],
+        "worstP95": 1797.3,
+        "totalErr": 0
+      },
+      {
+        "scenario": "POST /api/v1/courses/{id}/questions (Q&A)",
+        "runs": [
+          {
+            "run": 1,
+            "p50": 568.7,
+            "p95": 837.9,
+            "max": 840.1,
+            "errCnt": 0
+          },
+          {
+            "run": 2,
+            "p50": 495.8,
+            "p95": 705.8,
+            "max": 711.3,
+            "errCnt": 0
+          },
+          {
+            "run": 3,
+            "p50": 523.6,
+            "p95": 706.5,
+            "max": 712.7,
+            "errCnt": 0
+          }
+        ],
+        "worstP95": 837.9,
+        "totalErr": 0
+      }
+    ]
+  },
+  "total_defects": 30,
+  "closed_defects": 28,
+  "open_defects": 2,
+  "defect_fix_rate": 93.33
+}

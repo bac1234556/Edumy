@@ -1,0 +1,37 @@
+{
+  "shortTitle": {
+    "create": 201,
+    "submit": 400,
+    "msg": "Tiêu đề khóa học phải có ít nhất 5 ký tự hợp lệ."
+  },
+  "shortDesc": {
+    "create": 201,
+    "submit": 400,
+    "msg": "Mô tả khóa học phải có ít nhất 10 ký tự trước khi nộp duyệt."
+  },
+  "badPrice": {
+    "create": 201,
+    "submit": 400,
+    "msg": "Giá khóa học trả phí phải từ 10.000 VNĐ trở lên và là bội số của 1.000 VNĐ."
+  },
+  "noSection": {
+    "create": 201,
+    "submit": 400,
+    "msg": "Khóa học phải có ít nhất 1 chương (section) trước khi nộp duyệt."
+  },
+  "emptySection": {
+    "create": 201,
+    "submit": 400,
+    "msg": "Chương 'S1' chưa có bài học nào. Vui lòng thêm bài học hoặc xóa chương trống."
+  },
+  "emptyLesson": {
+    "create": 201,
+    "submit": 400,
+    "msg": "Bài học 'L Empty' thuộc chương 'S1' chưa có nội dung hoặc liên kết video."
+  },
+  "fullValid": {
+    "create": 201,
+    "submit": 200,
+    "msg": "Đã kiểm tra checklist thành công và gửi yêu cầu xét duyệt khóa học tới Quản trị viên."
+  }
+}

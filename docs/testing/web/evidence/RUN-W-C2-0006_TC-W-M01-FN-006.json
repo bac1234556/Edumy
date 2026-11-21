@@ -1,0 +1,41 @@
+{
+  "lWrong": {
+    "status": 401,
+    "raw": {
+      "success": false,
+      "message": "Email hoặc mật khẩu không chính xác.",
+      "data": null,
+      "errors": {
+        "code": "AUTH_INVALID_CREDENTIALS",
+        "fields": null,
+        "traceId": "2bf56d71-d518-4ec1-a329-75058e965341"
+      }
+    }
+  },
+  "lMiss": {
+    "status": 401,
+    "raw": {
+      "success": false,
+      "message": "Email hoặc mật khẩu không chính xác.",
+      "data": null,
+      "errors": {
+        "code": "AUTH_INVALID_CREDENTIALS",
+        "fields": null,
+        "traceId": "6c0c87b3-ebda-4d2d-9ade-8b21ccefd6b4"
+      }
+    }
+  },
+  "lLock": {
+    "status": 403,
+    "raw": {
+      "success": false,
+      "message": "Tài khoản của bạn đã bị khóa. Vui lòng liên hệ quản trị viên.",
+      "data": null,
+      "errors": {
+        "code": "AUTH_ACCOUNT_LOCKED",
+        "fields": null,
+        "traceId": "ff4b4dd2-9f58-4b0d-838d-612d98c9e0e4"
+      }
+    }
+  }
+}

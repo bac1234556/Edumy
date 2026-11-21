@@ -1,0 +1,9 @@
+{
+  "hv2CompleteHv1Course": 403,
+  "hv2EditHv1Question": 403,
+  "hv2DelHv1Question": 403,
+  "hv2EditHv1Review": 403,
+  "hv2DelHv1Review": 403,
+  "hv2GetHv1CertPdf": 404,
+  "hv2GetHv1CertPdfByCourse": 404
+}

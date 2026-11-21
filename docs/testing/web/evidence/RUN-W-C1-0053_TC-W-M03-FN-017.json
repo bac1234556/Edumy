@@ -1,0 +1,76 @@
+{
+  "rejEmpty": {
+    "status": 400,
+    "ok": false,
+    "elapsedMs": 12.4,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 220,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "close",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 15:25:44 GMT",
+      "expires": "0",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": false,
+      "message": "Vui lòng nhập lý do từ chối xét duyệt để giảng viên chỉnh sửa.",
+      "data": null,
+      "errors": {
+        "code": "BAD_REQUEST",
+        "fields": null,
+        "traceId": "e708e0ae-fd93-40e5-8678-d394dd328ff9"
+      }
+    },
+    "rawText": "{\"success\":false,\"message\":\"Vui lòng nhập lý do từ chối xét duyệt để giảng viên chỉnh sửa.\",\"data\":null,\"errors\":{\"code\":\"BAD_REQUEST\",\"fields\":null,\"traceId\":\"e708e0ae-fd93-40e5-8678-d394dd328ff9\"}}",
+    "data": null
+  },
+  "rejOk": {
+    "status": 200,
+    "ok": true,
+    "elapsedMs": 20.1,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 293,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 15:25:44 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": true,
+      "message": "Đã từ chối khóa học và gửi phản hồi cho giảng viên.",
+      "data": {
+        "status": "NeedsReview",
+        "message": "Đã từ chối khóa học và gửi phản hồi cho giảng viên.",
+        "courseId": 44,
+        "reviewNote": "Thiếu video bài học chương 2"
+      },
+      "errors": null
+    },
+    "rawText": "{\"success\":true,\"message\":\"Đã từ chối khóa học và gửi phản hồi cho giảng viên.\",\"data\":{\"status\":\"NeedsReview\",\"message\":\"Đã từ chối khóa học và gửi phản hồi cho giảng viên.\",\"courseId\":44,\"reviewNote\":\"Thiếu video bài học chương 2\"},\"errors\":null}",
+    "data": {
+      "status": "NeedsReview",
+      "message": "Đã từ chối khóa học và gửi phản hồi cho giảng viên.",
+      "courseId": 44,
+      "reviewNote": "Thiếu video bài học chương 2"
+    }
+  },
+  "hasReasonInMail": false
+}

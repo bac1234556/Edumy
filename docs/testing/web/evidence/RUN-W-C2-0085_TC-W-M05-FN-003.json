@@ -1,0 +1,22 @@
+{
+  "hidLearnStatus": 200,
+  "hidQaStatus": 200,
+  "hidProg": {
+    "totalQuizzes": 0,
+    "totalItems": 3,
+    "certificateId": 6,
+    "completedItems": 3,
+    "progressPercentage": 100,
+    "certificateUrl": "EDUMY-A6FDA6C06E",
+    "completedLessonIds": [
+      168,
+      169,
+      170
+    ],
+    "totalLessons": 3,
+    "completedQuizIds": [],
+    "completedQuizzes": 0,
+    "lastAccessedLessonId": null
+  },
+  "hidOutStatus": 404
+}

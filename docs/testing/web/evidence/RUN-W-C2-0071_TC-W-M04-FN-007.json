@@ -1,0 +1,139 @@
+{
+  "whNoAuth": {
+    "status": 401,
+    "ok": false,
+    "elapsedMs": 30.2,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 112,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:27:32 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "rspCode": "97",
+      "message": "Unauthorized: Thiếu API Key xác thực Webhook",
+      "orderId": null,
+      "orderStatus": null
+    },
+    "rawText": "{\"rspCode\":\"97\",\"message\":\"Unauthorized: Thiếu API Key xác thực Webhook\",\"orderId\":null,\"orderStatus\":null}",
+    "data": {
+      "rspCode": "97",
+      "message": "Unauthorized: Thiếu API Key xác thực Webhook",
+      "orderId": null,
+      "orderStatus": null
+    }
+  },
+  "whBadAuth": {
+    "status": 401,
+    "ok": false,
+    "elapsedMs": 13.2,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 121,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:27:32 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "rspCode": "97",
+      "message": "Unauthorized: Sai API Key hoặc Token xác thực Webhook",
+      "orderId": null,
+      "orderStatus": null
+    },
+    "rawText": "{\"rspCode\":\"97\",\"message\":\"Unauthorized: Sai API Key hoặc Token xác thực Webhook\",\"orderId\":null,\"orderStatus\":null}",
+    "data": {
+      "rspCode": "97",
+      "message": "Unauthorized: Sai API Key hoặc Token xác thực Webhook",
+      "orderId": null,
+      "orderStatus": null
+    }
+  },
+  "vnpBad": {
+    "status": 200,
+    "ok": true,
+    "elapsedMs": 13.8,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 88,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:27:32 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "Message": "Invalid Checksum (Chữ ký điện tử không hợp lệ)",
+      "RspCode": "97"
+    },
+    "rawText": "{\"Message\":\"Invalid Checksum (Chữ ký điện tử không hợp lệ)\",\"RspCode\":\"97\"}",
+    "data": {
+      "Message": "Invalid Checksum (Chữ ký điện tử không hợp lệ)",
+      "RspCode": "97"
+    }
+  },
+  "enrSigCheck": {
+    "status": 200,
+    "ok": true,
+    "elapsedMs": 24.2,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 89,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:27:32 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": true,
+      "message": "OK",
+      "data": {
+        "status": "NONE",
+        "isEnrolled": false
+      },
+      "errors": null
+    },
+    "rawText": "{\"success\":true,\"message\":\"OK\",\"data\":{\"status\":\"NONE\",\"isEnrolled\":false},\"errors\":null}",
+    "data": {
+      "status": "NONE",
+      "isEnrolled": false
+    }
+  }
+}

@@ -1,0 +1,92 @@
+{
+  "revSelf": {
+    "status": 200,
+    "ok": true,
+    "elapsedMs": 24.5,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 560,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 15:25:29 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": true,
+      "message": "Chúc mừng! Bạn đã nâng cấp tài khoản thành Giảng viên thành công.",
+      "data": {
+        "message": "Chúc mừng! Bạn đã nâng cấp tài khoản thành Giảng viên thành công.",
+        "token": "***",
+        "role": "Instructor"
+      },
+      "errors": null
+    },
+    "rawText": "{\"success\":true,\"message\":\"Chúc mừng! Bạn đã nâng cấp tài khoản thành Giảng viên thành công.\",\"data\":{\"message\":\"Chúc mừng! Bạn đã nâng cấp tài khoản thành Giảng viên thành công.\",\"token\":\"***JWT***\",\"role\":\"Instructor\"},\"errors\":null}",
+    "data": {
+      "message": "Chúc mừng! Bạn đã nâng cấp tài khoản thành Giảng viên thành công.",
+      "token": "***",
+      "role": "Instructor"
+    }
+  },
+  "gvrevAfter": {
+    "status": 200,
+    "ok": true,
+    "elapsedMs": 15.6,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 247,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 15:25:29 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": true,
+      "message": "OK",
+      "data": {
+        "id": 23,
+        "email": "qa.gvrevoked@edumy.test",
+        "fullName": "QA GVREV Tiếng Việt",
+        "emailVerified": true,
+        "roles": [
+          "STUDENT",
+          "INSTRUCTOR"
+        ],
+        "status": "ACTIVE",
+        "createdAt": "2026-11-21T08:16:45.622491Z"
+      },
+      "errors": null
+    },
+    "rawText": "{\"success\":true,\"message\":\"OK\",\"data\":{\"id\":23,\"email\":\"qa.gvrevoked@edumy.test\",\"fullName\":\"QA GVREV Tiếng Việt\",\"emailVerified\":true,\"roles\":[\"STUDENT\",\"INSTRUCTOR\"],\"status\":\"ACTIVE\",\"createdAt\":\"2026-11-21T08:16:45.622491Z\"},\"errors\":null}",
+    "data": {
+      "id": 23,
+      "email": "qa.gvrevoked@edumy.test",
+      "fullName": "QA GVREV Tiếng Việt",
+      "emailVerified": true,
+      "roles": [
+        "STUDENT",
+        "INSTRUCTOR"
+      ],
+      "status": "ACTIVE",
+      "createdAt": "2026-11-21T08:16:45.622491Z"
+    }
+  }
+}

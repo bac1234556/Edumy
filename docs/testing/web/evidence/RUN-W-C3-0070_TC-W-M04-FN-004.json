@@ -1,0 +1,105 @@
+{
+  "cancelO2": {
+    "status": 200,
+    "ok": true,
+    "elapsedMs": 34.6,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 233,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:38:47 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": true,
+      "message": "Đã hủy đơn hàng chờ thanh toán thành công.",
+      "data": {
+        "status": "CANCELLED",
+        "orderCode": "EDUMY2087",
+        "message": "Đã hủy đơn hàng chờ thanh toán thành công.",
+        "orderId": 2087
+      },
+      "errors": null
+    },
+    "rawText": "{\"success\":true,\"message\":\"Đã hủy đơn hàng chờ thanh toán thành công.\",\"data\":{\"status\":\"CANCELLED\",\"orderCode\":\"EDUMY2087\",\"message\":\"Đã hủy đơn hàng chờ thanh toán thành công.\",\"orderId\":2087},\"errors\":null}",
+    "data": {
+      "status": "CANCELLED",
+      "orderCode": "EDUMY2087",
+      "message": "Đã hủy đơn hàng chờ thanh toán thành công.",
+      "orderId": 2087
+    }
+  },
+  "cancelPaid": {
+    "status": 409,
+    "ok": false,
+    "elapsedMs": 17.4,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 196,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:38:48 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": false,
+      "message": "Đơn hàng đã thanh toán thành công, không thể hủy.",
+      "data": null,
+      "errors": {
+        "code": "CONFLICT",
+        "fields": null,
+        "traceId": "010e762d-b977-4894-a8e3-8bd962ddd7ac"
+      }
+    },
+    "rawText": "{\"success\":false,\"message\":\"Đơn hàng đã thanh toán thành công, không thể hủy.\",\"data\":null,\"errors\":{\"code\":\"CONFLICT\",\"fields\":null,\"traceId\":\"010e762d-b977-4894-a8e3-8bd962ddd7ac\"}}",
+    "data": null
+  },
+  "emptyCheckout": {
+    "status": 400,
+    "ok": false,
+    "elapsedMs": 23.7,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 94,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "close",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:38:47 GMT",
+      "expires": "0",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": false,
+      "message": "Giỏ hàng của bạn đang trống.",
+      "data": null,
+      "errors": null
+    },
+    "rawText": "{\"success\":false,\"message\":\"Giỏ hàng của bạn đang trống.\",\"data\":null,\"errors\":null}",
+    "data": null
+  }
+}

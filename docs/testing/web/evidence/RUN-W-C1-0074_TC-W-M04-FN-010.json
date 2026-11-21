@@ -1,0 +1,17 @@
+{
+  "qrData": {
+    "orderId": 2050,
+    "amount": 300000,
+    "transferContent": "EDUMY 2050",
+    "bankId": "BIDV",
+    "bankName": "BIDV (Ngân hàng TMCP Đầu tư và Phát triển Việt Nam)",
+    "accountNo": "96247BAC206",
+    "accountName": "LE VIET BAC",
+    "qrImageUrl": "https://img.vietqr.io/image/BIDV-96247BAC206-compact2.png?amount=300000&addInfo=EDUMY+2050&accountName=LE+VIET+BAC",
+    "status": "Pending",
+    "expiresAt": "2026-11-21T15:40:57.937513",
+    "firstCourseId": 49,
+    "message": "Tạo mã QR VietQR thành công."
+  },
+  "qrHasExpire": true
+}

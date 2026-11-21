@@ -1,0 +1,87 @@
+{
+  "vWrong": {
+    "status": 400,
+    "ok": false,
+    "elapsedMs": 331.7,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 203,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "close",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:26:31 GMT",
+      "expires": "0",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": false,
+      "message": "Mã xác thực email không hợp lệ hoặc không tồn tại.",
+      "data": null,
+      "errors": {
+        "code": "BAD_REQUEST",
+        "fields": null,
+        "traceId": "939537b1-6373-4cf9-83d6-f4cdb1c456bb"
+      }
+    },
+    "rawText": "{\"success\":false,\"message\":\"Mã xác thực email không hợp lệ hoặc không tồn tại.\",\"data\":null,\"errors\":{\"code\":\"BAD_REQUEST\",\"fields\":null,\"traceId\":\"939537b1-6373-4cf9-83d6-f4cdb1c456bb\"}}",
+    "data": null
+  },
+  "vUsed": {
+    "status": 400,
+    "ok": false,
+    "elapsedMs": 193.6,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 203,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "close",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:26:31 GMT",
+      "expires": "0",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": false,
+      "message": "Mã xác thực email không hợp lệ hoặc không tồn tại.",
+      "data": null,
+      "errors": {
+        "code": "BAD_REQUEST",
+        "fields": null,
+        "traceId": "870f2838-ba48-41a3-a226-91630000f73c"
+      }
+    },
+    "rawText": "{\"success\":false,\"message\":\"Mã xác thực email không hợp lệ hoặc không tồn tại.\",\"data\":null,\"errors\":{\"code\":\"BAD_REQUEST\",\"fields\":null,\"traceId\":\"870f2838-ba48-41a3-a226-91630000f73c\"}}",
+    "data": null
+  },
+  "usersCols": [
+    "user_id",
+    "avatar_url",
+    "bio",
+    "created_at",
+    "email",
+    "full_name",
+    "is_active",
+    "password_hash",
+    "provider",
+    "provider_user_id",
+    "reset_token",
+    "reset_token_expiry",
+    "role",
+    "instructor_revoked",
+    "email_verified",
+    "verification_code",
+    "verification_code_expiry"
+  ]
+}

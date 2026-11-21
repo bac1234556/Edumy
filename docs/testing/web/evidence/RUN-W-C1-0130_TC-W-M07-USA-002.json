@@ -1,0 +1,6 @@
+{
+  "status": "Blocked",
+  "cause": "BLOCKED_BROWSER_CONNECTION_FAILED",
+  "error": "Could not find DevToolsActivePort for chrome (ENOENT)",
+  "note": "Chrome DevTools remote debugging (DevToolsActivePort) chưa bật -> chưa kiểm tra trực quan UI thông báo lỗi từng trường & trạng thái rỗng trong C1."
+}

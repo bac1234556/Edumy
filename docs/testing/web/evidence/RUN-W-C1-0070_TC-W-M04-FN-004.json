@@ -1,0 +1,132 @@
+{
+  "cancelO2": {
+    "status": 200,
+    "ok": true,
+    "elapsedMs": 56.1,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 233,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 15:25:57 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": true,
+      "message": "Đã hủy đơn hàng chờ thanh toán thành công.",
+      "data": {
+        "status": "CANCELLED",
+        "orderId": 2048,
+        "message": "Đã hủy đơn hàng chờ thanh toán thành công.",
+        "orderCode": "EDUMY2048"
+      },
+      "errors": null
+    },
+    "rawText": "{\"success\":true,\"message\":\"Đã hủy đơn hàng chờ thanh toán thành công.\",\"data\":{\"status\":\"CANCELLED\",\"orderId\":2048,\"message\":\"Đã hủy đơn hàng chờ thanh toán thành công.\",\"orderCode\":\"EDUMY2048\"},\"errors\":null}",
+    "data": {
+      "status": "CANCELLED",
+      "orderId": 2048,
+      "message": "Đã hủy đơn hàng chờ thanh toán thành công.",
+      "orderCode": "EDUMY2048"
+    }
+  },
+  "cancelPaid": {
+    "status": 409,
+    "ok": false,
+    "elapsedMs": 42.6,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 196,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 15:26:02 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": false,
+      "message": "Đơn hàng đã thanh toán thành công, không thể hủy.",
+      "data": null,
+      "errors": {
+        "code": "CONFLICT",
+        "fields": null,
+        "traceId": "1d7f6f72-3c05-4274-a6bc-7da5e8ca73d3"
+      }
+    },
+    "rawText": "{\"success\":false,\"message\":\"Đơn hàng đã thanh toán thành công, không thể hủy.\",\"data\":null,\"errors\":{\"code\":\"CONFLICT\",\"fields\":null,\"traceId\":\"1d7f6f72-3c05-4274-a6bc-7da5e8ca73d3\"}}",
+    "data": null
+  },
+  "emptyCheckout": {
+    "status": 200,
+    "ok": true,
+    "elapsedMs": 56.8,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 651,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 15:25:57 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": true,
+      "message": "Đơn hàng đã được tạo. Vui lòng quét mã VietQR để thanh toán.",
+      "data": {
+        "transferContent": "EDUMY 2049",
+        "amount": 300000,
+        "bankId": "BIDV",
+        "isFree": false,
+        "orderId": 2049,
+        "accountName": "LE VIET BAC",
+        "qrImageUrl": "https://img.vietqr.io/image/BIDV-96247BAC206-compact2.png?amount=300000&addInfo=EDUMY+2049&accountName=LE+VIET+BAC",
+        "accountNo": "96247BAC206",
+        "bankName": "BIDV (Ngân hàng TMCP Đầu tư và Phát triển Việt Nam)",
+        "paymentUrl": "/payment?orderId=2049&amount=300000.00",
+        "message": "Đơn hàng đã được tạo. Vui lòng quét mã VietQR để thanh toán.",
+        "status": "Pending"
+      },
+      "errors": null
+    },
+    "rawText": "{\"success\":true,\"message\":\"Đơn hàng đã được tạo. Vui lòng quét mã VietQR để thanh toán.\",\"data\":{\"transferContent\":\"EDUMY 2049\",\"amount\":300000.00,\"bankId\":\"BIDV\",\"isFree\":false,\"orderId\":2049,\"accountName\":\"LE VIET BAC\",\"qrImageUrl\":\"https://img.vietqr.io/image/BIDV-96247BAC206-compact2.png?amount=300000&addInfo=EDUMY+2049&accountName=LE+VIET+BAC\",\"accountNo\":\"96247BAC206\",\"bankName\":\"BIDV (Ngân hàng TMCP Đầu tư và Phát triển Việt Nam)\",\"paymentUrl\":\"/payment?orderId=2049&amount=300000.00\",\"message\":\"Đơn hàng đã được tạo. Vui lòng quét mã VietQR để thanh toán.\",\"status\":\"Pending\"},\"errors\":null}",
+    "data": {
+      "transferContent": "EDUMY 2049",
+      "amount": 300000,
+      "bankId": "BIDV",
+      "isFree": false,
+      "orderId": 2049,
+      "accountName": "LE VIET BAC",
+      "qrImageUrl": "https://img.vietqr.io/image/BIDV-96247BAC206-compact2.png?amount=300000&addInfo=EDUMY+2049&accountName=LE+VIET+BAC",
+      "accountNo": "96247BAC206",
+      "bankName": "BIDV (Ngân hàng TMCP Đầu tư và Phát triển Việt Nam)",
+      "paymentUrl": "/payment?orderId=2049&amount=300000.00",
+      "message": "Đơn hàng đã được tạo. Vui lòng quét mã VietQR để thanh toán.",
+      "status": "Pending"
+    }
+  }
+}

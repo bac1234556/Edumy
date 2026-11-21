@@ -1,0 +1,13 @@
+{
+  "lintErrors": 0,
+  "lintWarnings": 64,
+  "buildOk": true,
+  "unusedPages": [
+    "MockPaymentGateway.jsx",
+    "Wishlist.jsx"
+  ],
+  "emptyControllers": [
+    "LessonController.java",
+    "QuizController.java"
+  ]
+}

@@ -1,0 +1,104 @@
+{
+  "dup": {
+    "status": 409,
+    "ok": false,
+    "elapsedMs": 26.6,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 174,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 15:25:21 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": false,
+      "message": "Email đã được sử dụng.",
+      "data": null,
+      "errors": {
+        "code": "AUTH_EMAIL_TAKEN",
+        "fields": null,
+        "traceId": "c741c68b-28e9-47d1-be22-2e40da906a78"
+      }
+    },
+    "rawText": "{\"success\":false,\"message\":\"Email đã được sử dụng.\",\"data\":null,\"errors\":{\"code\":\"AUTH_EMAIL_TAKEN\",\"fields\":null,\"traceId\":\"c741c68b-28e9-47d1-be22-2e40da906a78\"}}",
+    "data": null
+  },
+  "weak": {
+    "status": 200,
+    "ok": true,
+    "elapsedMs": 93.6,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 231,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 15:25:22 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": true,
+      "message": "Đăng ký thành công! Vui lòng kiểm tra email để xác thực tài khoản.",
+      "data": {
+        "message": "Đăng ký thành công! Vui lòng kiểm tra email để xác thực tài khoản."
+      },
+      "errors": null
+    },
+    "rawText": "{\"success\":true,\"message\":\"Đăng ký thành công! Vui lòng kiểm tra email để xác thực tài khoản.\",\"data\":{\"message\":\"Đăng ký thành công! Vui lòng kiểm tra email để xác thực tài khoản.\"},\"errors\":null}",
+    "data": {
+      "message": "Đăng ký thành công! Vui lòng kiểm tra email để xác thực tài khoản."
+    }
+  },
+  "badEm": {
+    "status": 200,
+    "ok": true,
+    "elapsedMs": 107.4,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 231,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 15:25:22 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": true,
+      "message": "Đăng ký thành công! Vui lòng kiểm tra email để xác thực tài khoản.",
+      "data": {
+        "message": "Đăng ký thành công! Vui lòng kiểm tra email để xác thực tài khoản."
+      },
+      "errors": null
+    },
+    "rawText": "{\"success\":true,\"message\":\"Đăng ký thành công! Vui lòng kiểm tra email để xác thực tài khoản.\",\"data\":{\"message\":\"Đăng ký thành công! Vui lòng kiểm tra email để xác thực tài khoản.\"},\"errors\":null}",
+    "data": {
+      "message": "Đăng ký thành công! Vui lòng kiểm tra email để xác thực tài khoản."
+    }
+  }
+}

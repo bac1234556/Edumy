@@ -1,0 +1,38 @@
+{
+  "admOrdersLen": 55,
+  "admPaysLen": 55,
+  "reconTry": {
+    "status": 404,
+    "ok": false,
+    "elapsedMs": 58.4,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 178,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 15:26:03 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": false,
+      "message": "Không tìm thấy tài nguyên yêu cầu.",
+      "data": null,
+      "errors": {
+        "code": "NOT_FOUND",
+        "fields": null,
+        "traceId": "7c56e39a-71bd-4825-b77d-e9f6297799dc"
+      }
+    },
+    "rawText": "{\"success\":false,\"message\":\"Không tìm thấy tài nguyên yêu cầu.\",\"data\":null,\"errors\":{\"code\":\"NOT_FOUND\",\"fields\":null,\"traceId\":\"7c56e39a-71bd-4825-b77d-e9f6297799dc\"}}",
+    "data": null
+  }
+}

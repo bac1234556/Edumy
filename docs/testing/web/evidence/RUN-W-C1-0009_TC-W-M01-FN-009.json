@@ -1,0 +1,68 @@
+{
+  "rsBad": {
+    "status": 400,
+    "ok": false,
+    "elapsedMs": 19.3,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 209,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "close",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 15:25:23 GMT",
+      "expires": "0",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": false,
+      "message": "Mã đặt lại mật khẩu không hợp lệ hoặc đã hết hạn.",
+      "data": null,
+      "errors": {
+        "code": "BAD_REQUEST",
+        "fields": null,
+        "traceId": "eddec887-ac2e-4c0b-ab4f-d67bf57e80cb"
+      }
+    },
+    "rawText": "{\"success\":false,\"message\":\"Mã đặt lại mật khẩu không hợp lệ hoặc đã hết hạn.\",\"data\":null,\"errors\":{\"code\":\"BAD_REQUEST\",\"fields\":null,\"traceId\":\"eddec887-ac2e-4c0b-ab4f-d67bf57e80cb\"}}",
+    "data": null
+  },
+  "rsWeak": {
+    "status": 400,
+    "ok": false,
+    "elapsedMs": 17,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 209,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "close",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 15:25:23 GMT",
+      "expires": "0",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": false,
+      "message": "Mã đặt lại mật khẩu không hợp lệ hoặc đã hết hạn.",
+      "data": null,
+      "errors": {
+        "code": "BAD_REQUEST",
+        "fields": null,
+        "traceId": "515a89f1-20ba-4c3f-9965-0a812342a882"
+      }
+    },
+    "rawText": "{\"success\":false,\"message\":\"Mã đặt lại mật khẩu không hợp lệ hoặc đã hết hạn.\",\"data\":null,\"errors\":{\"code\":\"BAD_REQUEST\",\"fields\":null,\"traceId\":\"515a89f1-20ba-4c3f-9965-0a812342a882\"}}",
+    "data": null
+  }
+}

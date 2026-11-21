@@ -1,0 +1,135 @@
+{
+  "qaUnenr": {
+    "status": 403,
+    "ok": false,
+    "elapsedMs": 168.5,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 208,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:28:00 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": false,
+      "message": "Bạn phải ghi danh khóa học này mới có thể đặt câu hỏi.",
+      "data": null,
+      "errors": {
+        "code": "FORBIDDEN",
+        "fields": null,
+        "traceId": "7cca3fbc-bad2-4f44-8798-a3102f54427a"
+      }
+    },
+    "rawText": "{\"success\":false,\"message\":\"Bạn phải ghi danh khóa học này mới có thể đặt câu hỏi.\",\"data\":null,\"errors\":{\"code\":\"FORBIDDEN\",\"fields\":null,\"traceId\":\"7cca3fbc-bad2-4f44-8798-a3102f54427a\"}}",
+    "data": null
+  },
+  "qaWrongLes": {
+    "status": 400,
+    "ok": false,
+    "elapsedMs": 101.9,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 196,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "close",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:28:00 GMT",
+      "expires": "0",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": false,
+      "message": "Bài học được chọn không thuộc khóa học này.",
+      "data": null,
+      "errors": {
+        "code": "BAD_REQUEST",
+        "fields": null,
+        "traceId": "050e483d-c933-42e6-8df9-a3af01390435"
+      }
+    },
+    "rawText": "{\"success\":false,\"message\":\"Bài học được chọn không thuộc khóa học này.\",\"data\":null,\"errors\":{\"code\":\"BAD_REQUEST\",\"fields\":null,\"traceId\":\"050e483d-c933-42e6-8df9-a3af01390435\"}}",
+    "data": null
+  },
+  "qaOk": {
+    "status": 200,
+    "ok": true,
+    "elapsedMs": 99.9,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 501,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:28:00 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": true,
+      "message": "OK",
+      "data": {
+        "id": 8,
+        "courseId": 49,
+        "courseTitle": "Lập Trình Java Nâng Cao Spring Boot",
+        "lessonId": 181,
+        "title": "Câu hỏi Spring Boot",
+        "content": "Em thắc mắc về Bean scope ạ",
+        "askerId": 24,
+        "askerName": "QA HV1 Tiếng Việt",
+        "askerAvatar": null,
+        "isResolved": false,
+        "answerCount": 0,
+        "hasInstructorAnswer": false,
+        "visibilityStatus": "VISIBLE",
+        "createdAt": "2026-11-21T16:28:00.845322001",
+        "contentSnippet": "Em thắc mắc về Bean scope ạ",
+        "questionId": 8
+      },
+      "errors": null
+    },
+    "rawText": "{\"success\":true,\"message\":\"OK\",\"data\":{\"id\":8,\"courseId\":49,\"courseTitle\":\"Lập Trình Java Nâng Cao Spring Boot\",\"lessonId\":181,\"title\":\"Câu hỏi Spring Boot\",\"content\":\"Em thắc mắc về Bean scope ạ\",\"askerId\":24,\"askerName\":\"QA HV1 Tiếng Việt\",\"askerAvatar\":null,\"isResolved\":false,\"answerCount\":0,\"hasInstructorAnswer\":false,\"visibilityStatus\":\"VISIBLE\",\"createdAt\":\"2026-11-21T16:28:00.845322001\",\"contentSnippet\":\"Em thắc mắc về Bean scope ạ\",\"questionId\":8},\"errors\":null}",
+    "data": {
+      "id": 8,
+      "courseId": 49,
+      "courseTitle": "Lập Trình Java Nâng Cao Spring Boot",
+      "lessonId": 181,
+      "title": "Câu hỏi Spring Boot",
+      "content": "Em thắc mắc về Bean scope ạ",
+      "askerId": 24,
+      "askerName": "QA HV1 Tiếng Việt",
+      "askerAvatar": null,
+      "isResolved": false,
+      "answerCount": 0,
+      "hasInstructorAnswer": false,
+      "visibilityStatus": "VISIBLE",
+      "createdAt": "2026-11-21T16:28:00.845322001",
+      "contentSnippet": "Em thắc mắc về Bean scope ạ",
+      "questionId": 8
+    }
+  },
+  "qaUpd": 200,
+  "qaRes": 200
+}

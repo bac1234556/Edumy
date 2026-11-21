@@ -1,0 +1,10 @@
+{
+  "updDraft": 204,
+  "updPend": 409,
+  "updPendBody": {
+    "success": false,
+    "message": "Khóa học đang ở trạng thái chờ duyệt (PendingApproval), không thể chỉnh sửa.",
+    "data": null,
+    "errors": null
+  }
+}

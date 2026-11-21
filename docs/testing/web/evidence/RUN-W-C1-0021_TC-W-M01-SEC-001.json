@@ -1,0 +1,50 @@
+{
+  "Khách": {
+    "/api/v1/admin/users": 401,
+    "/api/v1/admin/orders": 401,
+    "/api/v1/admin/payments": 401,
+    "/api/v1/admin/withdrawals": 401
+  },
+  "HV1": {
+    "/api/v1/admin/users": 403,
+    "/api/v1/admin/orders": 403,
+    "/api/v1/admin/payments": 403,
+    "/api/v1/admin/withdrawals": 403
+  },
+  "HV2": {
+    "/api/v1/admin/users": 403,
+    "/api/v1/admin/orders": 403,
+    "/api/v1/admin/payments": 403,
+    "/api/v1/admin/withdrawals": 403
+  },
+  "GV-A": {
+    "/api/v1/admin/users": 403,
+    "/api/v1/admin/orders": 403,
+    "/api/v1/admin/payments": 403,
+    "/api/v1/admin/withdrawals": 403
+  },
+  "GV-B": {
+    "/api/v1/admin/users": 403,
+    "/api/v1/admin/orders": 403,
+    "/api/v1/admin/payments": 403,
+    "/api/v1/admin/withdrawals": 403
+  },
+  "Đồng GV": {
+    "/api/v1/admin/users": 403,
+    "/api/v1/admin/orders": 403,
+    "/api/v1/admin/payments": 403,
+    "/api/v1/admin/withdrawals": 403
+  },
+  "GV bị thu hồi": {
+    "/api/v1/admin/users": 403,
+    "/api/v1/admin/orders": 403,
+    "/api/v1/admin/payments": 403,
+    "/api/v1/admin/withdrawals": 403
+  },
+  "Admin": {
+    "/api/v1/admin/users": 200,
+    "/api/v1/admin/orders": 200,
+    "/api/v1/admin/payments": 200,
+    "/api/v1/admin/withdrawals": 200
+  }
+}

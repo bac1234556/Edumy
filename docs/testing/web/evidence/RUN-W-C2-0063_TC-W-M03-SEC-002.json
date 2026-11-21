@@ -1,0 +1,24 @@
+{
+  "uExe": {
+    "status": 400,
+    "body": null
+  },
+  "uSvg": {
+    "status": 400,
+    "body": null
+  },
+  "uTrav": {
+    "status": 200,
+    "body": {
+      "url": "/uploads/16d7025e50df4eb1a8f8b17693bc4355.png"
+    }
+  },
+  "uFake": {
+    "status": 400,
+    "body": null
+  },
+  "uMediaExe": {
+    "status": 400,
+    "body": null
+  }
+}

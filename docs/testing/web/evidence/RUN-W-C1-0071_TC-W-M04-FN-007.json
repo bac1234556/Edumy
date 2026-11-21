@@ -1,0 +1,139 @@
+{
+  "whNoAuth": {
+    "status": 200,
+    "ok": true,
+    "elapsedMs": 109.9,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 148,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 15:26:02 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "orderId": 2051,
+      "success": true,
+      "message": "Xác nhận thanh toán thành công! Khóa học đã được mở khóa tự động.",
+      "status": "PAID"
+    },
+    "rawText": "{\"orderId\":2051,\"success\":true,\"message\":\"Xác nhận thanh toán thành công! Khóa học đã được mở khóa tự động.\",\"status\":\"PAID\"}",
+    "data": {
+      "orderId": 2051,
+      "success": true,
+      "message": "Xác nhận thanh toán thành công! Khóa học đã được mở khóa tự động.",
+      "status": "PAID"
+    }
+  },
+  "whBadAuth": {
+    "status": 401,
+    "ok": false,
+    "elapsedMs": 13.7,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 121,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 15:26:03 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "rspCode": "97",
+      "message": "Unauthorized: Sai API Key hoặc Token xác thực Webhook",
+      "orderId": null,
+      "orderStatus": null
+    },
+    "rawText": "{\"rspCode\":\"97\",\"message\":\"Unauthorized: Sai API Key hoặc Token xác thực Webhook\",\"orderId\":null,\"orderStatus\":null}",
+    "data": {
+      "rspCode": "97",
+      "message": "Unauthorized: Sai API Key hoặc Token xác thực Webhook",
+      "orderId": null,
+      "orderStatus": null
+    }
+  },
+  "vnpBad": {
+    "status": 200,
+    "ok": true,
+    "elapsedMs": 13.9,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 88,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 15:26:03 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "Message": "Invalid Checksum (Chữ ký điện tử không hợp lệ)",
+      "RspCode": "97"
+    },
+    "rawText": "{\"Message\":\"Invalid Checksum (Chữ ký điện tử không hợp lệ)\",\"RspCode\":\"97\"}",
+    "data": {
+      "Message": "Invalid Checksum (Chữ ký điện tử không hợp lệ)",
+      "RspCode": "97"
+    }
+  },
+  "enrSigCheck": {
+    "status": 200,
+    "ok": true,
+    "elapsedMs": 19.2,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 90,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 15:26:03 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": true,
+      "message": "OK",
+      "data": {
+        "isEnrolled": true,
+        "status": "ACTIVE"
+      },
+      "errors": null
+    },
+    "rawText": "{\"success\":true,\"message\":\"OK\",\"data\":{\"isEnrolled\":true,\"status\":\"ACTIVE\"},\"errors\":null}",
+    "data": {
+      "isEnrolled": true,
+      "status": "ACTIVE"
+    }
+  }
+}

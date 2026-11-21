@@ -1,0 +1,182 @@
+{
+  "sub14": {
+    "status": 400,
+    "ok": false,
+    "elapsedMs": 26.2,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 235,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "close",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 15:25:40 GMT",
+      "expires": "0",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": false,
+      "message": "Chương '   ' chưa có bài học nào. Vui lòng thêm bài học hoặc xóa chương trống.",
+      "data": null,
+      "errors": {
+        "code": "BAD_REQUEST",
+        "fields": null,
+        "traceId": "d935c315-807d-4ecd-9314-19a124975454"
+      }
+    },
+    "rawText": "{\"success\":false,\"message\":\"Chương '   ' chưa có bài học nào. Vui lòng thêm bài học hoặc xóa chương trống.\",\"data\":null,\"errors\":{\"code\":\"BAD_REQUEST\",\"fields\":null,\"traceId\":\"d935c315-807d-4ecd-9314-19a124975454\"}}",
+    "data": null
+  },
+  "wd14": {
+    "status": 200,
+    "ok": true,
+    "elapsedMs": 21.5,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 270,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 15:25:40 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": true,
+      "message": "Đã rút yêu cầu duyệt, khóa học trở về trạng thái Bản nháp (DRAFT).",
+      "data": {
+        "message": "Đã rút yêu cầu duyệt, khóa học trở về trạng thái Bản nháp (DRAFT).",
+        "status": "Draft",
+        "courseId": 51
+      },
+      "errors": null
+    },
+    "rawText": "{\"success\":true,\"message\":\"Đã rút yêu cầu duyệt, khóa học trở về trạng thái Bản nháp (DRAFT).\",\"data\":{\"message\":\"Đã rút yêu cầu duyệt, khóa học trở về trạng thái Bản nháp (DRAFT).\",\"status\":\"Draft\",\"courseId\":51},\"errors\":null}",
+    "data": {
+      "message": "Đã rút yêu cầu duyệt, khóa học trở về trạng thái Bản nháp (DRAFT).",
+      "status": "Draft",
+      "courseId": 51
+    }
+  },
+  "rej14": {
+    "status": 200,
+    "ok": true,
+    "elapsedMs": 28.7,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 289,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 15:25:40 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": true,
+      "message": "Đã từ chối khóa học và gửi phản hồi cho giảng viên.",
+      "data": {
+        "status": "NeedsReview",
+        "message": "Đã từ chối khóa học và gửi phản hồi cho giảng viên.",
+        "courseId": 51,
+        "reviewNote": "Thiếu bài tập thực hành"
+      },
+      "errors": null
+    },
+    "rawText": "{\"success\":true,\"message\":\"Đã từ chối khóa học và gửi phản hồi cho giảng viên.\",\"data\":{\"status\":\"NeedsReview\",\"message\":\"Đã từ chối khóa học và gửi phản hồi cho giảng viên.\",\"courseId\":51,\"reviewNote\":\"Thiếu bài tập thực hành\"},\"errors\":null}",
+    "data": {
+      "status": "NeedsReview",
+      "message": "Đã từ chối khóa học và gửi phản hồi cho giảng viên.",
+      "courseId": 51,
+      "reviewNote": "Thiếu bài tập thực hành"
+    }
+  },
+  "rn14": {
+    "status": 200,
+    "ok": true,
+    "elapsedMs": 13,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 109,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 15:25:40 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": true,
+      "message": "OK",
+      "data": {
+        "reviewNote": "Thi?u bài t?p th?c hành",
+        "courseId": 51
+      },
+      "errors": null
+    },
+    "rawText": "{\"success\":true,\"message\":\"OK\",\"data\":{\"reviewNote\":\"Thi?u bài t?p th?c hành\",\"courseId\":51},\"errors\":null}",
+    "data": {
+      "reviewNote": "Thi?u bài t?p th?c hành",
+      "courseId": 51
+    }
+  },
+  "sub14c": {
+    "status": 400,
+    "ok": false,
+    "elapsedMs": 26.1,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 235,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "close",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 15:25:40 GMT",
+      "expires": "0",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": false,
+      "message": "Chương '   ' chưa có bài học nào. Vui lòng thêm bài học hoặc xóa chương trống.",
+      "data": null,
+      "errors": {
+        "code": "BAD_REQUEST",
+        "fields": null,
+        "traceId": "b53ccd22-3362-4be2-b6e9-342e2111a8ff"
+      }
+    },
+    "rawText": "{\"success\":false,\"message\":\"Chương '   ' chưa có bài học nào. Vui lòng thêm bài học hoặc xóa chương trống.\",\"data\":null,\"errors\":{\"code\":\"BAD_REQUEST\",\"fields\":null,\"traceId\":\"b53ccd22-3362-4be2-b6e9-342e2111a8ff\"}}",
+    "data": null
+  }
+}

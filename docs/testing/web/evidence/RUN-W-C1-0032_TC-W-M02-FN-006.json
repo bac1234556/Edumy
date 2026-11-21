@@ -1,0 +1,41 @@
+{
+  "detailStatus": 200,
+  "prevStatus": 500,
+  "enrCheck": {
+    "isEnrolled": false,
+    "status": "NONE"
+  },
+  "lockRes": {
+    "status": 500,
+    "ok": false,
+    "elapsedMs": 58.1,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 202,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "close",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 15:25:35 GMT",
+      "expires": "0",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": false,
+      "message": "Hệ thống đang gặp sự cố. Vui lòng thử lại sau.",
+      "data": null,
+      "errors": {
+        "code": "INTERNAL_ERROR",
+        "fields": null,
+        "traceId": "d629868d-0c6e-4c10-801b-343a3cb84bfe"
+      }
+    },
+    "rawText": "{\"success\":false,\"message\":\"Hệ thống đang gặp sự cố. Vui lòng thử lại sau.\",\"data\":null,\"errors\":{\"code\":\"INTERNAL_ERROR\",\"fields\":null,\"traceId\":\"d629868d-0c6e-4c10-801b-343a3cb84bfe\"}}",
+    "data": null
+  }
+}

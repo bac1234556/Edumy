@@ -1,0 +1,104 @@
+{
+  "qzUnenr": {
+    "status": 403,
+    "ok": false,
+    "elapsedMs": 42.5,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 139,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:28:03 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": false,
+      "message": "Bạn chưa ghi danh khóa học này nên không thể nộp bài trắc nghiệm.",
+      "data": null,
+      "errors": null
+    },
+    "rawText": "{\"success\":false,\"message\":\"Bạn chưa ghi danh khóa học này nên không thể nộp bài trắc nghiệm.\",\"data\":null,\"errors\":null}",
+    "data": null
+  },
+  "qzEmpty": {
+    "status": 200,
+    "ok": true,
+    "elapsedMs": 54.5,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 321,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:28:03 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": true,
+      "message": "OK",
+      "data": {
+        "quizAttemptId": 7,
+        "score": 0,
+        "totalPoints": 2,
+        "passed": false,
+        "results": [
+          {
+            "questionId": 91,
+            "selectedAnswerId": 0,
+            "correctAnswerId": 355,
+            "isCorrect": false,
+            "explanation": null
+          },
+          {
+            "questionId": 92,
+            "selectedAnswerId": 0,
+            "correctAnswerId": 357,
+            "isCorrect": false,
+            "explanation": null
+          }
+        ]
+      },
+      "errors": null
+    },
+    "rawText": "{\"success\":true,\"message\":\"OK\",\"data\":{\"quizAttemptId\":7,\"score\":0,\"totalPoints\":2,\"passed\":false,\"results\":[{\"questionId\":91,\"selectedAnswerId\":0,\"correctAnswerId\":355,\"isCorrect\":false,\"explanation\":null},{\"questionId\":92,\"selectedAnswerId\":0,\"correctAnswerId\":357,\"isCorrect\":false,\"explanation\":null}]},\"errors\":null}",
+    "data": {
+      "quizAttemptId": 7,
+      "score": 0,
+      "totalPoints": 2,
+      "passed": false,
+      "results": [
+        {
+          "questionId": 91,
+          "selectedAnswerId": 0,
+          "correctAnswerId": 355,
+          "isCorrect": false,
+          "explanation": null
+        },
+        {
+          "questionId": 92,
+          "selectedAnswerId": 0,
+          "correctAnswerId": 357,
+          "isCorrect": false,
+          "explanation": null
+        }
+      ]
+    }
+  }
+}

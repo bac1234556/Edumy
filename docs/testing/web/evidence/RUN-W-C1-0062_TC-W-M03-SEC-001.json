@@ -1,0 +1,12 @@
+{
+  "gvbPutCourse": 403,
+  "gvbDelCourse": 403,
+  "gvbSubmitCourse": 200,
+  "gvbAddSection": 403,
+  "gvbUpdLesson": 200,
+  "gvbInviteCo": 200,
+  "gvbRemoveCo": 200,
+  "coUpdateShare": 403,
+  "hv1PutCourse": 403,
+  "revokedPutCourse": 403
+}

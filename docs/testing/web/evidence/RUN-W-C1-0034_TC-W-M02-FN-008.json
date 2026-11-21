@@ -1,0 +1,119 @@
+{
+  "prevLockGuest": {
+    "status": 403,
+    "ok": false,
+    "elapsedMs": 32,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 203,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 15:25:35 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": false,
+      "message": "Bài học này không cho phép xem thử miễn phí.",
+      "data": null,
+      "errors": {
+        "code": "LESSON_NOT_PREVIEWABLE",
+        "fields": null,
+        "traceId": "2f96c126-dcaf-4ffd-aa77-c6f94fbbd77b"
+      }
+    },
+    "rawText": "{\"success\":false,\"message\":\"Bài học này không cho phép xem thử miễn phí.\",\"data\":null,\"errors\":{\"code\":\"LESSON_NOT_PREVIEWABLE\",\"fields\":null,\"traceId\":\"2f96c126-dcaf-4ffd-aa77-c6f94fbbd77b\"}}",
+    "data": null
+  },
+  "prevHid": {
+    "status": 200,
+    "ok": true,
+    "elapsedMs": 23.4,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 327,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 15:25:35 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": true,
+      "message": "OK",
+      "data": {
+        "id": 166,
+        "courseId": 46,
+        "title": "Bài 1: Nội dung bài học số 1",
+        "contentType": "video",
+        "videoUrl": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+        "articleContent": null,
+        "durationSeconds": 7200,
+        "prevLessonId": null,
+        "nextLessonId": null
+      },
+      "errors": null
+    },
+    "rawText": "{\"success\":true,\"message\":\"OK\",\"data\":{\"id\":166,\"courseId\":46,\"title\":\"Bài 1: Nội dung bài học số 1\",\"contentType\":\"video\",\"videoUrl\":\"https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4\",\"articleContent\":null,\"durationSeconds\":7200,\"prevLessonId\":null,\"nextLessonId\":null},\"errors\":null}",
+    "data": {
+      "id": 166,
+      "courseId": 46,
+      "title": "Bài 1: Nội dung bài học số 1",
+      "contentType": "video",
+      "videoUrl": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+      "articleContent": null,
+      "durationSeconds": 7200,
+      "prevLessonId": null,
+      "nextLessonId": null
+    }
+  },
+  "prevMiss": {
+    "status": 500,
+    "ok": false,
+    "elapsedMs": 13.2,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 202,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "close",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 15:25:35 GMT",
+      "expires": "0",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": false,
+      "message": "Hệ thống đang gặp sự cố. Vui lòng thử lại sau.",
+      "data": null,
+      "errors": {
+        "code": "INTERNAL_ERROR",
+        "fields": null,
+        "traceId": "ef4b07af-8380-48c4-b3d2-ba59dda9f816"
+      }
+    },
+    "rawText": "{\"success\":false,\"message\":\"Hệ thống đang gặp sự cố. Vui lòng thử lại sau.\",\"data\":null,\"errors\":{\"code\":\"INTERNAL_ERROR\",\"fields\":null,\"traceId\":\"ef4b07af-8380-48c4-b3d2-ba59dda9f816\"}}",
+    "data": null
+  }
+}

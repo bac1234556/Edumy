@@ -1,0 +1,12 @@
+{
+  "webPageSize": 12,
+  "mobPageSize": 20,
+  "totalItems": 47,
+  "nonPubTitles": [
+    {
+      "id": 45,
+      "status": "NeedsReview",
+      "title": "QA Khóa Cần Sửa NeedsReview"
+    }
+  ]
+}

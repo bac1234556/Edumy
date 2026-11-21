@@ -1,0 +1,70 @@
+{
+  "leaveMain": {
+    "status": 405,
+    "ok": false,
+    "elapsedMs": 40.6,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 192,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 15:25:54 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": false,
+      "message": "Phương thức HTTP không được hỗ trợ.",
+      "data": null,
+      "errors": {
+        "code": "METHOD_NOT_ALLOWED",
+        "fields": null,
+        "traceId": "55efcac0-ac99-4a1f-933f-2b3f14628629"
+      }
+    },
+    "rawText": "{\"success\":false,\"message\":\"Phương thức HTTP không được hỗ trợ.\",\"data\":null,\"errors\":{\"code\":\"METHOD_NOT_ALLOWED\",\"fields\":null,\"traceId\":\"55efcac0-ac99-4a1f-933f-2b3f14628629\"}}",
+    "data": null
+  },
+  "leaveOut": {
+    "status": 405,
+    "ok": false,
+    "elapsedMs": 45.5,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 192,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 15:25:54 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": false,
+      "message": "Phương thức HTTP không được hỗ trợ.",
+      "data": null,
+      "errors": {
+        "code": "METHOD_NOT_ALLOWED",
+        "fields": null,
+        "traceId": "1cf34c14-8e12-41c6-bf6b-d318f324671c"
+      }
+    },
+    "rawText": "{\"success\":false,\"message\":\"Phương thức HTTP không được hỗ trợ.\",\"data\":null,\"errors\":{\"code\":\"METHOD_NOT_ALLOWED\",\"fields\":null,\"traceId\":\"1cf34c14-8e12-41c6-bf6b-d318f324671c\"}}",
+    "data": null
+  }
+}

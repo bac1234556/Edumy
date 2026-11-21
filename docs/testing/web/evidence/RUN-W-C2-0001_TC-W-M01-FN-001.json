@@ -1,0 +1,121 @@
+{
+  "reg": {
+    "status": 200,
+    "ok": true,
+    "elapsedMs": 328.5,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 231,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:26:30 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": true,
+      "message": "Đăng ký thành công! Vui lòng kiểm tra email để xác thực tài khoản.",
+      "data": {
+        "message": "Đăng ký thành công! Vui lòng kiểm tra email để xác thực tài khoản."
+      },
+      "errors": null
+    },
+    "rawText": "{\"success\":true,\"message\":\"Đăng ký thành công! Vui lòng kiểm tra email để xác thực tài khoản.\",\"data\":{\"message\":\"Đăng ký thành công! Vui lòng kiểm tra email để xác thực tài khoản.\"},\"errors\":null}",
+    "data": {
+      "message": "Đăng ký thành công! Vui lòng kiểm tra email để xác thực tài khoản."
+    }
+  },
+  "mailSubject": "Xác thực địa chỉ email tài khoản Edumy",
+  "verRes": {
+    "status": 200,
+    "ok": true,
+    "elapsedMs": 149.2,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 237,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:26:30 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": true,
+      "message": "Xác thực email thành công! Tài khoản của bạn đã sẵn sàng sử dụng.",
+      "data": {
+        "message": "Xác thực email thành công! Tài khoản của bạn đã sẵn sàng sử dụng."
+      },
+      "errors": null
+    },
+    "rawText": "{\"success\":true,\"message\":\"Xác thực email thành công! Tài khoản của bạn đã sẵn sàng sử dụng.\",\"data\":{\"message\":\"Xác thực email thành công! Tài khoản của bạn đã sẵn sàng sử dụng.\"},\"errors\":null}",
+    "data": {
+      "message": "Xác thực email thành công! Tài khoản của bạn đã sẵn sàng sử dụng."
+    }
+  },
+  "newMe": {
+    "status": 200,
+    "ok": true,
+    "elapsedMs": 49.5,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 242,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:26:31 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": true,
+      "message": "OK",
+      "data": {
+        "id": 28,
+        "email": "qa.m01.new.1795278390309@edumy.test",
+        "fullName": "Nguyễn Văn Mới",
+        "emailVerified": true,
+        "roles": [
+          "STUDENT"
+        ],
+        "status": "ACTIVE",
+        "createdAt": "2026-11-21T09:26:30.625037Z"
+      },
+      "errors": null
+    },
+    "rawText": "{\"success\":true,\"message\":\"OK\",\"data\":{\"id\":28,\"email\":\"qa.m01.new.1795278390309@edumy.test\",\"fullName\":\"Nguyễn Văn Mới\",\"emailVerified\":true,\"roles\":[\"STUDENT\"],\"status\":\"ACTIVE\",\"createdAt\":\"2026-11-21T09:26:30.625037Z\"},\"errors\":null}",
+    "data": {
+      "id": 28,
+      "email": "qa.m01.new.1795278390309@edumy.test",
+      "fullName": "Nguyễn Văn Mới",
+      "emailVerified": true,
+      "roles": [
+        "STUDENT"
+      ],
+      "status": "ACTIVE",
+      "createdAt": "2026-11-21T09:26:30.625037Z"
+    }
+  }
+}

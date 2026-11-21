@@ -1,0 +1,125 @@
+{
+  "whOk": {
+    "status": 200,
+    "ok": true,
+    "elapsedMs": 74.3,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 148,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:38:47 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "orderId": 2088,
+      "success": true,
+      "message": "Xác nhận thanh toán thành công! Khóa học đã được mở khóa tự động.",
+      "status": "PAID"
+    },
+    "rawText": "{\"orderId\":2088,\"success\":true,\"message\":\"Xác nhận thanh toán thành công! Khóa học đã được mở khóa tự động.\",\"status\":\"PAID\"}",
+    "data": {
+      "orderId": 2088,
+      "success": true,
+      "message": "Xác nhận thanh toán thành công! Khóa học đã được mở khóa tự động.",
+      "status": "PAID"
+    }
+  },
+  "stAfterPay": {
+    "status": 200,
+    "ok": true,
+    "elapsedMs": 23.2,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 223,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:38:47 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": true,
+      "message": "OK",
+      "data": {
+        "orderId": 2088,
+        "status": "PAID",
+        "isPaid": true,
+        "totalAmount": 300000,
+        "courseIds": [
+          49
+        ],
+        "firstCourseId": 49,
+        "message": "Đơn hàng đã được thanh toán thành công."
+      },
+      "errors": null
+    },
+    "rawText": "{\"success\":true,\"message\":\"OK\",\"data\":{\"orderId\":2088,\"status\":\"PAID\",\"isPaid\":true,\"totalAmount\":300000.00,\"courseIds\":[49],\"firstCourseId\":49,\"message\":\"Đơn hàng đã được thanh toán thành công.\"},\"errors\":null}",
+    "data": {
+      "orderId": 2088,
+      "status": "PAID",
+      "isPaid": true,
+      "totalAmount": 300000,
+      "courseIds": [
+        49
+      ],
+      "firstCourseId": 49,
+      "message": "Đơn hàng đã được thanh toán thành công."
+    }
+  },
+  "enrHv1": {
+    "status": 200,
+    "ok": true,
+    "elapsedMs": 12.8,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 90,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:38:47 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": true,
+      "message": "OK",
+      "data": {
+        "status": "ACTIVE",
+        "isEnrolled": true
+      },
+      "errors": null
+    },
+    "rawText": "{\"success\":true,\"message\":\"OK\",\"data\":{\"status\":\"ACTIVE\",\"isEnrolled\":true},\"errors\":null}",
+    "data": {
+      "status": "ACTIVE",
+      "isEnrolled": true
+    }
+  },
+  "earnCnt": "1",
+  "mailSubject": "Xác nhận đơn hàng EDUMY2088 thành công trên Edumy"
+}

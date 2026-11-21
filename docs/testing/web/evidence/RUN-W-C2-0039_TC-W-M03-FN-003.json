@@ -1,0 +1,20 @@
+{
+  "badCatStatus": 400,
+  "badCatBody": {
+    "success": false,
+    "message": "Danh mục khóa học không tồn tại.",
+    "data": null,
+    "errors": null
+  },
+  "hasActiveField": true,
+  "sampleCat": {
+    "coursesCount": 14,
+    "name": "Development",
+    "icon": "bi-code-slash",
+    "description": null,
+    "parentCategoryId": null,
+    "id": 1,
+    "isActive": true,
+    "categoryId": 1
+  }
+}

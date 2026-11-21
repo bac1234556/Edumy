@@ -1,0 +1,6 @@
+{
+  "bcryptPrefix": "$2a$10$RWB",
+  "bcryptCost": 10,
+  "requiredMinCost": 12,
+  "resetTokenInfo": "***"
+}

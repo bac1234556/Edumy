@@ -1,0 +1,35 @@
+{
+  "count": 5,
+  "subjects": [
+    {
+      "to": [
+        "qa.gva@edumy.test"
+      ],
+      "subject": "Khóa học “Khóa Test Mail 9” của bạn đã được duyệt và phát hành"
+    },
+    {
+      "to": [
+        "qa.hv1@edumy.test"
+      ],
+      "subject": "Giảng viên đã trả lời câu hỏi của bạn trong khóa học “Lập Trình Java Cơ Bản Miễn Phí”"
+    },
+    {
+      "to": [
+        "qa.gvb@edumy.test"
+      ],
+      "subject": "Lời mời làm đồng giảng viên khóa học “QA Khóa Bản Nháp Draft” trên Edumy"
+    },
+    {
+      "to": [
+        "qa.mail9.1795274786806@edumy.test"
+      ],
+      "subject": "Yêu cầu đặt lại mật khẩu tài khoản Edumy"
+    },
+    {
+      "to": [
+        "qa.mail9.1795274786806@edumy.test"
+      ],
+      "subject": "Xác thực địa chỉ email tài khoản Edumy"
+    }
+  ]
+}

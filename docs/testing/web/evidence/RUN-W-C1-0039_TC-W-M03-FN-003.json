@@ -1,0 +1,23 @@
+{
+  "badCatStatus": 500,
+  "badCatBody": {
+    "success": false,
+    "message": "Hệ thống đang gặp sự cố. Vui lòng thử lại sau.",
+    "data": null,
+    "errors": {
+      "code": "INTERNAL_ERROR",
+      "fields": null,
+      "traceId": "9cfa3444-b1ef-438c-863a-55b5c270349d"
+    }
+  },
+  "hasActiveField": false,
+  "sampleCat": {
+    "coursesCount": 14,
+    "name": "Development",
+    "icon": "bi-code-slash",
+    "description": null,
+    "parentCategoryId": null,
+    "id": 1,
+    "categoryId": 1
+  }
+}

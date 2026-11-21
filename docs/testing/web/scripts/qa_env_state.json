@@ -1,0 +1,208 @@
+{
+  "seededAt": "2026-11-21T16:26:01.427Z",
+  "accounts": {
+    "ADM1": "admin@edumy.com",
+    "ADM2": "qa.adm2@edumy.test",
+    "GVA": "qa.gva@edumy.test",
+    "GVB": "qa.gvb@edumy.test",
+    "GVCO": "qa.gvco@edumy.test",
+    "GVREV": "qa.gvrevoked@edumy.test",
+    "HV1": "qa.hv1@edumy.test",
+    "HV2": "qa.hv2@edumy.test",
+    "HVLOCK": "qa.hvlocked@edumy.test",
+    "HVUNV": "qa.hvunverified@edumy.test"
+  },
+  "userIds": {
+    "ADM1": 1,
+    "ADM2": 19,
+    "GVA": 20,
+    "GVB": 21,
+    "GVCO": 22,
+    "GVREV": 23,
+    "HV1": 24,
+    "HV2": 25,
+    "HVLOCK": 26,
+    "HVUNV": 27
+  },
+  "categories": {
+    "activeCatId": 1,
+    "secondCatId": 2,
+    "emptyCatId": 11,
+    "extraCatId": 12
+  },
+  "courses": {
+    "cDraft": {
+      "courseId": 43,
+      "sectionId": 83,
+      "lessonIds": [
+        160,
+        161
+      ],
+      "quizId": null,
+      "slug": "qa-khoa-ban-nhap-draft-1b5c25"
+    },
+    "cPend": {
+      "courseId": 44,
+      "sectionId": 84,
+      "lessonIds": [
+        162,
+        163
+      ],
+      "quizId": null,
+      "slug": "qa-khoa-cho-duyet-pending-257eb6"
+    },
+    "cNeedsRev": {
+      "courseId": 45,
+      "sectionId": 85,
+      "lessonIds": [
+        164,
+        165
+      ],
+      "quizId": null,
+      "slug": "qa-khoa-can-sua-needsreview-a7a261"
+    },
+    "cHidden": {
+      "courseId": 46,
+      "sectionId": 86,
+      "lessonIds": [
+        166,
+        167
+      ],
+      "quizId": null,
+      "slug": "qa-khoa-da-an-hidden-8789fd"
+    },
+    "cFree3": {
+      "courseId": 47,
+      "sectionId": 87,
+      "lessonIds": [
+        168,
+        169,
+        170
+      ],
+      "quizId": null,
+      "slug": "lap-trinh-java-co-ban-mien-phi-1af0e1"
+    },
+    "cFree10": {
+      "courseId": 48,
+      "sectionId": 88,
+      "lessonIds": [
+        171,
+        172,
+        173,
+        174,
+        175,
+        176,
+        177,
+        178,
+        179,
+        180
+      ],
+      "quizId": null,
+      "slug": "khoa-hoc-chung-chi-10-bai-tieng-viet-69d020"
+    },
+    "cPaid1": {
+      "courseId": 49,
+      "sectionId": 89,
+      "lessonIds": [
+        181,
+        182,
+        183
+      ],
+      "quizId": 79,
+      "slug": "lap-trinh-java-nang-cao-spring-boot-ba915c"
+    },
+    "cPaidSplit": {
+      "courseId": 50,
+      "sectionId": 90,
+      "lessonIds": [
+        184,
+        185
+      ],
+      "quizId": null,
+      "slug": "kien-truc-microservices-chuyen-sau-a8fd4e"
+    }
+  },
+  "coupons": {
+    "valid": "QAGIAM20",
+    "expired": "QAEXPIRED",
+    "inactive": "QAINACTIVE"
+  },
+  "seedLog": {
+    "ADM2": {
+      "email": "qa.adm2@edumy.test",
+      "registerStatus": 200,
+      "verify": {
+        "found": true,
+        "tokenFound": true,
+        "verifyStatus": 200
+      }
+    },
+    "GVA": {
+      "email": "qa.gva@edumy.test",
+      "registerStatus": 200,
+      "verify": {
+        "found": true,
+        "tokenFound": true,
+        "verifyStatus": 200
+      }
+    },
+    "GVB": {
+      "email": "qa.gvb@edumy.test",
+      "registerStatus": 200,
+      "verify": {
+        "found": true,
+        "tokenFound": true,
+        "verifyStatus": 200
+      }
+    },
+    "GVCO": {
+      "email": "qa.gvco@edumy.test",
+      "registerStatus": 200,
+      "verify": {
+        "found": true,
+        "tokenFound": true,
+        "verifyStatus": 200
+      }
+    },
+    "GVREV": {
+      "email": "qa.gvrevoked@edumy.test",
+      "registerStatus": 200,
+      "verify": {
+        "found": true,
+        "tokenFound": true,
+        "verifyStatus": 200
+      }
+    },
+    "HV1": {
+      "email": "qa.hv1@edumy.test",
+      "registerStatus": 200,
+      "verify": {
+        "found": true,
+        "tokenFound": true,
+        "verifyStatus": 200
+      }
+    },
+    "HV2": {
+      "email": "qa.hv2@edumy.test",
+      "registerStatus": 200,
+      "verify": {
+        "found": true,
+        "tokenFound": true,
+        "verifyStatus": 200
+      }
+    },
+    "HVLOCK": {
+      "email": "qa.hvlocked@edumy.test",
+      "registerStatus": 200,
+      "verify": {
+        "found": true,
+        "tokenFound": true,
+        "verifyStatus": 200
+      }
+    },
+    "HVUNV": {
+      "email": "qa.hvunverified@edumy.test",
+      "registerStatus": 200
+    }
+  }
+}

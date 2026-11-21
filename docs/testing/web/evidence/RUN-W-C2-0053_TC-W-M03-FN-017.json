@@ -1,0 +1,77 @@
+{
+  "rejEmpty": {
+    "status": 400,
+    "ok": false,
+    "elapsedMs": 37.2,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 220,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "close",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:27:21 GMT",
+      "expires": "0",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": false,
+      "message": "Vui lòng nhập lý do từ chối xét duyệt để giảng viên chỉnh sửa.",
+      "data": null,
+      "errors": {
+        "code": "BAD_REQUEST",
+        "fields": null,
+        "traceId": "09d00591-e4ec-47a1-a2ab-be631654b219"
+      }
+    },
+    "rawText": "{\"success\":false,\"message\":\"Vui lòng nhập lý do từ chối xét duyệt để giảng viên chỉnh sửa.\",\"data\":null,\"errors\":{\"code\":\"BAD_REQUEST\",\"fields\":null,\"traceId\":\"09d00591-e4ec-47a1-a2ab-be631654b219\"}}",
+    "data": null
+  },
+  "rejOk": {
+    "status": 200,
+    "ok": true,
+    "elapsedMs": 64.5,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 293,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:27:21 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": true,
+      "message": "Đã từ chối khóa học và gửi phản hồi cho giảng viên.",
+      "data": {
+        "reviewNote": "Thiếu video bài học chương 2",
+        "courseId": 44,
+        "message": "Đã từ chối khóa học và gửi phản hồi cho giảng viên.",
+        "status": "NeedsReview"
+      },
+      "errors": null
+    },
+    "rawText": "{\"success\":true,\"message\":\"Đã từ chối khóa học và gửi phản hồi cho giảng viên.\",\"data\":{\"reviewNote\":\"Thiếu video bài học chương 2\",\"courseId\":44,\"message\":\"Đã từ chối khóa học và gửi phản hồi cho giảng viên.\",\"status\":\"NeedsReview\"},\"errors\":null}",
+    "data": {
+      "reviewNote": "Thiếu video bài học chương 2",
+      "courseId": 44,
+      "message": "Đã từ chối khóa học và gửi phản hồi cho giảng viên.",
+      "status": "NeedsReview"
+    }
+  },
+  "mailSubject": "Khóa học “QA Khóa Chờ Duyệt Pending” cần chỉnh sửa trước khi phát hành",
+  "hasReasonInMail": true
+}

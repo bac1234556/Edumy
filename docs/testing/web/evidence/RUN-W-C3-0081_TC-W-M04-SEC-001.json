@@ -1,0 +1,7 @@
+{
+  "hv2GetHv1Order": 403,
+  "hv2CancelHv1Order": 403,
+  "hv2CreateQrHv1": 403,
+  "hv2GetVietQrHv1": 403,
+  "guestGetOrder": 401
+}

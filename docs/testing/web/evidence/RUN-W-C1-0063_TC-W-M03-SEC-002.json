@@ -1,0 +1,26 @@
+{
+  "uExe": {
+    "status": 400,
+    "body": null
+  },
+  "uSvg": {
+    "status": 400,
+    "body": null
+  },
+  "uTrav": {
+    "status": 500,
+    "body": null
+  },
+  "uFake": {
+    "status": 200,
+    "body": {
+      "url": "/uploads/a82c5f8a-2c32-45f6-84c2-ee7807bfd2df_fake.jpg"
+    }
+  },
+  "uMediaExe": {
+    "status": 200,
+    "body": {
+      "url": "/uploads/992eb92407f7457c85d286045d09eef3.sh"
+    }
+  }
+}

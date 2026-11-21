@@ -1,0 +1,89 @@
+{
+  "gvbQStatus": 200,
+  "gvbQItems": 0,
+  "gvbRep": {
+    "status": 200,
+    "ok": true,
+    "elapsedMs": 29.2,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 284,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 15:26:21 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": true,
+      "message": "OK",
+      "data": {
+        "id": 4,
+        "authorId": 21,
+        "authorName": "QA GVB Tiếng Việt",
+        "authorAvatar": null,
+        "authorType": "INSTRUCTOR",
+        "content": "GV-B trả lời khóa GV-A",
+        "visibilityStatus": "VISIBLE",
+        "createdAt": "2026-11-21T15:26:21.530406796",
+        "answerId": 4
+      },
+      "errors": null
+    },
+    "rawText": "{\"success\":true,\"message\":\"OK\",\"data\":{\"id\":4,\"authorId\":21,\"authorName\":\"QA GVB Tiếng Việt\",\"authorAvatar\":null,\"authorType\":\"INSTRUCTOR\",\"content\":\"GV-B trả lời khóa GV-A\",\"visibilityStatus\":\"VISIBLE\",\"createdAt\":\"2026-11-21T15:26:21.530406796\",\"answerId\":4},\"errors\":null}",
+    "data": {
+      "id": 4,
+      "authorId": 21,
+      "authorName": "QA GVB Tiếng Việt",
+      "authorAvatar": null,
+      "authorType": "INSTRUCTOR",
+      "content": "GV-B trả lời khóa GV-A",
+      "visibilityStatus": "VISIBLE",
+      "createdAt": "2026-11-21T15:26:21.530406796",
+      "answerId": 4
+    }
+  },
+  "gvaEmptyRep": {
+    "status": 400,
+    "ok": false,
+    "elapsedMs": 12.7,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 251,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "close",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 15:26:21 GMT",
+      "expires": "0",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": false,
+      "message": "Dữ liệu đầu vào không hợp lệ.",
+      "data": null,
+      "errors": {
+        "code": "VALIDATION_ERROR",
+        "fields": {
+          "content": "Nội dung câu trả lời không được để trống"
+        },
+        "traceId": "4d202d23-ad2e-4439-912e-e992d5ae851e"
+      }
+    },
+    "rawText": "{\"success\":false,\"message\":\"Dữ liệu đầu vào không hợp lệ.\",\"data\":null,\"errors\":{\"code\":\"VALIDATION_ERROR\",\"fields\":{\"content\":\"Nội dung câu trả lời không được để trống\"},\"traceId\":\"4d202d23-ad2e-4439-912e-e992d5ae851e\"}}",
+    "data": null
+  }
+}

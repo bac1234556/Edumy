@@ -1,0 +1,50 @@
+{
+  "paWrong": {
+    "status": 422,
+    "ok": false,
+    "elapsedMs": 358.1,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 189,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:28:11 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": false,
+      "message": "Mật khẩu hiện tại không chính xác.",
+      "data": null,
+      "errors": {
+        "code": "PASSWORD_INCORRECT",
+        "fields": null,
+        "traceId": "855687ca-d716-4fa7-aa88-0462b5f7b290"
+      }
+    },
+    "rawText": "{\"success\":false,\"message\":\"Mật khẩu hiện tại không chính xác.\",\"data\":null,\"errors\":{\"code\":\"PASSWORD_INCORRECT\",\"fields\":null,\"traceId\":\"855687ca-d716-4fa7-aa88-0462b5f7b290\"}}",
+    "data": null
+  },
+  "paOk": {
+    "bankName": "Vietcombank",
+    "accountNumberLast4": "***",
+    "accountHolder": "QA GVA",
+    "updatedAt": "2026-11-21T16:28:11.678416583"
+  },
+  "paGet": {
+    "bankName": "Vietcombank",
+    "accountNumberLast4": "***",
+    "accountHolder": "QA GVA",
+    "updatedAt": "2026-11-21T16:28:11.678417"
+  },
+  "noFullAcct": true,
+  "hasLast4": true
+}

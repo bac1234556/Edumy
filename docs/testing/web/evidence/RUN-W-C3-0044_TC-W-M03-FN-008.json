@@ -1,0 +1,8 @@
+{
+  "sec1": 200,
+  "sec2": 200,
+  "secUpd": 200,
+  "secReord": 200,
+  "secDel": 204,
+  "secEmpty": 400
+}

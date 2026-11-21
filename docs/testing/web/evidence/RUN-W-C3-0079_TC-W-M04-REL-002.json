@@ -1,0 +1,27 @@
+{
+  "dblRes": [
+    {
+      "status": 500,
+      "data": null
+    },
+    {
+      "status": 200,
+      "data": {
+        "amount": 1000000,
+        "orderId": 2092,
+        "accountName": "LE VIET BAC",
+        "bankName": "BIDV (Ngân hàng TMCP Đầu tư và Phát triển Việt Nam)",
+        "paymentUrl": "/payment?orderId=2092&amount=1000000.00",
+        "message": "Đơn hàng đã được tạo. Vui lòng quét mã VietQR để thanh toán.",
+        "totalAmount": 1000000,
+        "transferContent": "EDUMY 2092",
+        "bankId": "BIDV",
+        "isFree": false,
+        "qrImageUrl": "https://img.vietqr.io/image/BIDV-96247BAC206-compact2.png?amount=1000000&addInfo=EDUMY+2092&accountName=LE+VIET+BAC",
+        "accountNo": "96247BAC206",
+        "status": "Pending"
+      }
+    }
+  ],
+  "orphanPaid": 0
+}

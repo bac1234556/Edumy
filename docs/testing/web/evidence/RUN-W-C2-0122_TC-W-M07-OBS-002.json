@@ -1,0 +1,11 @@
+{
+  "health": {
+    "status": "UP"
+  },
+  "promTargetHealth": "up",
+  "grafanaDashboards": [
+    "Edumy Alerts",
+    "Edumy Monitoring",
+    "Edumy - Spring Boot & System Overview"
+  ]
+}

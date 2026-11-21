@@ -1,0 +1,118 @@
+{
+  "ccu": 50,
+  "runs": 3,
+  "report": [
+    {
+      "scenario": "GET /api/courses (catalog)",
+      "runs": [
+        {
+          "run": 1,
+          "p50": 461.2,
+          "p95": 620.5,
+          "max": 623,
+          "errCnt": 0
+        },
+        {
+          "run": 2,
+          "p50": 295.9,
+          "p95": 450.9,
+          "max": 463.9,
+          "errCnt": 0
+        },
+        {
+          "run": 3,
+          "p50": 334.2,
+          "p95": 523.7,
+          "max": 524.2,
+          "errCnt": 0
+        }
+      ],
+      "worstP95": 620.5,
+      "totalErr": 0
+    },
+    {
+      "scenario": "GET /api/courses/{id} (detail)",
+      "runs": [
+        {
+          "run": 1,
+          "p50": 335.8,
+          "p95": 572.1,
+          "max": 594.7,
+          "errCnt": 0
+        },
+        {
+          "run": 2,
+          "p50": 467.3,
+          "p95": 790.4,
+          "max": 813.9,
+          "errCnt": 0
+        },
+        {
+          "run": 3,
+          "p50": 689.9,
+          "p95": 1169,
+          "max": 1196.2,
+          "errCnt": 0
+        }
+      ],
+      "worstP95": 1169,
+      "totalErr": 0
+    },
+    {
+      "scenario": "PUT /api/v1/learn/lessons/{id}/completion (progress)",
+      "runs": [
+        {
+          "run": 1,
+          "p50": 1281.6,
+          "p95": 1797.3,
+          "max": 1847.2,
+          "errCnt": 0
+        },
+        {
+          "run": 2,
+          "p50": 633.7,
+          "p95": 861.4,
+          "max": 883,
+          "errCnt": 0
+        },
+        {
+          "run": 3,
+          "p50": 607.9,
+          "p95": 916.5,
+          "max": 932.6,
+          "errCnt": 0
+        }
+      ],
+      "worstP95": 1797.3,
+      "totalErr": 0
+    },
+    {
+      "scenario": "POST /api/v1/courses/{id}/questions (Q&A)",
+      "runs": [
+        {
+          "run": 1,
+          "p50": 568.7,
+          "p95": 837.9,
+          "max": 840.1,
+          "errCnt": 0
+        },
+        {
+          "run": 2,
+          "p50": 495.8,
+          "p95": 705.8,
+          "max": 711.3,
+          "errCnt": 0
+        },
+        {
+          "run": 3,
+          "p50": 523.6,
+          "p95": 706.5,
+          "max": 712.7,
+          "errCnt": 0
+        }
+      ],
+      "worstP95": 837.9,
+      "totalErr": 0
+    }
+  ]
+}

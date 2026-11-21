@@ -1,0 +1,31 @@
+{
+  "rtoSec": 68.6,
+  "origCounts": {
+    "Users": 36,
+    "Categories": 12,
+    "Courses": 61,
+    "course_sections": 105,
+    "Lessons": 209,
+    "Orders": 62,
+    "order_items": 46,
+    "Enrollments": 20,
+    "Certificates": 6,
+    "Reviews": 74,
+    "course_questions": 171,
+    "payout_earnings": 13
+  },
+  "restoredCounts": {
+    "Users": 36,
+    "Categories": 12,
+    "Courses": 61,
+    "course_sections": 105,
+    "Lessons": 209,
+    "Orders": 62,
+    "order_items": 46,
+    "Enrollments": 20,
+    "Certificates": 6,
+    "Reviews": 74,
+    "course_questions": 171,
+    "payout_earnings": 13
+  }
+}

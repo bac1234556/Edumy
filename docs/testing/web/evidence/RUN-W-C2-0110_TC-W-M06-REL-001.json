@@ -1,0 +1,24 @@
+{
+  "raceRes": [
+    {
+      "status": 200,
+      "data": {
+        "id": 4,
+        "amount": 1000000,
+        "bankName": "BIDV",
+        "accountNumberLast4": "***",
+        "accountHolder": "QA GVCO",
+        "status": "requested",
+        "transferReference": null,
+        "rejectReason": null,
+        "createdAt": "2026-11-21T23:28:14.173541572",
+        "processedAt": null
+      }
+    },
+    {
+      "status": 409,
+      "data": null
+    }
+  ],
+  "raceOpenDb": 1
+}

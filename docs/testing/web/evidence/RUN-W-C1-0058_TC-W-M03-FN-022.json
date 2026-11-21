@@ -1,0 +1,112 @@
+{
+  "wdPub": {
+    "status": 200,
+    "ok": true,
+    "elapsedMs": 39.5,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 270,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 15:25:54 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": true,
+      "message": "Đã rút yêu cầu duyệt, khóa học trở về trạng thái Bản nháp (DRAFT).",
+      "data": {
+        "message": "Đã rút yêu cầu duyệt, khóa học trở về trạng thái Bản nháp (DRAFT).",
+        "status": "Draft",
+        "courseId": 51
+      },
+      "errors": null
+    },
+    "rawText": "{\"success\":true,\"message\":\"Đã rút yêu cầu duyệt, khóa học trở về trạng thái Bản nháp (DRAFT).\",\"data\":{\"message\":\"Đã rút yêu cầu duyệt, khóa học trở về trạng thái Bản nháp (DRAFT).\",\"status\":\"Draft\",\"courseId\":51},\"errors\":null}",
+    "data": {
+      "message": "Đã rút yêu cầu duyệt, khóa học trở về trạng thái Bản nháp (DRAFT).",
+      "status": "Draft",
+      "courseId": 51
+    }
+  },
+  "wdGvb": {
+    "status": 200,
+    "ok": true,
+    "elapsedMs": 42.2,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 270,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 15:25:54 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": true,
+      "message": "Đã rút yêu cầu duyệt, khóa học trở về trạng thái Bản nháp (DRAFT).",
+      "data": {
+        "message": "Đã rút yêu cầu duyệt, khóa học trở về trạng thái Bản nháp (DRAFT).",
+        "status": "Draft",
+        "courseId": 44
+      },
+      "errors": null
+    },
+    "rawText": "{\"success\":true,\"message\":\"Đã rút yêu cầu duyệt, khóa học trở về trạng thái Bản nháp (DRAFT).\",\"data\":{\"message\":\"Đã rút yêu cầu duyệt, khóa học trở về trạng thái Bản nháp (DRAFT).\",\"status\":\"Draft\",\"courseId\":44},\"errors\":null}",
+    "data": {
+      "message": "Đã rút yêu cầu duyệt, khóa học trở về trạng thái Bản nháp (DRAFT).",
+      "status": "Draft",
+      "courseId": 44
+    }
+  },
+  "wd404": {
+    "status": 404,
+    "ok": false,
+    "elapsedMs": 34.4,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 166,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 15:25:54 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": false,
+      "message": "Không tìm thấy khóa học.",
+      "data": null,
+      "errors": {
+        "code": "NOT_FOUND",
+        "fields": null,
+        "traceId": "28d62fdc-b417-4abe-9d77-1752f32ee82e"
+      }
+    },
+    "rawText": "{\"success\":false,\"message\":\"Không tìm thấy khóa học.\",\"data\":null,\"errors\":{\"code\":\"NOT_FOUND\",\"fields\":null,\"traceId\":\"28d62fdc-b417-4abe-9d77-1752f32ee82e\"}}",
+    "data": null
+  }
+}

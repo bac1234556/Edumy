@@ -1,0 +1,45 @@
+{
+  "verOk": {
+    "courseTitle": "Khóa Học Chứng Chỉ 10 Bài Tiếng Việt",
+    "valid": true,
+    "courseName": "Khóa Học Chứng Chỉ 10 Bài Tiếng Việt",
+    "instructorName": "QA GVA Tiếng Việt",
+    "pdfDownloadUrl": "/api/certificates/EDUMY-BBD78DB934/pdf",
+    "certificateId": 7,
+    "studentName": "QA HV1 Tiếng Việt",
+    "issuedAt": "2026-11-21T16:27:57.79772",
+    "certificateUrl": "EDUMY-BBD78DB934",
+    "message": "Chứng chỉ hợp lệ và đã được cấp bởi nền tảng Edumy.",
+    "courseId": 48
+  },
+  "verBad": {
+    "status": 404,
+    "ok": false,
+    "elapsedMs": 30.3,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 118,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:27:59 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": false,
+      "message": "Mã chứng chỉ không tồn tại trong hệ thống Edumy.",
+      "data": null,
+      "errors": null
+    },
+    "rawText": "{\"success\":false,\"message\":\"Mã chứng chỉ không tồn tại trong hệ thống Edumy.\",\"data\":null,\"errors\":null}",
+    "data": null
+  }
+}

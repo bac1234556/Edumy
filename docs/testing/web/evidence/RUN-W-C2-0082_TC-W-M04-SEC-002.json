@@ -1,0 +1,73 @@
+{
+  "tampTotal": 300000,
+  "cbBypass": {
+    "status": 401,
+    "ok": false,
+    "elapsedMs": 6.2,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 201,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-length": "201",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:27:52 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": false,
+      "message": "Chưa xác thực hoặc phiên đăng nhập đã hết hạn.",
+      "data": null,
+      "errors": {
+        "code": "UNAUTHORIZED",
+        "fields": null,
+        "traceId": "1de43ef6-88ab-47f1-a0af-d0ba8e184bfa"
+      }
+    },
+    "rawText": "{\"success\":false,\"message\":\"Chưa xác thực hoặc phiên đăng nhập đã hết hạn.\",\"data\":null,\"errors\":{\"code\":\"UNAUTHORIZED\",\"fields\":null,\"traceId\":\"1de43ef6-88ab-47f1-a0af-d0ba8e184bfa\"}}",
+    "data": null
+  },
+  "enrBypass": {
+    "status": 200,
+    "ok": true,
+    "elapsedMs": 20.1,
+    "contentType": "application/json;charset=UTF-8",
+    "byteLength": 89,
+    "headers": {
+      "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+      "connection": "keep-alive",
+      "content-type": "application/json;charset=UTF-8",
+      "date": "Sat, 21 Nov 2026 16:27:52 GMT",
+      "expires": "0",
+      "keep-alive": "timeout=60",
+      "pragma": "no-cache",
+      "transfer-encoding": "chunked",
+      "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0"
+    },
+    "setCookies": [],
+    "raw": {
+      "success": true,
+      "message": "OK",
+      "data": {
+        "status": "NONE",
+        "isEnrolled": false
+      },
+      "errors": null
+    },
+    "rawText": "{\"success\":true,\"message\":\"OK\",\"data\":{\"status\":\"NONE\",\"isEnrolled\":false},\"errors\":null}",
+    "data": {
+      "status": "NONE",
+      "isEnrolled": false
+    }
+  }
+}
