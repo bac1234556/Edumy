@@ -18,6 +18,12 @@ import LiveCourseSearchBar from './LiveCourseSearchBar';
 import api from '../api/axiosConfig';
 import './Navbar.css';
 
+const ROLE_LABELS = {
+  Admin: 'Quản trị viên',
+  Instructor: 'Giảng viên',
+  Student: 'Học viên'
+};
+
 const Navbar = () => {
   const { user, logout } = useContext(AuthContext);
   const { cartCount, clearCartState } = useContext(CartContext);
@@ -142,7 +148,7 @@ const Navbar = () => {
                   <div className="dropdown-user-header">
                     <p className="dropdown-user-name line-clamp-1">{user.fullName || 'Người dùng'}</p>
                     <p className="dropdown-user-email line-clamp-1">{user.email}</p>
-                    <span className="dropdown-user-role-badge">{user.role}</span>
+                    <span className="dropdown-user-role-badge">{ROLE_LABELS[user.role] || user.role}</span>
                   </div>
 
                   <div className="dropdown-links-list">
@@ -324,7 +330,7 @@ const Navbar = () => {
                 <div className="mobile-user-profile-bar">
                   <div className="mobile-user-info">
                     <span className="mobile-user-name line-clamp-1">{user.fullName || user.email}</span>
-                    <span className="mobile-user-role pill-badge">{user.role}</span>
+                    <span className="mobile-user-role pill-badge">{ROLE_LABELS[user.role] || user.role}</span>
                   </div>
                   <button
                     type="button"

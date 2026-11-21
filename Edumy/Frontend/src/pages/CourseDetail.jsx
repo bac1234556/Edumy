@@ -119,21 +119,27 @@ function CourseDetail() {
     }
 
     const checkStatus = async () => {
+      let isInst = false;
       try {
         const statusRes = await api.get(`/courses/${id}/enrollment-status`);
         setIsEnrolled(!!statusRes.data?.isEnrolled);
-        setIsInstructorOfCourse(!!statusRes.data?.isInstructor);
+        isInst = !!statusRes.data?.isInstructor;
+        setIsInstructorOfCourse(isInst);
       } catch (err) {
         console.warn('Could not check enrollment status:', err);
       }
 
-      try {
-        const coRes = await api.get(`/v1/instructor/courses/${id}/co-instructors`);
-        if (Array.isArray(coRes.data)) {
-          setCoInstructors(coRes.data.filter((c) => c.status === 'ACCEPTED' || !c.status));
+      if (isInst || user?.role === 'Admin') {
+        try {
+          const coRes = await api.get(`/v1/instructor/courses/${id}/co-instructors`);
+          if (Array.isArray(coRes.data)) {
+            setCoInstructors(coRes.data.filter((c) => c.status === 'ACCEPTED' || !c.status));
+          }
+        } catch {
+          // Ignore if none
         }
-      } catch {
-        // Ignore if none
+      } else {
+        setCoInstructors([]);
       }
     };
 

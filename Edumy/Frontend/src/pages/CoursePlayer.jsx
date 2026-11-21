@@ -62,9 +62,22 @@ function CoursePlayer() {
   const [showCongratsModal, setShowCongratsModal] = useState(false);
 
   // UI Interactive States
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(
+    () => typeof window !== 'undefined' && window.innerWidth < 1024
+  );
   const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'notes' | 'attachments'
   const [expandedSections, setExpandedSections] = useState({});
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 1024) {
+        setIsSidebarCollapsed(true);
+      }
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Personal Notes States
   const [noteInput, setNoteInput] = useState('');
@@ -413,10 +426,17 @@ function CoursePlayer() {
 
   const getVideoSrc = () => {
     if (!streamData?.videoUrl) return '';
-    if (streamData.videoUrl.startsWith('http://') || streamData.videoUrl.startsWith('https://')) {
-      return streamData.videoUrl;
+    const rawUrl = streamData.videoUrl;
+    if (
+      rawUrl.includes('commondatastorage.googleapis.com') ||
+      rawUrl.includes('example.com/')
+    ) {
+      return '';
     }
-    return `${BACKEND_URL}${streamData.videoUrl}`;
+    if (rawUrl.startsWith('http://') || rawUrl.startsWith('https://')) {
+      return rawUrl;
+    }
+    return `${BACKEND_URL}${rawUrl}`;
   };
 
   // ==================== 1. SKELETON LOADING STATE ====================
@@ -576,7 +596,7 @@ function CoursePlayer() {
                   style={{ width: '100%', height: '100%', border: 'none' }}
                   allowFullScreen
                 />
-              ) : streamData?.videoUrl ? (
+              ) : streamData?.videoUrl && getVideoSrc() ? (
                 <video
                   ref={videoRef}
                   key={streamData.videoUrl}

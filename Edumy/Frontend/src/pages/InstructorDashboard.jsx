@@ -30,6 +30,22 @@ import './InstructorDashboard.css';
 
 const BACKEND_URL = (import.meta.env.VITE_API_URL || '/api').replace('/api', '');
 
+const COURSE_STATUS_LABELS = {
+  draft: 'Bản nháp',
+  pendingapproval: 'Chờ xét duyệt',
+  published: 'Đã xuất bản',
+  hidden: 'Đã ẩn',
+  needsreview: 'Cần chỉnh sửa',
+  rejected: 'Bị từ chối',
+  invited: 'Đã mời',
+  pending: 'Chờ phản hồi',
+  accepted: 'Đã chấp nhận',
+  declined: 'Đã từ chối',
+  active: 'Đang học',
+  completed: 'Đã hoàn thành'
+};
+const formatStatusVi = (st) => COURSE_STATUS_LABELS[String(st || '').toLowerCase()] || st;
+
 function InstructorDashboard() {
   const location = useLocation();
   const [courses, setCourses] = useState([]);
@@ -406,7 +422,7 @@ function InstructorDashboard() {
                           <td><strong>{inv.courseTitle || `Khóa học #${inv.courseId}`}</strong></td>
                           <td>
                             <span className="badge bg-info-subtle text-info px-2 py-1 rounded-pill">
-                              {inv.status}
+                              {formatStatusVi(inv.status)}
                             </span>
                           </td>
                           <td className="text-end">
@@ -631,7 +647,7 @@ function InstructorDashboard() {
                             className="studio-course-thumb"
                           />
                           <span className={`status-badge-pill ${statusKey}`}>
-                            {course.status}
+                            {formatStatusVi(course.status)}
                           </span>
                         </div>
 
@@ -853,7 +869,7 @@ function InstructorDashboard() {
                           </td>
                           <td>
                             <span className="badge bg-success bg-opacity-10 text-success rounded-pill px-2 py-1">
-                              {st.status || 'Active'}
+                              {formatStatusVi(st.status || 'Active')}
                             </span>
                           </td>
                         </tr>
