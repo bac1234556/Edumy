@@ -932,6 +932,7 @@ public class SpecUseCaseController {
     // UC-A18: Admin manual payment reconciliation (ACTIVATE | REFUND_EXTERNAL)
     @PostMapping({"/api/v1/admin/payments/{orderId}/reconcile", "/api/admin/payments/{orderId}/reconcile"})
     @PreAuthorize("hasRole('Admin')")
+    @org.springframework.transaction.annotation.Transactional(rollbackFor = Exception.class)
     public ResponseEntity<?> reconcilePayment(@PathVariable Integer orderId, @RequestBody(required = false) Map<String, String> body) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "Không tìm thấy đơn hàng #" + orderId));

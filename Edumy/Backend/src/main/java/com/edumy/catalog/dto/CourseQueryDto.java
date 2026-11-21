@@ -15,5 +15,5 @@ public class CourseQueryDto {
     private String sortBy; // price, rating, newest
     private String sortOrder; // asc, desc
     private Integer pageNumber = 1;
-    private Integer pageSize = 12;
+    private Integer pageSize = 20;
 }

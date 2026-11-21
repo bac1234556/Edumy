@@ -21,6 +21,8 @@ import java.util.NoSuchElementException;
 @RequestMapping
 public class PaymentController {
 
+    private static final java.util.concurrent.ConcurrentHashMap<String, Object> WEBHOOK_LOCKS = new java.util.concurrent.ConcurrentHashMap<>();
+
     @Autowired
     private PaymentService paymentService;
 
@@ -136,7 +138,12 @@ public class PaymentController {
                                                 @RequestHeader(value = "Authorization", required = false) String authHeader,
                                                 @RequestHeader(value = "X-Api-Key", required = false) String apiKeyHeader) {
         String effectiveAuth = authHeader != null ? authHeader : apiKeyHeader;
-        PaymentWebhookResponseDto result = paymentService.processSepayWebhook(webhookData, effectiveAuth);
+        String lockKey = extractWebhookLockKey(webhookData);
+        Object lock = WEBHOOK_LOCKS.computeIfAbsent(lockKey, k -> new Object());
+        PaymentWebhookResponseDto result;
+        synchronized (lock) {
+            result = paymentService.processSepayWebhook(webhookData, effectiveAuth);
+        }
 
         if ("97".equals(result.getRspCode())) {
             return ResponseEntity.status(401).body(result);
@@ -243,5 +250,18 @@ public class PaymentController {
             return ResponseEntity.status(401).body(result);
         }
         return ResponseEntity.ok(result);
+    }
+
+    private static String extractWebhookLockKey(SepayWebhookDto dto) {
+        if (dto == null) return "EMPTY";
+        if (dto.getOrderId() != null) return "ORD-" + dto.getOrderId();
+        StringBuilder sb = new StringBuilder();
+        if (dto.getContent() != null) sb.append(' ').append(dto.getContent());
+        if (dto.getDescription() != null) sb.append(' ').append(dto.getDescription());
+        if (dto.getTransactionContent() != null) sb.append(' ').append(dto.getTransactionContent());
+        if (dto.getCode() != null) sb.append(' ').append(dto.getCode());
+        var m = java.util.regex.Pattern.compile("(?i)EDUMY[\\s_-]*([0-9]+)").matcher(sb.toString());
+        if (m.find()) return "ORD-" + m.group(1);
+        return "GLOBAL";
     }
 }
