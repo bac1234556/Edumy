@@ -1,0 +1,65 @@
+{
+  "runId": "RUN-W-C3-0131",
+  "tcId": "TC-W-M07-USA-001",
+  "cycle": "C3",
+  "commit": "Edumy-main@a44cb7d",
+  "browser": "Google Chrome 157.0.0.0 (Windows x64, Chrome DevTools MCP)",
+  "timestamp": "2026-11-22T00:37:49+07:00",
+  "status": "Fail",
+  "defectId": "DEF-W-032",
+  "matrix": {
+    "/": {
+      "360": "Pass",
+      "768": "Pass",
+      "1366": "Pass"
+    },
+    "/courses": {
+      "360": "Pass",
+      "768": "Pass",
+      "1366": "Pass"
+    },
+    "/courses/49": {
+      "360": "Pass",
+      "768": "Pass",
+      "1366": "Pass"
+    },
+    "/instructor/courses/new": {
+      "360": "Pass",
+      "768": "Pass",
+      "1366": "Pass"
+    },
+    "/cart": {
+      "360": "Fail (horizontal overflow clipping price & CTA)",
+      "768": "Pass",
+      "1366": "Pass"
+    },
+    "/my-courses/47/learn": {
+      "360": "Fail (sidebar open & horizontal overflow)",
+      "768": "Fail (Q&A tab clipped horizontally)",
+      "1366": "Pass"
+    }
+  },
+  "untranslatedEnglishLabels": [
+    "Instructor",
+    "Student",
+    "Draft",
+    "PendingApproval",
+    "Published",
+    "Hidden",
+    "NeedsReview",
+    "Development",
+    "Business",
+    "Design",
+    "Marketing",
+    "IT & Software"
+  ],
+  "screenshots": [
+    "evidence/RUN-W-C3-0131_TC-W-M07-USA-001_home_360.png",
+    "evidence/RUN-W-C3-0131_TC-W-M07-USA-001_courses_360.png",
+    "evidence/RUN-W-C3-0131_TC-W-M07-USA-001_detail_360.png",
+    "evidence/RUN-W-C3-0131_TC-W-M07-USA-001_course_create_360.png",
+    "evidence/RUN-W-C3-0131_TC-W-M07-USA-001_cart_360_FAIL.png",
+    "evidence/RUN-W-C3-0131_TC-W-M07-USA-001_player_360_FAIL.png",
+    "evidence/RUN-W-C3-0131_TC-W-M07-USA-001_player_768_FAIL.png"
+  ]
+}

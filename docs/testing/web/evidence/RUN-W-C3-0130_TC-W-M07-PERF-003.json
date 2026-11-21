@@ -1,0 +1,48 @@
+{
+  "runId": "RUN-W-C3-0130",
+  "tcId": "TC-W-M07-PERF-003",
+  "cycle": "C3",
+  "commit": "Edumy-main@a44cb7d",
+  "browser": "Google Chrome 157.0.0.0 (Windows x64, Chrome DevTools MCP)",
+  "timestamp": "2026-11-22T00:37:49+07:00",
+  "status": "Fail",
+  "defectId": "DEF-W-031",
+  "pages": [
+    {
+      "path": "/",
+      "ttfbMs": 15,
+      "lcpMs": 290,
+      "cls": 0.0,
+      "consoleErrors": 0,
+      "failedNetwork": []
+    },
+    {
+      "path": "/courses",
+      "ttfbMs": 6,
+      "lcpMs": 778,
+      "cls": 0.01,
+      "consoleErrors": 0,
+      "failedNetwork": []
+    },
+    {
+      "path": "/courses/49",
+      "ttfbMs": 15,
+      "lcpMs": 903,
+      "cls": 0.06,
+      "consoleErrors": 1,
+      "failedNetwork": [
+        "GET /api/v1/instructor/courses/49/co-instructors [403]"
+      ]
+    },
+    {
+      "path": "/my-courses/47/learn",
+      "ttfbMs": 6,
+      "lcpMs": 616,
+      "cls": 0.1,
+      "consoleErrors": 0,
+      "failedNetwork": [
+        "BigBuckBunny.mp4 [net::ERR_BLOCKED_BY_ORB]"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "runId": "RUN-W-C3-0129",
+  "tcId": "TC-W-REG-FN-002",
+  "cycle": "C3",
+  "commit": "Edumy-main@a44cb7d",
+  "browser": "Google Chrome 157.0.0.0 (Windows x64, Chrome DevTools MCP)",
+  "timestamp": "2026-11-22T00:37:49+07:00",
+  "status": "Pass",
+  "validationChecks": {
+    "emptySubmitInline": true,
+    "negativePriceInline": true,
+    "price5000Api400Alert": true
+  },
+  "partialFailure": {
+    "courseId": 1067,
+    "coInstructorHttpStatus": 404,
+    "warningAlertDisplayed": true
+  },
+  "doubleSubmit": {
+    "courseId": 1068,
+    "postCoursesCalls": 1,
+    "duplicateCoursesCreated": 0
+  },
+  "screenshots": [
+    "evidence/RUN-W-C3-0129_TC-W-REG-FN-002_validation.png",
+    "evidence/RUN-W-C3-0129_TC-W-REG-FN-002_partial_failure.png",
+    "evidence/RUN-W-C3-0129_TC-W-REG-FN-002_double_submit.png"
+  ]
+}

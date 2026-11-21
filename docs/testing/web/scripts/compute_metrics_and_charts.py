@@ -290,7 +290,7 @@ def compute_all():
     ax.set_xticks(list(x))
     ax.set_xticklabels(mods)
     ax.set_ylabel("Số lượng Test Case")
-    ax.set_title("Kết quả kiểm thử Edumy Web sau Chu kỳ C1 → C3 theo Module (123/134 Pass)")
+    ax.set_title(f"Kết quả kiểm thử Edumy Web sau Chu kỳ C1 → C3 theo Module ({table1_module[-1]['pass']}/{table1_module[-1]['total']} Pass)")
     ax.legend()
     ax.grid(axis="y", linestyle="--", alpha=0.4)
     fig.tight_layout()
@@ -308,7 +308,7 @@ def compute_all():
         tot_s = cv + ov
         ax.text(idx, tot_s + 0.3, f"{cv}/{tot_s} đóng", ha="center", va="bottom", fontweight="bold")
     ax.set_ylabel("Số lượng Defect")
-    ax.set_title("Tình trạng xử lý 30 Defect theo Severity (28/30 Closed = 93.33%)")
+    ax.set_title(f"Tình trạng xử lý {len(defects)} Defect theo Severity ({metrics['closed_defects']}/{len(defects)} Closed = {metrics['defect_fix_rate']}%)")
     ax.legend()
     ax.grid(axis="y", linestyle="--", alpha=0.4)
     fig.tight_layout()
@@ -378,12 +378,13 @@ def compute_all():
         closed_defects = metrics["closed_defects"]
         ws_cov.cell(row=5, column=2, value="2.0 (Hoàn tất 6 Pha — Chu kỳ C1 → C2 → C3)")
         ws_cov.cell(row=8, column=2, value="Edumy-Project: f2f5240 | Edumy-main: bf4ac6c (C1) → 836460a (C2) → a44cb7d (C3)")
-        exec_non_blk_pct = round(100.0 * tot["pass"] / (tot["total"] - tot["blocked"]), 2) if (tot["total"] - tot["blocked"]) else 0.0
+        exec_non_blk_cnt = tot["total"] - tot["blocked"]
+        exec_non_blk_pct = round(100.0 * tot["pass"] / exec_non_blk_cnt, 2) if exec_non_blk_cnt else 0.0
         ws_cov.cell(
             row=12,
             column=2,
             value=f"{tot['pass']} Pass / {tot['fail']} Fail / {tot['blocked']} Blocked / {tot['notRun']} Not Run "
-                  f"({tot['passRate']}% tổng; {exec_non_blk_pct}% trên 126 TC chạy được) — {closed_defects}/{len(defects)} Defect Closed (0 S1 Open) — CONDITIONAL GO"
+                  f"({tot['passRate']}% tổng; {exec_non_blk_pct}% trên {exec_non_blk_cnt} TC chạy được) — {closed_defects}/{len(defects)} Defect Closed (0 S1 Open) — CONDITIONAL GO"
         )
     ws_tc = wb["TestCases"]
     for row_idx in range(2, ws_tc.max_row + 1):

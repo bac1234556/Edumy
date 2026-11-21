@@ -1,0 +1,22 @@
+{
+  "runId": "RUN-W-C3-0132",
+  "tcId": "TC-W-M07-USA-002",
+  "cycle": "C3",
+  "commit": "Edumy-main@a44cb7d",
+  "browser": "Google Chrome 157.0.0.0 (Windows x64, Chrome DevTools MCP)",
+  "timestamp": "2026-11-22T00:37:49+07:00",
+  "status": "Pass",
+  "checks": {
+    "registerInlineFieldErrors": "Pass",
+    "emptyCartFriendlyState": "Pass",
+    "invalidCouponInlineError": "Pass",
+    "adminBlockedForStudent": "Pass (silent redirect to /)",
+    "paymentCancelFriendlyPage": "Pass"
+  },
+  "screenshots": [
+    "evidence/RUN-W-C3-0132_TC-W-M07-USA-002_register_validation.png",
+    "evidence/RUN-W-C3-0132_TC-W-M07-USA-002_cart_empty.png",
+    "evidence/RUN-W-C3-0132_TC-W-M07-USA-002_cart_bad_coupon.png",
+    "evidence/RUN-W-C3-0132_TC-W-M07-USA-002_payment_cancel.png"
+  ]
+}

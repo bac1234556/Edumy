@@ -1,0 +1,34 @@
+{
+  "runId": "RUN-W-C3-0133",
+  "tcId": "TC-W-M07-USA-003",
+  "cycle": "C3",
+  "commit": "Edumy-main@a44cb7d",
+  "browser": "Google Chrome 157.0.0.0 (Windows x64, Chrome DevTools MCP)",
+  "timestamp": "2026-11-22T00:37:49+07:00",
+  "status": "Pass",
+  "keyboardNavigation": {
+    "navbarTabFocusRing": true,
+    "loginTabEnterSubmit": true,
+    "coursesFilterTabEnter": true
+  },
+  "lighthouseAccessibility": {
+    "/": {
+      "accessibility": 93,
+      "bestPractices": 77,
+      "seo": 83
+    },
+    "/courses": {
+      "accessibility": 94,
+      "bestPractices": 77,
+      "seo": 83
+    },
+    "/courses/49": {
+      "accessibility": 94,
+      "bestPractices": 73,
+      "seo": 83
+    }
+  },
+  "screenshots": [
+    "evidence/RUN-W-C3-0133_TC-W-M07-USA-003_keyboard_focus.png"
+  ]
+}

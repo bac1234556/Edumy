@@ -68,7 +68,7 @@ def write_tir():
 
     lines += [
         "",
-        "## 3. Danh sách chi tiết toàn bộ 30 Defect (`DEF-W-001` .. `DEF-W-030`)",
+        "## 3. Danh sách chi tiết toàn bộ Defect (`DEF-W-001` .. `DEF-W-032`)",
         "",
         "| Defect ID | Severity | Module | Loại lỗi | Trạng thái | Chu kỳ đóng | Commit sửa | TC liên quan | Tóm tắt & Bằng chứng xác nhận |",
         "| :--- | :---: | :---: | :--- | :---: | :---: | :---: | :--- | :--- |",
@@ -263,16 +263,20 @@ def build_9_tables_markdown():
 def write_tsr2():
     t1_tot = METRICS["table1_module"][-1]
     t3 = METRICS["table3_cycle"]
+    cl_sev = METRICS["table5_defects_closed_by_sev"]
+    by_sev = METRICS["table5_defects_by_sev"]
+    op_sev = METRICS["table5_defects_open_by_sev"]
+    exec_non_blk = t1_tot["total"] - t1_tot["blocked"]
     lines = [
         "# EDU-TSR-W-002 — BÁO CÁO TRẠNG THÁI KIỂM THỬ CHU KỲ C2 & C3 (TEST STATUS REPORT)",
         "",
         "| Thuộc tính | Giá trị |",
         "| :--- | :--- |",
         "| **Mã tài liệu** | `EDU-TSR-W-002` |",
-        "| **Chu kỳ báo cáo** | **Chu kỳ C2** (`Edumy-main@836460a`) & **Chu kỳ C3** (`Edumy-main@a44cb7d`) |",
-        "| **Thời điểm** | `2026-11-21` (Asia/Ho_Chi_Minh) |",
-        f"| **Trạng thái tích lũy sau C3** | **{t1_tot['pass']} Pass / {t1_tot['fail']} Fail / {t1_tot['blocked']} Blocked / {t1_tot['notRun']} Not Run** (Pass rate trên 134 TC: **{t1_tot['passRate']}%**; trên 126 TC chạy được: **{round(100.0*t1_tot['pass']/126,2)}%**) |",
-        f"| **Đóng Defect** | **{METRICS['closed_defects']}/{METRICS['total_defects']} Closed ({METRICS['defect_fix_rate']}%)** — **7/7 S1 Closed (100%)**, **16/17 S2 Closed**, **5/5 S3 Closed (100%)**, **1 S4 Deferred** |",
+        "| **Chu kỳ báo cáo** | **Chu kỳ C2** (`Edumy-main@836460a`) & **Chu kỳ C3** (`Edumy-main@a44cb7d`, gồm 7 TC UI trên Chrome 157) |",
+        "| **Thời điểm** | `2026-11-22` (Asia/Ho_Chi_Minh) |",
+        f"| **Trạng thái tích lũy sau C3** | **{t1_tot['pass']} Pass / {t1_tot['fail']} Fail / {t1_tot['blocked']} Blocked / {t1_tot['notRun']} Not Run** (Pass rate trên 134 TC: **{t1_tot['passRate']}%**; trên {exec_non_blk} TC chạy được: **{round(100.0*t1_tot['pass']/exec_non_blk,2)}%**) |",
+        f"| **Đóng Defect** | **{METRICS['closed_defects']}/{METRICS['total_defects']} Closed ({METRICS['defect_fix_rate']}%)** — **{cl_sev.get('S1',0)}/{by_sev.get('S1',0)} S1 Closed (100%)**, **{cl_sev.get('S2',0)}/{by_sev.get('S2',0)} S2 Closed** ({op_sev.get('S2',0)} S2 Open), **{cl_sev.get('S3',0)}/{by_sev.get('S3',0)} S3 Closed** ({op_sev.get('S3',0)} S3 Open), **{op_sev.get('S4',0)} S4 Deferred** |",
         "",
         "## Tóm tắt tiến triển qua 3 chu kỳ",
         "",
@@ -286,10 +290,11 @@ def write_tsr2():
         )
     lines += [
         "",
-        "- **Module đạt 100% Pass**: `W-M01` (26/26), `W-M02` (10/10), `W-M03` (28/28), `W-M04` (18/18), `W-M05` (21/21), `W-M06` (9/9).",
+        "- **Module đạt 100% Pass (`7/8 module`)**: `W-M01` (26/26), `W-M02` (10/10), `W-M03` (28/28), `W-M04` (18/18), `W-M05` (21/21), `W-M06` (9/9), **`W-REG` (3/3)**.",
+        "- **Hồi quy UI Chrome 157 (`RUN-W-C3-0128..0134`)**: `TC-W-REG-FN-001..002` (tạo khóa 1 trang `CourseCreate.jsx` + partial failure + double-submit), `TC-W-M07-USA-002` (validation & empty/error states), và `TC-W-M07-USA-003` (bàn phím + Lighthouse A11y `93/94/94 >= 90`) đều **PASS**; phát hiện 2 lỗi giao diện thật: **`DEF-W-031` (S3)** (`/courses/49` gọi trái quyền `/co-instructors` trả 403 trên console cho học viên & video mẫu bị ORB) và **`DEF-W-032` (S2)** (tràn ngang mobile 360px tại `/cart` & `/my-courses/{id}/learn`, cắt tab Q&A tại 768px, còn vài nhãn tiếng Anh).",
         "- **Hiệu năng 50 CCU (`TC-W-M07-PERF-001`)**: `GET /api/courses` giảm từ `3431.2 ms` (C1) xuống `620.5 ms` (C2 — cải thiện **5.5x**), cả 4 API trọng điểm đều đạt `p95 <= 1800 ms` với `0` lỗi 5xx.",
         "- **Email (`TC-W-M07-FN-001`)**: Mailpit nhận đủ **9/9 loại email**; 10x webhook song song chỉ gửi **1 email** duy nhất (`RUN-W-C3-0078`).",
-        "- **Còn lại**: 1 lỗi S2 cấu hình bảo mật môi trường dev (`DEF-W-027` — Nginx headers đã sửa xong, còn fallback secret trong `docker-compose.yml`/`application.yml`), 1 lỗi S4 mã chết (`DEF-W-030`), và 8 TC Blocked (7 UI trình duyệt do Chrome `DevToolsActivePort ENOENT` + 1 Jenkins Server).",
+        "- **Còn lại**: 2 lỗi S2 Open (`DEF-W-027` secret mặc định dev & `DEF-W-032` responsive `/cart` + `/learn`), 1 lỗi S3 Open (`DEF-W-031` console 403 trên `/courses/49`), 1 lỗi S4 Deferred (`DEF-W-030`), và **2 TC Blocked** (`TC-W-M07-COMP-001` phần Edge/Firefox + `TC-W-M07-DEP-002` máy chủ Jenkins).",
         "",
         "Xem báo cáo hoàn tất đầy đủ (9 bảng, 4 biểu đồ, khuyến nghị Go/No-Go) tại [`EDU-TCR-W-001_Test_Completion_Report.md`](EDU-TCR-W-001_Test_Completion_Report.md).",
     ]
@@ -323,12 +328,12 @@ def write_tcr():
         "| **Mã tài liệu** | `EDU-TCR-W-001` |",
         "| **Đối tượng kiểm thử** | **Edumy Web** (Spring Boot 3.2.0 Modulith + React 19/Vite 8 + SQL Server 2022 + Mailpit + Prometheus/Grafana) |",
         "| **Chuỗi Build kiểm thử** | C1: `Edumy-main@bf4ac6c` · C2: `Edumy-main@836460a` · C3 (Cuối): `Edumy-main@a44cb7d` (`Edumy-Project@f2f5240`) |",
-        "| **Thời gian thực hiện** | `2026-11-21` (Asia/Ho_Chi_Minh) |",
+        "| **Thời gian thực hiện** | `2026-11-21` – `2026-11-22` (Asia/Ho_Chi_Minh) |",
         "| **Môi trường thực thi** | Stack Docker cô lập `edumy-test` (6 containers: SQL Server 2022 `14334`, Backend `5001`, Frontend Nginx `3002`, Mailpit `1026/8026`, Prometheus `9091`, Grafana `3003`) |",
-        "| **Công cụ kiểm thử** | JUnit 5 + MockMvc + Spring Modulith + JaCoCo (`47/47 PASS`), Node.js v24.16.0 (`fetch`), Mailpit API, SQL Server `sqlcmd`, Antigravity Browser Subagent |",
+        "| **Công cụ kiểm thử** | JUnit 5 + MockMvc + Spring Modulith + JaCoCo (`47/47 PASS`), Node.js v24.16.0 (`fetch`), Mailpit API, SQL Server `sqlcmd`, Google Chrome `157.0.0.0` (Chrome DevTools MCP + Performance Trace + Lighthouse) |",
         f"| **Kết quả cuối cùng** | **{tot['pass']} Pass / {tot['fail']} Fail / {tot['blocked']} Blocked / {tot['notRun']} Not Run** (Tổng **134 TC**, **{tot['totalRuns']} lượt chạy** qua 3 chu kỳ) |",
-        f"| **Pass rate** | **{tot['passRate']}%** trên toàn bộ 134 TC · **{exec_non_blk_pass_pct}%** trên 126 TC thực thi được (tăng từ **42.54%** ở C1) |",
-        f"| **Defect Resolution** | **{METRICS['closed_defects']}/{METRICS['total_defects']} Closed ({METRICS['defect_fix_rate']}%)** — **0 S1 Open**, **{op_sev.get('S2', 0)} S2 Open (cấu hình dev secret)**, **0 S3 Open**, **{op_sev.get('S4', 0)} S4 Deferred** |",
+        f"| **Pass rate** | **{tot['passRate']}%** trên toàn bộ 134 TC · **{exec_non_blk_pass_pct}%** trên {tot['total']-tot['blocked']} TC thực thi được (tăng từ **42.54%** ở C1) |",
+        f"| **Defect Resolution** | **{METRICS['closed_defects']}/{METRICS['total_defects']} Closed ({METRICS['defect_fix_rate']}%)** — **0 S1 Open**, **{op_sev.get('S2', 0)} S2 Open** (`DEF-W-027`, `DEF-W-032`), **{op_sev.get('S3', 0)} S3 Open** (`DEF-W-031`), **{op_sev.get('S4', 0)} S4 Deferred** (`DEF-W-030`) |",
         "| **QUYẾT ĐỊNH PHÁT HÀNH** | **CONDITIONAL GO (Đủ điều kiện phát hành có điều kiện)** |",
         "",
         "---",
@@ -339,16 +344,16 @@ def write_tcr():
         "",
         "- **Chu kỳ C1 (`Edumy-main@bf4ac6c`)**: Phát hiện **30 Defect** (`7 S1 Critical`, `17 S2 Major`, `5 S3 Minor`, `1 S4 Trivial`), Pass rate chỉ đạt **42.54% (57/134)** → Quyết định **NO-GO** tại cổng dừng cuối C1.",
         "- **Giai đoạn khắc phục & Chu kỳ C2 (`Edumy-main@836460a`)**: Toàn bộ **7/7 lỗi S1 nghiêm trọng** và phần lớn lỗi S2/S3 (gồm cả 5 chức năng chưa hiện thực trong SRS: `UC-I18`, `D-21`, `UC-A18`, `UC-S16/@Scheduled`, `NFR-06/backup_daily.sh`) đã được triển khai, kiểm chứng lại bằng **47/47 JUnit 5 tests** (gồm `ModularityTest`) và chạy lại toàn bộ bộ kiểm thử hệ thống, nâng kết quả lên **118 Pass** trên 127 TC chạy được.",
-        "- **Chu kỳ C3 (`Edumy-main@a44cb7d`)**: Khắc phục triệt để 3 điểm tồn đọng cuối từ C2 (`CourseQueryDto.pageSize=20`, `@Transactional` cho `UC-A18 reconcilePayment`, và khóa đồng bộ theo `orderId` chống gửi trùng email khi nhận 5 webhook song song). Kết quả cuối cùng: **6/6 module nghiệp vụ cốt lõi (`W-M01`..`W-M06`) đạt 100% Pass (112/112 TC)**; **W-REG kiểm tra gỡ AI/ML đạt 0 dấu vết (`404`)**; tổng đạt **123/134 Pass (91.79% tổng thể; 97.62% trên 126 TC thực thi được)**.",
+        f"- **Chu kỳ C3 (`Edumy-main@a44cb7d` — API + UI thực tế trên Chrome 157)**: Khắc phục triệt để 3 tồn đọng từ C2 (`CourseQueryDto.pageSize=20`, `@Transactional` cho `UC-A18 reconcilePayment`, khóa đồng bộ theo `orderId` chống gửi trùng email khi nhận 5 webhook song song) và thực thi trực tiếp toàn bộ **7 TC giao diện trình duyệt trên Google Chrome 157.0.0.0**. Kết quả cuối cùng: **7/8 module (`W-M01`..`W-M06` và `W-REG`) đạt 100% Pass (`115/115 TC`)**; tổng đạt **{tot['pass']}/134 Pass ({tot['passRate']}% tổng thể; {exec_non_blk_pass_pct}% trên {tot['total']-tot['blocked']} TC thực thi được)**; phát hiện thêm 2 lỗi UI thật (`DEF-W-031` S3 & `DEF-W-032` S2) để đội dự án xử lý trước Go-Live.",
         "",
         "---",
         "",
         "## 2. Sai lệch so với Kế hoạch kiểm thử (Deviations from Test Plan)",
         "",
         "1. **Tài liệu Test Basis đầu vào**: Repo không có file `EDU-SRS-001_v3.0`, `EDU-DDD-001`, `EDU-MTP-001`. Theo xác nhận của người yêu cầu tại Pha 1, QA đã tổng hợp đầy đủ 182 yêu cầu từ đặc tả tóm tắt trong đề bài kết hợp tài liệu hệ thống hiện hữu (`api-contract-v2.md`, `openapi.json`, `Edumy/docs/system/*`, SQL scripts `06–08`, controllers & routes).",
-        "2. **7 TC giao diện trình duyệt bị `Blocked`**: Trình duyệt Chrome trên máy host chưa bật Remote Debugging (`DevToolsActivePort ENOENT`) ở cả C1 lẫn C2 và Mozilla Firefox chưa được cài đặt. Tuân thủ quy tắc trung thực & an toàn, QA không tự sửa profile trình duyệt máy chủ và ghi nhận trung thực 7 TC này là `Blocked` (`TC-W-M07-PERF-003`, `TC-W-M07-USA-001..003`, `TC-W-M07-COMP-001`, `TC-W-REG-FN-001..002`).",
-        "3. **1 TC Jenkins CI Server bị `Blocked`**: `TC-W-M07-DEP-002` đã kiểm chứng thành công toàn bộ các bước build/test cục bộ trong `Jenkinsfile` (`mvnw verify`, `npm build`, `docker compose build`), nhưng không có máy chủ Jenkins CI cục bộ nên đánh `Blocked`.",
-        "4. **Chu kỳ C3 bổ sung**: Ngoài C1 và C2, QA thực hiện thêm Chu kỳ C3 cho `W-M02`, `W-M03`, `W-M04` nhằm đóng sạch 100% lỗi chức năng, độ tin cậy (webhook đồng thời) và phân trang.",
+        "2. **1 TC tương thích đa trình duyệt còn `Blocked` một phần (`TC-W-M07-COMP-001`)**: Đã chạy đầy đủ 5 luồng High trên **Google Chrome 157.0.0.0**, nhưng phiên Chrome DevTools MCP không điều khiển được Microsoft Edge và máy host chưa cài Mozilla Firefox nên ghi nhận trung thực là `Blocked` phần Edge/Firefox.",
+        "3. **1 TC Jenkins CI Server bị `Blocked` (`TC-W-M07-DEP-002`)**: Đã kiểm chứng thành công toàn bộ các bước build/test cục bộ trong `Jenkinsfile` (`mvnw verify`, `npm build`, `docker compose build`), nhưng không có máy chủ Jenkins CI cục bộ nên đánh `Blocked`.",
+        "4. **Chu kỳ C3 bổ sung**: Ngoài C1 và C2, QA thực hiện Chu kỳ C3 cho `W-M02`, `W-M03`, `W-M04` và 7 TC UI trên Chrome 157 (kèm 16 ảnh chụp bằng chứng và 5 video ghi phiên kiểm thử).",
         "",
         "---",
         "",
@@ -357,15 +362,15 @@ def write_tcr():
         "| # | Tiêu chí kết thúc (theo `EDU-TP-W-001`) | Mục tiêu | Kết quả thực tế sau C3 | Đánh giá |",
         "| :---: | :--- | :--- | :--- | :---: |",
         f"| EC-01 | Độ phủ yêu cầu trên RTM | 100% (0 khoảng trống) | **182/182 yêu cầu (100%)**, 0 khoảng trống, 0 UC < 2 TC | **ĐẠT** |",
-        f"| EC-02 | Tỷ lệ thực thi Test Case | 100% được xử lý (0 Not Run) | **134/134 TC (100%)** đã thực thi/đánh giá (`0 Not Run`, `8 Blocked` có lý do rõ) | **ĐẠT** |",
+        f"| EC-02 | Tỷ lệ thực thi Test Case | 100% được xử lý (0 Not Run) | **134/134 TC (100%)** đã thực thi/đánh giá (`0 Not Run`, `{tot['blocked']} Blocked` có lý do rõ) | **ĐẠT** |",
         f"| EC-03 | Lỗi nghiêm trọng S1 Critical còn mở | **0 S1 Open** | **0 S1 Open** (`7/7 S1 Closed = 100%`) | **ĐẠT** |",
-        f"| EC-04 | Lỗi nghiêm trọng S2 Major còn mở | 0 S2 Open (hoặc có phương án giảm thiểu được phê duyệt) | **1 S2 Open** (`DEF-W-027`: Nginx headers đã sửa xong; còn fallback dev credentials trong `docker-compose.yml`/`application.yml`) | **ĐẠT CÓ ĐIỀU KIỆN** |",
-        f"| EC-05 | Pass rate nhóm TC ưu tiên High | >= 95% trên TC chạy được | **{high_pass}/{len(high_tcs)-high_blk} ({high_exec_pass_pct}%)** trên TC High thực thi được (`{high_fail}` Fail chỉ thuộc `DEF-W-027` config secrets; `{high_blk}` Blocked UI) | **ĐẠT** |",
-        f"| EC-06 | Pass rate tổng thể | >= 95% trên TC thực thi được | **{tot['pass']}/{tot['total']-tot['blocked']} ({exec_non_blk_pass_pct}%)** (`{tot['passRate']}%` tính cả 8 Blocked) | **ĐẠT** |",
+        f"| EC-04 | Lỗi nghiêm trọng S2 Major còn mở | 0 S2 Open (hoặc có phương án giảm thiểu được phê duyệt) | **{op_sev.get('S2', 0)} S2 Open** (`DEF-W-027` secret mặc định môi trường dev; `DEF-W-032` responsive tràn ngang `/cart` 360px & `/learn` 360/768px) | **ĐẠT CÓ ĐIỀU KIỆN** |",
+        f"| EC-05 | Pass rate nhóm TC ưu tiên High | >= 95% trên TC chạy được | **{high_pass}/{len(high_tcs)-high_blk} ({high_exec_pass_pct}%)** trên TC High thực thi được (`{high_fail}` Fail chỉ thuộc `DEF-W-027` config secrets; `{high_blk}` Blocked) | **ĐẠT** |",
+        f"| EC-06 | Pass rate tổng thể | >= 95% trên TC thực thi được | **{tot['pass']}/{tot['total']-tot['blocked']} ({exec_non_blk_pass_pct}%)** (`{tot['passRate']}%` tính cả {tot['blocked']} Blocked) | **ĐẠT** |",
         f"| EC-07 | Không có lỗ hổng IDOR / Bypass thanh toán / Upload độc hại | 0 vi phạm OWASP A01/A03/A07/A08 | **0 vi phạm** trên ma trận 8 vai trò × 13 nhóm API, SePay/VNPay ký bắt buộc, magic-bytes upload | **ĐẠT** |",
-        f"| EC-08 | Hiệu năng NFR-05 (50 CCU) & Phục hồi NFR-06 | p95 <= 3000ms, 0 lỗi 5xx; RTO <= 4h; có backup hằng ngày | p95 ({perf_summary}), 0 lỗi 5xx; RTO = **68.6s** (12/12 bảng khớp); có `backup_daily.sh` | **ĐẠT** |",
+        f"| EC-08 | Hiệu năng NFR-05 (50 CCU) & Phục hồi NFR-06 | p95 <= 3000ms, 0 lỗi 5xx; RTO <= 4h; có backup hằng ngày | p95 ({perf_summary}), 0 lỗi 5xx; LCP Chrome `290–903ms`; RTO = **68.6s** (12/12 bảng khớp); có `backup_daily.sh` | **ĐẠT** |",
         "| EC-09 | Unit test & Modularity Backend (`./mvnw verify`) | 100% Pass, 0 skipped | **47/47 tests PASS** (gồm `ModularityTest` + 3 bộ QA test mới), JaCoCo 362 lớp (`10.49%` line, `6.84%` branch) | **ĐẠT** |",
-        "| EC-10 | Kiểm thử UI/Responsive/Lighthouse trên trình duyệt | Hoàn tất 7 TC UI | **7 TC Blocked** do Chrome `DevToolsActivePort ENOENT` (cần chạy bổ sung trước Go-Live) | **CHƯA ĐẠT (BLOCKED)** |",
+        "| EC-10 | Kiểm thử UI/Responsive/Lighthouse trên trình duyệt | Hoàn tất 7 TC UI | **6/7 TC UI đã chạy trọn vẹn trên Chrome 157** (4 PASS: `REG-FN-001..002`, `USA-002`, `USA-003` A11y `93/94/94`; 2 FAIL ghi defect `DEF-W-031`, `DEF-W-032`); `COMP-001` còn phần Edge/Firefox | **ĐẠT CÓ ĐIỀU KIỆN** |",
         "",
         "---",
         "",
@@ -402,14 +407,16 @@ def write_tcr():
         "## 6. Yếu tố chặn (Blockers), Rủi ro tồn đọng (Residual Risks) & Khuyến nghị Go/No-Go",
         "",
         "### Quyết định phát hành: **CONDITIONAL GO**",
-        "Hệ thống Edumy Web **đã vượt qua 100% kiểm thử nghiệp vụ, thanh toán, phân quyền IDOR, hiệu năng 50 CCU và phục hồi dữ liệu trên tầng Backend/API** (`0 S1 Open`, `112/112 TC` trên 6 module nghiệp vụ chính PASS, `47/47 JUnit 5 tests` PASS). Tuy nhiên, để **Go-Live Production**, đội dự án **bắt buộc hoàn thành 3 điều kiện sau**:",
+        "Hệ thống Edumy Web **đã vượt qua 100% kiểm thử nghiệp vụ, thanh toán, phân quyền IDOR, tạo khóa 1 trang, gỡ AI/ML, hiệu năng 50 CCU, Lighthouse Accessibility và phục hồi dữ liệu** (`0 S1 Open`, **`7/8` module đạt 100% PASS = `115/115 TC`**, `47/47 JUnit 5 tests` PASS). Tuy nhiên, để **Go-Live Production**, đội dự án **bắt buộc hoàn thành 4 điều kiện sau**:",
         "",
         "1. **[Điều kiện bắt buộc — Bảo mật `DEF-W-027` / S2]**: Gỡ bỏ toàn bộ mật khẩu/secret fallback mặc định (`SA password`, `Grafana admin/admin`, `JWT/VNPay/SePay fallback key`) khỏi cấu hình Production; bắt buộc nạp qua Secret Manager / biến môi trường không có giá trị mặc định yếu.",
-        "2. **[Điều kiện bắt buộc — UI E2E `7 TC Blocked`]**: Bật `chrome://inspect/#remote-debugging` (hoặc tích hợp Playwright trong CI) và cài Firefox để chạy nốt 7 TC UI (`TC-W-M07-PERF-003` Lighthouse, `USA-001..003` Responsive/A11y, `COMP-001` Chrome/Edge/Firefox, `REG-FN-001..002` UI tạo khóa 1 trang `CourseCreate.jsx`).",
-        "3. **[Điều kiện vận hành — CI/CD & Backup]**: Chạy kiểm chứng `Jenkinsfile` trên máy chủ Jenkins thực (`TC-W-M07-DEP-002`) và gắn crontab cho `Edumy/Database/scripts/backup_daily.sh` trên server triển khai.",
+        "2. **[Điều kiện bắt buộc — Responsive UI `DEF-W-032` / S2]**: Sửa lỗi tràn ngang trên Mobile `360px` của trang Giỏ hàng (`/cart` bị cắt giá & nút thanh toán) và Phòng học (`/my-courses/{id}/learn` mở sẵn sidebar đè player; Tablet `768px` cắt tab `Hỏi & Đáp (Q&A)`), đồng thời Việt hóa các nhãn vai trò/trạng thái còn tiếng Anh.",
+        "3. **[Điều kiện khuyến nghị mạnh — Frontend `DEF-W-031` / S3]**: Chặn `CourseDetail.jsx` gọi trái quyền `/api/v1/instructor/courses/{id}/co-instructors` khi người dùng là Student (tránh lỗi 403 trên console) và thay URL video mẫu `BigBuckBunny.mp4` bị Chrome chặn ORB.",
+        "4. **[Điều kiện vận hành — Cross-browser & CI/CD]**: Chạy bổ sung 5 luồng High trên **Edge** & **Firefox** (`TC-W-M07-COMP-001`), chạy `Jenkinsfile` trên máy chủ Jenkins thực (`TC-W-M07-DEP-002`) và gắn crontab cho `Edumy/Database/scripts/backup_daily.sh`.",
         "",
         "### Rủi ro tồn đọng chấp nhận được (Low / Deferred)",
         "- **`DEF-W-030` (S4 Deferred)**: Hai trang chưa gắn route (`Wishlist.jsx`, `MockPaymentGateway.jsx`), hai controller rỗng (`LessonController.java`, `QuizController.java`) và 64 cảnh báo `oxlint` — nên dọn dẹp ở sprint kỹ thuật kế tiếp.",
+        "- **Minor UX/A11y polish**: Bổ sung toast báo thiếu quyền khi Student truy cập `/admin` bị redirect về `/`; cải thiện độ tương phản màu phụ (`span.rating-count`, badge `Gợi ý thông minh`) và thêm `id`/`label` cho input động trong `CourseCreate.jsx`.",
         "- **In-memory rate limiter**: Bộ đếm khóa tạm đăng nhập (`AuthServiceImpl`) và giới hạn tra cứu chứng chỉ (`CertificatesController`) hiện lưu trong `ConcurrentHashMap` (phù hợp triển khai đơn nút Docker Compose hiện tại; khi scale đa instance cần chuyển sang Redis).",
         "",
         "---",
@@ -423,10 +430,10 @@ def write_tcr():
         "- [`EDU-TCS-W-001_Test_Cases.xlsx`](EDU-TCS-W-001_Test_Cases.xlsx) — Sổ kiểm thử 8 sheet (`Cover`, `TestCases`, `ExecutionLog`, `Defects`, `Summary`, `RTM`, `IDOR`, `NFR`)",
         "- [`EDU-TER-W-001_Test_Environment.md`](EDU-TER-W-001_Test_Environment.md) — Hồ sơ môi trường kiểm thử cô lập `edumy-test`",
         "- [`EDU-TEL-W-001_Execution_Log.csv`](EDU-TEL-W-001_Execution_Log.csv) — Nhật ký thực thi đầy đủ 3 chu kỳ C1/C2/C3",
-        "- [`EDU-TIR-W-001_Defect_Report.md`](EDU-TIR-W-001_Defect_Report.md) — Báo cáo 30 Defect & trạng thái đóng/mở",
+        "- [`EDU-TIR-W-001_Defect_Report.md`](EDU-TIR-W-001_Defect_Report.md) — Báo cáo 32 Defect & trạng thái đóng/mở",
         "- [`EDU-TSR-W-001_Status_Report.md`](EDU-TSR-W-001_Status_Report.md) & [`EDU-TSR-W-002_Status_Report.md`](EDU-TSR-W-002_Status_Report.md) — Báo cáo trạng thái các chu kỳ",
         "- [`EDU-TCR-W-001_Test_Completion_Report.md`](EDU-TCR-W-001_Test_Completion_Report.md) — Báo cáo hoàn tất kiểm thử (tài liệu này)",
-        "- `evidence/` — 331 tệp bằng chứng JSON/log đã che toàn bộ thông tin nhạy cảm (`***`)",
+        "- `evidence/` — 354 tệp bằng chứng (JSON/log + 16 ảnh chụp màn hình Chrome 157) đã che toàn bộ thông tin nhạy cảm (`***`)",
         "- `charts/` — 4 biểu đồ PNG tự sinh từ dữ liệu thật",
         "",
         "### Tài sản tự động hóa tái sử dụng (Reusable QA Assets)",
@@ -459,7 +466,7 @@ def write_progress():
 | **Pha 2** | Thiết kế & Sinh Test Case + RTM | **HOÀN TẤT** | `EDU-TDS-W-001_Test_Design.md`, `EDU-TCS-W-001_Test_Cases.xlsx` (8 sheet, 134 TC, 100% RTM) |
 | **Pha 3** | Môi trường cô lập & Smoke Test | **HOÀN TẤT** | `docker-compose.test.yml` (6 containers `edumy-test`), `seed_and_baseline.mjs`, `smoke_test.mjs` (10/10 PASS), `EDU-TER-W-001_Test_Environment.md` |
 | **Pha 4 (C1)** | Thực thi Chu kỳ C1 (`Edumy-main@bf4ac6c`) | **HOÀN TẤT** | 57 Pass / 69 Fail / 8 Blocked; phát hiện 30 Defect (7 S1, 17 S2, 5 S3, 1 S4); `EDU-TSR-W-001_Status_Report.md` |
-| **Pha 5 (Fix + C2/C3)** | Sửa lỗi + Kiểm thử lại & Hồi quy (`@836460a`, `@a44cb7d`) | **HOÀN TẤT** | 47/47 JUnit 5 PASS; C2/C3 nâng kết quả lên **{tot['pass']} Pass / {tot['fail']} Fail / {tot['blocked']} Blocked** (**28/30 Defect Closed**, **7/7 S1 Closed**); `EDU-TSR-W-002_Status_Report.md` |
+| **Pha 5 (Fix + C2/C3)** | Sửa lỗi + Kiểm thử lại, Hồi quy API & UI Chrome 157 (`@836460a`, `@a44cb7d`) | **HOÀN TẤT** | 47/47 JUnit 5 PASS; C2/C3 + 7 TC UI nâng kết quả lên **{tot['pass']} Pass / {tot['fail']} Fail / {tot['blocked']} Blocked** (**{METRICS['closed_defects']}/{METRICS['total_defects']} Defect Closed**, **7/7 S1 Closed**); `EDU-TSR-W-002_Status_Report.md` |
 | **Pha 6** | Báo cáo hoàn tất & Chốt bàn giao | **HOÀN TẤT** | `EDU-TCR-W-001_Test_Completion_Report.md` (9 bảng + 4 biểu đồ PNG), `EDU-TIR-W-001_Defect_Report.md`, cập nhật `.xlsx` — **Quyết định: CONDITIONAL GO** |
 """
     with open(PROG_PATH, "w", encoding="utf-8") as f:

@@ -5,30 +5,31 @@
 | **Mã tài liệu** | `EDU-TIR-W-001` (Cập nhật cuối Chu kỳ C3) |
 | **Các chu kỳ** | `C1` (`Edumy-main@bf4ac6c`) → `C2` (`Edumy-main@836460a`) → `C3` (`Edumy-main@a44cb7d`) |
 | **Thời điểm cập nhật** | `2026-11-21` (Asia/Ho_Chi_Minh) |
-| **Tổng số Defect** | **30** (`S1`: 7 · `S2`: 17 · `S3`: 5 · `S4`: 1) |
-| **Trạng thái cuối C3** | **Closed: 28/30 (93.33%)** · **Open/Deferred: 2** (`S1 Open`: **0**, `S2 Open`: **1**, `S3 Open`: **0**, `S4 Deferred`: **1**) |
+| **Tổng số Defect** | **32** (`S1`: 7 · `S2`: 18 · `S3`: 6 · `S4`: 1) |
+| **Trạng thái cuối C3** | **Closed: 28/32 (87.5%)** · **Open/Deferred: 4** (`S1 Open`: **0**, `S2 Open`: **2**, `S3 Open`: **1**, `S4 Deferred`: **1**) |
 
 ## 1. Bảng tổng hợp Defect theo Severity & Trạng thái đóng
 
 | Severity | Tổng phát hiện (C1) | Đã đóng (C2/C3) | Còn mở / Hoãn | Tỷ lệ đóng |
 | :---: | ---: | ---: | ---: | ---: |
 | **S1** | 7 | 7 | 0 | 100.0% |
-| **S2** | 17 | 16 | 1 | 94.12% |
-| **S3** | 5 | 5 | 0 | 100.0% |
+| **S2** | 18 | 16 | 2 | 88.89% |
+| **S3** | 6 | 5 | 1 | 83.33% |
 | **S4** | 1 | 0 | 1 | 0.0% |
-| **Tổng** | **30** | **28** | **2** | **93.33%** |
+| **Tổng** | **32** | **28** | **4** | **87.5%** |
 
 ## 2. Phân bố Defect theo Loại lỗi
 
 | Loại lỗi | Số lượng |
 | :--- | ---: |
-| Functional | 14 |
+| Functional | 15 |
 | Security | 11 |
 | Spec Mismatch | 3 |
 | Not Implemented | 1 |
 | Performance | 1 |
+| Usability | 1 |
 
-## 3. Danh sách chi tiết toàn bộ 30 Defect (`DEF-W-001` .. `DEF-W-030`)
+## 3. Danh sách chi tiết toàn bộ Defect (`DEF-W-001` .. `DEF-W-032`)
 
 | Defect ID | Severity | Module | Loại lỗi | Trạng thái | Chu kỳ đóng | Commit sửa | TC liên quan | Tóm tắt & Bằng chứng xác nhận |
 | :--- | :---: | :---: | :--- | :---: | :---: | :---: | :--- | :--- |
@@ -62,6 +63,8 @@
 | **DEF-W-028** | **S3** | W-REG | Functional | **Closed** | C2 | `Edumy-main@098233f` | `TC-W-REG-MNT-001` | Còn sót endpoint AI/ML cũ GET /api/v1/admin/ml-monitoring trong AdminController.java:352 trả HTTP 200 ([evidence](evidence/RUN-W-C2-0127_TC-W-REG-MNT-001.json)) |
 | **DEF-W-029** | **S3** | W-M03 | Functional | **Closed** | C2 | `Edumy-main@836460a` | `TC-W-M03-FN-008, TC-W-M03-FN-011, TC-W-M03-FN-021, TC-W-M01-FN-005, TC-W-M01-SEC-002, TC-W-M05-SEC-003` | Thiếu kiểm tra validation dữ liệu rỗng khi tạo chương học (CourseSection), tạo Tag, tạo Quiz sai sectionId (500), Web revoke-token trả 400 và đánh giá khóa COMPLETED bị chặn ([evidence](evidence/RUN-W-C3-0044_TC-W-M03-FN-008.json)) |
 | **DEF-W-030** | **S4** | W-M07 | Functional | **Deferred** | — | — | `TC-W-M07-MNT-002` | Mã chết / trang chưa gắn route: Wishlist.jsx & MockPaymentGateway.jsx chưa được nối trong App.jsx; LessonController.java & QuizController.java rỗng ([evidence](evidence/RUN-W-C2-0124_TC-W-M07-MNT-002.json)) |
+| **DEF-W-031** | **S3** | W-M07 | Functional | **Open** | — | — | `TC-W-M07-PERF-003` | Trang chi tiết khóa học (/courses/{id}) gọi trái quyền API giảng viên /co-instructors gây lỗi HTTP 403 trên console cho học viên; video mẫu BigBuckBunny.mp4 bị Chrome chặn ORB ([evidence](evidence/RUN-W-C3-0130_TC-W-M07-PERF-003.json)) |
+| **DEF-W-032** | **S2** | W-M07 | Usability | **Open** | — | — | `TC-W-M07-USA-001` | Lỗi Responsive nghiêm trọng trên Mobile 360px & Tablet 768px: /cart tràn ngang cắt giá & nút thanh toán; /my-courses/{id}/learn mở sẵn sidebar đè player và cắt tab Hỏi & Đáp (Q&A); còn nhãn tiếng Anh chưa Việt hóa ([evidence](evidence/RUN-W-C3-0131_TC-W-M07-USA-001.json)) |
 
 ## 4. Chi tiết các Defect còn Mở / Hoãn (Residual Defects)
 
@@ -76,3 +79,15 @@
 - **Thực tế mới nhất**: Wishlist.jsx và MockPaymentGateway.jsx chưa gắn route trong App.jsx; LessonController.java và QuizController.java là file rỗng; oxlint 0 errors / 64 warnings. Dời sang backlog dọn mã kỹ thuật (S4 Trivial).
 - **Ghi chú xử lý**: Mức S4 Trivial, không ảnh hưởng chức năng chạy thực tế; hoãn dọn dẹp ở sprint kế tiếp.
 - **Bằng chứng**: `evidence/RUN-W-C2-0124_TC-W-M07-MNT-002.json`
+
+### DEF-W-031 [S3 / Open / Functional] — Trang chi tiết khóa học (/courses/{id}) gọi trái quyền API giảng viên /co-instructors gây lỗi HTTP 403 trên console cho học viên; video mẫu BigBuckBunny.mp4 bị Chrome chặn ORB
+- **Module**: `W-M07` · **Truy vết**: `NFR-05` · **Verify Run**: `RUN-W-C3-0130`
+- **Thực tế mới nhất**: Tốc độ tải đạt tốt (LCP 290–903ms, CLS 0.00–0.10), nhưng /courses/49 gọi GET /api/v1/instructor/courses/49/co-instructors [403] khi đăng nhập Student HV1 (sinh console error) và /my-courses/47/learn tải video mẫu BigBuckBunny.mp4 bị net::ERR_BLOCKED_BY_ORB.
+- **Ghi chú xử lý**: Frontend CourseDetail.jsx cần chỉ gọi /co-instructors khi user là Instructor/Admin (hoặc dùng endpoint công khai trả danh sách đồng GV) và thay URL video mẫu không bị ORB.
+- **Bằng chứng**: `evidence/RUN-W-C3-0130_TC-W-M07-PERF-003.json`
+
+### DEF-W-032 [S2 / Open / Usability] — Lỗi Responsive nghiêm trọng trên Mobile 360px & Tablet 768px: /cart tràn ngang cắt giá & nút thanh toán; /my-courses/{id}/learn mở sẵn sidebar đè player và cắt tab Hỏi & Đáp (Q&A); còn nhãn tiếng Anh chưa Việt hóa
+- **Module**: `W-M07` · **Truy vết**: `NFR-07` · **Verify Run**: `RUN-W-C3-0131`
+- **Thực tế mới nhất**: 4 trang (/, /courses, /courses/49, /instructor/courses/new) đạt 3 viewport; nhưng /cart (360px) tràn ngang cắt giá '300.000 ₫', nút 'Áp dụng' và 'Tiến hành thanh toán (1)'; /my-courses/47/learn (360px) mở sẵn sidebar đè player/cắt text tiến độ và (768px) cắt ngang tab thứ 4 'Hỏi & Đáp (Q&A)'. Còn nhãn tiếng Anh ('Instructor', 'Student', 'Draft', 'PendingApproval', 'Published', 'Hidden', 'NeedsReview').
+- **Ghi chú xử lý**: Bắt buộc sửa CSS responsive cho Cart.jsx & CoursePlayer.jsx (đóng sidebar mặc định ở <1024px, flex-wrap tab bar) và Việt hóa badge vai trò/trạng thái.
+- **Bằng chứng**: `evidence/RUN-W-C3-0131_TC-W-M07-USA-001.json`

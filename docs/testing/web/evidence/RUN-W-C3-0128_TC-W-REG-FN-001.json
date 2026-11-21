@@ -1,0 +1,21 @@
+{
+  "runId": "RUN-W-C3-0128",
+  "tcId": "TC-W-REG-FN-001",
+  "cycle": "C3",
+  "commit": "Edumy-main@a44cb7d",
+  "browser": "Google Chrome 157.0.0.0 (Windows x64, Chrome DevTools MCP)",
+  "timestamp": "2026-11-22T00:37:49+07:00",
+  "status": "Pass",
+  "createdCourseId": 1066,
+  "sectionsCreated": [
+    1107,
+    1108
+  ],
+  "lessonsCreated": 4,
+  "coInstructorInvited": "qa.gvco@edumy.test (HTTP 200)",
+  "aiMlUiElementsFound": 0,
+  "consoleErrors": 0,
+  "screenshots": [
+    "evidence/RUN-W-C3-0128_TC-W-REG-FN-001_curriculum.png"
+  ]
+}

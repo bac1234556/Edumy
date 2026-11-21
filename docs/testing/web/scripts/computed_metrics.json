@@ -112,32 +112,32 @@
       "key": "W-M07",
       "total": 19,
       "executed": 19,
-      "pass": 10,
-      "fail": 3,
-      "blocked": 6,
+      "pass": 12,
+      "fail": 5,
+      "blocked": 2,
       "notRun": 0,
-      "totalRuns": 38,
+      "totalRuns": 43,
       "cycles": 3,
       "execRate": 100.0,
-      "passRate": 52.63,
+      "passRate": 63.16,
       "firstTimePassRate": 36.84,
       "S1": 0,
-      "S2": 3,
-      "S3": 0,
+      "S2": 4,
+      "S3": 1,
       "S4": 1
     },
     {
       "key": "W-REG",
       "total": 3,
       "executed": 3,
-      "pass": 1,
+      "pass": 3,
       "fail": 0,
-      "blocked": 2,
+      "blocked": 0,
       "notRun": 0,
-      "totalRuns": 6,
+      "totalRuns": 8,
       "cycles": 3,
       "execRate": 100.0,
-      "passRate": 33.33,
+      "passRate": 100.0,
       "firstTimePassRate": 0.0,
       "S1": 0,
       "S2": 0,
@@ -148,18 +148,18 @@
       "key": "Tổng",
       "total": 134,
       "executed": 134,
-      "pass": 123,
-      "fail": 3,
-      "blocked": 8,
+      "pass": 127,
+      "fail": 5,
+      "blocked": 2,
       "notRun": 0,
-      "totalRuns": 324,
+      "totalRuns": 331,
       "cycles": 3,
       "execRate": 100.0,
-      "passRate": 91.79,
+      "passRate": 94.78,
       "firstTimePassRate": 42.54,
       "S1": 7,
-      "S2": 17,
-      "S3": 5,
+      "S2": 18,
+      "S3": 6,
       "S4": 1
     }
   ],
@@ -168,14 +168,14 @@
       "key": "FN",
       "total": 95,
       "executed": 95,
-      "pass": 93,
+      "pass": 95,
       "fail": 0,
-      "blocked": 2,
+      "blocked": 0,
       "notRun": 0,
-      "totalRuns": 237,
+      "totalRuns": 239,
       "cycles": 3,
       "execRate": 100.0,
-      "passRate": 97.89,
+      "passRate": 100.0,
       "firstTimePassRate": 44.21
     },
     {
@@ -197,10 +197,10 @@
       "total": 3,
       "executed": 3,
       "pass": 2,
-      "fail": 0,
-      "blocked": 1,
+      "fail": 1,
+      "blocked": 0,
       "notRun": 0,
-      "totalRuns": 6,
+      "totalRuns": 7,
       "cycles": 3,
       "execRate": 100.0,
       "passRate": 66.67,
@@ -252,14 +252,14 @@
       "key": "USA",
       "total": 3,
       "executed": 3,
-      "pass": 0,
-      "fail": 0,
-      "blocked": 3,
+      "pass": 2,
+      "fail": 1,
+      "blocked": 0,
       "notRun": 0,
-      "totalRuns": 6,
+      "totalRuns": 9,
       "cycles": 3,
       "execRate": 100.0,
-      "passRate": 0.0,
+      "passRate": 66.67,
       "firstTimePassRate": 0.0
     },
     {
@@ -270,7 +270,7 @@
       "fail": 0,
       "blocked": 1,
       "notRun": 0,
-      "totalRuns": 2,
+      "totalRuns": 3,
       "cycles": 3,
       "execRate": 100.0,
       "passRate": 0.0,
@@ -308,14 +308,14 @@
       "key": "Tổng",
       "total": 134,
       "executed": 134,
-      "pass": 123,
-      "fail": 3,
-      "blocked": 8,
+      "pass": 127,
+      "fail": 5,
+      "blocked": 2,
       "notRun": 0,
-      "totalRuns": 324,
+      "totalRuns": 331,
       "cycles": 3,
       "execRate": 100.0,
-      "passRate": 91.79,
+      "passRate": 94.78,
       "firstTimePassRate": 42.54
     }
   ],
@@ -342,24 +342,25 @@
     },
     {
       "cycle": "C3",
-      "executed": 56,
-      "pass": 56,
-      "fail": 0,
-      "blocked": 0,
-      "defectsNew": 0,
+      "executed": 63,
+      "pass": 60,
+      "fail": 2,
+      "blocked": 1,
+      "defectsNew": 2,
       "defectsClosed": 4,
       "defectsReopened": 0
     }
   ],
   "table5_defects_by_sev": {
     "S1": 7,
-    "S2": 17,
-    "S3": 5,
+    "S2": 18,
+    "S3": 6,
     "S4": 1
   },
   "table5_defects_open_by_sev": {
-    "S2": 1,
-    "S4": 1
+    "S2": 2,
+    "S4": 1,
+    "S3": 1
   },
   "table5_defects_closed_by_sev": {
     "S1": 7,
@@ -368,17 +369,18 @@
   },
   "table5_defects_by_type": {
     "Security": 11,
-    "Functional": 14,
+    "Functional": 15,
     "Spec Mismatch": 3,
     "Not Implemented": 1,
-    "Performance": 1
+    "Performance": 1,
+    "Usability": 1
   },
   "table6_req": [
     {
       "type": "UC",
       "total": 75,
       "withTc": 75,
-      "allPass": 74,
+      "allPass": 75,
       "gaps": 0,
       "failedReqs": []
     },
@@ -394,7 +396,7 @@
       "type": "AC",
       "total": 37,
       "withTc": 37,
-      "allPass": 36,
+      "allPass": 37,
       "gaps": 0,
       "failedReqs": []
     },
@@ -406,6 +408,8 @@
       "gaps": 0,
       "failedReqs": [
         "NFR-02",
+        "NFR-05",
+        "NFR-07",
         "NFR-08",
         "NFR-10"
       ]
@@ -430,7 +434,7 @@
       "type": "REG",
       "total": 2,
       "withTc": 2,
-      "allPass": 1,
+      "allPass": 2,
       "gaps": 0,
       "failedReqs": []
     }
@@ -2476,16 +2480,17 @@
       "module": "W-M07",
       "type": "PERF",
       "priority": "Medium",
-      "status": "Blocked",
-      "runCount": 2,
+      "status": "Fail",
+      "runCount": 3,
       "firstPass": false,
-      "latestRunId": "RUN-W-C2-0128",
-      "latestActual": "Chrome DevTools remote debugging (DevToolsActivePort) chưa bật trên máy host trong C2 -> không thể chạy Lighthouse Performance audit.",
-      "latestEvidence": "evidence/RUN-W-C2-0128_TC-W-M07-PERF-003.json",
-      "latestDate": "2026-11-21T23:38:04+07:00",
+      "latestRunId": "RUN-W-C3-0130",
+      "latestActual": "Trace Chrome 157: /(LCP=290ms,CLS=0.00,0 err), /courses(LCP=778ms,CLS=0.01,0 err), /courses/49(LCP=903ms,CLS=0.06, 1 console err: GET /api/v1/instructor/courses/49/co-instructors 403 cho Student HV1), /my-courses/47/learn(LCP=616ms,CLS=0.10, BigBuckBunny.mp4 ERR_BLOCKED_BY_ORB). Không đạt tiêu chí 0 lỗi console/4xx.",
+      "latestEvidence": "evidence/RUN-W-C3-0130_TC-W-M07-PERF-003.json",
+      "latestDate": "2026-11-22T00:37:49+07:00",
       "byCycle": {
         "C1": "Blocked",
-        "C2": "Blocked"
+        "C2": "Blocked",
+        "C3": "Fail"
       }
     },
     "TC-W-M07-REC-001": {
@@ -2556,48 +2561,51 @@
       "module": "W-M07",
       "type": "USA",
       "priority": "Medium",
-      "status": "Blocked",
-      "runCount": 2,
+      "status": "Fail",
+      "runCount": 3,
       "firstPass": false,
-      "latestRunId": "RUN-W-C2-0129",
-      "latestActual": "Chrome DevTools remote debugging chưa bật trong C2 -> chưa kiểm tra visual Responsive 360/768/1366px trên trình duyệt.",
-      "latestEvidence": "evidence/RUN-W-C2-0129_TC-W-M07-USA-001.json",
-      "latestDate": "2026-11-21T23:38:04+07:00",
+      "latestRunId": "RUN-W-C3-0131",
+      "latestActual": "4 trang (/, /courses, /courses/49, /instructor/courses/new) PASS cả 360/768/1366px; FAIL tràn ngang nghiêm trọng tại /cart (360px cắt giá 300.000₫, nút Áp dụng & Thanh toán) và /my-courses/47/learn (360px sidebar mở đè player cắt tiến độ; 768px cắt tab thứ 4 'Hỏi & Đáp (Q&A)'). Còn nhãn tiếng Anh (Instructor/Student/Draft/Published/NeedsReview).",
+      "latestEvidence": "evidence/RUN-W-C3-0131_TC-W-M07-USA-001.json",
+      "latestDate": "2026-11-22T00:37:49+07:00",
       "byCycle": {
         "C1": "Blocked",
-        "C2": "Blocked"
+        "C2": "Blocked",
+        "C3": "Fail"
       }
     },
     "TC-W-M07-USA-002": {
       "module": "W-M07",
       "type": "USA",
       "priority": "Medium",
-      "status": "Blocked",
-      "runCount": 2,
+      "status": "Pass",
+      "runCount": 3,
       "firstPass": false,
-      "latestRunId": "RUN-W-C2-0130",
-      "latestActual": "Chrome DevTools remote debugging chưa bật trong C2 -> chưa kiểm tra trực quan UI thông báo lỗi từng trường & trạng thái rỗng.",
-      "latestEvidence": "evidence/RUN-W-C2-0130_TC-W-M07-USA-002.json",
-      "latestDate": "2026-11-21T23:38:04+07:00",
+      "latestRunId": "RUN-W-C3-0132",
+      "latestActual": "/register hiển thị lỗi inline tiếng Việt rõ từng trường (rỗng & sai định dạng); /cart trống có thông báo & nút khám phá; coupon EXPIRED2025 báo inline 'Mã giảm giá không tồn tại.'; HV1 vào /admin bị chặn và redirect về / (góp ý UX: nên hiện thêm toast báo thiếu quyền); /payment-cancel hiển thị tiếng Việt & 2 nút điều hướng.",
+      "latestEvidence": "evidence/RUN-W-C3-0132_TC-W-M07-USA-002.json",
+      "latestDate": "2026-11-22T00:37:49+07:00",
       "byCycle": {
         "C1": "Blocked",
-        "C2": "Blocked"
+        "C2": "Blocked",
+        "C3": "Pass"
       }
     },
     "TC-W-M07-USA-003": {
       "module": "W-M07",
       "type": "USA",
       "priority": "Medium",
-      "status": "Blocked",
-      "runCount": 2,
+      "status": "Pass",
+      "runCount": 3,
       "firstPass": false,
-      "latestRunId": "RUN-W-C2-0131",
-      "latestActual": "Chrome DevTools remote debugging chưa bật trong C2 -> chưa kiểm tra điều hướng bàn phím & Lighthouse Accessibility.",
-      "latestEvidence": "evidence/RUN-W-C2-0131_TC-W-M07-USA-003.json",
-      "latestDate": "2026-11-21T23:38:04+07:00",
+      "latestRunId": "RUN-W-C3-0133",
+      "latestActual": "Điều hướng Tab/Enter trên Navbar, /login và /courses hoạt động mượt với focus ring xanh rõ nét; Lighthouse Accessibility đạt >= 90 trên cả 3 trang: /=93, /courses=94, /courses/49=94 (<html lang=vi>, landmark & img alt đạt 100%; ghi nhận điểm tối ưu nhỏ contrast rating-count & heading-order).",
+      "latestEvidence": "evidence/RUN-W-C3-0133_TC-W-M07-USA-003.json",
+      "latestDate": "2026-11-22T00:37:49+07:00",
       "byCycle": {
         "C1": "Blocked",
-        "C2": "Blocked"
+        "C2": "Blocked",
+        "C3": "Pass"
       }
     },
     "TC-W-M07-COMP-001": {
@@ -2605,15 +2613,16 @@
       "type": "COMP",
       "priority": "Medium",
       "status": "Blocked",
-      "runCount": 2,
+      "runCount": 3,
       "firstPass": false,
-      "latestRunId": "RUN-W-C2-0132",
-      "latestActual": "Chrome DevTools chưa kết nối (DevToolsActivePort ENOENT) và Firefox chưa cài đặt trên máy host.",
-      "latestEvidence": "evidence/RUN-W-C2-0132_TC-W-M07-COMP-001.json",
-      "latestDate": "2026-11-21T23:38:04+07:00",
+      "latestRunId": "RUN-W-C3-0134",
+      "latestActual": "Đã chạy đủ 5 luồng High trên Google Chrome 157.0.0.0 (Login/CreateCourse/Detail/Cart/Player hoạt động trên desktop; phát hiện DEF-W-031 403 trên /courses/49 và DEF-W-032 responsive /cart & /learn). Còn BLOCKED phần Microsoft Edge và Mozilla Firefox do phiên DevTools MCP chỉ kết nối Chrome và máy chưa cài Firefox.",
+      "latestEvidence": "evidence/RUN-W-C3-0134_TC-W-M07-COMP-001.json",
+      "latestDate": "2026-11-22T00:37:49+07:00",
       "byCycle": {
         "C1": "Blocked",
-        "C2": "Blocked"
+        "C2": "Blocked",
+        "C3": "Blocked"
       }
     },
     "TC-W-M07-MNT-001": {
@@ -2684,32 +2693,34 @@
       "module": "W-REG",
       "type": "FN",
       "priority": "High",
-      "status": "Blocked",
-      "runCount": 2,
+      "status": "Pass",
+      "runCount": 3,
       "firstPass": false,
-      "latestRunId": "RUN-W-C2-0133",
-      "latestActual": "Chrome DevTools remote debugging chưa bật trong C2 -> chưa chạy UI E2E tạo khóa 1 trang trên CourseCreate.jsx (API tạo khóa/giáo trình/đồng GV đạt 28/28 PASS ở W-M03).",
-      "latestEvidence": "evidence/RUN-W-C2-0133_TC-W-REG-FN-001.json",
-      "latestDate": "2026-11-21T23:38:04+07:00",
+      "latestRunId": "RUN-W-C3-0128",
+      "latestActual": "Tạo khóa 1 trang CourseCreate.jsx thành công (Course ID=1066, 2 chương 1107/1108, 4 bài học gồm video preview + bài đọc, mời đồng GV qa.gvco@edumy.test [200]), 0 lỗi JS console, 0 nút/tab AI/ML; xác minh hiển thị đủ trên CourseCurriculumEditor.",
+      "latestEvidence": "evidence/RUN-W-C3-0128_TC-W-REG-FN-001.json",
+      "latestDate": "2026-11-22T00:37:49+07:00",
       "byCycle": {
         "C1": "Blocked",
-        "C2": "Blocked"
+        "C2": "Blocked",
+        "C3": "Pass"
       }
     },
     "TC-W-REG-FN-002": {
       "module": "W-REG",
       "type": "FN",
       "priority": "High",
-      "status": "Blocked",
-      "runCount": 2,
+      "status": "Pass",
+      "runCount": 3,
       "firstPass": false,
-      "latestRunId": "RUN-W-C2-0134",
-      "latestActual": "Chrome DevTools remote debugging chưa bật trong C2 -> chưa chạy UI E2E validation/partial-failure/double-submit trên CourseCreate.jsx.",
-      "latestEvidence": "evidence/RUN-W-C2-0134_TC-W-REG-FN-002.json",
-      "latestDate": "2026-11-21T23:38:04+07:00",
+      "latestRunId": "RUN-W-C3-0129",
+      "latestActual": "Validation inline tiếng Việt rõ từng trường (title, price=-1000, category, section, lesson); price=5000 bị API chặn 400 với banner rõ; partial failure (ghost@edumy.test->404) tạo khóa 1067 và hiện role=alert cảnh báo chi tiết trên curriculum; double-click tạo ĐÚNG 1 khóa 1068 (nút disable khi submit).",
+      "latestEvidence": "evidence/RUN-W-C3-0129_TC-W-REG-FN-002.json",
+      "latestDate": "2026-11-22T00:37:49+07:00",
       "byCycle": {
         "C1": "Blocked",
-        "C2": "Blocked"
+        "C2": "Blocked",
+        "C3": "Pass"
       }
     },
     "TC-W-REG-MNT-001": {
@@ -2939,6 +2950,12 @@
     ],
     "TC-W-M07-MNT-002": [
       "DEF-W-030"
+    ],
+    "TC-W-M07-PERF-003": [
+      "DEF-W-031"
+    ],
+    "TC-W-M07-USA-001": [
+      "DEF-W-032"
     ]
   },
   "perf_c1": {
@@ -3177,8 +3194,8 @@
       }
     ]
   },
-  "total_defects": 30,
+  "total_defects": 32,
   "closed_defects": 28,
-  "open_defects": 2,
-  "defect_fix_rate": 93.33
+  "open_defects": 4,
+  "defect_fix_rate": 87.5
 }
