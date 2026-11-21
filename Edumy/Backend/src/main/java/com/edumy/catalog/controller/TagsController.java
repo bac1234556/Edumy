@@ -37,11 +37,16 @@ public class TagsController {
     @PostMapping
     @PreAuthorize("hasAnyRole('Instructor', 'Admin')")
     public ResponseEntity<?> createTag(@RequestBody Tag tag) {
-        Tag existing = tagRepository.findByNameIgnoreCase(tag.getName());
+        if (tag == null || tag.getName() == null || tag.getName().trim().isEmpty()) {
+            return ResponseEntity.badRequest().body(java.util.Map.of("message", "Tên thẻ (tag) không được để trống."));
+        }
+        String cleanName = tag.getName().trim();
+        Tag existing = tagRepository.findByNameIgnoreCase(cleanName);
         if (existing != null) {
             return ResponseEntity.ok(existing);
         }
-        
+
+        tag.setName(cleanName);
         Tag savedTag = tagRepository.save(tag);
         return ResponseEntity.created(URI.create("/api/Tags/" + savedTag.getId())).body(savedTag);
     }

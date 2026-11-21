@@ -225,18 +225,25 @@ public class PaymentServiceImpl implements PaymentService {
                     .build();
         }
 
-        // 1. Xác thực API Key / Bearer Token từ Header nếu SePay có gửi
-        if (authHeader != null && !authHeader.trim().isEmpty()) {
-            String cleanAuth = authHeader.replace("Bearer ", "").replace("Apikey ", "").trim();
-            if (webhookApiKey != null && !webhookApiKey.trim().isEmpty() && !webhookApiKey.equalsIgnoreCase(cleanAuth)) {
-                logger.warn("Webhook Unauthorized: Sai API Key trong Header: {}", authHeader);
+        // 1. BẮT BUỘC xác thực API Key / Bearer Token từ Header (BR-26 / OWASP A07)
+        if (webhookApiKey != null && !webhookApiKey.trim().isEmpty()) {
+            if (authHeader == null || authHeader.trim().isEmpty()) {
+                logger.warn("Webhook Unauthorized: Thiếu Header Authorization / X-Api-Key");
+                return PaymentWebhookResponseDto.builder()
+                        .rspCode("97")
+                        .message("Unauthorized: Thiếu API Key xác thực Webhook")
+                        .build();
+            }
+            String cleanAuth = authHeader.replaceFirst("(?i)^Bearer\\s+", "")
+                    .replaceFirst("(?i)^Apikey\\s+", "")
+                    .trim();
+            if (!webhookApiKey.trim().equals(cleanAuth)) {
+                logger.warn("Webhook Unauthorized: Sai API Key trong Header");
                 return PaymentWebhookResponseDto.builder()
                         .rspCode("97")
                         .message("Unauthorized: Sai API Key hoặc Token xác thực Webhook")
                         .build();
             }
-        } else {
-            logger.info("--> [SePay Webhook] Request nhận không kèm Header Authorization / API Key (chấp nhận theo cơ chế mở SePay Webhook)");
         }
 
         // 2. Kiểm tra loại giao dịch: bỏ qua tiền ra (transferType == "out")
@@ -344,16 +351,47 @@ public class PaymentServiceImpl implements PaymentService {
                     .build();
         }
 
-        // So khớp số tiền thực nhận với tổng giá trị đơn hàng
+        // BR-28: Nếu đơn hàng đã bị hủy / hết hạn mà nhận webhook thanh toán muộn -> chuyển chờ đối soát (NEEDS_REVIEW), KHÔNG cấp quyền học
+        if ("CANCELLED".equalsIgnoreCase(order.getStatus()) || "EXPIRED".equalsIgnoreCase(order.getStatus())) {
+            String prevStatus = order.getStatus();
+            order.setStatus("NEEDS_REVIEW");
+            order.setReconciliationNote("Nhận thanh toán muộn cho đơn hàng đã " + prevStatus
+                    + " (Số tiền: " + receivedAmount + ", Ref: " + transactionRef + ")");
+            orderRepository.save(order);
+            logger.warn("--> [Payment] Đơn hàng #{} đã {} nhưng nhận thanh toán muộn. Chuyển NEEDS_REVIEW.", orderId, prevStatus);
+            return PaymentWebhookResponseDto.builder()
+                    .rspCode("05")
+                    .orderId(orderId)
+                    .orderStatus("NEEDS_REVIEW")
+                    .message("Đơn hàng đã " + prevStatus + "; giao dịch đã được đánh dấu chờ đối soát thủ công (NEEDS_REVIEW).")
+                    .build();
+        }
+
+        if ("NEEDS_REVIEW".equalsIgnoreCase(order.getStatus())
+                || "RECONCILE".equalsIgnoreCase(order.getStatus())
+                || "REFUNDED_EXTERNAL".equalsIgnoreCase(order.getStatus())) {
+            return PaymentWebhookResponseDto.builder()
+                    .rspCode("05")
+                    .orderId(orderId)
+                    .orderStatus(order.getStatus())
+                    .message("Đơn hàng đang chờ hoặc đã qua xử lý đối soát (" + order.getStatus() + ").")
+                    .build();
+        }
+
+        // So khớp số tiền thực nhận với tổng giá trị đơn hàng -> thiếu tiền chuyển NEEDS_REVIEW, không cấp quyền học
         if (receivedAmount != null && order.getTotalAmount() != null) {
             if (receivedAmount.compareTo(order.getTotalAmount()) < 0) {
-                logger.warn("--> [Payment] Đơn hàng #{}: Số tiền nhận ({}) nhỏ hơn tổng tiền đơn hàng ({})", 
+                order.setStatus("NEEDS_REVIEW");
+                order.setReconciliationNote("Số tiền chuyển khoản (" + receivedAmount + ") nhỏ hơn tổng tiền đơn hàng ("
+                        + order.getTotalAmount() + ", Ref: " + transactionRef + ")");
+                orderRepository.save(order);
+                logger.warn("--> [Payment] Đơn hàng #{}: Số tiền nhận ({}) nhỏ hơn tổng tiền đơn hàng ({}). Chuyển NEEDS_REVIEW.",
                         orderId, receivedAmount, order.getTotalAmount());
                 return PaymentWebhookResponseDto.builder()
                         .rspCode("04")
                         .orderId(orderId)
-                        .orderStatus(order.getStatus())
-                        .message("Số tiền chuyển khoản (" + receivedAmount + ") chưa đủ tổng tiền đơn hàng (" + order.getTotalAmount() + ")")
+                        .orderStatus("NEEDS_REVIEW")
+                        .message("Số tiền chuyển khoản (" + receivedAmount + ") chưa đủ tổng tiền đơn hàng (" + order.getTotalAmount() + "). Đơn hàng đã chuyển sang NEEDS_REVIEW.")
                         .build();
             }
         }

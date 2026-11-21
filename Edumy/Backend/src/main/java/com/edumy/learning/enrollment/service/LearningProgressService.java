@@ -33,6 +33,12 @@ public class LearningProgressService {
     private final QuizAttemptRepository quizAttemptRepository;
     private final CertificateRepository certificateRepository;
 
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    private com.edumy.authoring.repository.CourseRepository courseRepository;
+
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    private com.edumy.identity.user.repository.UserRepository userRepository;
+
     public LearningProgressService(LessonRepository lessonRepository,
                                    CourseSectionRepository courseSectionRepository,
                                    LessonProgressRepository lessonProgressRepository,
@@ -144,7 +150,7 @@ public class LearningProgressService {
         long totalItems = totalLessons + totalQuizzes;
         long completedItems = completedLessons + completedQuizzes;
         int progressPercentage = totalItems > 0
-                ? (int) Math.min(100, Math.round((double) completedItems / totalItems * 100))
+                ? (int) Math.min(100, Math.floor((double) completedItems / totalItems * 100))
                 : 0;
 
         Certificate cert = certificateRepository.findByUserIdAndCourseId(userId, courseId);
@@ -181,7 +187,7 @@ public class LearningProgressService {
         long totalItems = totalLessons + totalQuizzes;
         long completedItems = completedLessons + completedQuizzes;
         int progressPercent = totalItems > 0
-                ? (int) Math.min(100, Math.round((double) completedItems / totalItems * 100))
+                ? (int) Math.min(100, Math.floor((double) completedItems / totalItems * 100))
                 : 0;
 
         Enrollment enrollment = enrollmentRepository.findByUserIdAndCourseId(userId, courseId);
@@ -201,9 +207,33 @@ public class LearningProgressService {
         Certificate cert = certificateRepository.findByUserIdAndCourseId(userId, courseId);
         boolean justIssued = false;
         if (totalItems > 0 && completedItems >= totalItems && cert == null) {
+            String courseTitleSnap = null;
+            String instructorNameSnap = null;
+            String studentNameSnap = null;
+            if (courseRepository != null) {
+                var c = courseRepository.findById(courseId).orElse(null);
+                if (c != null) {
+                    courseTitleSnap = c.getTitle();
+                    if (c.getInstructor() != null) {
+                        instructorNameSnap = c.getInstructor().getFullName();
+                    } else if (c.getInstructorId() != null && userRepository != null) {
+                        instructorNameSnap = userRepository.findById(c.getInstructorId())
+                                .map(com.edumy.identity.user.model.User::getFullName)
+                                .orElse(null);
+                    }
+                }
+            }
+            if (userRepository != null) {
+                studentNameSnap = userRepository.findById(userId)
+                        .map(com.edumy.identity.user.model.User::getFullName)
+                        .orElse(null);
+            }
             cert = Certificate.builder()
                     .userId(userId)
                     .courseId(courseId)
+                    .courseTitleSnapshot(courseTitleSnap)
+                    .studentNameSnapshot(studentNameSnap)
+                    .instructorNameSnapshot(instructorNameSnap)
                     .issuedAt(LocalDateTime.now())
                     .certificateUrl("EDUMY-" + UUID.randomUUID().toString().replace("-", "").substring(0, 10).toUpperCase())
                     .build();

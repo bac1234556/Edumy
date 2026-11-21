@@ -68,7 +68,7 @@ public class Course {
     @Builder.Default
     private Integer studentCount = 0;
 
-    @Column(name = "ReviewNote", length = 1000)
+    @Column(name = "ReviewNote", columnDefinition = "NVARCHAR(MAX)")
     private String reviewNote;
 
     @Column(name = "CreatedAt")

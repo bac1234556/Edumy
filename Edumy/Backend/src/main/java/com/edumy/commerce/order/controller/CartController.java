@@ -50,6 +50,8 @@ public class CartController {
         try {
             Map<String, String> res = cartService.addToCart(userId, courseId);
             return ResponseEntity.ok(res);
+        } catch (com.edumy.shared.exception.BusinessException ex) {
+            throw ex;
         } catch (NoSuchElementException ex) {
             return ResponseEntity.status(404).body(Map.of("message", ex.getMessage()));
         } catch (IllegalStateException ex) {

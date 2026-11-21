@@ -9,6 +9,7 @@ import com.edumy.shared.exception.ErrorCode;
 import com.edumy.shared.response.ApiResponse;
 import com.edumy.shared.security.SecurityUtils;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.http.HttpHeaders;
@@ -37,7 +38,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegisterDto model) {
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterDto model) {
         return ResponseEntity.ok(authService.register(model));
     }
 

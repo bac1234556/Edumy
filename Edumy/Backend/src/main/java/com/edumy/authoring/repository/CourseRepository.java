@@ -22,6 +22,9 @@ public interface CourseRepository extends JpaRepository<Course, Integer> {
 
     List<Course> findTop4ByStatusIgnoreCaseOrderByCourseIdDesc(String status);
 
+    @Query("SELECT c FROM Course c LEFT JOIN FETCH c.instructor LEFT JOIN FETCH c.category WHERE LOWER(c.status) = 'published'")
+    List<Course> findPublishedWithRelations();
+
     @Query("SELECT c FROM Course c WHERE LOWER(c.status) = 'published' AND LOWER(c.title) LIKE LOWER(CONCAT('%', :keyword, '%')) ORDER BY c.title ASC")
     List<Course> searchInstant(@Param("keyword") String keyword, Pageable pageable);
 

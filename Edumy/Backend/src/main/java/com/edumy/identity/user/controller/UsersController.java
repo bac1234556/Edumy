@@ -89,6 +89,12 @@ public class UsersController {
             return ResponseEntity.badRequest().body(Map.of("message", "Tài khoản Quản trị viên đã có toàn quyền giảng viên."));
         }
 
+        if (Boolean.TRUE.equals(user.getInstructorRevoked())) {
+            return ResponseEntity.status(403).body(Map.of(
+                    "message", "Quyền giảng viên của tài khoản này đã bị Quản trị viên thu hồi. Bạn không thể tự kích hoạt lại."
+            ));
+        }
+
         user.setRole("Instructor");
         userRepository.save(user);
 

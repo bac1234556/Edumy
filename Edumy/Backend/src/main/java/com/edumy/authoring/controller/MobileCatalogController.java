@@ -182,8 +182,37 @@ public class MobileCatalogController {
                 ? price.toLowerCase()
                 : null;
 
-        Page<Course> coursePage = courseRepository.findPublishedCatalog(cleanQ, categoryId, cleanPrice, pageable);
-        List<Course> courses = coursePage.getContent();
+        List<Course> courses;
+        PageResponse.PageMeta meta;
+        if (cleanQ != null) {
+            // D-09: Vietnamese accent-insensitive and case-insensitive search
+            String normQ = com.edumy.shared.text.VietnameseNormalizer.normalize(cleanQ);
+            List<Course> matched = courseRepository.findPublishedWithRelations().stream()
+                    .filter(c -> {
+                        if (categoryId != null && !categoryId.equals(c.getCategoryId())) return false;
+                        if ("free".equals(cleanPrice) && c.getPrice() != null && c.getPrice().compareTo(BigDecimal.ZERO) > 0) return false;
+                        if ("paid".equals(cleanPrice) && (c.getPrice() == null || c.getPrice().compareTo(BigDecimal.ZERO) <= 0)) return false;
+                        String normTitle = com.edumy.shared.text.VietnameseNormalizer.normalize(c.getTitle());
+                        String normDesc = com.edumy.shared.text.VietnameseNormalizer.normalize(c.getDescription());
+                        return normTitle.contains(normQ) || normDesc.contains(normQ);
+                    })
+                    .sorted(resolveCourseComparator(sort))
+                    .collect(Collectors.toList());
+            long totalElements = matched.size();
+            int totalPages = (int) Math.ceil((double) totalElements / safeSize);
+            courses = matched.stream().skip((long) safePage * safeSize).limit(safeSize).collect(Collectors.toList());
+            meta = new PageResponse.PageMeta(safePage, safeSize, totalElements, totalPages);
+        } else {
+            Page<Course> coursePage = courseRepository.findPublishedCatalog(null, categoryId, cleanPrice, pageable);
+            courses = coursePage.getContent();
+            meta = new PageResponse.PageMeta(
+                    coursePage.getNumber(),
+                    coursePage.getSize(),
+                    coursePage.getTotalElements(),
+                    coursePage.getTotalPages()
+            );
+        }
+
         Map<Integer, Long> ratingCounts = loadRatingCounts(courses);
 
         List<CourseCardDto> content = courses.stream()
@@ -199,12 +228,6 @@ public class MobileCatalogController {
                     .collect(Collectors.toList());
         }
 
-        PageResponse.PageMeta meta = new PageResponse.PageMeta(
-                coursePage.getNumber(),
-                coursePage.getSize(),
-                coursePage.getTotalElements(),
-                coursePage.getTotalPages()
-        );
         return ResponseEntity.ok(new CatalogCoursePageDto(content, meta, suggestions));
     }
 
@@ -338,6 +361,12 @@ public class MobileCatalogController {
         if (course == null) {
             throw new BusinessException(HttpStatus.NOT_FOUND, "COURSE_NOT_FOUND", "Không tìm thấy khóa học.");
         }
+        Integer viewerId = SecurityUtils.getCurrentUserId();
+        boolean isInstOrEnrolled = viewerId != null && (isCourseInstructorOrAdmin(course, viewerId)
+                || enrollmentRepository.isUserEnrolledActive(viewerId, course.getCourseId()));
+        if (!"Published".equalsIgnoreCase(course.getStatus()) && !isInstOrEnrolled) {
+            throw new BusinessException(HttpStatus.NOT_FOUND, "COURSE_NOT_FOUND", "Không tìm thấy khóa học.");
+        }
         Lesson lesson = lessonRepository.findById(lessonId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "Không tìm thấy bài học."));
 
@@ -348,10 +377,7 @@ public class MobileCatalogController {
             throw new BusinessException(HttpStatus.FORBIDDEN, "LESSON_NOT_PREVIEWABLE", "Bài học không thuộc khóa học này hoặc không cho phép xem thử.");
         }
 
-        Integer viewerId = SecurityUtils.getCurrentUserId();
-        boolean canAccess = Boolean.TRUE.equals(lesson.getIsPreview())
-                || (viewerId != null && (enrollmentRepository.isUserEnrolledActive(viewerId, course.getCourseId())
-                || isCourseInstructorOrAdmin(course, viewerId)));
+        boolean canAccess = Boolean.TRUE.equals(lesson.getIsPreview()) || isInstOrEnrolled;
         if (!canAccess) {
             throw new BusinessException(HttpStatus.FORBIDDEN, "LESSON_NOT_PREVIEWABLE", "Bài học này không cho phép xem thử miễn phí.");
         }
@@ -382,6 +408,24 @@ public class MobileCatalogController {
             return Sort.by(Sort.Order.desc("price"), Sort.Order.desc("courseId"));
         }
         return Sort.by(Sort.Order.desc("courseId"));
+    }
+
+    private Comparator<Course> resolveCourseComparator(String sort) {
+        if ("rating".equalsIgnoreCase(sort)) {
+            return Comparator.comparing((Course c) -> c.getAverageRating() != null ? c.getAverageRating() : 0.0)
+                    .reversed()
+                    .thenComparing(Course::getCourseId, Comparator.nullsLast(Comparator.reverseOrder()));
+        }
+        if ("price_asc".equalsIgnoreCase(sort)) {
+            return Comparator.comparing((Course c) -> c.getPrice() != null ? c.getPrice() : BigDecimal.ZERO)
+                    .thenComparing(Course::getCourseId, Comparator.nullsLast(Comparator.reverseOrder()));
+        }
+        if ("price_desc".equalsIgnoreCase(sort)) {
+            return Comparator.comparing((Course c) -> c.getPrice() != null ? c.getPrice() : BigDecimal.ZERO)
+                    .reversed()
+                    .thenComparing(Course::getCourseId, Comparator.nullsLast(Comparator.reverseOrder()));
+        }
+        return Comparator.comparing(Course::getCourseId, Comparator.nullsLast(Comparator.reverseOrder()));
     }
 
     private Map<Integer, Long> loadRatingCounts(List<Course> courses) {

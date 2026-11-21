@@ -4,6 +4,7 @@ import com.edumy.identity.auth.model.RefreshToken;
 import com.edumy.identity.auth.repository.RefreshTokenRepository;
 import com.edumy.identity.user.model.User;
 import com.edumy.identity.user.repository.UserRepository;
+import com.edumy.notification.service.MailService;
 import com.edumy.shared.exception.BusinessException;
 import com.edumy.shared.exception.ErrorCode;
 import com.edumy.shared.security.SecurityUtils;
@@ -32,16 +33,19 @@ public class MeController {
     private final UserRepository userRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final PasswordEncoder passwordEncoder;
+    private final MailService mailService;
 
     @Value("${edumy.time-zone:Asia/Ho_Chi_Minh}")
     private String timeZone;
 
     public MeController(UserRepository userRepository,
                         RefreshTokenRepository refreshTokenRepository,
-                        PasswordEncoder passwordEncoder) {
+                        PasswordEncoder passwordEncoder,
+                        MailService mailService) {
         this.userRepository = userRepository;
         this.refreshTokenRepository = refreshTokenRepository;
         this.passwordEncoder = passwordEncoder;
+        this.mailService = mailService;
     }
 
     public record MeDto(
@@ -119,6 +123,10 @@ public class MeController {
             }
         }
         refreshTokenRepository.saveAll(allTokens);
+
+        if (mailService != null && user.getEmail() != null) {
+            mailService.sendPasswordChanged(user.getEmail(), user.getFullName(), Instant.now());
+        }
 
         return ResponseEntity.noContent().build();
     }

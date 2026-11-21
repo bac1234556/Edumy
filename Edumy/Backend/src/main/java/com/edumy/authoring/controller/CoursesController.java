@@ -109,6 +109,12 @@ public class CoursesController {
     @Autowired
     private com.edumy.learning.enrollment.service.LearningProgressService learningProgressService;
 
+    @Autowired(required = false)
+    private com.edumy.authoring.repository.CourseSectionRepository courseSectionRepository;
+
+    @Autowired(required = false)
+    private com.edumy.authoring.repository.CourseCoInstructorRepository courseCoInstructorRepository;
+
     private Integer getCurrentUserId() {
         try {
             return Integer.parseInt(SecurityContextHolder.getContext().getAuthentication().getName());
@@ -122,51 +128,34 @@ public class CoursesController {
                 .anyMatch(a -> a.getAuthority().equals("ROLE_" + role));
     }
 
-    @GetMapping("/recommend")
-    public ResponseEntity<?> getRecommendations() {
-        List<Course> courses = courseRepository.findAll().stream()
-                .filter(c -> "Published".equalsIgnoreCase(c.getStatus()))
-                .sorted((c1, c2) -> {
-                    double r1 = c1.getAverageRating() != null ? c1.getAverageRating() : 0.0;
-                    double r2 = c2.getAverageRating() != null ? c2.getAverageRating() : 0.0;
-                    return Double.compare(r2, r1);
-                })
-                .limit(4)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(courses);
-    }
-
     @GetMapping
     public ResponseEntity<?> getCourses(@ModelAttribute CourseQueryDto queryDto) {
         String keyword = (queryDto.getQ() != null && !queryDto.getQ().trim().isEmpty())
                 ? queryDto.getQ().trim()
                 : (queryDto.getSearch() != null ? queryDto.getSearch().trim() : "");
-        if (!keyword.isEmpty()) {
+        if (!keyword.isEmpty() && userActivityService != null) {
             userActivityService.logSearch(getCurrentUserId(), keyword);
         }
 
-        List<Course> all = courseRepository.findAll();
-        
-        List<Course> filtered = all.stream().filter(c -> {
-            // UC-G01: Only display public/published courses in public catalog (exclude Hidden, Draft, Rejected, PendingApproval)
-            String st = c.getStatus();
-            if (st != null && ("Hidden".equalsIgnoreCase(st) || "Draft".equalsIgnoreCase(st)
-                    || "Rejected".equalsIgnoreCase(st) || "PendingApproval".equalsIgnoreCase(st))) {
+        String normKeyword = !keyword.isEmpty() ? com.edumy.shared.text.VietnameseNormalizer.normalize(keyword) : "";
+        List<Course> published = courseRepository.findPublishedWithRelations();
+
+        List<Course> filtered = published.stream().filter(c -> {
+            if (!"Published".equalsIgnoreCase(c.getStatus())) {
                 return false;
             }
             boolean match = true;
-            if (!keyword.isEmpty()) {
-                String s = keyword.toLowerCase();
-                match = (c.getTitle() != null && c.getTitle().toLowerCase().contains(s)) ||
-                        (c.getDescription() != null && c.getDescription().toLowerCase().contains(s));
+            if (!normKeyword.isEmpty()) {
+                String normTitle = com.edumy.shared.text.VietnameseNormalizer.normalize(c.getTitle());
+                String normDesc = com.edumy.shared.text.VietnameseNormalizer.normalize(c.getDescription());
+                match = normTitle.contains(normKeyword) || normDesc.contains(normKeyword);
             }
             if (match && queryDto.getCategoryId() != null) {
                 match = queryDto.getCategoryId().equals(c.getCategoryId());
             }
             if (match && queryDto.getLevel() != null && !queryDto.getLevel().isEmpty()) {
-                match = queryDto.getLevel().equals(c.getLevel());
+                match = queryDto.getLevel().equalsIgnoreCase(c.getLevel());
             }
-            // UC-G03: Filter by priceType (FREE / PAID / ALL)
             if (match && queryDto.getPriceType() != null && !queryDto.getPriceType().isEmpty()) {
                 BigDecimal p = c.getPrice() != null ? c.getPrice() : BigDecimal.ZERO;
                 if ("FREE".equalsIgnoreCase(queryDto.getPriceType())) {
@@ -176,39 +165,45 @@ public class CoursesController {
                 }
             }
             if (match && queryDto.getMinPrice() != null) {
-                match = c.getPrice().compareTo(queryDto.getMinPrice()) >= 0;
+                BigDecimal p = c.getPrice() != null ? c.getPrice() : BigDecimal.ZERO;
+                match = p.compareTo(queryDto.getMinPrice()) >= 0;
             }
             if (match && queryDto.getMaxPrice() != null) {
-                match = c.getPrice().compareTo(queryDto.getMaxPrice()) <= 0;
+                BigDecimal p = c.getPrice() != null ? c.getPrice() : BigDecimal.ZERO;
+                match = p.compareTo(queryDto.getMaxPrice()) <= 0;
             }
             return match;
         }).collect(Collectors.toList());
-        
-        Comparator<Course> comparator = Comparator.comparing(Course::getCreatedAt).reversed(); 
+
+        Comparator<Course> comparator = Comparator.comparing(Course::getCreatedAt, Comparator.nullsLast(Comparator.naturalOrder())).reversed();
         String sortOrder = queryDto.getSortOrder() != null ? queryDto.getSortOrder().toLowerCase() : "desc";
-        
+
         if ("price".equalsIgnoreCase(queryDto.getSortBy())) {
-            comparator = Comparator.comparing(Course::getPrice);
+            comparator = Comparator.comparing(c -> c.getPrice() != null ? c.getPrice() : BigDecimal.ZERO);
             if ("desc".equals(sortOrder)) comparator = comparator.reversed();
         } else if ("rating".equalsIgnoreCase(queryDto.getSortBy())) {
             comparator = Comparator.comparing(c -> c.getAverageRating() == null ? 0.0 : c.getAverageRating());
             if ("desc".equals(sortOrder)) comparator = comparator.reversed();
         } else if ("newest".equalsIgnoreCase(queryDto.getSortBy())) {
-            comparator = Comparator.comparing(Course::getCreatedAt);
+            comparator = Comparator.comparing(Course::getCreatedAt, Comparator.nullsLast(Comparator.naturalOrder()));
             if ("desc".equals(sortOrder)) comparator = comparator.reversed();
         }
 
         filtered.sort(comparator);
 
         int totalItems = filtered.size();
-        int pageSize = queryDto.getPageSize() != null ? queryDto.getPageSize() : 12;
-        int pageNumber = queryDto.getPageNumber() != null ? queryDto.getPageNumber() : 1;
+        int pageSize = (queryDto.getPageSize() != null && queryDto.getPageSize() > 0) ? Math.min(100, queryDto.getPageSize()) : 20;
+        int pageNumber = (queryDto.getPageNumber() != null && queryDto.getPageNumber() > 0) ? queryDto.getPageNumber() : 1;
         int totalPages = (int) Math.ceil((double) totalItems / pageSize);
 
         int skip = (pageNumber - 1) * pageSize;
-        List<Course> items = filtered.stream().skip(skip).limit(pageSize).collect(Collectors.toList());
+        List<Map<String, Object>> items = filtered.stream()
+                .skip(skip)
+                .limit(pageSize)
+                .map(this::toPublicCourseCard)
+                .collect(Collectors.toList());
 
-        PagedResultDto<Course> result = new PagedResultDto<>();
+        PagedResultDto<Map<String, Object>> result = new PagedResultDto<>();
         result.setItems(items);
         result.setPageNumber(pageNumber);
         result.setPageSize(pageSize);
@@ -216,6 +211,38 @@ public class CoursesController {
         result.setTotalPages(totalPages);
 
         return ResponseEntity.ok(result);
+    }
+
+    private Map<String, Object> toPublicCourseCard(Course c) {
+        Map<String, Object> m = new LinkedHashMap<>();
+        m.put("courseId", c.getCourseId());
+        m.put("instructorId", c.getInstructorId());
+        m.put("categoryId", c.getCategoryId());
+        m.put("title", c.getTitle());
+        m.put("slug", c.getSlug());
+        m.put("description", c.getDescription());
+        m.put("price", c.getPrice());
+        m.put("thumbnailUrl", c.getThumbnailUrl());
+        m.put("level", c.getLevel());
+        m.put("status", c.getStatus());
+        m.put("averageRating", c.getAverageRating());
+        m.put("studentCount", c.getStudentCount());
+        m.put("createdAt", c.getCreatedAt());
+        m.put("updatedAt", c.getUpdatedAt());
+        if (c.getInstructor() != null) {
+            Map<String, Object> inst = new LinkedHashMap<>();
+            inst.put("userId", c.getInstructor().getUserId());
+            inst.put("fullName", c.getInstructor().getFullName());
+            inst.put("avatarUrl", c.getInstructor().getAvatarUrl());
+            m.put("instructor", inst);
+        }
+        if (c.getCategory() != null) {
+            Map<String, Object> cat = new LinkedHashMap<>();
+            cat.put("categoryId", c.getCategory().getCategoryId());
+            cat.put("name", c.getCategory().getName());
+            m.put("category", cat);
+        }
+        return m;
     }
 
     @GetMapping("/my-courses")
@@ -248,10 +275,10 @@ public class CoursesController {
             String instructorName = (e.getCourse() != null && e.getCourse().getInstructor() != null) ? e.getCourse().getInstructor().getFullName() : "Giảng viên Edumy";
             Integer courseId = e.getCourseId();
 
-            // UC-S11: Tính tiến độ dựa trên số bài học đã hoàn thành trên tổng số bài học của khóa
+            // UC-S11 / BR-32: Tính tiến độ làm tròn xuống (floor)
             long totalLessons = lessonRepository.countLessonsByCourseId(courseId);
             long completedLessons = lessonProgressRepository.countCompletedLessonsByUserAndCourse(userId, courseId);
-            int actualProgress = totalLessons > 0 ? (int) Math.min(100, Math.round((double) completedLessons / totalLessons * 100)) : 0;
+            int actualProgress = totalLessons > 0 ? (int) Math.min(100, Math.floor((double) completedLessons / totalLessons * 100)) : 0;
 
             m.put("courseId", courseId);
             m.put("title", e.getCourse() != null ? e.getCourse().getTitle() : null);
@@ -272,7 +299,31 @@ public class CoursesController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getCourse(@PathVariable Integer id) {
-        return courseRepository.findById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+        Course course = courseRepository.findById(id).orElse(null);
+        if (course == null) {
+            return ResponseEntity.notFound().build();
+        }
+        if (!"Published".equalsIgnoreCase(course.getStatus())) {
+            Integer userId = getCurrentUserId();
+            boolean allowed = false;
+            if (userId != null) {
+                if (isUserInRole("Admin") || userId.equals(course.getInstructorId())) {
+                    allowed = true;
+                } else if (courseCoInstructorRepository != null && courseCoInstructorRepository
+                        .findFirstByCourseIdAndInstructorId(id, userId)
+                        .map(ci -> "ACCEPTED".equalsIgnoreCase(ci.getStatus()))
+                        .orElse(false)) {
+                    allowed = true;
+                } else if ("Hidden".equalsIgnoreCase(course.getStatus())
+                        && enrollmentRepository.isUserEnrolledActive(userId, id)) {
+                    allowed = true;
+                }
+            }
+            if (!allowed) {
+                return ResponseEntity.notFound().build();
+            }
+        }
+        return ResponseEntity.ok(course);
     }
 
     @GetMapping("/{id}/enrollment-status")
@@ -310,25 +361,46 @@ public class CoursesController {
         Integer userId = getCurrentUserId();
         if (userId == null) return ResponseEntity.status(401).build();
 
+        if (dto == null || dto.getTitle() == null || dto.getTitle().trim().isEmpty()) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Tiêu đề khóa học không được để trống."));
+        }
+
+        if (dto.getCategoryId() == null || dto.getCategoryId() <= 0) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Danh mục khóa học không được để trống."));
+        }
+        var category = categoryRepository.findById(dto.getCategoryId()).orElse(null);
+        if (category == null) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Danh mục khóa học không tồn tại."));
+        }
+        if (Boolean.FALSE.equals(category.getIsActive())) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Danh mục đã ngừng sử dụng, vui lòng chọn danh mục đang hoạt động."));
+        }
+
+        BigDecimal price = dto.getPrice() != null ? dto.getPrice() : BigDecimal.ZERO;
+        if (price.compareTo(BigDecimal.ZERO) < 0) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Giá khóa học không được âm."));
+        }
+        if (price.compareTo(BigDecimal.ZERO) > 0) {
+            long p = price.longValue();
+            if (price.stripTrailingZeros().scale() > 0 || p < 10000 || p % 1000 != 0) {
+                return ResponseEntity.badRequest().body(Map.of("message", "Giá khóa học trả phí phải từ 10.000 VNĐ trở lên và là bội số của 1.000 VNĐ."));
+            }
+        }
+
         String slug = generateSlug(dto.getTitle());
 
         Course course = new Course();
         course.setInstructorId(userId);
-        course.setTitle(dto.getTitle());
+        course.setCategoryId(dto.getCategoryId());
+        course.setTitle(dto.getTitle().trim());
         course.setDescription(dto.getDescription());
-        course.setPrice(dto.getPrice());
-        course.setLevel(dto.getLevel());
+        course.setPrice(price);
+        course.setLevel(dto.getLevel() != null && !dto.getLevel().isBlank() ? dto.getLevel() : "Beginner");
         course.setThumbnailUrl(dto.getThumbnailUrl());
         course.setSlug(slug);
         course.setStatus("Draft");
         course.setCreatedAt(LocalDateTime.now());
         course.setUpdatedAt(LocalDateTime.now());
-
-        if (dto.getCategoryId() != null && dto.getCategoryId() > 0) {
-            course.setCategoryId(dto.getCategoryId());
-        } else {
-            course.setCategoryId(1);
-        }
 
         course = courseRepository.save(course);
         return ResponseEntity.created(java.net.URI.create("/api/Courses/" + course.getCourseId())).body(course);
@@ -337,18 +409,64 @@ public class CoursesController {
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('Instructor', 'Admin')")
     public ResponseEntity<?> updateCourse(@PathVariable Integer id, @RequestBody Course course) {
-        if (!id.equals(course.getCourseId())) return ResponseEntity.badRequest().build();
+        if (course.getCourseId() != null && !id.equals(course.getCourseId())) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Course ID mismatch."));
+        }
 
         Course existing = courseRepository.findById(id).orElse(null);
         if (existing == null) return ResponseEntity.notFound().build();
 
         Integer userId = getCurrentUserId();
-        if (userId != null && !userId.equals(existing.getInstructorId()) && !isUserInRole("Admin")) {
-            return ResponseEntity.status(403).build();
+        boolean isOwner = userId != null && userId.equals(existing.getInstructorId());
+        boolean isCoInst = userId != null && courseCoInstructorRepository != null
+                && courseCoInstructorRepository.findFirstByCourseIdAndInstructorId(id, userId)
+                .map(ci -> "ACCEPTED".equalsIgnoreCase(ci.getStatus()))
+                .orElse(false);
+        if (!isOwner && !isCoInst && !isUserInRole("Admin")) {
+            return ResponseEntity.status(403).body(Map.of("message", "Bạn không có quyền chỉnh sửa khóa học này."));
         }
 
-        course.setUpdatedAt(LocalDateTime.now());
-        courseRepository.save(course);
+        // AC-27: Không cho phép chỉnh sửa khóa học đang chờ xét duyệt
+        if ("PendingApproval".equalsIgnoreCase(existing.getStatus()) && !isUserInRole("Admin")) {
+            return ResponseEntity.status(409).body(Map.of("message", "Khóa học đang ở trạng thái chờ duyệt (PendingApproval), không thể chỉnh sửa."));
+        }
+
+        if (course.getCategoryId() != null && !course.getCategoryId().equals(existing.getCategoryId())) {
+            var cat = categoryRepository.findById(course.getCategoryId()).orElse(null);
+            if (cat == null || Boolean.FALSE.equals(cat.getIsActive())) {
+                return ResponseEntity.badRequest().body(Map.of("message", "Danh mục khóa học không tồn tại hoặc đã ngừng sử dụng."));
+            }
+            existing.setCategoryId(course.getCategoryId());
+        }
+
+        if (course.getPrice() != null) {
+            BigDecimal price = course.getPrice();
+            if (price.compareTo(BigDecimal.ZERO) < 0) {
+                return ResponseEntity.badRequest().body(Map.of("message", "Giá khóa học không được âm."));
+            }
+            if (price.compareTo(BigDecimal.ZERO) > 0) {
+                long p = price.longValue();
+                if (price.stripTrailingZeros().scale() > 0 || p < 10000 || p % 1000 != 0) {
+                    return ResponseEntity.badRequest().body(Map.of("message", "Giá khóa học trả phí phải từ 10.000 VNĐ trở lên và là bội số của 1.000 VNĐ."));
+                }
+            }
+            existing.setPrice(price);
+        }
+
+        if (course.getTitle() != null && !course.getTitle().trim().isEmpty()) {
+            existing.setTitle(course.getTitle().trim());
+        }
+        if (course.getDescription() != null) {
+            existing.setDescription(course.getDescription());
+        }
+        if (course.getLevel() != null) {
+            existing.setLevel(course.getLevel());
+        }
+        if (course.getThumbnailUrl() != null) {
+            existing.setThumbnailUrl(course.getThumbnailUrl());
+        }
+        existing.setUpdatedAt(LocalDateTime.now());
+        courseRepository.save(existing);
 
         return ResponseEntity.noContent().build();
     }
@@ -362,6 +480,17 @@ public class CoursesController {
         Integer userId = getCurrentUserId();
         if (userId != null && !userId.equals(course.getInstructorId()) && !isUserInRole("Admin")) {
             return ResponseEntity.status(403).build();
+        }
+
+        // AC-31: Không cho phép xóa khóa học đã công khai, đã ẩn, đang chờ duyệt hoặc đã có học viên ghi danh
+        String st = course.getStatus();
+        boolean hasEnrollments = (course.getStudentCount() != null && course.getStudentCount() > 0)
+                || enrollmentRepository.findAll().stream().anyMatch(e -> id.equals(e.getCourseId()));
+        if ("Published".equalsIgnoreCase(st) || "Hidden".equalsIgnoreCase(st)
+                || "PendingApproval".equalsIgnoreCase(st) || hasEnrollments) {
+            return ResponseEntity.status(409).body(Map.of(
+                    "message", "Không thể xóa khóa học đã từng công khai, đang chờ duyệt hoặc đã có học viên ghi danh."
+            ));
         }
 
         courseRepository.delete(course);
@@ -381,7 +510,7 @@ public class CoursesController {
 
         List<String> validStatuses = Arrays.asList("Draft", "NeedsReview", "PendingApproval", "Published");
         if (!validStatuses.contains(newStatus)) {
-            return ResponseEntity.badRequest().body("Invalid status.");
+            return ResponseEntity.badRequest().body(Map.of("message", "Invalid status."));
         }
 
         Course course = courseRepository.findById(id).orElse(null);
@@ -393,7 +522,47 @@ public class CoursesController {
         }
 
         if ("Published".equals(newStatus) && !isUserInRole("Admin")) {
-            return ResponseEntity.status(403).body("Only admins can publish courses.");
+            return ResponseEntity.status(403).body(Map.of("message", "Only admins can publish courses."));
+        }
+
+        // BR-07: Kiểm tra đầy đủ checklist khi gửi duyệt qua PUT /{id}/status
+        if ("PendingApproval".equals(newStatus)) {
+            if (course.getTitle() == null || course.getTitle().trim().length() < 5) {
+                return ResponseEntity.badRequest().body(Map.of("message", "Tiêu đề khóa học phải có ít nhất 5 ký tự hợp lệ."));
+            }
+            if (course.getDescription() == null || course.getDescription().trim().length() < 10) {
+                return ResponseEntity.badRequest().body(Map.of("message", "Mô tả khóa học phải có ít nhất 10 ký tự trước khi nộp duyệt."));
+            }
+            if (course.getCategoryId() == null) {
+                return ResponseEntity.badRequest().body(Map.of("message", "Khóa học phải thuộc về một danh mục hợp lệ."));
+            }
+            if (course.getPrice() != null && course.getPrice().compareTo(BigDecimal.ZERO) > 0) {
+                long p = course.getPrice().longValue();
+                if (p < 10000 || p % 1000 != 0) {
+                    return ResponseEntity.badRequest().body(Map.of("message", "Giá khóa học trả phí phải từ 10.000 VNĐ trở lên và là bội số của 1.000 VNĐ."));
+                }
+            }
+            if (courseSectionRepository != null) {
+                var sections = courseSectionRepository.findByCourseIdOrderByOrderIndexAsc(id);
+                if (sections.isEmpty()) {
+                    return ResponseEntity.badRequest().body(Map.of("message", "Khóa học phải có ít nhất 1 chương (section) trước khi nộp duyệt."));
+                }
+                List<com.edumy.authoring.model.Lesson> allLessons = lessonRepository.findAll();
+                for (var sec : sections) {
+                    var secLessons = allLessons.stream().filter(l -> sec.getSectionId().equals(l.getSectionId())).toList();
+                    if (secLessons.isEmpty()) {
+                        return ResponseEntity.badRequest().body(Map.of("message", "Chương '" + sec.getTitle() + "' chưa có bài học nào."));
+                    }
+                    for (var les : secLessons) {
+                        boolean hasContent = (les.getVideoUrl() != null && !les.getVideoUrl().trim().isEmpty())
+                                || (les.getContentText() != null && !les.getContentText().trim().isEmpty())
+                                || (les.getPdfUrl() != null && !les.getPdfUrl().trim().isEmpty());
+                        if (!hasContent) {
+                            return ResponseEntity.badRequest().body(Map.of("message", "Bài học '" + les.getTitle() + "' chưa có nội dung hoặc liên kết video."));
+                        }
+                    }
+                }
+            }
         }
 
         course.setStatus(newStatus);

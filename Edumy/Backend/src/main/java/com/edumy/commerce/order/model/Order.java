@@ -37,6 +37,15 @@ public class Order {
     @Column(name = "CreatedAt")
     private LocalDateTime createdAt;
 
+    @Column(name = "ReconciliationNote", columnDefinition = "NVARCHAR(1000)")
+    private String reconciliationNote;
+
+    @Column(name = "ReconciledAt")
+    private LocalDateTime reconciledAt;
+
+    @Column(name = "ReconciledBy")
+    private Integer reconciledBy;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "UserId", insertable = false, updatable = false)
     @com.fasterxml.jackson.annotation.JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "courses", "enrollments", "reviews", "orders", "userRoles", "refreshTokens", "wishlists", "certificates", "quizAttempts", "cart"})

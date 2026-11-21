@@ -126,7 +126,7 @@ public class MailComposer {
                         "fullName", fullName,
                         "courseTitle", courseTitle,
                         "reason", reason,
-                        "editCourseUrl", instructorCourseUrl(courseId)));
+                        "courseUrl", instructorCourseUrl(courseId)));
     }
 
     /** Course hidden notice. */
@@ -135,7 +135,7 @@ public class MailComposer {
                 "fullName", fullName,
                 "courseTitle", courseTitle,
                 "reason", reason,
-                "editCourseUrl", instructorCourseUrl(courseId)));
+                "courseUrl", instructorCourseUrl(courseId)));
     }
 
     /** Purchase confirmation. */
@@ -145,7 +145,7 @@ public class MailComposer {
                 "fullName", fullName,
                 "orderCode", orderCode,
                 "totalAmount", vnd(totalAmount),
-                "courseList", courseTitles.isEmpty() ? "Các khóa học đã mua" : quoted(courseTitles),
+                "courseTitles", courseTitles.isEmpty() ? "Các khóa học đã mua" : quoted(courseTitles),
                 "orderUrl", orderUrl(orderCode)));
     }
 

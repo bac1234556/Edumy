@@ -32,6 +32,10 @@ public class Category {
     @Column(name = "ParentCategoryId")
     private Integer parentCategoryId;
 
+    @Column(name = "IsActive")
+    @Builder.Default
+    private Boolean isActive = true;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ParentCategoryId", insertable = false, updatable = false)
     @JsonIgnoreProperties({"parentCategory", "subCategories", "courses"})

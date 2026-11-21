@@ -66,7 +66,9 @@ public class MeCertificatesController {
         Page<MyCertificateDto> mapped = certPage.map(c -> new MyCertificateDto(
                 c.getCertificateUrl(),
                 c.getCourseId(),
-                c.getCourse() != null ? c.getCourse().getTitle() : "Khóa học Edumy",
+                c.getCourseTitleSnapshot() != null
+                        ? c.getCourseTitleSnapshot()
+                        : (c.getCourse() != null ? c.getCourse().getTitle() : "Khóa học Edumy"),
                 TimeUtils.toInstant(c.getIssuedAt(), timeZone),
                 base + "/certificates/verify/" + c.getCertificateUrl()
         ));
@@ -83,15 +85,21 @@ public class MeCertificatesController {
             throw new BusinessException(ErrorCode.NOT_FOUND, "Không tìm thấy chứng chỉ.");
         }
 
-        String studentName = (certificate.getUser() != null && certificate.getUser().getFullName() != null)
-                ? certificate.getUser().getFullName()
-                : "Học viên Edumy";
-        String courseTitle = (certificate.getCourse() != null && certificate.getCourse().getTitle() != null)
-                ? certificate.getCourse().getTitle()
-                : "Khóa học trực tuyến";
-        String instructorName = (certificate.getCourse() != null && certificate.getCourse().getInstructor() != null)
-                ? certificate.getCourse().getInstructor().getFullName()
-                : "Ban Giảng huấn Edumy";
+        String studentName = certificate.getStudentNameSnapshot() != null
+                ? certificate.getStudentNameSnapshot()
+                : ((certificate.getUser() != null && certificate.getUser().getFullName() != null)
+                        ? certificate.getUser().getFullName()
+                        : "Học viên Edumy");
+        String courseTitle = certificate.getCourseTitleSnapshot() != null
+                ? certificate.getCourseTitleSnapshot()
+                : ((certificate.getCourse() != null && certificate.getCourse().getTitle() != null)
+                        ? certificate.getCourse().getTitle()
+                        : "Khóa học trực tuyến");
+        String instructorName = certificate.getInstructorNameSnapshot() != null
+                ? certificate.getInstructorNameSnapshot()
+                : ((certificate.getCourse() != null && certificate.getCourse().getInstructor() != null)
+                        ? certificate.getCourse().getInstructor().getFullName()
+                        : "Ban Giảng huấn Edumy");
 
         String base = frontendBaseUrl != null ? frontendBaseUrl.replaceAll("/+$", "") : "http://localhost:3000";
         String verifyUrl = base + "/certificates/verify/" + code;

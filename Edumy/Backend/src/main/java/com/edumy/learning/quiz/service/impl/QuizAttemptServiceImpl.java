@@ -61,6 +61,12 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
     @Autowired
     private com.edumy.learning.enrollment.service.LearningProgressService learningProgressService;
 
+    @Autowired(required = false)
+    private com.edumy.authoring.repository.CourseRepository courseRepository;
+
+    @Autowired(required = false)
+    private com.edumy.authoring.repository.CourseCoInstructorRepository courseCoInstructorRepository;
+
     private Integer getCurrentUserId() {
         try {
             String name = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -106,6 +112,9 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
     private QuizResultDto processQuizSubmission(Integer quizId, Map<Integer, Integer> selectedAnswers, Integer userId) {
         Quiz quiz = quizRepository.findById(quizId)
                 .orElseThrow(() -> new NoSuchElementException("Không tìm thấy bài trắc nghiệm với ID: " + quizId));
+
+        // Kiểm tra quyền làm bài (chống IDOR DEF-W-007): phải ghi danh khóa học hoặc là GV/Admin
+        validateEnrollmentForQuiz(quiz, userId);
 
         // 1. Khởi tạo và lưu đối tượng QuizAttempt (quiz_id, user_id, attempt_date, score, is_passed)
         QuizAttempt attempt = QuizAttempt.builder()
@@ -196,6 +205,31 @@ public class QuizAttemptServiceImpl implements QuizAttemptService {
         resultDto.setResults(resultList);
 
         return resultDto;
+    }
+
+    private void validateEnrollmentForQuiz(Quiz quiz, Integer userId) {
+        if (com.edumy.shared.security.SecurityUtils.hasRole("Admin")) return;
+        Integer sectionId = quiz.getCourseSectionId();
+        CourseSection section = quiz.getCourseSection();
+        if (section == null && sectionId != null) {
+            section = courseSectionRepository.findById(sectionId).orElse(null);
+        }
+        if (section == null || section.getCourseId() == null) return;
+        Integer courseId = section.getCourseId();
+
+        if (courseRepository != null) {
+            var course = courseRepository.findById(courseId).orElse(null);
+            if (course != null && Objects.equals(course.getInstructorId(), userId)) return;
+        }
+        if (courseCoInstructorRepository != null) {
+            boolean isCo = courseCoInstructorRepository.findFirstByCourseIdAndInstructorId(courseId, userId)
+                    .map(ci -> "ACCEPTED".equalsIgnoreCase(ci.getStatus()))
+                    .orElse(false);
+            if (isCo) return;
+        }
+        if (!enrollmentRepository.isUserEnrolledActive(userId, courseId)) {
+            throw new AccessDeniedException("Bạn chưa ghi danh khóa học này nên không thể nộp bài trắc nghiệm.");
+        }
     }
 
     /**

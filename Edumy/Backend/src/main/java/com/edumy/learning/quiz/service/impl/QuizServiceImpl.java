@@ -177,6 +177,12 @@ public class QuizServiceImpl implements QuizService {
         if (dto.getTitle() == null || dto.getTitle().trim().isEmpty()) {
             throw new IllegalArgumentException("Tiêu đề bài trắc nghiệm không được để trống.");
         }
+        if (dto.getCourseSectionId() == null) {
+            throw new IllegalArgumentException("Mã chương học (courseSectionId) không được để trống.");
+        }
+        if (!courseSectionRepository.existsById(dto.getCourseSectionId())) {
+            throw new NoSuchElementException("Không tìm thấy chương học với ID: " + dto.getCourseSectionId());
+        }
 
         Quiz quiz = new Quiz();
         quiz.setTitle(dto.getTitle().trim());

@@ -74,7 +74,7 @@ public class LessonsController {
      * GET /api/lessons/{id}/play
      * GET /api/v1/lessons/{id}/play
      */
-    @GetMapping({"/{id}/stream", "/{id}/play", "/{id}/access"})
+    @GetMapping({"/{id}/stream", "/{id}/play"})
     public ResponseEntity<?> streamLesson(@PathVariable("id") Integer id) {
         try {
             Integer userId = getCurrentUserId();

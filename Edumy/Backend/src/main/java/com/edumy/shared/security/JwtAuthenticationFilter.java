@@ -21,6 +21,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Autowired
     private JwtTokenProvider tokenProvider;
 
+    @Autowired(required = false)
+    private UserActiveChecker userActiveChecker;
+
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getRequestURI();
@@ -39,6 +42,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 String role = tokenProvider.getRoleFromToken(jwt);
 
                 if (userId != null) {
+                    if (userActiveChecker != null && !userActiveChecker.isUserActive(userId)) {
+                        SecurityContextHolder.clearContext();
+                        filterChain.doFilter(request, response);
+                        return;
+                    }
+
                     List<SimpleGrantedAuthority> authorities = Collections.singletonList(
                             new SimpleGrantedAuthority("ROLE_" + (role != null ? role : "Student"))
                     );

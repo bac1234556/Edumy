@@ -121,6 +121,10 @@ public class CurriculumController {
             return ResponseEntity.status(403).build();
         }
 
+        if (section == null || section.getTitle() == null || section.getTitle().trim().isEmpty()) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Tiêu đề chương học không được để trống."));
+        }
+        section.setTitle(section.getTitle().trim());
         section.setCourseId(courseId);
         CourseSection saved = courseSectionRepository.save(section);
         return ResponseEntity.ok(saved);

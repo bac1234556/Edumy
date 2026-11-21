@@ -77,6 +77,8 @@ public class QuizzesController {
             Integer userId = getCurrentUserId();
             QuizDto created = quizService.createQuiz(dto, userId);
             return ResponseEntity.ok(created);
+        } catch (NoSuchElementException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", ex.getMessage()));
         } catch (IllegalArgumentException ex) {
             return ResponseEntity.badRequest().body(Map.of("message", ex.getMessage()));
         }

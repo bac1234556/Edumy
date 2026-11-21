@@ -55,6 +55,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/courses", "/api/Courses", "/api/v1/courses").permitAll()
                 .requestMatchers("/api/courses/**", "/api/Courses/**", "/api/v1/courses/**").permitAll()
                 .requestMatchers("/api/categories/**", "/api/Categories/**", "/api/v1/categories/**").permitAll()
+                .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/tags", "/api/tags/**", "/api/Tags", "/api/Tags/**", "/api/v1/tags", "/api/v1/tags/**").permitAll()
                 .requestMatchers("/api/v1/certificates/verify/**", "/api/certificates/verify/**").permitAll()
                 .requestMatchers("/api/reviews/course/**", "/api/Reviews/course/**", "/api/v1/reviews/course/**").permitAll()
                 .requestMatchers("/api/quizzes/**", "/api/Quizzes/**").permitAll()

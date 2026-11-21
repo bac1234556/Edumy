@@ -60,6 +60,15 @@ public class SpecUseCaseController {
     @org.springframework.beans.factory.annotation.Autowired
     private com.edumy.learning.enrollment.repository.CertificateRepository certificateRepository;
 
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    private com.edumy.identity.auth.repository.RefreshTokenRepository refreshTokenRepository;
+
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    private com.edumy.commerce.order.repository.OrderItemRepository orderItemRepository;
+
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    private com.edumy.payout.api.EarningApi earningApi;
+
     public SpecUseCaseController(UserRepository userRepository,
                                  CourseRepository courseRepository,
                                  CourseSectionRepository courseSectionRepository,
@@ -98,8 +107,23 @@ public class SpecUseCaseController {
         }
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "Không tìm thấy tài khoản."));
+        if ("Admin".equalsIgnoreCase(user.getRole())) {
+            throw new BusinessException(ErrorCode.FORBIDDEN, "Không được phép khóa tài khoản Quản trị viên khác.");
+        }
         user.setIsActive(false);
         userRepository.save(user);
+
+        if (refreshTokenRepository != null) {
+            var tokens = refreshTokenRepository.findByUserId(userId);
+            LocalDateTime now = LocalDateTime.now();
+            for (var t : tokens) {
+                if (t.isActive()) {
+                    t.setRevoked(now);
+                }
+            }
+            refreshTokenRepository.saveAll(tokens);
+        }
+
         return ResponseEntity.ok(Map.of(
                 "userId", userId,
                 "status", "LOCKED",
@@ -130,6 +154,7 @@ public class SpecUseCaseController {
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "Không tìm thấy tài khoản."));
         if (!"Admin".equalsIgnoreCase(user.getRole())) {
             user.setRole("Instructor");
+            user.setInstructorRevoked(false);
             userRepository.save(user);
         }
         return ResponseEntity.ok(Map.of(
@@ -148,6 +173,10 @@ public class SpecUseCaseController {
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "Không tìm thấy tài khoản."));
         if ("Instructor".equalsIgnoreCase(user.getRole())) {
             user.setRole("Student");
+            user.setInstructorRevoked(true);
+            userRepository.save(user);
+        } else if (!"Admin".equalsIgnoreCase(user.getRole())) {
+            user.setInstructorRevoked(true);
             userRepository.save(user);
         }
         return ResponseEntity.ok(Map.of(
@@ -155,6 +184,27 @@ public class SpecUseCaseController {
                 "role", user.getRole(),
                 "message", "Đã thu hồi quyền Giảng viên (INSTRUCTOR) thành công."
         ));
+    }
+
+    private void requireCourseOwnerOrAdmin(Course course) {
+        Integer currentUserId = SecurityUtils.getCurrentUserId();
+        if (SecurityUtils.hasRole("Admin")) return;
+        if (currentUserId == null || !Objects.equals(course.getInstructorId(), currentUserId)) {
+            throw new BusinessException(ErrorCode.FORBIDDEN, "Bạn không có quyền thực hiện thao tác này trên khóa học của giảng viên khác.");
+        }
+    }
+
+    private void requireCourseEditorOrAdmin(Course course) {
+        Integer currentUserId = SecurityUtils.getCurrentUserId();
+        if (SecurityUtils.hasRole("Admin")) return;
+        if (currentUserId != null && Objects.equals(course.getInstructorId(), currentUserId)) return;
+        if (currentUserId != null && courseCoInstructorRepository != null) {
+            boolean isCo = courseCoInstructorRepository.findFirstByCourseIdAndInstructorId(course.getCourseId(), currentUserId)
+                    .map(ci -> "ACCEPTED".equalsIgnoreCase(ci.getStatus()))
+                    .orElse(false);
+            if (isCo) return;
+        }
+        throw new BusinessException(ErrorCode.FORBIDDEN, "Bạn không có quyền chỉnh sửa khóa học này.");
     }
 
     private List<String> buildRolesList(String role) {
@@ -172,6 +222,12 @@ public class SpecUseCaseController {
     public ResponseEntity<?> submitCourseForReview(@PathVariable Integer courseId) {
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "Không tìm thấy khóa học."));
+        requireCourseOwnerOrAdmin(course);
+
+        String st = course.getStatus() != null ? course.getStatus() : "Draft";
+        if (!"Draft".equalsIgnoreCase(st) && !"NeedsReview".equalsIgnoreCase(st) && !"Rejected".equalsIgnoreCase(st)) {
+            throw new BusinessException(ErrorCode.CONFLICT, "Chỉ khóa học ở trạng thái Nháp (Draft) hoặc Cần chỉnh sửa (NeedsReview) mới có thể gửi duyệt.");
+        }
 
         // BR-07 Checklist kiểm tra trước khi gửi duyệt
         if (course.getTitle() == null || course.getTitle().trim().length() < 5) {
@@ -231,6 +287,10 @@ public class SpecUseCaseController {
     public ResponseEntity<?> withdrawCourseSubmission(@PathVariable Integer courseId) {
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "Không tìm thấy khóa học."));
+        requireCourseOwnerOrAdmin(course);
+        if (!"PendingApproval".equalsIgnoreCase(course.getStatus())) {
+            throw new BusinessException(ErrorCode.CONFLICT, "Chỉ có thể rút yêu cầu duyệt khi khóa học đang ở trạng thái chờ duyệt (PendingApproval).");
+        }
         course.setStatus("Draft");
         course.setUpdatedAt(LocalDateTime.now());
         courseRepository.save(course);
@@ -244,6 +304,12 @@ public class SpecUseCaseController {
     @PutMapping({"/api/v1/instructor/courses/{courseId}/chapter-order", "/api/courses/{courseId}/sections/reorder"})
     @PreAuthorize("hasAnyRole('Instructor', 'Admin')")
     public ResponseEntity<?> reorderChapters(@PathVariable Integer courseId, @RequestBody Map<String, List<Integer>> body) {
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "Không tìm thấy khóa học."));
+        requireCourseEditorOrAdmin(course);
+        if ("PendingApproval".equalsIgnoreCase(course.getStatus()) && !SecurityUtils.hasRole("Admin")) {
+            throw new BusinessException(ErrorCode.CONFLICT, "Khóa học đang chờ duyệt, không thể sắp xếp lại chương.");
+        }
         List<Integer> orderedIds = body != null ? body.get("sectionIds") : null;
         if (orderedIds == null && body != null) {
             orderedIds = body.get("chapterIds");
@@ -265,6 +331,14 @@ public class SpecUseCaseController {
     @PutMapping({"/api/v1/instructor/chapters/{sectionId}/lesson-order", "/api/sections/{sectionId}/lessons/reorder"})
     @PreAuthorize("hasAnyRole('Instructor', 'Admin')")
     public ResponseEntity<?> reorderLessons(@PathVariable Integer sectionId, @RequestBody Map<String, List<Integer>> body) {
+        CourseSection section = courseSectionRepository.findById(sectionId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "Không tìm thấy chương học."));
+        Course course = courseRepository.findById(section.getCourseId())
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "Không tìm thấy khóa học."));
+        requireCourseEditorOrAdmin(course);
+        if ("PendingApproval".equalsIgnoreCase(course.getStatus()) && !SecurityUtils.hasRole("Admin")) {
+            throw new BusinessException(ErrorCode.CONFLICT, "Khóa học đang chờ duyệt, không thể sắp xếp lại bài học.");
+        }
         List<Integer> orderedIds = body != null ? body.get("lessonIds") : null;
         if (orderedIds != null) {
             for (int i = 0; i < orderedIds.size(); i++) {
@@ -285,6 +359,14 @@ public class SpecUseCaseController {
     public ResponseEntity<?> updateLesson(@PathVariable Integer lessonId, @RequestBody Map<String, Object> body) {
         Lesson lesson = lessonRepository.findById(lessonId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "Không tìm thấy bài học."));
+        CourseSection section = lesson.getSectionId() != null ? courseSectionRepository.findById(lesson.getSectionId()).orElse(null) : null;
+        Course course = (section != null && section.getCourseId() != null) ? courseRepository.findById(section.getCourseId()).orElse(null) : null;
+        if (course != null) {
+            requireCourseEditorOrAdmin(course);
+            if ("PendingApproval".equalsIgnoreCase(course.getStatus()) && !SecurityUtils.hasRole("Admin")) {
+                throw new BusinessException(ErrorCode.CONFLICT, "Khóa học đang chờ duyệt, không thể chỉnh sửa bài học.");
+            }
+        }
         if (body.containsKey("title") && body.get("title") != null) {
             lesson.setTitle(body.get("title").toString().trim());
         }
@@ -318,6 +400,14 @@ public class SpecUseCaseController {
     public ResponseEntity<?> deleteLesson(@PathVariable Integer lessonId) {
         Lesson lesson = lessonRepository.findById(lessonId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "Không tìm thấy bài học."));
+        CourseSection section = lesson.getSectionId() != null ? courseSectionRepository.findById(lesson.getSectionId()).orElse(null) : null;
+        Course course = (section != null && section.getCourseId() != null) ? courseRepository.findById(section.getCourseId()).orElse(null) : null;
+        if (course != null) {
+            requireCourseEditorOrAdmin(course);
+            if ("PendingApproval".equalsIgnoreCase(course.getStatus()) && !SecurityUtils.hasRole("Admin")) {
+                throw new BusinessException(ErrorCode.CONFLICT, "Khóa học đang chờ duyệt, không thể xóa bài học.");
+            }
+        }
         lessonRepository.delete(lesson);
         return ResponseEntity.noContent().build();
     }
@@ -345,6 +435,7 @@ public class SpecUseCaseController {
         Integer currentUserId = SecurityUtils.getCurrentUserId();
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "Không tìm thấy khóa học."));
+        requireCourseOwnerOrAdmin(course);
         String email = body != null && body.get("email") != null ? String.valueOf(body.get("email")).trim().toLowerCase() : "";
         if (email.isEmpty()) {
             throw new BusinessException(ErrorCode.BAD_REQUEST, "Vui lòng nhập email giảng viên cần mời.");
@@ -450,6 +541,9 @@ public class SpecUseCaseController {
     @DeleteMapping({"/api/v1/instructor/courses/{courseId}/co-instructors/{instructorId}", "/api/instructor/courses/{courseId}/co-instructors/{instructorId}"})
     @PreAuthorize("hasAnyRole('Instructor', 'Admin')")
     public ResponseEntity<?> removeCoInstructor(@PathVariable Integer courseId, @PathVariable Integer instructorId) {
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "Không tìm thấy khóa học."));
+        requireCourseOwnerOrAdmin(course);
         courseCoInstructorRepository.findFirstByCourseIdAndInstructorId(courseId, instructorId)
                 .ifPresent(ci -> {
                     ci.setStatus("REMOVED");
@@ -458,6 +552,33 @@ public class SpecUseCaseController {
                     courseCoInstructorRepository.save(ci);
                 });
         return ResponseEntity.ok(Map.of("message", "Đã gỡ đồng giảng viên khỏi khóa học."));
+    }
+
+    // UC-I18: Co-instructor leaves a course voluntarily
+    @PostMapping({"/api/v1/instructor/courses/{courseId}/co-instructors/leave", "/api/instructor/courses/{courseId}/co-instructors/leave"})
+    @PreAuthorize("hasAnyRole('Instructor', 'Admin')")
+    public ResponseEntity<?> leaveCoInstructorCourse(@PathVariable Integer courseId) {
+        Integer currentUserId = SecurityUtils.getCurrentUserId();
+        if (currentUserId == null) throw new BusinessException(ErrorCode.UNAUTHORIZED);
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "Không tìm thấy khóa học."));
+        if (Objects.equals(course.getInstructorId(), currentUserId)) {
+            throw new BusinessException(ErrorCode.BAD_REQUEST, "Giảng viên chính không thể tự rời khỏi khóa học của mình.");
+        }
+        CourseCoInstructor membership = courseCoInstructorRepository
+                .findFirstByCourseIdAndInstructorId(courseId, currentUserId)
+                .filter(ci -> "ACCEPTED".equalsIgnoreCase(ci.getStatus()))
+                .orElseThrow(() -> new BusinessException(ErrorCode.FORBIDDEN, "Bạn không phải đồng giảng viên đang hoạt động của khóa học này."));
+        membership.setStatus("REMOVED");
+        membership.setShareBps(0);
+        membership.setRespondedAt(LocalDateTime.now());
+        courseCoInstructorRepository.save(membership);
+        return ResponseEntity.ok(Map.of(
+                "courseId", courseId,
+                "instructorId", currentUserId,
+                "status", "LEFT",
+                "message", "Bạn đã rời khỏi danh sách đồng giảng viên của khóa học thành công."
+        ));
     }
 
     public record CoInstructorInvitationDto(
@@ -589,6 +710,9 @@ public class SpecUseCaseController {
     public ResponseEntity<?> approveCourse(@PathVariable Integer courseId) {
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "Không tìm thấy khóa học."));
+        if (!"PendingApproval".equalsIgnoreCase(course.getStatus())) {
+            throw new BusinessException(ErrorCode.CONFLICT, "Chỉ có thể duyệt khóa học đang ở trạng thái chờ duyệt (PendingApproval).");
+        }
         course.setStatus("Published");
         course.setReviewNote(null);
         course.setUpdatedAt(LocalDateTime.now());
@@ -611,6 +735,9 @@ public class SpecUseCaseController {
     public ResponseEntity<?> rejectCourse(@PathVariable Integer courseId, @RequestBody Map<String, String> body) {
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "Không tìm thấy khóa học."));
+        if (!"PendingApproval".equalsIgnoreCase(course.getStatus())) {
+            throw new BusinessException(ErrorCode.CONFLICT, "Chỉ có thể từ chối khóa học đang ở trạng thái chờ duyệt (PendingApproval).");
+        }
         String reviewNote = body != null ? body.get("reviewNote") : null;
         if (reviewNote == null || reviewNote.trim().isEmpty()) {
             throw new BusinessException(ErrorCode.BAD_REQUEST, "Vui lòng nhập lý do từ chối xét duyệt để giảng viên chỉnh sửa.");
@@ -638,6 +765,9 @@ public class SpecUseCaseController {
     public ResponseEntity<?> hideCourse(@PathVariable Integer courseId, @RequestBody(required = false) Map<String, String> body) {
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "Không tìm thấy khóa học."));
+        if (!"Published".equalsIgnoreCase(course.getStatus())) {
+            throw new BusinessException(ErrorCode.CONFLICT, "Chỉ có thể ẩn khóa học đang ở trạng thái Công khai (Published).");
+        }
         String reason = (body != null && body.get("reason") != null) ? body.get("reason").trim() : "Quản trị viên ẩn theo chính sách nền tảng";
         course.setStatus("Hidden");
         course.setReviewNote("Lý do ẩn: " + reason);
@@ -662,6 +792,9 @@ public class SpecUseCaseController {
     public ResponseEntity<?> unhideCourse(@PathVariable Integer courseId) {
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "Không tìm thấy khóa học."));
+        if (!"Hidden".equalsIgnoreCase(course.getStatus())) {
+            throw new BusinessException(ErrorCode.CONFLICT, "Chỉ có thể hiện lại khóa học đang ở trạng thái Đã ẩn (Hidden).");
+        }
         course.setStatus("Published");
         course.setUpdatedAt(LocalDateTime.now());
         courseRepository.save(course);
@@ -669,6 +802,35 @@ public class SpecUseCaseController {
                 "courseId", courseId,
                 "status", "Published",
                 "message", "Đã hiện lại khóa học công khai."
+        ));
+    }
+
+    // D-21: Admin deactivate / activate category
+    @PostMapping({"/api/v1/admin/categories/{categoryId}/deactivate", "/api/admin/categories/{categoryId}/deactivate"})
+    @PreAuthorize("hasRole('Admin')")
+    public ResponseEntity<?> deactivateCategory(@PathVariable Integer categoryId) {
+        var cat = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "Không tìm thấy danh mục."));
+        cat.setIsActive(false);
+        categoryRepository.save(cat);
+        return ResponseEntity.ok(Map.of(
+                "categoryId", categoryId,
+                "isActive", false,
+                "message", "Đã ngừng sử dụng danh mục '" + cat.getName() + "' thành công."
+        ));
+    }
+
+    @PostMapping({"/api/v1/admin/categories/{categoryId}/activate", "/api/admin/categories/{categoryId}/activate"})
+    @PreAuthorize("hasRole('Admin')")
+    public ResponseEntity<?> activateCategory(@PathVariable Integer categoryId) {
+        var cat = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "Không tìm thấy danh mục."));
+        cat.setIsActive(true);
+        categoryRepository.save(cat);
+        return ResponseEntity.ok(Map.of(
+                "categoryId", categoryId,
+                "isActive", true,
+                "message", "Đã kích hoạt lại danh mục '" + cat.getName() + "' thành công."
         ));
     }
 
@@ -742,7 +904,9 @@ public class SpecUseCaseController {
                 .map(order -> {
                     String status = order.getStatus() != null ? order.getStatus().toUpperCase() : "PENDING";
                     if ("COMPLETED".equalsIgnoreCase(status)) status = "PAID";
-                    boolean reconcile = "FAILED".equalsIgnoreCase(status) || "RECONCILE".equalsIgnoreCase(status);
+                    boolean reconcile = "NEEDS_REVIEW".equalsIgnoreCase(status)
+                            || "RECONCILE".equalsIgnoreCase(status)
+                            || "FAILED".equalsIgnoreCase(status);
                     Map<String, Object> tx = new LinkedHashMap<>();
                     tx.put("transactionId", order.getOrderId());
                     tx.put("transactionRef", "TXN-EDUMY-" + order.getOrderId());
@@ -753,13 +917,106 @@ public class SpecUseCaseController {
                     tx.put("amount", order.getTotalAmount());
                     tx.put("status", "PAID".equalsIgnoreCase(status) ? "SUCCEEDED" : status);
                     tx.put("needsReconciliation", reconcile);
-                    tx.put("reconciliationNote", reconcile ? "Cần kiểm tra đối soát giao dịch" : null);
+                    tx.put("reconciliationNote", order.getReconciliationNote() != null
+                            ? order.getReconciliationNote()
+                            : (reconcile ? "Cần kiểm tra đối soát giao dịch" : null));
+                    tx.put("reconciledAt", order.getReconciledAt());
                     tx.put("createdAt", order.getCreatedAt());
                     return tx;
                 })
                 .filter(tx -> needsReconciliation == null || Objects.equals(tx.get("needsReconciliation"), needsReconciliation))
                 .collect(Collectors.toList());
         return ResponseEntity.ok(transactions);
+    }
+
+    // UC-A18: Admin manual payment reconciliation (ACTIVATE | REFUND_EXTERNAL)
+    @PostMapping({"/api/v1/admin/payments/{orderId}/reconcile", "/api/admin/payments/{orderId}/reconcile"})
+    @PreAuthorize("hasRole('Admin')")
+    public ResponseEntity<?> reconcilePayment(@PathVariable Integer orderId, @RequestBody(required = false) Map<String, String> body) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "Không tìm thấy đơn hàng #" + orderId));
+
+        String status = order.getStatus() != null ? order.getStatus().toUpperCase() : "";
+        if (!"NEEDS_REVIEW".equals(status) && !"RECONCILE".equals(status)) {
+            throw new BusinessException(ErrorCode.CONFLICT, "Đơn hàng này không ở trạng thái chờ đối soát (hiện tại: " + status + ") hoặc đã được xử lý trước đó.");
+        }
+
+        String action = body != null ? body.getOrDefault("action", body.getOrDefault("resolution", "")).trim().toUpperCase() : "";
+        String note = body != null ? body.getOrDefault("note", body.getOrDefault("reconciliationNote", "")).trim() : "";
+        if (note.isEmpty()) {
+            throw new BusinessException(ErrorCode.BAD_REQUEST, "Bắt buộc nhập ghi chú đối soát khi xử lý đơn hàng.");
+        }
+        if (!"ACTIVATE".equals(action) && !"REFUND_EXTERNAL".equals(action)) {
+            throw new BusinessException(ErrorCode.BAD_REQUEST, "Hành động đối soát không hợp lệ (chỉ chấp nhận ACTIVATE hoặc REFUND_EXTERNAL).");
+        }
+
+        List<OrderItem> items = order.getOrderItems();
+        if ((items == null || items.isEmpty()) && orderItemRepository != null) {
+            items = orderItemRepository.findByOrderId(orderId);
+        }
+
+        Integer adminId = SecurityUtils.getCurrentUserId();
+        boolean activated = "ACTIVATE".equals(action);
+        order.setStatus(activated ? "PAID" : "REFUNDED_EXTERNAL");
+        order.setReconciliationNote(note);
+        order.setReconciledAt(LocalDateTime.now());
+        order.setReconciledBy(adminId);
+        orderRepository.save(order);
+
+        List<String> titles = new ArrayList<>();
+        if (items != null) {
+            List<com.edumy.payout.api.EarningApi.OrderLine> earningLines = new ArrayList<>();
+            for (OrderItem item : items) {
+                Integer cid = item.getCourseId();
+                if (cid == null) continue;
+                Course course = courseRepository.findById(cid).orElse(null);
+                if (course != null) titles.add(course.getTitle());
+
+                if (activated && order.getUserId() != null) {
+                    boolean exists = enrollmentRepository.existsByUserIdAndCourseId(order.getUserId(), cid);
+                    if (!exists) {
+                        Enrollment enrollment = Enrollment.builder()
+                                .userId(order.getUserId())
+                                .courseId(cid)
+                                .enrolledAt(LocalDateTime.now())
+                                .progressPercentage(0)
+                                .status("ACTIVE")
+                                .build();
+                        enrollmentRepository.save(enrollment);
+                        if (course != null) {
+                            course.setStudentCount((course.getStudentCount() != null ? course.getStudentCount() : 0) + 1);
+                            courseRepository.save(course);
+                        }
+                    }
+                    if (item.getPrice() != null && item.getPrice().compareTo(BigDecimal.ZERO) > 0) {
+                        earningLines.add(new com.edumy.payout.api.EarningApi.OrderLine(
+                                item.getOrderItemId(), cid,
+                                course != null ? course.getTitle() : "Khóa học #" + cid,
+                                item.getPrice().longValue()
+                        ));
+                    }
+                }
+            }
+            if (activated && earningApi != null && !earningLines.isEmpty()) {
+                earningApi.recordForPaidOrder(new com.edumy.payout.api.EarningApi.PaidOrderCommand(
+                        orderId, "ORD-" + orderId, earningLines));
+            }
+        }
+
+        if (order.getUserId() != null && mailService != null) {
+            userRepository.findById(order.getUserId()).ifPresent(buyer ->
+                    mailService.sendPaymentReconciled(buyer.getEmail(), buyer.getFullName(), "EDUMY" + orderId, activated, titles));
+        }
+
+        return ResponseEntity.ok(Map.of(
+                "orderId", orderId,
+                "action", action,
+                "status", order.getStatus(),
+                "reconciliationNote", note,
+                "message", activated
+                        ? "Đã đối soát kích hoạt quyền học cho học viên thành công."
+                        : "Đã ghi nhận hoàn tiền ngoài hệ thống cho giao dịch."
+        ));
     }
 
     private Map<String, Object> mapOrderDetail(Order order) {

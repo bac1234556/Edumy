@@ -20,18 +20,34 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Base64;
+import java.util.HexFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class AuthServiceImpl implements AuthService {
+
+    private static final int MAX_FAILED_LOGIN_ATTEMPTS = 5;
+    private static final long LOGIN_LOCK_MINUTES = 15;
+    private static final String NEUTRAL_FORGOT_PASSWORD_MESSAGE =
+            "Nếu địa chỉ email tồn tại trong hệ thống, hướng dẫn đặt lại mật khẩu đã được gửi.";
+
+    private static final class LoginAttemptState {
+        int failedCount;
+        Instant windowStart;
+        Instant lockedUntil;
+    }
+
+    private final Map<String, LoginAttemptState> loginAttempts = new ConcurrentHashMap<>();
 
     private final UserRepository userRepository;
     private final RefreshTokenRepository refreshTokenRepository;
@@ -81,10 +97,16 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public AuthResponseDto login(LoginDto loginDto, HttpServletResponse response) {
+        String emailKey = normalizeEmailKey(loginDto != null ? loginDto.getEmail() : null);
+        checkLoginRateLimit(emailKey);
+
         User user = userRepository.findByEmail(loginDto.getEmail());
         if (user == null || !passwordEncoder.matches(loginDto.getPassword(), user.getPasswordHash())) {
+            recordFailedLogin(emailKey);
             throw new BusinessException(HttpStatus.UNAUTHORIZED, "AUTH_INVALID_CREDENTIALS", "Email hoặc mật khẩu không chính xác.");
         }
+
+        clearFailedLogin(emailKey);
 
         if (Boolean.FALSE.equals(user.getIsActive())) {
             throw new BusinessException(HttpStatus.FORBIDDEN, "AUTH_ACCOUNT_LOCKED", "Tài khoản của bạn đã bị khóa. Vui lòng liên hệ quản trị viên.");
@@ -173,20 +195,14 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public Map<String, Object> revokeToken(String refreshToken) {
         if (refreshToken == null || refreshToken.isEmpty()) {
-            throw new BusinessException(ErrorCode.BAD_REQUEST, "Token is required.");
+            return Map.of("message", "Token revoked.");
         }
 
         RefreshToken refreshTokenEntity = refreshTokenRepository.findByToken(refreshToken);
-        if (refreshTokenEntity == null) {
-            throw new BusinessException(ErrorCode.BAD_REQUEST, "Invalid token.");
+        if (refreshTokenEntity != null && refreshTokenEntity.isActive()) {
+            refreshTokenEntity.setRevoked(LocalDateTime.now());
+            refreshTokenRepository.save(refreshTokenEntity);
         }
-
-        if (!refreshTokenEntity.isActive()) {
-            throw new BusinessException(ErrorCode.BAD_REQUEST, "Token is already expired or revoked.");
-        }
-
-        refreshTokenEntity.setRevoked(LocalDateTime.now());
-        refreshTokenRepository.save(refreshTokenEntity);
 
         return Map.of("message", "Token revoked.");
     }
@@ -290,26 +306,31 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public Map<String, Object> forgotPassword(ForgotPasswordDto model) {
-        User user = userRepository.findByEmail(model.getEmail());
+        User user = model != null && model.getEmail() != null ? userRepository.findByEmail(model.getEmail()) : null;
         if (user == null) {
-            return Map.of("message", "Nếu địa chỉ email tồn tại trong hệ thống, hướng dẫn đặt lại mật khẩu đã được gửi.");
+            return Map.of("message", NEUTRAL_FORGOT_PASSWORD_MESSAGE);
         }
 
         String token = UUID.randomUUID().toString().replace("-", "").substring(0, 8).toUpperCase();
-        user.setResetToken(token);
+        user.setResetToken(sha256Hex(token));
         user.setResetTokenExpiry(LocalDateTime.now().plusMinutes(30));
         userRepository.save(user);
 
-        // Send password reset email via Mailpit
+        // Send password reset email via Mailpit (raw code only in email, SHA-256 hash stored in DB)
         mailService.sendPasswordReset(user.getEmail(), user.getFullName(), token);
 
-        return Map.of("message", "Hướng dẫn đặt lại mật khẩu đã được gửi về email của bạn.");
+        return Map.of("message", NEUTRAL_FORGOT_PASSWORD_MESSAGE);
     }
 
     @Override
     public Map<String, Object> resetPassword(ResetPasswordDto model) {
-        User user = userRepository.findByEmail(model.getEmail());
-        if (user == null || user.getResetToken() == null || !user.getResetToken().equals(model.getToken()) || user.getResetTokenExpiry().isBefore(LocalDateTime.now())) {
+        User user = model != null && model.getEmail() != null ? userRepository.findByEmail(model.getEmail()) : null;
+        String providedToken = model != null ? model.getToken() : null;
+        String hashedToken = providedToken != null ? sha256Hex(providedToken) : null;
+        if (user == null || user.getResetToken() == null || hashedToken == null
+                || !user.getResetToken().equals(hashedToken)
+                || user.getResetTokenExpiry() == null
+                || user.getResetTokenExpiry().isBefore(LocalDateTime.now())) {
             throw new BusinessException(ErrorCode.BAD_REQUEST, "Mã đặt lại mật khẩu không hợp lệ hoặc đã hết hạn.");
         }
 
@@ -317,6 +338,18 @@ public class AuthServiceImpl implements AuthService {
         user.setResetToken(null);
         user.setResetTokenExpiry(null);
         userRepository.save(user);
+
+        List<RefreshToken> allTokens = refreshTokenRepository.findByUserId(user.getUserId());
+        if (allTokens != null && !allTokens.isEmpty()) {
+            LocalDateTime now = LocalDateTime.now();
+            for (RefreshToken t : allTokens) {
+                if (t.isActive()) {
+                    t.setRevoked(now);
+                }
+            }
+            refreshTokenRepository.saveAll(allTokens);
+        }
+        clearFailedLogin(normalizeEmailKey(user.getEmail()));
 
         // Send password changed notification
         mailService.sendPasswordChanged(user.getEmail(), user.getFullName(), java.time.Instant.now());
@@ -412,10 +445,16 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public MobileTokensDto mobileLogin(MobileLoginRequest request) {
+        String emailKey = normalizeEmailKey(request != null ? request.getEmail() : null);
+        checkLoginRateLimit(emailKey);
+
         User user = userRepository.findByEmail(request.getEmail());
         if (user == null || !passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
+            recordFailedLogin(emailKey);
             throw new BusinessException(HttpStatus.UNAUTHORIZED, "AUTH_INVALID_CREDENTIALS", "Email hoặc mật khẩu không chính xác.");
         }
+
+        clearFailedLogin(emailKey);
 
         if (Boolean.FALSE.equals(user.getIsActive())) {
             throw new BusinessException(HttpStatus.FORBIDDEN, "AUTH_ACCOUNT_LOCKED", "Tài khoản của bạn đã bị khóa. Vui lòng liên hệ quản trị viên.");
@@ -546,5 +585,59 @@ public class AuthServiceImpl implements AuthService {
         cookie.setPath("/");
         cookie.setMaxAge(7 * 24 * 60 * 60);
         response.addCookie(cookie);
+    }
+
+    private String normalizeEmailKey(String email) {
+        return email == null ? "" : email.trim().toLowerCase();
+    }
+
+    private void checkLoginRateLimit(String emailKey) {
+        if (emailKey.isEmpty()) return;
+        LoginAttemptState state = loginAttempts.get(emailKey);
+        if (state == null) return;
+        synchronized (state) {
+            if (state.lockedUntil != null && Instant.now().isBefore(state.lockedUntil)) {
+                throw new BusinessException(HttpStatus.TOO_MANY_REQUESTS, "AUTH_TOO_MANY_ATTEMPTS",
+                        "Tài khoản tạm thời bị khóa do đăng nhập sai quá nhiều lần. Vui lòng thử lại sau 15 phút.");
+            }
+        }
+    }
+
+    private void recordFailedLogin(String emailKey) {
+        if (emailKey.isEmpty()) return;
+        Instant now = Instant.now();
+        LoginAttemptState state = loginAttempts.computeIfAbsent(emailKey, k -> {
+            LoginAttemptState s = new LoginAttemptState();
+            s.windowStart = now;
+            return s;
+        });
+        synchronized (state) {
+            if (state.windowStart == null || now.isAfter(state.windowStart.plus(LOGIN_LOCK_MINUTES, ChronoUnit.MINUTES))) {
+                state.windowStart = now;
+                state.failedCount = 1;
+                state.lockedUntil = null;
+            } else {
+                state.failedCount++;
+            }
+            if (state.failedCount >= MAX_FAILED_LOGIN_ATTEMPTS) {
+                state.lockedUntil = now.plus(LOGIN_LOCK_MINUTES, ChronoUnit.MINUTES);
+            }
+        }
+    }
+
+    private void clearFailedLogin(String emailKey) {
+        if (!emailKey.isEmpty()) {
+            loginAttempts.remove(emailKey);
+        }
+    }
+
+    private static String sha256Hex(String input) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            byte[] digest = md.digest(input.getBytes(StandardCharsets.UTF_8));
+            return HexFormat.of().formatHex(digest);
+        } catch (Exception e) {
+            throw new IllegalStateException("SHA-256 algorithm unavailable", e);
+        }
     }
 }

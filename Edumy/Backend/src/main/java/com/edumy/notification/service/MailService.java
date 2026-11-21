@@ -116,4 +116,15 @@ public class MailService {
             log.error("Failed to send purchase confirmation to {}: {}", to, e.getMessage());
         }
     }
+
+    /** Send payment reconciliation result (UC-A18). */
+    @Async
+    public void sendPaymentReconciled(String to, String fullName, String orderCode, boolean activated,
+                                      List<String> courseTitles) {
+        try {
+            gateway.send(composer.paymentReconciled(to, fullName, orderCode, activated, courseTitles));
+        } catch (Exception e) {
+            log.error("Failed to send payment reconciliation email to {}: {}", to, e.getMessage());
+        }
+    }
 }

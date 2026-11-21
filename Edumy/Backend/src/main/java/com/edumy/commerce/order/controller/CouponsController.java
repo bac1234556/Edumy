@@ -86,9 +86,14 @@ public class CouponsController {
             return ResponseEntity.badRequest().body(Map.of("message", "Mã giảm giá này đã tồn tại."));
         }
 
+        BigDecimal discount = dto.getDiscountPercentage() != null ? dto.getDiscountPercentage() : BigDecimal.valueOf(10);
+        if (discount.compareTo(BigDecimal.ONE) < 0 || discount.compareTo(BigDecimal.valueOf(100)) > 0) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Phần trăm giảm giá phải nằm trong khoảng từ 1% đến 100%."));
+        }
+
         Coupon coupon = Coupon.builder()
                 .code(dto.getCode().trim().toUpperCase())
-                .discountPercentage(dto.getDiscountPercentage() != null ? dto.getDiscountPercentage() : BigDecimal.valueOf(10))
+                .discountPercentage(discount)
                 .expiryDate(dto.getExpiryDate() != null ? dto.getExpiryDate() : LocalDateTime.now().plusMonths(1))
                 .isActive(true)
                 .build();

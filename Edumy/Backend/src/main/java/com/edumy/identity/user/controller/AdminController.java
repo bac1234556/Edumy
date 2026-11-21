@@ -46,6 +46,9 @@ public class AdminController {
     @Autowired
     private UserActivityRepository userActivityRepository;
 
+    @Autowired(required = false)
+    private com.edumy.identity.auth.repository.RefreshTokenRepository refreshTokenRepository;
+
     @Autowired
     private com.edumy.notification.service.MailService mailService;
 
@@ -137,9 +140,13 @@ public class AdminController {
         courseRepository.save(course);
 
         // Notify instructor via email
-        if (course.getInstructor() != null && course.getInstructor().getEmail() != null) {
-            String instEmail = course.getInstructor().getEmail();
-            String instName = course.getInstructor().getFullName();
+        User inst = course.getInstructor();
+        if (inst == null && course.getInstructorId() != null) {
+            inst = userRepository.findById(course.getInstructorId()).orElse(null);
+        }
+        if (inst != null && inst.getEmail() != null) {
+            String instEmail = inst.getEmail();
+            String instName = inst.getFullName();
             if ("Published".equalsIgnoreCase(statusStr)) {
                 mailService.sendCourseApproved(instEmail, instName, course.getTitle(), course.getSlug());
             } else if ("NeedsReview".equalsIgnoreCase(statusStr) || "Rejected".equalsIgnoreCase(statusStr)) {
@@ -157,11 +164,32 @@ public class AdminController {
 
     @PutMapping("/users/{id}/toggle-status")
     public ResponseEntity<?> toggleUserStatus(@PathVariable Integer id) {
+        Integer currentAdminId = com.edumy.shared.security.SecurityUtils.getCurrentUserId();
+        if (Objects.equals(currentAdminId, id)) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Quản trị viên không được tự khóa tài khoản của chính mình."));
+        }
+
         User user = userRepository.findById(id).orElse(null);
         if (user == null) return ResponseEntity.notFound().build();
 
-        user.setIsActive(!user.getIsActive());
+        if ("Admin".equalsIgnoreCase(user.getRole()) && Boolean.TRUE.equals(user.getIsActive())) {
+            return ResponseEntity.status(403).body(Map.of("message", "Không được phép khóa tài khoản Quản trị viên khác."));
+        }
+
+        boolean nextActive = !Boolean.TRUE.equals(user.getIsActive());
+        user.setIsActive(nextActive);
         userRepository.save(user);
+
+        if (!nextActive && refreshTokenRepository != null) {
+            var tokens = refreshTokenRepository.findByUserId(id);
+            LocalDateTime now = LocalDateTime.now();
+            for (var t : tokens) {
+                if (t.isActive()) {
+                    t.setRevoked(now);
+                }
+            }
+            refreshTokenRepository.saveAll(tokens);
+        }
 
         Map<String, Object> response = new HashMap<>();
         response.put("message", "User status updated to " + (user.getIsActive() ? "Active" : "Blocked"));
@@ -343,41 +371,5 @@ public class AdminController {
         if (lower.contains("music") || lower.contains("âm nhạc")) return "bi-music-note-beamed";
         if (lower.contains("finance") || lower.contains("tài chính")) return "bi-cash-coin";
         return "bi-folder-fill";
-    }
-
-    // =========================================================================
-    // SYSTEM MONITORING (NO ML DEPENDENCY)
-    // =========================================================================
-
-    @GetMapping("/ml-monitoring")
-    public ResponseEntity<?> getMlMonitoring() {
-        long totalReviews = reviewRepository.count();
-        long posCount = reviewRepository.findAll().stream()
-                .filter(r -> "POSITIVE".equalsIgnoreCase(r.getSentimentLabel()) || "POS".equalsIgnoreCase(r.getSentimentLabel())).count();
-        long negCount = reviewRepository.findAll().stream()
-                .filter(r -> "NEGATIVE".equalsIgnoreCase(r.getSentimentLabel()) || "NEG".equalsIgnoreCase(r.getSentimentLabel())).count();
-        long neuCount = reviewRepository.findAll().stream()
-                .filter(r -> "NEUTRAL".equalsIgnoreCase(r.getSentimentLabel()) || "NEU".equalsIgnoreCase(r.getSentimentLabel())).count();
-
-        List<Map<String, Object>> sentimentStats = List.of(
-                Map.of("label", "POS", "count", posCount),
-                Map.of("label", "NEG", "count", negCount),
-                Map.of("label", "NEU", "count", neuCount)
-        );
-        
-        Map<String, Object> response = new HashMap<>();
-        response.put("TotalAnalyses", 0);
-        response.put("HighRiskCount", 0);
-        response.put("PendingReviews", 0);
-        response.put("TotalReviews", totalReviews);
-        response.put("SentimentStats", sentimentStats);
-        response.put("sentimentStats", sentimentStats);
-        response.put("totalAnalyses", 0);
-        response.put("highRiskCount", 0);
-        response.put("pendingReviews", 0);
-        response.put("totalReviews", totalReviews);
-        response.put("AnalysesHistory", List.of());
-        response.put("analysesHistory", List.of());
-        return ResponseEntity.ok(response);
     }
 }

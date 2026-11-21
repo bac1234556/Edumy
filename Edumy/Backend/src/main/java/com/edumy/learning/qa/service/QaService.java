@@ -31,6 +31,18 @@ public class QaService {
     private final UserRepository userRepository;
     private final MailService mailService;
 
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    private com.edumy.learning.enrollment.repository.EnrollmentRepository enrollmentRepository;
+
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    private com.edumy.authoring.repository.LessonRepository lessonRepository;
+
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    private com.edumy.authoring.repository.CourseSectionRepository courseSectionRepository;
+
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    private com.edumy.authoring.repository.CourseCoInstructorRepository courseCoInstructorRepository;
+
     public QaService(CourseQuestionRepository questionRepository,
                      QuestionAnswerRepository answerRepository,
                      CourseRepository courseRepository,
@@ -129,7 +141,8 @@ public class QaService {
     }
 
     /**
-     * UC-S17: Ask a new question in a course/lesson.
+     * UC-S17 / AC-32: Ask a new question in a course/lesson.
+     * Requires active enrollment (or course instructor/admin) and verifies lessonId belongs to courseId.
      */
     public QuestionSummaryResponse askQuestion(Integer userId, Integer courseId, CreateQuestionRequest request) {
         Course course = courseRepository.findById(courseId)
@@ -137,6 +150,23 @@ public class QaService {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "Không tìm thấy người dùng."));
+
+        boolean isCourseStaff = isCourseInstructorOrAdmin(course, userId, user.getRole());
+        boolean isEnrolled = enrollmentRepository != null && enrollmentRepository.isUserEnrolledActive(userId, courseId);
+        if (!isCourseStaff && !isEnrolled) {
+            throw new BusinessException(ErrorCode.FORBIDDEN, "Bạn phải ghi danh khóa học này mới có thể đặt câu hỏi.");
+        }
+
+        if (request.getLessonId() != null && lessonRepository != null && courseSectionRepository != null) {
+            var lesson = lessonRepository.findById(request.getLessonId())
+                    .orElseThrow(() -> new BusinessException(ErrorCode.BAD_REQUEST, "Bài học được gắn kèm không tồn tại."));
+            var section = lesson.getSectionId() != null
+                    ? courseSectionRepository.findById(lesson.getSectionId()).orElse(null)
+                    : null;
+            if (section == null || !Objects.equals(section.getCourseId(), courseId)) {
+                throw new BusinessException(ErrorCode.BAD_REQUEST, "Bài học được chọn không thuộc khóa học này.");
+            }
+        }
 
         CourseQuestion question = CourseQuestion.builder()
                 .courseId(courseId)
@@ -152,6 +182,18 @@ public class QaService {
 
         CourseQuestion saved = questionRepository.save(question);
         return toSummary(saved, course.getTitle(), user);
+    }
+
+    private boolean isCourseInstructorOrAdmin(Course course, Integer userId, String role) {
+        if ("Admin".equalsIgnoreCase(role)) return true;
+        if (course == null || userId == null) return false;
+        if (Objects.equals(course.getInstructorId(), userId)) return true;
+        if (courseCoInstructorRepository != null) {
+            return courseCoInstructorRepository.findFirstByCourseIdAndInstructorId(course.getCourseId(), userId)
+                    .map(ci -> "ACCEPTED".equalsIgnoreCase(ci.getStatus()))
+                    .orElse(false);
+        }
+        return false;
     }
 
     /**
@@ -210,11 +252,14 @@ public class QaService {
 
         Course course = courseRepository.findById(question.getCourseId()).orElse(null);
 
-        boolean isInstructor = "Instructor".equalsIgnoreCase(userRole) ||
-                "Admin".equalsIgnoreCase(userRole) ||
-                (course != null && course.getInstructorId() != null && course.getInstructorId().equals(userId));
+        // AC-33: Chỉ giảng viên/đồng giảng viên của khóa, quản trị viên, hoặc chính học viên đặt câu hỏi mới được phản hồi
+        boolean isCourseInstructor = isCourseInstructorOrAdmin(course, userId, userRole);
+        boolean isQuestionAsker = Objects.equals(question.getUserId(), userId);
+        if (!isCourseInstructor && !isQuestionAsker) {
+            throw new BusinessException(ErrorCode.FORBIDDEN, "Bạn không có quyền phản hồi câu hỏi này.");
+        }
 
-        String authorType = isInstructor ? "INSTRUCTOR" : "STUDENT";
+        String authorType = isCourseInstructor ? "INSTRUCTOR" : "STUDENT";
 
         QuestionAnswer answer = QuestionAnswer.builder()
                 .questionId(questionId)
@@ -228,8 +273,8 @@ public class QaService {
 
         QuestionAnswer saved = answerRepository.save(answer);
 
-        // If instructor answers, notify the student asker via email
-        if (isInstructor && !userId.equals(question.getUserId())) {
+        // If course instructor answers, notify the student asker via email
+        if (isCourseInstructor && !userId.equals(question.getUserId())) {
             User student = userRepository.findById(question.getUserId()).orElse(null);
             if (student != null && student.getEmail() != null && course != null) {
                 mailService.sendQuestionAnswered(

@@ -28,11 +28,14 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
+
+    private final ConcurrentHashMap<Integer, Object> userOrderLocks = new ConcurrentHashMap<>();
 
     private final OrderRepository orderRepository;
     private final CourseRepository courseRepository;
@@ -143,7 +146,8 @@ public class OrderServiceImpl implements OrderService {
                     .build();
         }
 
-        // 5. Trường hợp khóa học có phí -> Tạo đơn hàng trạng thái Pending và sinh thông tin VietQR
+        // 5. Trường hợp khóa học có phí -> Hủy các đơn Pending cũ (BR-29) và tạo đơn Pending mới
+        cancelExistingPendingOrders(userId);
         order.setStatus("Pending");
         Order savedOrder = orderRepository.save(order);
         orderItem.setOrderId(savedOrder.getOrderId());
@@ -184,7 +188,13 @@ public class OrderServiceImpl implements OrderService {
         if (userId == null) {
             throw new IllegalArgumentException("Yêu cầu thông tin học viên để thanh toán.");
         }
+        Object lock = userOrderLocks.computeIfAbsent(userId, k -> new Object());
+        synchronized (lock) {
+            return doCheckoutCart(userId, couponCode);
+        }
+    }
 
+    private Map<String, Object> doCheckoutCart(Integer userId, String couponCode) {
         Cart cart = cartRepository.findByUserId(userId);
         if (cart == null || cart.getCartItems() == null || cart.getCartItems().isEmpty()) {
             throw new IllegalStateException("Giỏ hàng của bạn đang trống.");
@@ -305,13 +315,19 @@ public class OrderServiceImpl implements OrderService {
             return response;
         }
 
-        // Đơn hàng có phí
+        // Đơn hàng có phí: BR-29 tối đa 1 đơn Pending/học viên -> hủy đơn Pending cũ trước khi tạo đơn mới
+        cancelExistingPendingOrders(userId);
         order.setStatus("Pending");
         Order savedOrder = orderRepository.save(order);
         for (OrderItem oi : items) {
             oi.setOrderId(savedOrder.getOrderId());
         }
         orderItemRepository.saveAll(items);
+
+        // Xóa các món đã chốt đơn khỏi giỏ hàng để tránh double-submit tạo 2 đơn trùng
+        for (CartItem ci : payableCartItems) {
+            cleanUpCartForCourse(userId, ci.getCourseId());
+        }
 
         String paymentUrl = "/payment?orderId=" + savedOrder.getOrderId() + "&amount=" + totalAmount;
 
@@ -337,6 +353,17 @@ public class OrderServiceImpl implements OrderService {
         }
 
         return response;
+    }
+
+    private void cancelExistingPendingOrders(Integer userId) {
+        if (userId == null) return;
+        List<Order> userOrders = orderRepository.findByUserId(userId);
+        for (Order existing : userOrders) {
+            if ("Pending".equalsIgnoreCase(existing.getStatus()) || "PENDING_PAYMENT".equalsIgnoreCase(existing.getStatus())) {
+                existing.setStatus("CANCELLED");
+                orderRepository.save(existing);
+            }
+        }
     }
 
     private void cleanUpCartForCourse(Integer userId, Integer courseId) {

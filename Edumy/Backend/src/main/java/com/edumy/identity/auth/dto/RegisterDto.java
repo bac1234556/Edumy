@@ -2,20 +2,22 @@ package com.edumy.identity.auth.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
 public class RegisterDto {
-    @NotBlank
+    @NotBlank(message = "Họ và tên không được để trống.")
     @Size(max = 100, message = "Full name cannot exceed 100 characters.")
     private String fullName = "";
 
-    @NotBlank
-    @Email(message = "Invalid email address format.")
+    @NotBlank(message = "Email không được để trống.")
+    @Email(regexp = "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$", message = "Invalid email address format.")
     private String email = "";
 
-    @NotBlank
-    @Size(min = 6, message = "Password must be at least 6 characters long.")
+    @NotBlank(message = "Mật khẩu không được để trống.")
+    @Size(min = 8, max = 72, message = "Mật khẩu phải từ 8 đến 72 ký tự.")
+    @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d).+$", message = "Mật khẩu phải chứa cả chữ cái và chữ số.")
     private String password = "";
 }

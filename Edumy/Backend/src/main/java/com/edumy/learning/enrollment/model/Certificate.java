@@ -40,6 +40,15 @@ public class Certificate {
     @Column(name = "CertificateUrl")
     private String certificateUrl;
 
+    @Column(name = "CourseTitleSnapshot", columnDefinition = "NVARCHAR(255)")
+    private String courseTitleSnapshot;
+
+    @Column(name = "StudentNameSnapshot", columnDefinition = "NVARCHAR(150)")
+    private String studentNameSnapshot;
+
+    @Column(name = "InstructorNameSnapshot", columnDefinition = "NVARCHAR(150)")
+    private String instructorNameSnapshot;
+
     @Column(name = "IssuedAt")
     private LocalDateTime issuedAt;
 

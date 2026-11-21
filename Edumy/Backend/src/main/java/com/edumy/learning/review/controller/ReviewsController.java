@@ -47,9 +47,9 @@ public class ReviewsController {
 
     @GetMapping("/course/{courseId}")
     public ResponseEntity<?> getCourseReviews(@PathVariable Integer courseId) {
-        List<Review> reviews = reviewRepository.findAll().stream()
-                .filter(r -> courseId.equals(r.getCourseId()))
-                .sorted(Comparator.comparing(Review::getCreatedAt).reversed())
+        List<Review> reviews = reviewRepository.findByCourseId(courseId).stream()
+                .filter(r -> !"HIDDEN_BY_ADMIN".equalsIgnoreCase(r.getVisibilityStatus()))
+                .sorted(Comparator.comparing(Review::getCreatedAt, Comparator.nullsLast(Comparator.reverseOrder())))
                 .collect(Collectors.toList());
         return ResponseEntity.ok(reviews);
     }
@@ -63,9 +63,9 @@ public class ReviewsController {
         Course course = courseRepository.findById(courseId).orElse(null);
         if (course == null) return ResponseEntity.notFound().build();
 
-        boolean isEnrolled = enrollmentRepository.existsByUserIdAndCourseIdAndStatus(userId, courseId, "ACTIVE");
+        boolean isEnrolled = enrollmentRepository.isUserEnrolledActive(userId, courseId);
         if (!isEnrolled) {
-            return ResponseEntity.status(403).body(Map.of("message", "Bạn phải có trạng thái ghi danh ACTIVE mới được đánh giá khóa học này."));
+            return ResponseEntity.status(403).body(Map.of("message", "Bạn phải ghi danh khóa học mới được đánh giá."));
         }
 
         boolean alreadyReviewed = reviewRepository.existsByUserIdAndCourseId(userId, courseId);
@@ -83,14 +83,11 @@ public class ReviewsController {
 
         review.setCourseId(courseId);
         review.setUserId(userId);
+        review.setVisibilityStatus("VISIBLE");
         review.setCreatedAt(LocalDateTime.now());
 
         Review saved = reviewRepository.save(review);
-
-        List<Review> courseReviews = reviewRepository.findByCourseId(courseId);
-        double avg = courseReviews.stream().mapToInt(Review::getRating).average().orElse(0.0);
-        course.setAverageRating(Math.round(avg * 10.0) / 10.0);
-        courseRepository.save(course);
+        recalculateCourseAverageRating(courseId);
 
         return ResponseEntity.created(java.net.URI.create("/api/Reviews/course/" + courseId)).body(saved);
     }
@@ -99,7 +96,9 @@ public class ReviewsController {
     @PreAuthorize("isAuthenticated()")
     @ApiResponse(responseCode = "204", description = "Review updated", content = @Content)
     public ResponseEntity<?> updateReview(@PathVariable Integer id, @RequestBody Review review) {
-        if (!id.equals(review.getReviewId())) return ResponseEntity.badRequest().build();
+        if (review.getReviewId() != null && !id.equals(review.getReviewId())) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Review ID mismatch."));
+        }
 
         Review existing = reviewRepository.findById(id).orElse(null);
         if (existing == null) return ResponseEntity.notFound().build();
@@ -109,20 +108,25 @@ public class ReviewsController {
             return ResponseEntity.status(403).build();
         }
 
-        review.setUserId(existing.getUserId());
-        review.setCourseId(existing.getCourseId());
-        review.setCreatedAt(existing.getCreatedAt());
-        
-        reviewRepository.save(review);
-        
-        List<Review> courseReviews = reviewRepository.findAll().stream().filter(r -> review.getCourseId().equals(r.getCourseId())).collect(Collectors.toList());
-        double avg = courseReviews.stream().mapToInt(Review::getRating).average().orElse(0.0);
-        
-        Course course = courseRepository.findById(review.getCourseId()).orElse(null);
-        if (course != null) {
-            course.setAverageRating(Math.round(avg * 10.0) / 10.0);
-            courseRepository.save(course);
+        // AC-30: Đánh giá đã bị Quản trị viên ẩn thì học viên không thể chỉnh sửa
+        if ("HIDDEN_BY_ADMIN".equalsIgnoreCase(existing.getVisibilityStatus()) && !isUserInRole("Admin")) {
+            return ResponseEntity.status(409).body(Map.of("message", "Đánh giá đã bị ẩn bởi Quản trị viên, không thể chỉnh sửa."));
         }
+
+        if (review.getRating() != null) {
+            if (review.getRating() < 1 || review.getRating() > 5) {
+                return ResponseEntity.badRequest().body(Map.of("message", "Số sao đánh giá phải từ 1 đến 5 sao."));
+            }
+            existing.setRating(review.getRating());
+            existing.setSentimentLabel(review.getRating() >= 4 ? "POSITIVE" : (review.getRating() == 3 ? "NEUTRAL" : "NEGATIVE"));
+            existing.setSentimentScore(review.getRating() / 5.0);
+        }
+        if (review.getComment() != null) {
+            existing.setComment(review.getComment());
+        }
+
+        reviewRepository.save(existing);
+        recalculateCourseAverageRating(existing.getCourseId());
 
         return ResponseEntity.noContent().build();
     }
@@ -141,15 +145,19 @@ public class ReviewsController {
 
         Integer courseId = review.getCourseId();
         reviewRepository.delete(review);
-
-        List<Review> remaining = reviewRepository.findAll().stream().filter(r -> courseId.equals(r.getCourseId())).collect(Collectors.toList());
-        Course course = courseRepository.findById(courseId).orElse(null);
-        if (course != null) {
-            double avg = remaining.isEmpty() ? 0.0 : remaining.stream().mapToInt(Review::getRating).average().orElse(0.0);
-            course.setAverageRating(Math.round(avg * 10.0) / 10.0);
-            courseRepository.save(course);
-        }
+        recalculateCourseAverageRating(courseId);
 
         return ResponseEntity.noContent().build();
+    }
+
+    private void recalculateCourseAverageRating(Integer courseId) {
+        Course course = courseRepository.findById(courseId).orElse(null);
+        if (course == null) return;
+        List<Review> visible = reviewRepository.findByCourseId(courseId).stream()
+                .filter(r -> !"HIDDEN_BY_ADMIN".equalsIgnoreCase(r.getVisibilityStatus()))
+                .collect(Collectors.toList());
+        double avg = visible.isEmpty() ? 0.0 : visible.stream().mapToInt(Review::getRating).average().orElse(0.0);
+        course.setAverageRating(Math.round(avg * 10.0) / 10.0);
+        courseRepository.save(course);
     }
 }

@@ -62,6 +62,10 @@ public class User {
     @Builder.Default
     private Boolean isActive = true;
 
+    @Column(name = "InstructorRevoked")
+    @Builder.Default
+    private Boolean instructorRevoked = false;
+
     @Column(name = "CreatedAt")
     private LocalDateTime createdAt;
 

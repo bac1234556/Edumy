@@ -129,6 +129,15 @@ public class CartServiceImpl implements CartService {
             throw new IllegalStateException("Giảng viên không thể mua khóa học do chính mình giảng dạy.");
         }
 
+        // AC-29: Khóa học miễn phí không được thêm vào giỏ hàng
+        if (course.getPrice() == null || course.getPrice().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new com.edumy.shared.exception.BusinessException(
+                    org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY,
+                    "CART_FREE_COURSE",
+                    "Khóa học miễn phí không thể thêm vào giỏ hàng. Vui lòng ghi danh trực tiếp."
+            );
+        }
+
         boolean alreadyEnrolled = enrollmentRepository.isUserEnrolledActive(userId, courseId);
         if (alreadyEnrolled) {
             throw new IllegalStateException("Bạn đã sở hữu khóa học này rồi. Vui lòng vào phòng học để tiếp tục.");
@@ -136,9 +145,13 @@ public class CartServiceImpl implements CartService {
 
         Cart cart = getOrCreateCart(userId);
 
+        // AC-29: Khóa học đã có trong giỏ hàng thì từ chối thêm trùng (409)
         if (cart.getCartItems() != null && cart.getCartItems().stream().anyMatch(ci -> ci.getCourseId().equals(courseId))) {
-            res.put("message", "Khóa học đã có sẵn trong giỏ hàng.");
-            return res;
+            throw new com.edumy.shared.exception.BusinessException(
+                    org.springframework.http.HttpStatus.CONFLICT,
+                    "CART_DUPLICATE_ITEM",
+                    "Khóa học đã có sẵn trong giỏ hàng."
+            );
         }
 
         CartItem cartItem = new CartItem();
