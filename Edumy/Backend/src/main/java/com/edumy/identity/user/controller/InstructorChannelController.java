@@ -124,7 +124,6 @@ public class InstructorChannelController {
             Integer enrollmentId,
             Integer userId,
             String fullName,
-            String email,
             Instant enrolledAt,
             Integer progressPercentage,
             String status
@@ -324,7 +323,6 @@ public class InstructorChannelController {
                 e.getEnrollmentId(),
                 e.getUserId(),
                 e.getUser() != null ? e.getUser().getFullName() : "Học viên #" + e.getUserId(),
-                e.getUser() != null ? e.getUser().getEmail() : "",
                 TimeUtils.toInstant(e.getEnrolledAt(), timeZone),
                 e.getProgressPercentage(),
                 e.getStatus()

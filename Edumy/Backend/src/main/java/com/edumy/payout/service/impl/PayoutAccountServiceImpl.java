@@ -39,7 +39,7 @@ public class PayoutAccountServiceImpl implements PayoutAccountService {
     @Transactional
     public PayoutAccountDto updateAccount(Integer instructorId, UpdatePayoutAccountRequest request) {
         if (!userPasswordVerificationApi.verifyPassword(instructorId, request.getCurrentPassword())) {
-            throw new BusinessException(HttpStatus.UNPROCESSABLE_ENTITY, "PASSWORD_INCORRECT", "Mật khẩu hiện tại không chính xác.");
+            throw new BusinessException(HttpStatus.UNPROCESSABLE_ENTITY, "CURRENT_PASSWORD_INCORRECT", "Mật khẩu hiện tại không chính xác.");
         }
 
         PayoutAccount account = payoutAccountRepository.findById(instructorId).orElse(null);

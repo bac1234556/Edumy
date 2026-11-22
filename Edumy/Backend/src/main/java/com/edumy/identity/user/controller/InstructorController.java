@@ -119,7 +119,6 @@ public class InstructorController {
             m.put("enrollmentId", e.getEnrollmentId());
             m.put("userId", e.getUserId());
             m.put("fullName", e.getUser() != null ? e.getUser().getFullName() : "Học viên #" + e.getUserId());
-            m.put("email", e.getUser() != null ? e.getUser().getEmail() : "");
             m.put("enrolledAt", e.getEnrolledAt());
             m.put("progressPercentage", e.getProgressPercentage());
             m.put("status", e.getStatus());

@@ -362,14 +362,22 @@ public class QaService {
 
     public QuestionSummaryResponse setResolved(Integer userId, Long questionId, Boolean resolved) {
         CourseQuestion question = questionRepository.findById(questionId)
+                .filter(q -> !"DELETED".equalsIgnoreCase(q.getVisibilityStatus()))
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "Không tìm thấy câu hỏi."));
+
+        Course course = courseRepository.findById(question.getCourseId()).orElse(null);
+        User actor = userId != null ? userRepository.findById(userId).orElse(null) : null;
+        boolean isCourseInstructor = isCourseInstructorOrAdmin(course, userId, actor != null ? actor.getRole() : null);
+        boolean isQuestionAsker = Objects.equals(question.getUserId(), userId);
+        if (!isCourseInstructor && !isQuestionAsker) {
+            throw new BusinessException(ErrorCode.FORBIDDEN, "Bạn không có quyền đánh dấu đã giải quyết câu hỏi này.");
+        }
 
         boolean target = resolved != null ? resolved : !Boolean.TRUE.equals(question.getIsResolved());
         question.setIsResolved(target);
         question.setUpdatedAt(LocalDateTime.now());
         questionRepository.save(question);
 
-        Course course = courseRepository.findById(question.getCourseId()).orElse(null);
         User user = userRepository.findById(question.getUserId()).orElse(null);
         return toSummary(question, course != null ? course.getTitle() : "Khóa học", user);
     }
