@@ -94,7 +94,7 @@ function HomePage() {
               </div>
 
               <h1 className="hero-title">
-                Nâng tầm kỹ năng chuyên môn cùng chuyên gia thực chiến.
+                Nâng tầm kỹ năng chuyên môn cùng chuyên gia thực chiến2026.
               </h1>
 
               <p className="hero-subtitle">
