@@ -282,38 +282,13 @@ pipeline {
                     echo "--> Đang kết nối SSH tới ${user}@${host} để cập nhật code và khởi chạy Docker..."
 
                     if (isUnix()) {
-                        sh """
-                            ssh -o StrictHostKeyChecking=no -i "${keyPath}" ${user}@${host} '
-                                cd "${projectDir}" && \
-                                git pull origin main || true && \
-                                mkdir -p "${projectDir}/Backend/target" "${projectDir}/Frontend/dist"
-                            '
-                            scp -o StrictHostKeyChecking=no -i "${keyPath}" "${projDir}/Backend/target/"*.jar ${user}@${host}:${projectDir}/Backend/target/ || true
-                            scp -o StrictHostKeyChecking=no -r -i "${keyPath}" "${projDir}/Frontend/dist/"* ${user}@${host}:${projectDir}/Frontend/dist/ || true
-                            ssh -o StrictHostKeyChecking=no -i "${keyPath}" ${user}@${host} '
-                                chmod -R 755 "${projectDir}/Frontend/dist" && \
-                                cd "${projectDir}" && \
-                                docker compose -p edumy up -d --build && \
-                                docker compose -p edumy ps
-                            '
-                        """
+                        sh "python3 scripts/deploy_ssh.py --host ${host} --user ${user} --key '${keyPath}' --server-dir '${projectDir}' --local-dir '${projDir}'"
                     } else {
                         bat """
                             @echo off
-                            echo [1/4] Dong bo code moi nhat tren server qua Git...
-                            ssh -o StrictHostKeyChecking=no -i "${keyPath}" ${user}@${host} "cd ${projectDir} && git pull origin main || ver > nul"
-
-                            echo [2/4] Sao chep ban build Backend (JAR) va Frontend (dist) sang server tu xa...
-                            ssh -o StrictHostKeyChecking=no -i "${keyPath}" ${user}@${host} "mkdir -p ${projectDir}/Backend/target ${projectDir}/Frontend/dist"
-                            scp -o StrictHostKeyChecking=no -i "${keyPath}" "${projDir}\\Backend\\target\\*.jar" ${user}@${host}:${projectDir}/Backend/target/ 2>nul || ver > nul
-                            scp -o StrictHostKeyChecking=no -r -i "${keyPath}" "${projDir}\\Frontend\\dist\\*" ${user}@${host}:${projectDir}/Frontend/dist/ 2>nul || ver > nul
-                            ssh -o StrictHostKeyChecking=no -i "${keyPath}" ${user}@${host} "chmod -R 755 ${projectDir}/Frontend/dist"
-
-                            echo [3/4] Khoi dong he thong bang Docker Compose tren server tu xa...
-                            ssh -o StrictHostKeyChecking=no -i "${keyPath}" ${user}@${host} "cd ${projectDir} && docker compose -p edumy up -d --build"
-
-                            echo [4/4] Kiem tra trang thai dich vu tren server tu xa:
-                            ssh -o StrictHostKeyChecking=no -i "${keyPath}" ${user}@${host} "cd ${projectDir} && docker compose -p edumy ps"
+                            set "PY_CMD=C:\\Users\\bacle\\AppData\\Local\\Programs\\Python\\Python312\\python.exe"
+                            if not exist "%PY_CMD%" set "PY_CMD=python"
+                            "%PY_CMD%" scripts\\deploy_ssh.py --host ${host} --user ${user} --key "${keyPath}" --server-dir "${projectDir}" --local-dir "${projDir}"
                         """
                     }
 
