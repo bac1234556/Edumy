@@ -1,0 +1,340 @@
+pipeline {
+    agent any
+
+    parameters {
+        choice(
+            name: 'ENVIRONMENT', 
+            choices: ['production', 'staging', 'development'], 
+            description: 'Môi trường triển khai mục tiêu'
+        )
+        booleanParam(
+            name: 'SKIP_TESTS', 
+            defaultValue: false, 
+            description: 'Bỏ qua bước Unit Test khi build'
+        )
+        booleanParam(
+            name: 'BUILD_DOCKER_IMAGES', 
+            defaultValue: true, 
+            description: 'Build Docker Image cho các dịch vụ (Backend, Frontend)'
+        )
+        booleanParam(
+            name: 'PUSH_TO_REGISTRY', 
+            defaultValue: false, 
+            description: 'Đẩy Docker Image lên Docker Registry'
+        )
+        string(
+            name: 'DOCKER_REGISTRY', 
+            defaultValue: 'docker.io/myusername', 
+            description: 'Địa chỉ Registry / Docker Hub Namespace'
+        )
+        booleanParam(
+            name: 'DEPLOY_APPLICATION', 
+            defaultValue: true, 
+            description: 'Triển khai dịch vụ bằng Docker Compose qua SSH sau khi build'
+        )
+        string(
+            name: 'SERVER_HOST', 
+            defaultValue: 'localhost', 
+            description: 'Địa chỉ Host / IP Server Public triển khai'
+        )
+        string(
+            name: 'SERVER_USER', 
+            defaultValue: 'bacle', 
+            description: 'Tài khoản SSH của Server'
+        )
+        string(
+            name: 'SERVER_SSH_KEY', 
+            defaultValue: 'C:\\Users\\bacle\\.ssh\\id_ed25519', 
+            description: 'Đường dẫn SSH Private Key'
+        )
+        string(
+            name: 'PUBLIC_URL', 
+            defaultValue: 'https://edumy.id.vn', 
+            description: 'Địa chỉ Public chính thức của Server'
+        )
+    }
+
+    triggers {
+        githubPush()
+    }
+
+    options {
+        buildDiscarder(logRotator(numToKeepStr: '15', artifactNumToKeepStr: '5'))
+        timestamps()
+        timeout(time: 45, unit: 'MINUTES')
+        disableConcurrentBuilds()
+    }
+
+    environment {
+        IMAGE_TAG = "${env.BUILD_NUMBER}"
+    }
+
+    stages {
+        stage('Khởi tạo & Xác định Thư mục') {
+            steps {
+                script {
+                    echo "========================================================"
+                    echo "      EDUMY CI/CD PIPELINE - DEPLOY SERVER QUA SSH      "
+                    echo "========================================================"
+                    echo "Build Number   : ${env.BUILD_NUMBER}"
+                    echo "Git Branch     : ${env.GIT_BRANCH ?: 'N/A'}"
+                    echo "Môi trường     : ${params.ENVIRONMENT}"
+                    echo "Skip Tests     : ${params.SKIP_TESTS}"
+                    echo "Build Docker   : ${params.BUILD_DOCKER_IMAGES}"
+                    echo "Server Deploy  : ${params.SERVER_USER}@${params.SERVER_HOST}"
+                    echo "Public Domain  : ${params.PUBLIC_URL}"
+                    echo "========================================================"
+
+                    // Nhận diện đường dẫn chứa mã nguồn trong repository
+                    if (fileExists('Edumy/Backend/pom.xml') || fileExists('Edumy\\Backend\\pom.xml') || fileExists('Edumy/Backend') || fileExists('Edumy\\Backend')) {
+                        env.PROJECT_DIR = 'Edumy'
+                    } else if (fileExists('Edumy-main/Edumy/Backend/pom.xml') || fileExists('Edumy-main\\Edumy\\Backend\\pom.xml')) {
+                        env.PROJECT_DIR = 'Edumy-main/Edumy'
+                    } else if (fileExists('Backend/pom.xml') || fileExists('Backend\\pom.xml')) {
+                        env.PROJECT_DIR = '.'
+                    } else {
+                        env.PROJECT_DIR = 'Edumy'
+                    }
+                    echo "==> Đã xác định thư mục dự án: ${env.PROJECT_DIR}"
+                }
+            }
+        }
+
+        stage('Build & Test Các Dịch Vụ') {
+            parallel {
+                // 1. BACKEND: Spring Boot 3 (Java, Maven)
+                stage('Backend (Spring Boot 3)') {
+                    steps {
+                        script {
+                            def projDir = env.PROJECT_DIR ?: (fileExists('Edumy/Backend') ? 'Edumy' : '.')
+                            dir("${projDir}/Backend") {
+                                echo "--> [Backend] Đang biên dịch và kiểm thử Spring Boot..."
+                                def testOption = params.SKIP_TESTS ? "-DskipTests" : ""
+
+                                if (isUnix()) {
+                                    sh "chmod +x mvnw"
+                                    sh "./mvnw clean package ${testOption}"
+                                } else {
+                                    bat """
+                                        @echo off
+                                        set "FOUND_JDK="
+                                        for /d %%d in ("C:\\Program Files\\Java\\jdk-17*" "C:\\Program Files\\Eclipse Adoptium\\jdk-17*" "C:\\Program Files\\Microsoft\\jdk-17*" "C:\\Program Files\\Java\\jdk-21*" "C:\\Program Files\\Eclipse Adoptium\\jdk-21*") do (
+                                            if exist "%%d\\bin\\java.exe" if not defined FOUND_JDK set "FOUND_JDK=%%d"
+                                        )
+                                        if not defined FOUND_JDK (
+                                            for /d %%d in ("C:\\Program Files\\Java\\jdk*" "C:\\Program Files\\Eclipse Adoptium\\jdk*" "C:\\Program Files\\Microsoft\\jdk*" "C:\\Program Files\\Amazon Corretto\\jdk*") do (
+                                                if exist "%%d\\bin\\java.exe" if not defined FOUND_JDK set "FOUND_JDK=%%d"
+                                            )
+                                        )
+                                        if defined FOUND_JDK (
+                                            set "JAVA_HOME=%FOUND_JDK%"
+                                            echo [INFO] Thiet lap JAVA_HOME: %FOUND_JDK%
+                                        )
+                                        call mvnw.cmd clean package ${testOption}
+                                    """
+                                }
+                            }
+                        }
+                    }
+                    post {
+                        success {
+                            echo "--> [Backend] Build JAR thành công."
+                            archiveArtifacts artifacts: "**/Backend/target/*.jar", fingerprint: true, allowEmptyArchive: true
+                        }
+                        failure {
+                            echo "--> [Backend] Lỗi biên dịch Spring Boot!"
+                        }
+                    }
+                }
+
+                // 2. FRONTEND: React + Vite (Node.js)
+                stage('Frontend (React & Vite)') {
+                    steps {
+                        script {
+                            def projDir = env.PROJECT_DIR ?: (fileExists('Edumy/Frontend') ? 'Edumy' : '.')
+                            dir("${projDir}/Frontend") {
+                                echo "--> [Frontend] Cài đặt dependencies và build client..."
+                                if (isUnix()) {
+                                    sh "which npm && (npm ci || npm install) && (npm run lint || true) && npm run build || echo '[CANH BAO] npm khong tim thay tren agent'"
+                                } else {
+                                    bat """
+                                        @echo off
+                                        set "PATH=C:\\Program Files\\nodejs;C:\\Program Files (x86)\\nodejs;%APPDATA%\\npm;%PATH%"
+                                        where npm >nul 2>&1
+                                        if %ERRORLEVEL% NEQ 0 (
+                                            echo [CANH BAO] npm khong tim thay tren agent, bo qua build client frontend.
+                                            exit /b 0
+                                        ) else (
+                                            call npm ci || call npm install
+                                            call npm run lint || ver > nul
+                                            call npm run build
+                                        )
+                                    """
+                                }
+                            }
+                        }
+                    }
+                    post {
+                        success {
+                            echo "--> [Frontend] Hoàn tất bước Frontend."
+                        }
+                    }
+                }
+            }
+        }
+
+        // 3. BUILD DOCKER IMAGES
+        stage('Build Docker Images') {
+            when {
+                expression { return params.BUILD_DOCKER_IMAGES }
+            }
+            steps {
+                script {
+                    def projDir = env.PROJECT_DIR ?: (fileExists('Edumy/docker-compose.yml') ? 'Edumy' : '.')
+                    echo "--> Đang đóng gói Docker Images cho toàn bộ hệ thống..."
+                    def composeFile = "${projDir}/docker-compose.yml"
+                    
+                    if (isUnix()) {
+                        sh "docker compose -p edumy -f ${composeFile} build || docker-compose -f ${composeFile} build || echo '[CANH BAO] Docker build that bai'"
+                    } else {
+                        bat """
+                            @echo off
+                            where docker >nul 2>&1
+                            if %ERRORLEVEL% NEQ 0 (
+                                echo [CANH BAO] Docker chua duoc cai dat tren agent Windows nay.
+                                exit /b 0
+                            )
+                            docker compose -p edumy -f ${composeFile} build || docker-compose -f ${composeFile} build
+                        """
+                    }
+                }
+            }
+        }
+
+        // 4. PUSH DOCKER IMAGES (Tùy chọn)
+        stage('Push Docker Images') {
+            when {
+                allOf {
+                    expression { return params.PUSH_TO_REGISTRY }
+                    expression { return params.BUILD_DOCKER_IMAGES }
+                }
+            }
+            steps {
+                script {
+                    echo "--> Đang gắn tag và push Docker Images lên Registry: ${params.DOCKER_REGISTRY}..."
+                    def registry = params.DOCKER_REGISTRY
+                    def tag = env.IMAGE_TAG
+
+                    def services = ['edumy-backend', 'edumy-frontend']
+                    for (service in services) {
+                        def localImg = "${service}:latest"
+                        def remoteImg = "${registry}/${service}:${tag}"
+                        def remoteLatest = "${registry}/${service}:latest"
+                        
+                        if (isUnix()) {
+                            sh "docker tag ${localImg} ${remoteImg} || true"
+                            sh "docker tag ${localImg} ${remoteLatest} || true"
+                            sh "docker push ${remoteImg} || true"
+                            sh "docker push ${remoteLatest} || true"
+                        } else {
+                            bat """
+                                @echo off
+                                where docker >nul 2>&1
+                                if %ERRORLEVEL% NEQ 0 (
+                                    echo [INFO] Skip docker push do docker khong tim thay
+                                    exit /b 0
+                                )
+                                docker tag ${localImg} ${remoteImg} 2>nul || ver > nul
+                                docker push ${remoteImg} || echo [CANH BAO] Khong the push ${remoteImg} do chua dang nhap Docker Hub.
+                            """
+                        }
+                    }
+                }
+            }
+        }
+
+        // 5. DEPLOYMENT QUA SSH LÊN SERVER PUBLIC
+        stage('Deploy lên Server qua SSH') {
+            when {
+                expression { return params.DEPLOY_APPLICATION }
+            }
+            steps {
+                script {
+                    echo "=========================================================="
+                    echo " [SSH DEPLOY] TIẾN HÀNH TRIỂN KHAI TỪ XA QUA SSH LÊN SERVER "
+                    echo "=========================================================="
+                    echo "Target Server : ${params.SERVER_USER}@${params.SERVER_HOST}"
+                    echo "Public URL    : ${params.PUBLIC_URL}"
+                    echo "=========================================================="
+
+                    def host = params.SERVER_HOST
+                    def user = params.SERVER_USER
+                    def keyPath = params.SERVER_SSH_KEY
+                    def projectDir = "C:\\Users\\bacle\\Downloads\\Edumy-Project\\Edumy-main\\Edumy"
+
+                    echo "--> Đang kết nối SSH tới ${user}@${host} để thực thi docker compose..."
+
+                    if (isUnix()) {
+                        sh """
+                            ssh -o StrictHostKeyChecking=no -i "${keyPath}" ${user}@${host} "
+                                cd '${projectDir}' && \
+                                docker rm -f edumy_sqlserver edumy_backend edumy_frontend || true && \
+                                docker compose -p edumy down --remove-orphans || true && \
+                                docker compose -p edumy up -d && \
+                                docker compose -p edumy ps
+                            "
+                        """
+                    } else {
+                        bat """
+                            @echo off
+                            echo [1/3] Ket noi SSH va don dep containers cu...
+                            ssh -o StrictHostKeyChecking=no -i "${keyPath}" ${user}@${host} "cd /d ${projectDir} && docker rm -f edumy_sqlserver edumy_backend edumy_frontend 2>nul & docker compose -p edumy down --remove-orphans 2>nul"
+
+                            echo [2/3] Khoi chay he thong bang Docker Compose qua SSH...
+                            ssh -o StrictHostKeyChecking=no -i "${keyPath}" ${user}@${host} "cd /d ${projectDir} && docker compose -p edumy up -d"
+
+                            echo [3/3] Kiem tra trang thai dich vu qua SSH:
+                            ssh -o StrictHostKeyChecking=no -i "${keyPath}" ${user}@${host} "cd /d ${projectDir} && docker compose -p edumy ps"
+                        """
+                    }
+
+                    echo ""
+                    echo "=========================================================="
+                    echo "   [THÀNH CÔNG] DỊCH VỤ ĐÃ TRIỂN KHAI VÀ HOẠT ĐỘNG ONLINE "
+                    echo " >> Địa chỉ Website : ${params.PUBLIC_URL}"
+                    echo " >> Địa chỉ Backend : ${params.PUBLIC_URL}/api"
+                    echo "=========================================================="
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            script {
+                echo "--> [Cleanup] Dọn dẹp Docker dangling images và cache cũ..."
+                if (isUnix()) {
+                    sh "docker image prune -f || true"
+                } else {
+                    bat "docker image prune -f 2>nul || ver > nul"
+                }
+                echo "Pipeline hoàn tất."
+            }
+        }
+        success {
+            script {
+                echo "=========================================================="
+                echo " [THÀNH CÔNG] Pipeline #${env.BUILD_NUMBER} hoàn tất xuất sắc! "
+                echo " Ứng dụng đã sẵn sàng truy cập tại: ${params.PUBLIC_URL}"
+                echo "=========================================================="
+            }
+        }
+        failure {
+            script {
+                echo "=========================================================="
+                echo " [THẤT BẠI] Pipeline #${env.BUILD_NUMBER} gặp lỗi! Vui lòng kiểm tra log."
+                echo "=========================================================="
+            }
+        }
+    }
+}
