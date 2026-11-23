@@ -286,6 +286,8 @@ pipeline {
                     } else {
                         bat """
                             @echo off
+                            chcp 65001 >nul
+                            set "PYTHONIOENCODING=utf-8"
                             set "PY_CMD=C:\\Users\\bacle\\AppData\\Local\\Programs\\Python\\Python312\\python.exe"
                             if not exist "%PY_CMD%" set "PY_CMD=python"
                             "%PY_CMD%" scripts\\deploy_ssh.py --host ${host} --user ${user} --key "${keyPath}" --server-dir "${projectDir}" --local-dir "${projDir}"

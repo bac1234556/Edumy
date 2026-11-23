@@ -3,10 +3,24 @@ import os
 import sys
 import glob
 import time
+
+# Force UTF-8 stdout/stderr on Windows to prevent UnicodeEncodeError ('charmap' / cp1252)
+if sys.platform.startswith('win'):
+    try:
+        if hasattr(sys.stdout, 'reconfigure'):
+            sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+        if hasattr(sys.stderr, 'reconfigure'):
+            sys.stderr.reconfigure(encoding='utf-8', errors='replace')
+    except Exception:
+        pass
+
 import paramiko
 
 def print_log(msg):
-    print(f"[SSH-DEPLOY] {msg}", flush=True)
+    try:
+        print(f"[SSH-DEPLOY] {msg}", flush=True)
+    except UnicodeEncodeError:
+        print(f"[SSH-DEPLOY] {msg.encode('ascii', errors='replace').decode('ascii')}", flush=True)
 
 def main():
     parser = argparse.ArgumentParser(description="Automated SSH Deploy Script for Jenkins")
@@ -51,12 +65,18 @@ def main():
         print_log(f">>> Thuc thi tu xa: {cmd}")
         stdin, stdout, stderr = ssh.exec_command(cmd)
         exit_status = stdout.channel.recv_exit_status()
-        out = stdout.read().decode('utf-8', errors='ignore')
-        err = stderr.read().decode('utf-8', errors='ignore')
+        out = stdout.read().decode('utf-8', errors='replace')
+        err = stderr.read().decode('utf-8', errors='replace')
         if out:
-            print(out, flush=True)
+            try:
+                print(out, flush=True)
+            except UnicodeEncodeError:
+                print(out.encode('ascii', errors='replace').decode('ascii'), flush=True)
         if err and exit_status != 0:
-            print(f"[STDERR] {err}", flush=True)
+            try:
+                print(f"[STDERR] {err}", flush=True)
+            except UnicodeEncodeError:
+                print(f"[STDERR] {err.encode('ascii', errors='replace').decode('ascii')}", flush=True)
         return exit_status
 
     # 1. Pull latest code on server
