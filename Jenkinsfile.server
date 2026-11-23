@@ -273,6 +273,7 @@ pipeline {
                     echo "Thư mục code  : ${params.SERVER_PROJECT_DIR}"
                     echo "=========================================================="
 
+                    def projDir = env.PROJECT_DIR ?: (fileExists('Edumy/docker-compose.yml') ? 'Edumy' : '.')
                     def host = params.SERVER_HOST
                     def user = params.SERVER_USER
                     def keyPath = params.SERVER_SSH_KEY
@@ -285,22 +286,29 @@ pipeline {
                             ssh -o StrictHostKeyChecking=no -i "${keyPath}" ${user}@${host} '
                                 cd "${projectDir}" && \
                                 git pull origin main || true && \
-                                docker rm -f edumy_sqlserver edumy_backend edumy_frontend 2>/dev/null || true && \
-                                docker compose -p edumy down --remove-orphans 2>/dev/null || true && \
-                                docker compose -p edumy up -d && \
+                                mkdir -p "${projectDir}/Backend/target"
+                            '
+                            scp -o StrictHostKeyChecking=no -i "${keyPath}" "${projDir}/Backend/target/"*.jar ${user}@${host}:${projectDir}/Backend/target/ || true
+                            ssh -o StrictHostKeyChecking=no -i "${keyPath}" ${user}@${host} '
+                                cd "${projectDir}" && \
+                                docker compose -p edumy up -d --build && \
                                 docker compose -p edumy ps
                             '
                         """
                     } else {
                         bat """
                             @echo off
-                            echo [1/3] Dong bo code moi nhat tren server...
-                            ssh -o StrictHostKeyChecking=no -i "${keyPath}" ${user}@${host} "cd ${projectDir} && git pull origin main"
+                            echo [1/4] Dong bo code moi nhat tren server qua Git...
+                            ssh -o StrictHostKeyChecking=no -i "${keyPath}" ${user}@${host} "cd ${projectDir} && git pull origin main || ver > nul"
 
-                            echo [2/3] Don dep container cu va khoi dong he thong bang Docker Compose...
-                            ssh -o StrictHostKeyChecking=no -i "${keyPath}" ${user}@${host} "cd ${projectDir} && docker rm -f edumy_sqlserver edumy_backend edumy_frontend 2>/dev/null || true; docker compose -p edumy down --remove-orphans 2>/dev/null || true; docker compose -p edumy up -d"
+                            echo [2/4] Sao chep ban build Backend (JAR) sang server tu xa...
+                            ssh -o StrictHostKeyChecking=no -i "${keyPath}" ${user}@${host} "mkdir -p ${projectDir}/Backend/target"
+                            scp -o StrictHostKeyChecking=no -i "${keyPath}" "${projDir}\\Backend\\target\\*.jar" ${user}@${host}:${projectDir}/Backend/target/ 2>nul || ver > nul
 
-                            echo [3/3] Kiem tra trang thai dich vu tren server tu xa:
+                            echo [3/4] Khoi dong he thong bang Docker Compose tren server tu xa...
+                            ssh -o StrictHostKeyChecking=no -i "${keyPath}" ${user}@${host} "cd ${projectDir} && docker compose -p edumy up -d --build"
+
+                            echo [4/4] Kiem tra trang thai dich vu tren server tu xa:
                             ssh -o StrictHostKeyChecking=no -i "${keyPath}" ${user}@${host} "cd ${projectDir} && docker compose -p edumy ps"
                         """
                     }
