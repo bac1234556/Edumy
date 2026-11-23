@@ -55,15 +55,18 @@ Edumy/
 │   ├── 📂 Frontend/                   <-- React 19.2 + Vite 8.1 + Design System + Nginx
 │   ├── 📂 Database/                   <-- SQL Server 2022 Docker, EduMyDb.bak, DDL & Seed scripts
 │   ├── 📂 monitoring/                 <-- Prometheus scrape config & Grafana dashboards/alerts
+│   ├── 📂 sonarqube/                  <-- Docker Compose riêng để dựng SonarQube LTS Community (port 9000)
 │   ├── 📂 docs/                       <-- Tài liệu kỹ thuật (system, design-system, ml legacy)
 │   ├── 📄 docker-compose.yml          <-- Stack 6 containers (database, backend, mailpit, frontend, prometheus, grafana)
 │   └── 📄 .env.example                <-- Biến môi trường Telegram Alerting cho Grafana
-├── 📂 scripts/                        <-- Script vận hành & kiểm thử trên Windows PowerShell
+├── 📂 docs/                           <-- Tài liệu vận hành, kiểm thử & hướng dẫn SonarQube (`SONARQUBE_SETUP.md`)
+├── 📂 scripts/                        <-- Script vận hành, kiểm thử & deploy SSH (`deploy_ssh.py`)
 │   ├── 📄 docker_start.ps1            <-- Khởi chạy toàn bộ stack 6 containers trên Docker Desktop
 │   ├── 📄 docker_stop.ps1             <-- Dừng toàn bộ containers
 │   ├── 📄 start_all.ps1               <-- Khởi chạy cục bộ Backend + Frontend trên Windows
 │   └── 📄 verify_audit.ps1            <-- Kiểm thử tích hợp các luồng API đa vai trò
-├── 📄 Jenkinsfile                     <-- Pipeline CI/CD tự động (Build, Test, Docker Compose Deploy)
+├── 📄 Jenkinsfile                     <-- Pipeline CI/CD cục bộ (Build, Test, SonarQube, Quality Gate, Docker Compose)
+├── 📄 Jenkinsfile.server              <-- Pipeline CI/CD triển khai lên Server qua SSH (tích hợp SonarQube & Quality Gate)
 ├── 📄 .gitignore & .gitattributes
 └── 📄 README.md                       <-- Tài liệu tổng quan dự án (file này)
 ```
@@ -151,4 +154,6 @@ Theo `DataSeeder.java` và `07_Script_Seed_Data_EduMyDb.sql`, hệ thống tạo
   ```powershell
   .\scripts\verify_audit.ps1
   ```
-- **CI/CD (Jenkins)**: `Jenkinsfile` tự động hóa Checkout SCM → Build & Test Backend (`mvnw clean package`) & Frontend (`npm run lint && npm run build`) song song → Build Docker Images → Push Registry (tùy chọn) → Deploy Docker Compose.
+- **CI/CD (Jenkins)**: `Jenkinsfile` (cục bộ) và `Jenkinsfile.server` (SSH deploy lên server) tự động hóa theo luồng:
+  **Checkout → Build & Test** (Backend `mvnw clean package` & Frontend `npm run lint && npm run build` song song) **→ SonarQube Analysis** (phân tích mã nguồn + JaCoCo coverage) **→ Quality Gate → Build Docker Images → Push → Deploy**.
+  Xem hướng dẫn dựng SonarQube server và cấu hình tích hợp chi tiết tại [`docs/SONARQUBE_SETUP.md`](docs/SONARQUBE_SETUP.md).
