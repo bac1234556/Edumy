@@ -13,6 +13,16 @@ pipeline {
             description: 'Bỏ qua bước Unit Test khi build'
         )
         booleanParam(
+            name: 'RUN_SONAR', 
+            defaultValue: true, 
+            description: 'Phân tích chất lượng mã bằng SonarQube'
+        )
+        booleanParam(
+            name: 'ENFORCE_QUALITY_GATE', 
+            defaultValue: true, 
+            description: 'Dừng pipeline nếu Quality Gate không đạt'
+        )
+        booleanParam(
             name: 'BUILD_DOCKER_IMAGES', 
             defaultValue: true, 
             description: 'Build Docker Image cho các dịch vụ (Backend, Frontend)'
@@ -60,6 +70,7 @@ pipeline {
                     echo "Git Branch     : ${env.GIT_BRANCH ?: 'N/A'}"
                     echo "Môi trường     : ${params.ENVIRONMENT}"
                     echo "Skip Tests     : ${params.SKIP_TESTS}"
+                    echo "SonarQube Scan : ${params.RUN_SONAR} (Enforce QG: ${params.ENFORCE_QUALITY_GATE})"
                     echo "Build Docker   : ${params.BUILD_DOCKER_IMAGES}"
                     echo "========================================================"
 
@@ -88,29 +99,7 @@ pipeline {
                             dir("${projDir}/Backend") {
                                 echo "--> [Backend] Đang biên dịch và kiểm thử Spring Boot..."
                                 def testOption = params.SKIP_TESTS ? "-DskipTests" : ""
-
-                                if (isUnix()) {
-                                    sh "chmod +x mvnw"
-                                    sh "./mvnw clean package ${testOption}"
-                                } else {
-                                    bat """
-                                        @echo off
-                                        set "FOUND_JDK="
-                                        for /d %%d in ("C:\\Program Files\\Java\\jdk-17*" "C:\\Program Files\\Eclipse Adoptium\\jdk-17*" "C:\\Program Files\\Microsoft\\jdk-17*" "C:\\Program Files\\Java\\jdk-21*" "C:\\Program Files\\Eclipse Adoptium\\jdk-21*") do (
-                                            if exist "%%d\\bin\\java.exe" if not defined FOUND_JDK set "FOUND_JDK=%%d"
-                                        )
-                                        if not defined FOUND_JDK (
-                                            for /d %%d in ("C:\\Program Files\\Java\\jdk*" "C:\\Program Files\\Eclipse Adoptium\\jdk*" "C:\\Program Files\\Microsoft\\jdk*" "C:\\Program Files\\Amazon Corretto\\jdk*") do (
-                                                if exist "%%d\\bin\\java.exe" if not defined FOUND_JDK set "FOUND_JDK=%%d"
-                                            )
-                                        )
-                                        if defined FOUND_JDK (
-                                            set "JAVA_HOME=%FOUND_JDK%"
-                                            echo [INFO] Thiet lap JAVA_HOME: %FOUND_JDK%
-                                        )
-                                        call mvnw.cmd clean package ${testOption}
-                                    """
-                                }
+                                runMaven("clean package ${testOption}".trim())
                             }
                         }
                     }
@@ -158,6 +147,40 @@ pipeline {
                         }
                     }
                 }
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            when {
+                expression { return params.RUN_SONAR }
+            }
+            steps {
+                script {
+                    def projDir = env.PROJECT_DIR ?: (fileExists('Edumy/Backend') ? 'Edumy' : '.')
+                    echo "--> [SonarQube] Đang phân tích chất lượng mã nguồn Backend (edumy-backend)..."
+                    if (params.SKIP_TESTS) {
+                        echo "--> [CẢNH BÁO] Không có dữ liệu coverage vì đã bỏ qua test (SKIP_TESTS=true). Vẫn tiếp tục phân tích tĩnh."
+                    }
+                    dir("${projDir}/Backend") {
+                        withSonarQubeEnv('SonarQube') {
+                            runMaven('sonar:sonar -Dsonar.projectKey=edumy-backend -Dsonar.projectName="Edumy Backend" -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml')
+                        }
+                    }
+                    echo "--> [SonarQube] Hoàn tất gửi báo cáo phân tích lên SonarQube server."
+                }
+            }
+        }
+
+        stage('Quality Gate') {
+            when {
+                expression { return params.RUN_SONAR }
+            }
+            steps {
+                echo "--> [Quality Gate] Đang chờ kết quả Quality Gate từ SonarQube (abortPipeline=${params.ENFORCE_QUALITY_GATE})..."
+                timeout(time: 10, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: params.ENFORCE_QUALITY_GATE
+                }
+                echo "--> [Quality Gate] Hoàn tất kiểm tra Quality Gate."
             }
         }
 
@@ -313,5 +336,30 @@ pipeline {
                 echo "=========================================================="
             }
         }
+    }
+}
+
+def runMaven(String mavenArgs) {
+    if (isUnix()) {
+        sh "chmod +x mvnw"
+        sh "./mvnw ${mavenArgs}"
+    } else {
+        bat """
+            @echo off
+            set "FOUND_JDK="
+            for /d %%d in ("C:\\Program Files\\Java\\jdk-17*" "C:\\Program Files\\Eclipse Adoptium\\jdk-17*" "C:\\Program Files\\Microsoft\\jdk-17*" "C:\\Program Files\\Java\\jdk-21*" "C:\\Program Files\\Eclipse Adoptium\\jdk-21*") do (
+                if exist "%%d\\bin\\java.exe" if not defined FOUND_JDK set "FOUND_JDK=%%d"
+            )
+            if not defined FOUND_JDK (
+                for /d %%d in ("C:\\Program Files\\Java\\jdk*" "C:\\Program Files\\Eclipse Adoptium\\jdk*" "C:\\Program Files\\Microsoft\\jdk*" "C:\\Program Files\\Amazon Corretto\\jdk*") do (
+                    if exist "%%d\\bin\\java.exe" if not defined FOUND_JDK set "FOUND_JDK=%%d"
+                )
+            )
+            if defined FOUND_JDK (
+                set "JAVA_HOME=%FOUND_JDK%"
+                echo [INFO] Thiet lap JAVA_HOME: %FOUND_JDK%
+            )
+            call mvnw.cmd ${mavenArgs}
+        """
     }
 }
