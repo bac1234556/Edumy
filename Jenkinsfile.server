@@ -34,18 +34,23 @@ pipeline {
         )
         string(
             name: 'SERVER_HOST', 
-            defaultValue: 'localhost', 
-            description: 'Địa chỉ Host / IP Server Public triển khai'
+            defaultValue: '192.168.60.165', 
+            description: 'Địa chỉ IP Server Public/Home Lab triển khai'
         )
         string(
             name: 'SERVER_USER', 
-            defaultValue: 'bacle', 
+            defaultValue: 'baclev', 
             description: 'Tài khoản SSH của Server'
         )
         string(
             name: 'SERVER_SSH_KEY', 
             defaultValue: 'C:\\Users\\bacle\\.ssh\\id_ed25519', 
             description: 'Đường dẫn SSH Private Key'
+        )
+        string(
+            name: 'SERVER_PROJECT_DIR', 
+            defaultValue: '/home/baclev/Edumy/Edumy', 
+            description: 'Thư mục mã nguồn Edumy trên Server'
         )
         string(
             name: 'PUBLIC_URL', 
@@ -253,7 +258,7 @@ pipeline {
             }
         }
 
-        // 5. DEPLOYMENT QUA SSH LÊN SERVER PUBLIC
+        // 5. DEPLOYMENT QUA SSH LÊN SERVER PUBLIC (DEBIAN VM)
         stage('Deploy lên Server qua SSH') {
             when {
                 expression { return params.DEPLOY_APPLICATION }
@@ -265,36 +270,38 @@ pipeline {
                     echo "=========================================================="
                     echo "Target Server : ${params.SERVER_USER}@${params.SERVER_HOST}"
                     echo "Public URL    : ${params.PUBLIC_URL}"
+                    echo "Thư mục code  : ${params.SERVER_PROJECT_DIR}"
                     echo "=========================================================="
 
                     def host = params.SERVER_HOST
                     def user = params.SERVER_USER
                     def keyPath = params.SERVER_SSH_KEY
-                    def projectDir = "C:\\Users\\bacle\\Downloads\\Edumy-Project\\Edumy-main\\Edumy"
+                    def projectDir = params.SERVER_PROJECT_DIR
 
-                    echo "--> Đang kết nối SSH tới ${user}@${host} để thực thi docker compose..."
+                    echo "--> Đang kết nối SSH tới ${user}@${host} để cập nhật code và khởi chạy Docker..."
 
                     if (isUnix()) {
                         sh """
-                            ssh -o StrictHostKeyChecking=no -i "${keyPath}" ${user}@${host} "
-                                cd '${projectDir}' && \
-                                docker rm -f edumy_sqlserver edumy_backend edumy_frontend || true && \
-                                docker compose -p edumy down --remove-orphans || true && \
+                            ssh -o StrictHostKeyChecking=no -i "${keyPath}" ${user}@${host} '
+                                cd "${projectDir}" && \
+                                git pull origin main || true && \
+                                docker rm -f edumy_sqlserver edumy_backend edumy_frontend 2>/dev/null || true && \
+                                docker compose -p edumy down --remove-orphans 2>/dev/null || true && \
                                 docker compose -p edumy up -d && \
                                 docker compose -p edumy ps
-                            "
+                            '
                         """
                     } else {
                         bat """
                             @echo off
-                            echo [1/3] Ket noi SSH va don dep containers cu...
-                            ssh -o StrictHostKeyChecking=no -i "${keyPath}" ${user}@${host} "cd /d ${projectDir} && docker rm -f edumy_sqlserver edumy_backend edumy_frontend 2>nul & docker compose -p edumy down --remove-orphans 2>nul"
+                            echo [1/3] Dong bo code moi nhat tren server...
+                            ssh -o StrictHostKeyChecking=no -i "${keyPath}" ${user}@${host} "cd ${projectDir} && git pull origin main"
 
-                            echo [2/3] Khoi chay he thong bang Docker Compose qua SSH...
-                            ssh -o StrictHostKeyChecking=no -i "${keyPath}" ${user}@${host} "cd /d ${projectDir} && docker compose -p edumy up -d"
+                            echo [2/3] Don dep container cu va khoi dong he thong bang Docker Compose...
+                            ssh -o StrictHostKeyChecking=no -i "${keyPath}" ${user}@${host} "cd ${projectDir} && docker rm -f edumy_sqlserver edumy_backend edumy_frontend 2>/dev/null || true; docker compose -p edumy down --remove-orphans 2>/dev/null || true; docker compose -p edumy up -d"
 
-                            echo [3/3] Kiem tra trang thai dich vu qua SSH:
-                            ssh -o StrictHostKeyChecking=no -i "${keyPath}" ${user}@${host} "cd /d ${projectDir} && docker compose -p edumy ps"
+                            echo [3/3] Kiem tra trang thai dich vu tren server tu xa:
+                            ssh -o StrictHostKeyChecking=no -i "${keyPath}" ${user}@${host} "cd ${projectDir} && docker compose -p edumy ps"
                         """
                     }
 
