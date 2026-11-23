@@ -58,7 +58,7 @@ groups:
         execErrState: OK
         for: 0s
         annotations:
-          summary: '🚨 Máy chủ Backend EduMy ĐANG BỊ SẬP (DOWN)!'
+          summary: 'Máy chủ Backend ngưng hoạt động (Down)'
           description: 'Dịch vụ Spring Boot (http://backend:5000) không phản hồi hoặc mất kết nối cơ sở dữ liệu. Vui lòng kiểm tra container edumy_backend.'
         labels:
           severity: critical
@@ -115,7 +115,7 @@ groups:
         execErrState: OK
         for: 1m
         annotations:
-          summary: '⚠️ CPU Máy chủ Backend vượt quá 85%'
+          summary: 'CPU Máy chủ Backend vượt quá 85%'
           description: 'Tiến trình Spring Boot đang sử dụng hơn 85% CPU liên tục trong hơn 1 phút. Cần kiểm tra tiến trình để tránh quá tải.'
         labels:
           severity: warning
@@ -172,7 +172,7 @@ groups:
         execErrState: OK
         for: 0s
         annotations:
-          summary: '🚨 Phát hiện lỗi hệ thống HTTP 5xx từ API Backend!'
+          summary: 'Phát hiện lỗi hệ thống HTTP 5xx từ API Backend'
           description: 'Hệ thống ghi nhận API Backend trả về mã lỗi 500/502/503 cho người dùng. Cần kiểm tra log backend để xử lý ngoại lệ.'
         labels:
           severity: critical
