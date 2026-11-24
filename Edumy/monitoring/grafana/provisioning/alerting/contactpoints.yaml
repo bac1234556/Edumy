@@ -1,0 +1,33 @@
+apiVersion: 1
+
+contactPoints:
+  - orgId: 1
+    name: 'Telegram Edumy'
+    receivers:
+      - uid: eg4257fg2cjk1b
+        type: telegram
+        disableResolveMessage: false
+        settings:
+          bottoken: '${TELEGRAM_BOT_TOKEN}'
+          chatid: '${TELEGRAM_CHAT_ID}'
+          message: |
+            {{ if eq .Status "firing" }}🔴 <b>[ALERT] EDUMY INCIDENT DETECTED</b>{{ else }}🟢 <b>[RESOLVED] EDUMY SYSTEM NORMAL</b>{{ end }}
+            ━━━━━━━━━━━━━━━━━━━━━━━━━
+            {{ range .Alerts }}<b>Target:</b> <code>Edumy Core Services</code>
+            <b>Severity:</b> {{ if eq .Labels.severity "critical" }}CRITICAL{{ else if eq .Labels.severity "warning" }}WARNING{{ else }}{{ .Labels.severity | toUpper }}{{ end }}
+            <b>Status:</b> {{ if eq .Status "firing" }}FIRING{{ else }}RESOLVED{{ end }}
+            <b>Event Time:</b> {{ if eq .Status "firing" }}{{ .StartsAt.Format "15:04:05 02/01/2006" }}{{ else }}{{ .EndsAt.Format "15:04:05 02/01/2006" }}{{ end }}
+
+            {{ if eq .Status "firing" }}<b>Incident:</b>
+            {{ .Annotations.summary }}
+
+            <b>Detail:</b>
+            {{ .Annotations.description }}
+            {{ else }}<b>Tình trạng:</b>
+            Hệ thống đã phục hồi hoàn toàn. Dịch vụ ({{ .Annotations.summary }}) đã hoạt động bình thường trở lại.
+
+            <b>Detail:</b>
+            Dịch vụ phản hồi ổn định (UP). Tất cả tiến trình và kết nối cơ sở dữ liệu đã hoạt động bình thường.
+            {{ end }}━━━━━━━━━━━━━━━━━━━━━━━━━
+            {{ end }}
+            🔗 <a href="http://localhost:3001/alerting/list">Grafana Dashboard</a>  •  <a href="https://edumy.id.vn">Live Website</a>
