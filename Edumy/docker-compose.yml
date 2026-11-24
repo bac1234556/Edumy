@@ -15,7 +15,7 @@ services:
     volumes:
       - edumy_sqlserver_data:/var/opt/mssql
     healthcheck:
-      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'YourPassword123' -C -Q 'SELECT 1' || /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'YourPassword123' -Q 'SELECT 1'"]
+      test: [ "CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'YourPassword123' -C -Q 'SELECT 1' || /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'YourPassword123' -Q 'SELECT 1'" ]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -46,8 +46,8 @@ services:
     container_name: edumy_mailpit
     restart: unless-stopped
     ports:
-      - "1025:1025"   # SMTP
-      - "8025:8025"   # Web UI
+      - "1025:1025" # SMTP
+      - "8025:8025" # Web UI
 
   frontend:
     build:
@@ -58,7 +58,6 @@ services:
     ports:
       - "3000:80"
     volumes:
-      - ./Frontend/dist:/usr/share/nginx/html:ro
       - ./Frontend/nginx.conf:/etc/nginx/conf.d/default.conf:ro
     depends_on:
       - backend
