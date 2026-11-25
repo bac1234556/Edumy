@@ -190,7 +190,7 @@ pipeline {
                     }
                     dir("${projDir}/Backend") {
                         withSonarQubeEnv('SonarQube') {
-                            runMaven('sonar:sonar -Dsonar.projectKey=edumy-backend -Dsonar.projectName="Edumy Backend" -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml')
+                            runMaven('sonar:sonar -Dsonar.projectKey=edumy-backend-server -Dsonar.projectName="Edumy Backend (Server)" -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml')
                         }
                     }
                     echo "--> [SonarQube] Hoàn tất gửi báo cáo phân tích lên SonarQube server."

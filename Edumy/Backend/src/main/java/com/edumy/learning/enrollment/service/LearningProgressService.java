@@ -149,33 +149,23 @@ public class LearningProgressService {
      * and floors the percentage to an integer in [0, 100].
      */
     private ComputedProgress computeProgress(Integer userId, Integer courseId) {
-        List<Integer> courseLessonIds = lessonRepository.findLessonIdsByCourseId(courseId);
-        Set<Integer> validLessonIds = courseLessonIds != null
-                ? new HashSet<>(courseLessonIds)
-                : Collections.emptySet();
+        Set<Integer> validLessonIds = new HashSet<>(lessonRepository.findLessonIdsByCourseId(courseId));
         long totalLessons = validLessonIds.size();
 
-        List<LessonProgress> progresses = lessonProgressRepository.findByUserIdAndCourseId(userId, courseId);
-        List<Integer> completedLessonIds = progresses != null
-                ? progresses.stream()
-                        .map(LessonProgress::getLessonId)
-                        .filter(validLessonIds::contains)
-                        .distinct()
-                        .toList()
-                : Collections.emptyList();
+        List<Integer> completedLessonIds = lessonProgressRepository.findByUserIdAndCourseId(userId, courseId).stream()
+                .map(LessonProgress::getLessonId)
+                .filter(validLessonIds::contains)
+                .distinct()
+                .toList();
         long completedLessons = completedLessonIds.size();
 
-        List<Integer> rawQuizIds = quizRepository.findQuizIdsByCourseId(courseId);
-        List<Integer> validQuizIds = rawQuizIds != null
-                ? rawQuizIds.stream().distinct().toList()
-                : Collections.emptyList();
+        List<Integer> validQuizIds = quizRepository.findQuizIdsByCourseId(courseId).stream()
+                .distinct()
+                .toList();
         long totalQuizzes = validQuizIds.size();
 
-        List<Integer> passedQuizIds = !validQuizIds.isEmpty()
-                ? quizAttemptRepository.findPassedQuizIdsByUserAndQuizIds(userId, validQuizIds)
-                : Collections.emptyList();
-        List<Integer> completedQuizIds = passedQuizIds != null
-                ? passedQuizIds.stream().distinct().toList()
+        List<Integer> completedQuizIds = !validQuizIds.isEmpty()
+                ? quizAttemptRepository.findPassedQuizIdsByUserAndQuizIds(userId, validQuizIds).stream().distinct().toList()
                 : Collections.emptyList();
         long completedQuizzes = completedQuizIds.size();
 
