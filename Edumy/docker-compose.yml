@@ -27,6 +27,7 @@ services:
       dockerfile: Dockerfile
     image: ${DOCKER_REGISTRY:-edumy}/edumy-backend:${IMAGE_TAG:-latest}
     container_name: edumy_backend
+    restart: unless-stopped
     ports:
       - "5000:5000"
     environment:
@@ -55,6 +56,7 @@ services:
       dockerfile: Dockerfile
     image: ${DOCKER_REGISTRY:-edumy}/edumy-frontend:${IMAGE_TAG:-latest}
     container_name: edumy_frontend
+    restart: unless-stopped
     ports:
       - "3000:80"
     volumes:
