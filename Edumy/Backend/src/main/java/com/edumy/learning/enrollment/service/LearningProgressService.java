@@ -19,7 +19,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -130,20 +132,50 @@ public class LearningProgressService {
         }
     }
 
-    @Transactional(readOnly = true)
-    public ProgressSnapshot getProgress(Integer userId, Integer courseId) {
-        long totalLessons = lessonRepository.countLessonsByCourseId(courseId);
+    private record ComputedProgress(
+            List<Integer> completedLessonIds,
+            List<Integer> completedQuizIds,
+            long totalLessons,
+            long totalQuizzes,
+            long completedQuizzes,
+            long totalItems,
+            long completedItems,
+            int progressPercentage
+    ) {}
+
+    /**
+     * Single source of truth for course progress calculation (UC-S11 / BR-32):
+     * counts distinct completed lessons belonging to the course + distinct passed quizzes belonging to the course,
+     * and floors the percentage to an integer in [0, 100].
+     */
+    private ComputedProgress computeProgress(Integer userId, Integer courseId) {
+        List<Integer> courseLessonIds = lessonRepository.findLessonIdsByCourseId(courseId);
+        Set<Integer> validLessonIds = courseLessonIds != null
+                ? new HashSet<>(courseLessonIds)
+                : Collections.emptySet();
+        long totalLessons = validLessonIds.size();
+
         List<LessonProgress> progresses = lessonProgressRepository.findByUserIdAndCourseId(userId, courseId);
-        List<Integer> completedLessonIds = progresses.stream()
-                .map(LessonProgress::getLessonId)
-                .distinct()
-                .toList();
+        List<Integer> completedLessonIds = progresses != null
+                ? progresses.stream()
+                        .map(LessonProgress::getLessonId)
+                        .filter(validLessonIds::contains)
+                        .distinct()
+                        .toList()
+                : Collections.emptyList();
         long completedLessons = completedLessonIds.size();
 
-        long totalQuizzes = quizRepository.countQuizzesByCourseId(courseId);
-        List<Integer> quizIds = quizRepository.findQuizIdsByCourseId(courseId);
-        List<Integer> completedQuizIds = (quizIds != null && !quizIds.isEmpty())
-                ? quizAttemptRepository.findPassedQuizIdsByUserAndQuizIds(userId, quizIds)
+        List<Integer> rawQuizIds = quizRepository.findQuizIdsByCourseId(courseId);
+        List<Integer> validQuizIds = rawQuizIds != null
+                ? rawQuizIds.stream().distinct().toList()
+                : Collections.emptyList();
+        long totalQuizzes = validQuizIds.size();
+
+        List<Integer> passedQuizIds = !validQuizIds.isEmpty()
+                ? quizAttemptRepository.findPassedQuizIdsByUserAndQuizIds(userId, validQuizIds)
+                : Collections.emptyList();
+        List<Integer> completedQuizIds = passedQuizIds != null
+                ? passedQuizIds.stream().distinct().toList()
                 : Collections.emptyList();
         long completedQuizzes = completedQuizIds.size();
 
@@ -153,10 +185,7 @@ public class LearningProgressService {
                 ? (int) Math.min(100, Math.floor((double) completedItems / totalItems * 100))
                 : 0;
 
-        Certificate cert = certificateRepository.findByUserIdAndCourseId(userId, courseId);
-        Enrollment enrollment = enrollmentRepository.findByUserIdAndCourseId(userId, courseId);
-
-        return new ProgressSnapshot(
+        return new ComputedProgress(
                 completedLessonIds,
                 completedQuizIds,
                 totalLessons,
@@ -164,7 +193,26 @@ public class LearningProgressService {
                 completedQuizzes,
                 totalItems,
                 completedItems,
-                progressPercentage,
+                progressPercentage
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public ProgressSnapshot getProgress(Integer userId, Integer courseId) {
+        ComputedProgress computed = computeProgress(userId, courseId);
+
+        Certificate cert = certificateRepository.findByUserIdAndCourseId(userId, courseId);
+        Enrollment enrollment = enrollmentRepository.findByUserIdAndCourseId(userId, courseId);
+
+        return new ProgressSnapshot(
+                computed.completedLessonIds(),
+                computed.completedQuizIds(),
+                computed.totalLessons(),
+                computed.totalQuizzes(),
+                computed.completedQuizzes(),
+                computed.totalItems(),
+                computed.completedItems(),
+                computed.progressPercentage(),
                 cert != null ? cert.getId() : null,
                 cert != null ? cert.getCertificateUrl() : null,
                 enrollment != null ? enrollment.getLastAccessedLessonId() : null,
@@ -176,19 +224,10 @@ public class LearningProgressService {
 
     @Transactional
     public RecalcResult recalculateAndIssueCertificate(Integer userId, Integer courseId) {
-        long totalLessons = lessonRepository.countLessonsByCourseId(courseId);
-        long completedLessons = lessonProgressRepository.countCompletedLessonsByUserAndCourse(userId, courseId);
-        long totalQuizzes = quizRepository.countQuizzesByCourseId(courseId);
-        List<Integer> quizIds = quizRepository.findQuizIdsByCourseId(courseId);
-        long completedQuizzes = (quizIds != null && !quizIds.isEmpty())
-                ? quizAttemptRepository.countByUserIdAndIsPassedTrueAndQuizIdIn(userId, quizIds)
-                : 0;
-
-        long totalItems = totalLessons + totalQuizzes;
-        long completedItems = completedLessons + completedQuizzes;
-        int progressPercent = totalItems > 0
-                ? (int) Math.min(100, Math.floor((double) completedItems / totalItems * 100))
-                : 0;
+        ComputedProgress computed = computeProgress(userId, courseId);
+        long totalItems = computed.totalItems();
+        long completedItems = computed.completedItems();
+        int progressPercent = computed.progressPercentage();
 
         Enrollment enrollment = enrollmentRepository.findByUserIdAndCourseId(userId, courseId);
         if (enrollment != null) {

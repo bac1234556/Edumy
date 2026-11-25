@@ -138,6 +138,23 @@ def main():
     else:
         print_log("[CANH BAO] Khong tim thay thu muc Frontend dist de upload.")
 
+    # 3b. Upload Frontend src so Docker build in Frontend/Dockerfile uses latest local source
+    src_paths = [
+        os.path.join(args.local_dir, "Edumy", "Frontend", "src"),
+        os.path.join(args.local_dir, "Frontend", "src"),
+        r"C:\Users\bacle\Downloads\Edumy-Project\Edumy-main\Edumy\Frontend\src"
+    ]
+    local_src = next((p for p in src_paths if os.path.exists(p) and os.path.isdir(p)), None)
+    if local_src:
+        print_log("[3b/4] Dong bo Frontend/src sang server de Docker build...")
+        for root, dirs, files in os.walk(local_src):
+            rel_dir = os.path.relpath(root, local_src).replace("\\", "/")
+            remote_sub = f"{args.server_dir}/Frontend/src" if rel_dir == "." else f"{args.server_dir}/Frontend/src/{rel_dir}"
+            run_remote(f"mkdir -p '{remote_sub}'")
+            for file in files:
+                sftp.put(os.path.join(root, file), f"{remote_sub}/{file}")
+        print_log("Dong bo Frontend/src thanh cong!")
+
     sftp.close()
 
     # 4. Run Docker Compose

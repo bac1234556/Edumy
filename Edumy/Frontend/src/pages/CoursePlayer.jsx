@@ -88,12 +88,15 @@ function CoursePlayer() {
   const videoRef = useRef(null);
   const activeLessonItemRef = useRef(null);
 
-  // Flattened playable list for Prev/Next navigation (Lessons only per 01-scope-decisions.md §5)
+  // Flattened playable list for Prev/Next navigation (Lessons + Quizzes, aligned with LearningProgressService)
   const allPlayableItems = useMemo(() => {
     const items = [];
     curriculum.forEach((section, sIdx) => {
       (section.lessons || []).forEach((lesson) => {
         items.push({ ...lesson, isQuiz: false, sectionTitle: section.title, sectionIndex: sIdx });
+      });
+      (section.quizzes || []).forEach((quiz) => {
+        items.push({ ...quiz, isQuiz: true, sectionTitle: section.title, sectionIndex: sIdx });
       });
     });
     return items;
@@ -147,9 +150,15 @@ function CoursePlayer() {
 
         await fetchProgress();
 
-        // Select first available lesson
-        if (currData.length > 0 && currData[0].lessons?.length > 0) {
-          setActiveLesson(currData[0].lessons[0]);
+        // Select first available lesson or quiz
+        const firstSectionWithLesson = currData.find((s) => s.lessons?.length > 0);
+        if (firstSectionWithLesson) {
+          setActiveLesson({ ...firstSectionWithLesson.lessons[0], isQuiz: false });
+        } else {
+          const firstSectionWithQuiz = currData.find((s) => s.quizzes?.length > 0);
+          if (firstSectionWithQuiz) {
+            setActiveLesson({ ...firstSectionWithQuiz.quizzes[0], isQuiz: true });
+          }
         }
       } catch (err) {
         console.error('Failed to load course player:', err);
@@ -258,8 +267,11 @@ function CoursePlayer() {
 
     setCompletedLessons(nextCompleted);
 
-    const totalItems = allPlayableItems.length || 1;
-    const optimisticPercent = Math.min(100, Math.round((nextCompleted.length / totalItems) * 100));
+    const totalItems = allPlayableItems.length;
+    const optimisticCompletedItems = nextCompleted.length + completedQuizzes.length;
+    const optimisticPercent = totalItems > 0
+      ? Math.min(100, Math.floor((optimisticCompletedItems / totalItems) * 100))
+      : 0;
     setProgressPercent(optimisticPercent);
 
     try {
@@ -556,6 +568,7 @@ function CoursePlayer() {
                     />
                   ) : (
                     <QuizTaker
+                      key={activeLesson.quizId}
                       quizId={activeLesson.quizId}
                       darkMode={true}
                       onComplete={(result) => {
@@ -846,7 +859,7 @@ function CoursePlayer() {
             <div className="sidebar-title-row">
               <h3>Nội dung khóa học</h3>
               <span className="sidebar-completed-count">
-                {completedLessons.length} / {allPlayableItems.length} bài hoàn thành
+                {completedLessons.length + completedQuizzes.length} / {allPlayableItems.length} bài hoàn thành
               </span>
             </div>
 
@@ -906,7 +919,7 @@ function CoursePlayer() {
                             ref={isActive ? activeLessonItemRef : null}
                             className={`sidebar-lesson-item ${isActive ? 'is-active' : ''}`}
                             onClick={() => {
-                              setActiveLesson(lesson);
+                              setActiveLesson({ ...lesson, isQuiz: false });
                               setQuizResult(null);
                             }}
                           >
@@ -932,6 +945,43 @@ function CoursePlayer() {
                                     Học thử
                                   </span>
                                 )}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+
+                      {/* Bài kiểm tra trắc nghiệm (Quizzes) trong chương */}
+                      {section.quizzes?.map((quiz) => {
+                        const isActive = activeLesson?.isQuiz && activeLesson?.quizId === quiz.quizId;
+                        const isDone = completedQuizzes.includes(quiz.quizId);
+
+                        return (
+                          <div
+                            key={`quiz-${quiz.quizId}`}
+                            ref={isActive ? activeLessonItemRef : null}
+                            className={`sidebar-lesson-item ${isActive ? 'is-active' : ''}`}
+                            onClick={() => {
+                              setActiveLesson({ ...quiz, isQuiz: true });
+                              setQuizResult(null);
+                            }}
+                          >
+                            <div className="lesson-status-icon-box">
+                              {isDone ? (
+                                <CheckCircle size={18} className="status-icon-completed" />
+                              ) : (
+                                <HelpCircle size={18} color={isActive ? '#60a5fa' : '#f59e0b'} />
+                              )}
+                            </div>
+
+                            <div className="lesson-title-meta-col">
+                              <span className="sidebar-lesson-name" title={quiz.title}>
+                                Quiz: {quiz.title}
+                              </span>
+                              <div className="sidebar-lesson-duration-badge">
+                                <span style={isDone ? { color: '#10b981', fontWeight: 600 } : {}}>
+                                  {isDone ? 'Đã đạt' : 'Kiểm tra trắc nghiệm'}
+                                </span>
                               </div>
                             </div>
                           </div>

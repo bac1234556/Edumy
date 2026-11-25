@@ -275,10 +275,9 @@ public class CoursesController {
             String instructorName = (e.getCourse() != null && e.getCourse().getInstructor() != null) ? e.getCourse().getInstructor().getFullName() : "Giảng viên Edumy";
             Integer courseId = e.getCourseId();
 
-            // UC-S11 / BR-32: Tính tiến độ làm tròn xuống (floor)
-            long totalLessons = lessonRepository.countLessonsByCourseId(courseId);
-            long completedLessons = lessonProgressRepository.countCompletedLessonsByUserAndCourse(userId, courseId);
-            int actualProgress = totalLessons > 0 ? (int) Math.min(100, Math.floor((double) completedLessons / totalLessons * 100)) : 0;
+            // UC-S11 / BR-32: Dùng chung LearningProgressService để đồng nhất tiến độ giữa Web (MyLearning, CoursePlayer) và Mobile
+            var snap = learningProgressService.getProgress(userId, courseId);
+            long completedLessons = snap.completedLessonIds().size();
 
             m.put("courseId", courseId);
             m.put("title", e.getCourse() != null ? e.getCourse().getTitle() : null);
@@ -289,8 +288,12 @@ public class CoursesController {
             m.put("instructor", instructorName);
             m.put("enrolledAt", e.getEnrolledAt());
             m.put("completedLessons", completedLessons);
-            m.put("totalLessons", totalLessons);
-            m.put("progressPercentage", actualProgress);
+            m.put("totalLessons", snap.totalLessons());
+            m.put("completedQuizzes", snap.completedQuizzes());
+            m.put("totalQuizzes", snap.totalQuizzes());
+            m.put("completedItems", snap.completedItems());
+            m.put("totalItems", snap.totalItems());
+            m.put("progressPercentage", snap.progressPercentage());
             return m;
         }).collect(Collectors.toList());
 
@@ -582,7 +585,7 @@ public class CoursesController {
     }
 
     @PostMapping("/{courseId}/lessons/{lessonId}/complete")
-    @PreAuthorize("hasRole('Student')")
+    @PreAuthorize("hasAnyRole('Student', 'Instructor', 'Admin')")
     public ResponseEntity<?> completeLesson(@PathVariable Integer courseId, @PathVariable Integer lessonId) {
         Integer userId = getCurrentUserId();
         if (userId == null) return ResponseEntity.status(401).build();
@@ -597,7 +600,7 @@ public class CoursesController {
     }
 
     @GetMapping("/{courseId}/progress")
-    @PreAuthorize("hasRole('Student')")
+    @PreAuthorize("hasAnyRole('Student', 'Instructor', 'Admin')")
     public ResponseEntity<?> getCourseProgress(@PathVariable Integer courseId) {
         Integer userId = getCurrentUserId();
         if (userId == null) return ResponseEntity.status(401).build();

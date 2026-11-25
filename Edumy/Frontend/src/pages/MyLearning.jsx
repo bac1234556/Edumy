@@ -192,6 +192,8 @@ function MyLearning() {
             {filteredCourses.map((item) => {
               const progress = item.progressPercentage || 0;
               const isCompleted = progress >= 100;
+              const totalCount = item.totalItems !== undefined ? item.totalItems : item.totalLessons;
+              const completedCount = item.completedItems !== undefined ? item.completedItems : (item.completedLessons || 0);
 
               return (
                 <div key={item.courseId} className="enrolled-card">
@@ -238,7 +240,7 @@ function MyLearning() {
                       <div className="progress-meta-row">
                         <span>
                           {isCompleted ? 'Đã hoàn thành' : 'Tiến độ học tập'}
-                          {item.totalLessons !== undefined && ` (${item.completedLessons || 0}/${item.totalLessons} bài)`}
+                          {totalCount !== undefined && ` (${completedCount}/${totalCount} bài)`}
                         </span>
                         <span className="text-success fw-bold">
                           {progress}% hoàn thành

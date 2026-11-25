@@ -50,6 +50,9 @@ public class InstructorChannelController {
     @Value("${edumy.time-zone:Asia/Ho_Chi_Minh}")
     private String timeZone;
 
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    private com.edumy.learning.enrollment.service.LearningProgressService learningProgressService;
+
     public InstructorChannelController(CourseRepository courseRepository,
                                        CourseCoInstructorRepository courseCoInstructorRepository,
                                        EnrollmentRepository enrollmentRepository,
@@ -324,7 +327,9 @@ public class InstructorChannelController {
                 e.getUserId(),
                 e.getUser() != null ? e.getUser().getFullName() : "Học viên #" + e.getUserId(),
                 TimeUtils.toInstant(e.getEnrolledAt(), timeZone),
-                e.getProgressPercentage(),
+                learningProgressService != null
+                        ? learningProgressService.getProgress(e.getUserId(), courseId).progressPercentage()
+                        : e.getProgressPercentage(),
                 e.getStatus()
         ));
         return ResponseEntity.ok(PageResponse.from(mapped));

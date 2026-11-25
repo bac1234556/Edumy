@@ -35,6 +35,9 @@ public class InstructorController {
     @Autowired
     private ReviewRepository reviewRepository;
 
+    @Autowired(required = false)
+    private com.edumy.learning.enrollment.service.LearningProgressService learningProgressService;
+
     private Integer getCurrentUserId() {
         try {
             return Integer.parseInt(SecurityContextHolder.getContext().getAuthentication().getName());
@@ -116,11 +119,14 @@ public class InstructorController {
         List<Enrollment> enrollments = enrollmentRepository.findByCourseId(courseId);
         List<Map<String, Object>> students = enrollments.stream().map(e -> {
             Map<String, Object> m = new HashMap<>();
+            Integer progressPct = learningProgressService != null
+                    ? learningProgressService.getProgress(e.getUserId(), courseId).progressPercentage()
+                    : e.getProgressPercentage();
             m.put("enrollmentId", e.getEnrollmentId());
             m.put("userId", e.getUserId());
             m.put("fullName", e.getUser() != null ? e.getUser().getFullName() : "Học viên #" + e.getUserId());
             m.put("enrolledAt", e.getEnrolledAt());
-            m.put("progressPercentage", e.getProgressPercentage());
+            m.put("progressPercentage", progressPct);
             m.put("status", e.getStatus());
             return m;
         }).collect(Collectors.toList());
