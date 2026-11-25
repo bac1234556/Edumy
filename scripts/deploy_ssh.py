@@ -24,7 +24,7 @@ def print_log(msg):
 
 def main():
     parser = argparse.ArgumentParser(description="Automated SSH Deploy Script for Jenkins")
-    parser.add_argument("--host", default="192.168.60.165", help="Target Server Host/IP")
+    parser.add_argument("--host", default="100.120.121.11", help="Target Server Host/IP (Tailscale)")
     parser.add_argument("--port", type=int, default=22, help="SSH Port")
     parser.add_argument("--user", default="baclev", help="SSH Username")
     parser.add_argument("--password", default="2011", help="SSH Password (fallback)")

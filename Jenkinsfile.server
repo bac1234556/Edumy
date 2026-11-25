@@ -44,8 +44,8 @@ pipeline {
         )
         string(
             name: 'SERVER_HOST', 
-            defaultValue: '192.168.60.165', 
-            description: 'Địa chỉ IP Server Public/Home Lab triển khai'
+            defaultValue: '100.120.121.11', 
+            description: 'Địa chỉ IP Tailscale của Server triển khai (truy cập từ mọi mạng)'
         )
         string(
             name: 'SERVER_USER', 
