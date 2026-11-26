@@ -18,6 +18,7 @@ public class Answer {
     @Column(name = "AnswerId")
     private Integer answerId;
 
+    @org.hibernate.annotations.Nationalized
     @Column(name = "Content", nullable = false)
     private String content;
 

@@ -255,7 +255,7 @@ function MyLearning() {
                       </div>
 
                       {/* Footer Actions */}
-                      <div className="enrolled-card-footer">
+                      <div className="enrolled-card-footer" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                         <Link
                           to={`/my-courses/${item.courseId}/learn`}
                           className="btn-continue-learning w-100 justify-content-center"
@@ -263,6 +263,15 @@ function MyLearning() {
                           <PlayCircle size={16} />
                           {isCompleted ? 'Xem lại bài học' : 'Vào học tiếp'}
                         </Link>
+                        {isCompleted && (
+                          <Link
+                            to={`/courses/${item.courseId}#reviews`}
+                            className="btn btn-warning w-100 d-flex align-items-center justify-content-center gap-2 fw-bold"
+                            style={{ borderRadius: '10px', padding: '0.55rem 1rem', fontSize: '0.88rem', color: '#0f172a' }}
+                          >
+                            <Sparkles size={16} /> ⭐ Đánh giá khóa học
+                          </Link>
+                        )}
                       </div>
                     </div>
                 </div>

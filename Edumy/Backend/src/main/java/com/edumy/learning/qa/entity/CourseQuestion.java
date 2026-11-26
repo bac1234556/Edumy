@@ -27,9 +27,11 @@ public class CourseQuestion {
     @Column(name = "user_id", nullable = false)
     private Integer userId;
 
-    @Column(name = "title", nullable = false, length = 200)
+    @org.hibernate.annotations.Nationalized
+    @Column(name = "title", nullable = false, length = 500)
     private String title;
 
+    @org.hibernate.annotations.Nationalized
     @Column(name = "content", nullable = false, length = 5000)
     private String content;
 

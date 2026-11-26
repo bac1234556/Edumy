@@ -431,13 +431,13 @@ export default function CourseQaTab({ courseId, activeLesson, currentUser }) {
                         <ShieldCheck size={13} /> Giảng viên đã trả lời
                       </span>
                     )}
-                    {q.isResolved ? (
+                    {q.isResolved || q.hasInstructorAnswer ? (
                       <span className="qa-badge resolved">
-                        <CheckCircle2 size={13} /> Đã giải quyết
+                        <CheckCircle2 size={13} /> Đã xác nhận
                       </span>
                     ) : (
                       <span className="qa-badge unanswered">
-                        <Clock size={13} /> Chờ giải đáp
+                        <Clock size={13} /> Đang chờ
                       </span>
                     )}
                     {q.answerCount > 0 && (
@@ -518,12 +518,12 @@ export default function CourseQaTab({ courseId, activeLesson, currentUser }) {
                       )}
                       <button
                         type="button"
-                        className={`qa-btn-toggle-resolve ${threadData.isResolved ? 'is-resolved' : ''}`}
+                        className={`qa-btn-toggle-resolve ${threadData.isResolved || threadData.answers?.some(a => a.authorType === 'INSTRUCTOR') ? 'is-resolved' : ''}`}
                         onClick={() => handleToggleResolve(threadData.id || threadData.questionId)}
-                        title="Nhấn để đổi trạng thái đã giải quyết"
+                        title="Nhấn để đổi trạng thái đã xác nhận"
                       >
                         <CheckCircle2 size={16} />
-                        {threadData.isResolved ? 'Đã giải quyết' : 'Đánh dấu đã giải quyết'}
+                        {threadData.isResolved || threadData.answers?.some(a => a.authorType === 'INSTRUCTOR') ? 'Đã xác nhận' : 'Đánh dấu đã xác nhận'}
                       </button>
                     </div>
                   </div>

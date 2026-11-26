@@ -28,6 +28,7 @@ public class QuestionAnswer {
     @Builder.Default
     private String authorType = "STUDENT"; // STUDENT, INSTRUCTOR
 
+    @org.hibernate.annotations.Nationalized
     @Column(name = "content", nullable = false, length = 5000)
     private String content;
 

@@ -22,9 +22,11 @@ public class Quiz {
     @Column(name = "QuizId")
     private Integer quizId;
 
+    @org.hibernate.annotations.Nationalized
     @Column(name = "Title", nullable = false)
     private String title;
 
+    @org.hibernate.annotations.Nationalized
     @Column(name = "Description")
     private String description;
 

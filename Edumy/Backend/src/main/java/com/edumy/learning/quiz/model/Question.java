@@ -20,6 +20,7 @@ public class Question {
     @Column(name = "QuestionId")
     private Integer questionId;
 
+    @org.hibernate.annotations.Nationalized
     @Column(name = "Content", nullable = false)
     private String content;
 
@@ -27,6 +28,7 @@ public class Question {
     @Builder.Default
     private Integer points = 1;
 
+    @org.hibernate.annotations.Nationalized
     @Column(name = "Explanation")
     private String explanation;
     

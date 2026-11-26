@@ -273,6 +273,13 @@ public class QaService {
 
         QuestionAnswer saved = answerRepository.save(answer);
 
+        // When a course instructor answers, automatically confirm/resolve the question
+        if (isCourseInstructor && !Boolean.TRUE.equals(question.getIsResolved())) {
+            question.setIsResolved(true);
+            question.setUpdatedAt(LocalDateTime.now());
+            questionRepository.save(question);
+        }
+
         // If course instructor answers, notify the student asker via email
         if (isCourseInstructor && !userId.equals(question.getUserId())) {
             User student = userRepository.findById(question.getUserId()).orElse(null);

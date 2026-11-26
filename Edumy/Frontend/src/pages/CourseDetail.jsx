@@ -720,7 +720,7 @@ function CourseDetail() {
             <CourseBundleCard courseId={id} />
 
             {/* Reviews with Human-Crafted Feedback and Verified Purchase */}
-            <div className="content-box">
+            <div className="content-box" id="reviews">
               <h3 className="content-box-title">Đánh giá từ học viên</h3>
 
               {/* Reviews Summary */}

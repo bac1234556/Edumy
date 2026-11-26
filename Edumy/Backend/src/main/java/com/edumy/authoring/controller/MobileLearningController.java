@@ -360,9 +360,15 @@ public class MobileLearningController {
         List<CourseSection> sections = courseSectionRepository.findByCourseIdOrderByOrderIndexAsc(courseId);
         List<Integer> sectionIds = sections.stream().map(CourseSection::getSectionId).collect(Collectors.toList());
         if (sectionIds.isEmpty()) return Collections.emptyList();
-        return lessonRepository.findBySectionIdInOrderByOrderIndexAsc(sectionIds).stream()
-                .map(Lesson::getLessonId)
-                .collect(Collectors.toList());
+        Map<Integer, List<Lesson>> lessonsBySection = lessonRepository.findBySectionIdInOrderByOrderIndexAsc(sectionIds).stream()
+                .collect(Collectors.groupingBy(Lesson::getSectionId, LinkedHashMap::new, Collectors.toList()));
+        List<Integer> ordered = new ArrayList<>();
+        for (CourseSection sec : sections) {
+            for (Lesson les : lessonsBySection.getOrDefault(sec.getSectionId(), Collections.emptyList())) {
+                ordered.add(les.getLessonId());
+            }
+        }
+        return ordered;
     }
 
     private boolean hasCourseLearningAccess(Course course, Integer userId) {

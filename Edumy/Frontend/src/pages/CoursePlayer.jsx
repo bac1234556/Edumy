@@ -79,14 +79,16 @@ function CoursePlayer() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Personal Notes States
+  // Personal Notes & Sequential Video Watch States
   const [noteInput, setNoteInput] = useState('');
   const [currentVideoTime, setCurrentVideoTime] = useState(0);
   const [notesList, setNotesList] = useState([]);
+  const [hasWatchedCurrentVideo, setHasWatchedCurrentVideo] = useState(false);
 
   // Refs
   const videoRef = useRef(null);
   const activeLessonItemRef = useRef(null);
+  const maxWatchedTimeRef = useRef(0);
 
   // Flattened playable list for Prev/Next navigation (Lessons + Quizzes, aligned with LearningProgressService)
   const allPlayableItems = useMemo(() => {
@@ -101,6 +103,26 @@ function CoursePlayer() {
     });
     return items;
   }, [curriculum]);
+
+  // Sequential Progression Rule: item N is unlocked ONLY if all items 0..N-1 are completed
+  const isItemCompleted = (item) => {
+    if (!item) return false;
+    return item.isQuiz
+      ? completedQuizzes.includes(item.quizId)
+      : completedLessons.includes(item.lessonId);
+  };
+
+  const isPlayableIndexUnlocked = (targetIdx) => {
+    if (targetIdx <= 0) return true;
+    const targetItem = allPlayableItems[targetIdx];
+    if (targetItem && isItemCompleted(targetItem)) return true;
+    for (let i = 0; i < targetIdx; i++) {
+      if (!isItemCompleted(allPlayableItems[i])) {
+        return false;
+      }
+    }
+    return true;
+  };
 
   // Load saved notes from localStorage
   useEffect(() => {
@@ -173,6 +195,12 @@ function CoursePlayer() {
 
   // Fetch secure streaming permissions on activeLesson change
   useEffect(() => {
+    maxWatchedTimeRef.current = 0;
+    setCurrentVideoTime(0);
+    setHasWatchedCurrentVideo(
+      Boolean(activeLesson && !activeLesson.isQuiz && completedLessons.includes(activeLesson.lessonId))
+    );
+
     if (!activeLesson || activeLesson.isQuiz) {
       setStreamData(null);
       return;
@@ -256,10 +284,15 @@ function CoursePlayer() {
   };
 
   // Toggle Complete / Unmark Complete Lesson
-  const handleToggleComplete = async () => {
+  const handleToggleComplete = async (forceCompleteFromVideoEnd = false) => {
     if (!activeLesson || activeLesson.isQuiz) return;
     const lessonId = activeLesson.lessonId;
     const isAlreadyCompleted = completedLessons.includes(lessonId);
+
+    if (!isAlreadyCompleted && !forceCompleteFromVideoEnd && getVideoSrc() && !hasWatchedCurrentVideo) {
+      alert('Bạn phải xem hết toàn bộ nội dung video bài học này thì mới có thể hoàn thành và mở khóa bài tiếp theo!');
+      return;
+    }
 
     const nextCompleted = isAlreadyCompleted
       ? completedLessons.filter((item) => item !== lessonId)
@@ -279,7 +312,11 @@ function CoursePlayer() {
         await api.post(`/courses/${id}/lessons/${lessonId}/complete`);
         if (hasNext) {
           setTimeout(() => {
-            handleNextLesson();
+            const next = allPlayableItems[currentIndex + 1];
+            if (next) {
+              setActiveLesson(next);
+              setQuizResult(null);
+            }
           }, 450);
         }
       } else {
@@ -302,6 +339,7 @@ function CoursePlayer() {
 
   const hasPrevious = currentIndex > 0;
   const hasNext = currentIndex >= 0 && currentIndex < allPlayableItems.length - 1;
+  const isCurrentItemDone = isItemCompleted(allPlayableItems[currentIndex]);
 
   const handlePrevLesson = () => {
     if (hasPrevious) {
@@ -312,6 +350,10 @@ function CoursePlayer() {
   };
 
   const handleNextLesson = () => {
+    if (!isCurrentItemDone) {
+      alert('Bạn phải xem hết nội dung và hoàn thành bài học hiện tại thì mới xem được bài tiếp theo!');
+      return;
+    }
     if (hasNext) {
       const next = allPlayableItems[currentIndex + 1];
       setActiveLesson(next);
@@ -321,18 +363,36 @@ function CoursePlayer() {
 
   // Auto-advance when video ends
   const handleVideoEnded = async () => {
+    setHasWatchedCurrentVideo(true);
     if (activeLesson && !completedLessons.includes(activeLesson.lessonId)) {
-      await handleToggleComplete();
-    }
-    if (hasNext) {
+      await handleToggleComplete(true);
+    } else if (hasNext) {
       handleNextLesson();
     }
   };
 
-  // Track Video Time for notes
+  // Track Video Time for notes & prevent fast-forwarding uncompleted lessons
   const handleTimeUpdate = () => {
     if (videoRef.current) {
-      setCurrentVideoTime(Math.floor(videoRef.current.currentTime));
+      const ct = videoRef.current.currentTime;
+      setCurrentVideoTime(Math.floor(ct));
+      if (ct > maxWatchedTimeRef.current && ct - maxWatchedTimeRef.current < 3) {
+        maxWatchedTimeRef.current = ct;
+      }
+      if (videoRef.current.duration > 0 && maxWatchedTimeRef.current / videoRef.current.duration >= 0.95) {
+        setHasWatchedCurrentVideo(true);
+      }
+    }
+  };
+
+  const handleVideoSeeking = () => {
+    if (
+      videoRef.current &&
+      activeLesson &&
+      !completedLessons.includes(activeLesson.lessonId) &&
+      videoRef.current.currentTime > maxWatchedTimeRef.current + 2
+    ) {
+      videoRef.current.currentTime = maxWatchedTimeRef.current;
     }
   };
 
@@ -443,7 +503,7 @@ function CoursePlayer() {
       rawUrl.includes('commondatastorage.googleapis.com') ||
       rawUrl.includes('example.com/')
     ) {
-      return '';
+      return 'https://vjs.zencdn.net/v/oceans.mp4';
     }
     if (rawUrl.startsWith('http://') || rawUrl.startsWith('https://')) {
       return rawUrl;
@@ -536,7 +596,20 @@ function CoursePlayer() {
           </h1>
         </div>
 
-        <div className="topbar-right">
+        <div className="topbar-right" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+          <Link
+            to={`/courses/${id}#reviews`}
+            className="btn-sidebar-collapse-toggle"
+            style={
+              progressPercent >= 100
+                ? { background: '#f59e0b', color: '#0f172a', borderColor: '#f59e0b', fontWeight: 700, textDecoration: 'none' }
+                : { textDecoration: 'none' }
+            }
+            title="Viết đánh giá cho khóa học này"
+          >
+            <Award size={16} />
+            <span>{progressPercent >= 100 ? '⭐ Đánh giá khóa học' : 'Đánh giá khóa học'}</span>
+          </Link>
           <button
             className="btn-sidebar-collapse-toggle"
             onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
@@ -620,6 +693,7 @@ function CoursePlayer() {
                   autoPlay
                   onEnded={handleVideoEnded}
                   onTimeUpdate={handleTimeUpdate}
+                  onSeeking={handleVideoSeeking}
                 >
                   Trình duyệt không hỗ trợ phát video HTML5.
                 </video>
@@ -651,9 +725,14 @@ function CoursePlayer() {
               <button
                 className="btn-ctrl-nav"
                 onClick={handleNextLesson}
-                disabled={!hasNext}
-                title="Chuyển tới bài giảng tiếp theo"
+                disabled={!hasNext || !isCurrentItemDone}
+                title={
+                  !isCurrentItemDone
+                    ? 'Cần xem hết nội dung bài học hiện tại để mở khóa bài tiếp theo'
+                    : 'Chuyển tới bài giảng tiếp theo'
+                }
               >
+                {!isCurrentItemDone && <Lock size={14} style={{ marginRight: 4 }} />}
                 Bài tiếp theo <ChevronRight size={16} />
               </button>
             </div>
@@ -661,11 +740,21 @@ function CoursePlayer() {
             {!activeLesson?.isQuiz && (
               <button
                 className={`btn-toggle-complete ${isCurrentCompleted ? 'is-completed' : 'not-completed'}`}
-                onClick={handleToggleComplete}
+                onClick={() => handleToggleComplete(false)}
+                disabled={!isCurrentCompleted && Boolean(getVideoSrc()) && !hasWatchedCurrentVideo}
+                title={
+                  !isCurrentCompleted && Boolean(getVideoSrc()) && !hasWatchedCurrentVideo
+                    ? 'Bạn phải xem hết video bài giảng để hoàn thành bài học'
+                    : ''
+                }
               >
                 {isCurrentCompleted ? (
                   <>
                     <CheckCircle size={16} /> Đã hoàn thành
+                  </>
+                ) : Boolean(getVideoSrc()) && !hasWatchedCurrentVideo ? (
+                  <>
+                    <Lock size={16} /> Xem hết video để hoàn thành
                   </>
                 ) : (
                   <>
@@ -875,6 +964,28 @@ function CoursePlayer() {
               <span>Tiến độ học tập</span>
               <strong>{progressPercent}%</strong>
             </div>
+
+            {progressPercent >= 100 && (
+              <Link
+                to={`/courses/${id}#reviews`}
+                style={{
+                  marginTop: '0.75rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '0.45rem',
+                  background: '#f59e0b',
+                  color: '#0f172a',
+                  fontWeight: 700,
+                  fontSize: '0.86rem',
+                  padding: '0.55rem 0.9rem',
+                  borderRadius: '8px',
+                  textDecoration: 'none',
+                }}
+              >
+                <Award size={16} /> ⭐ Viết đánh giá khóa học
+              </Link>
+            )}
           </div>
 
           {/* Accordion các Section (Chương học) */}
@@ -912,23 +1023,34 @@ function CoursePlayer() {
                       {section.lessons?.map((lesson, lIdx) => {
                         const isActive = !activeLesson?.isQuiz && activeLesson?.lessonId === lesson.lessonId;
                         const isDone = completedLessons.includes(lesson.lessonId);
+                        const flatIdx = allPlayableItems.findIndex(
+                          (it) => !it.isQuiz && it.lessonId === lesson.lessonId
+                        );
+                        const isUnlocked = isPlayableIndexUnlocked(flatIdx);
 
                         return (
                           <div
                             key={lesson.lessonId}
                             ref={isActive ? activeLessonItemRef : null}
                             className={`sidebar-lesson-item ${isActive ? 'is-active' : ''}`}
+                            style={!isUnlocked ? { opacity: 0.52, cursor: 'not-allowed' } : undefined}
                             onClick={() => {
+                              if (!isUnlocked) {
+                                alert('Bạn phải xem hết tất cả nội dung bài học trước đó theo thứ tự thì mới xem được bài tiếp theo!');
+                                return;
+                              }
                               setActiveLesson({ ...lesson, isQuiz: false });
                               setQuizResult(null);
                             }}
                           >
-                            {/* Icon trạng thái: tick xanh, đang xem, chưa xem */}
+                            {/* Icon trạng thái: tick xanh, đang xem, khóa, chưa xem */}
                             <div className="lesson-status-icon-box">
                               {isDone ? (
                                 <CheckCircle size={18} className="status-icon-completed" />
                               ) : isActive ? (
                                 <PlayCircle size={18} className="status-icon-active" />
+                              ) : !isUnlocked ? (
+                                <Lock size={16} color="#64748b" />
                               ) : (
                                 <Circle size={18} className="status-icon-unviewed" />
                               )}
@@ -940,7 +1062,12 @@ function CoursePlayer() {
                               </span>
                               <div className="sidebar-lesson-duration-badge">
                                 <span>{formatDuration(lesson.duration)}</span>
-                                {lesson.isPreview && (
+                                {!isUnlocked && (
+                                  <span style={{ marginLeft: '0.4rem', color: '#f59e0b', fontSize: '0.72rem', fontWeight: 600 }}>
+                                    • Khóa
+                                  </span>
+                                )}
+                                {lesson.isPreview && isUnlocked && (
                                   <span className="badge-preview-tag" style={{ marginLeft: '0.4rem' }}>
                                     Học thử
                                   </span>
@@ -955,13 +1082,22 @@ function CoursePlayer() {
                       {section.quizzes?.map((quiz) => {
                         const isActive = activeLesson?.isQuiz && activeLesson?.quizId === quiz.quizId;
                         const isDone = completedQuizzes.includes(quiz.quizId);
+                        const flatIdx = allPlayableItems.findIndex(
+                          (it) => it.isQuiz && it.quizId === quiz.quizId
+                        );
+                        const isUnlocked = isPlayableIndexUnlocked(flatIdx);
 
                         return (
                           <div
                             key={`quiz-${quiz.quizId}`}
                             ref={isActive ? activeLessonItemRef : null}
                             className={`sidebar-lesson-item ${isActive ? 'is-active' : ''}`}
+                            style={!isUnlocked ? { opacity: 0.52, cursor: 'not-allowed' } : undefined}
                             onClick={() => {
+                              if (!isUnlocked) {
+                                alert('Bạn phải xem hết tất cả nội dung bài học trước đó theo thứ tự thì mới mở được bài kiểm tra này!');
+                                return;
+                              }
                               setActiveLesson({ ...quiz, isQuiz: true });
                               setQuizResult(null);
                             }}
@@ -969,6 +1105,8 @@ function CoursePlayer() {
                             <div className="lesson-status-icon-box">
                               {isDone ? (
                                 <CheckCircle size={18} className="status-icon-completed" />
+                              ) : !isUnlocked ? (
+                                <Lock size={16} color="#64748b" />
                               ) : (
                                 <HelpCircle size={18} color={isActive ? '#60a5fa' : '#f59e0b'} />
                               )}
@@ -979,8 +1117,8 @@ function CoursePlayer() {
                                 Quiz: {quiz.title}
                               </span>
                               <div className="sidebar-lesson-duration-badge">
-                                <span style={isDone ? { color: '#10b981', fontWeight: 600 } : {}}>
-                                  {isDone ? 'Đã đạt' : 'Kiểm tra trắc nghiệm'}
+                                <span style={isDone ? { color: '#10b981', fontWeight: 600 } : !isUnlocked ? { color: '#f59e0b', fontWeight: 600 } : {}}>
+                                  {isDone ? 'Đã đạt' : !isUnlocked ? 'Khóa • Cần hoàn thành bài trước' : 'Kiểm tra trắc nghiệm'}
                                 </span>
                               </div>
                             </div>
