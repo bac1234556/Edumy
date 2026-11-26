@@ -24,7 +24,7 @@ public interface CourseQuestionRepository extends JpaRepository<CourseQuestion, 
             "AND (:unansweredOnly = false OR NOT EXISTS (" +
             "  SELECT a.id FROM QuestionAnswer a WHERE a.questionId = q.id AND a.authorType = 'INSTRUCTOR' AND a.visibilityStatus = 'VISIBLE'" +
             ")) " +
-            "AND (:keyword IS NULL OR LOWER(q.title) LIKE LOWER(CONCAT('%', :keyword, '%')) OR LOWER(q.content) LIKE LOWER(CONCAT('%', :keyword, '%')))")
+            "AND (:keyword IS NULL OR LOWER(q.title) LIKE LOWER(CONCAT('%', :keyword, '%')) OR LOWER(CAST(q.content AS string)) LIKE LOWER(CONCAT('%', :keyword, '%')))")
     Page<CourseQuestion> findForStudentCourse(@Param("courseId") Integer courseId,
                                              @Param("lessonId") Integer lessonId,
                                              @Param("authorUserId") Integer authorUserId,
