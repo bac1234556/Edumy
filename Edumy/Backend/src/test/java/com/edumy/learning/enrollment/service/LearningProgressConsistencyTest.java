@@ -319,7 +319,6 @@ class LearningProgressConsistencyTest {
                 courseRepository,
                 courseCoInstructorRepository,
                 enrollmentRepository,
-                orderItemRepository,
                 reviewRepository,
                 courseQuestionRepository,
                 earningEntryRepository,

@@ -4,7 +4,6 @@ import com.edumy.authoring.model.Course;
 import com.edumy.authoring.model.CourseCoInstructor;
 import com.edumy.authoring.repository.CourseCoInstructorRepository;
 import com.edumy.authoring.repository.CourseRepository;
-import com.edumy.commerce.order.repository.OrderItemRepository;
 import com.edumy.learning.enrollment.model.Enrollment;
 import com.edumy.learning.enrollment.repository.EnrollmentRepository;
 import com.edumy.learning.qa.repository.CourseQuestionRepository;
@@ -26,7 +25,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -41,7 +39,6 @@ public class InstructorChannelController {
     private final CourseRepository courseRepository;
     private final CourseCoInstructorRepository courseCoInstructorRepository;
     private final EnrollmentRepository enrollmentRepository;
-    private final OrderItemRepository orderItemRepository;
     private final ReviewRepository reviewRepository;
     private final CourseQuestionRepository courseQuestionRepository;
     private final EarningEntryRepository earningEntryRepository;
@@ -56,7 +53,6 @@ public class InstructorChannelController {
     public InstructorChannelController(CourseRepository courseRepository,
                                        CourseCoInstructorRepository courseCoInstructorRepository,
                                        EnrollmentRepository enrollmentRepository,
-                                       OrderItemRepository orderItemRepository,
                                        ReviewRepository reviewRepository,
                                        CourseQuestionRepository courseQuestionRepository,
                                        EarningEntryRepository earningEntryRepository,
@@ -64,7 +60,6 @@ public class InstructorChannelController {
         this.courseRepository = courseRepository;
         this.courseCoInstructorRepository = courseCoInstructorRepository;
         this.enrollmentRepository = enrollmentRepository;
-        this.orderItemRepository = orderItemRepository;
         this.reviewRepository = reviewRepository;
         this.courseQuestionRepository = courseQuestionRepository;
         this.earningEntryRepository = earningEntryRepository;
@@ -171,18 +166,7 @@ public class InstructorChannelController {
         long netEarnings = earningSummary.getTotalEarned();
 
         List<EarningEntry> myEntries = earningEntryRepository.findByInstructorId(userId);
-        long grossSales = myEntries.stream()
-                .mapToLong(e -> {
-                    long unitPrice = e.getUnitPrice() != null ? e.getUnitPrice() : 0L;
-                    int shareBps = (e.getShareBps() != null && e.getShareBps() > 0) ? e.getShareBps() : 10000;
-                    if (unitPrice > 0) {
-                        return (unitPrice * shareBps) / 10000;
-                    }
-                    long amt = e.getAmount() != null ? e.getAmount() : 0L;
-                    int feeBps = (e.getPlatformFeeBps() != null && e.getPlatformFeeBps() < 10000) ? e.getPlatformFeeBps() : 3000;
-                    return (amt * 10000L) / (10000 - feeBps);
-                })
-                .sum();
+        long grossSales = computeGrossSales(myEntries);
 
         LocalDate today = LocalDate.now();
         LocalDate startDate = today.minusDays(29);
@@ -343,6 +327,24 @@ public class InstructorChannelController {
                 e.getStatus()
         ));
         return ResponseEntity.ok(PageResponse.from(mapped));
+    }
+
+    static long computeGrossSales(List<EarningEntry> entries) {
+        if (entries == null || entries.isEmpty()) {
+            return 0L;
+        }
+        return entries.stream()
+                .mapToLong(e -> {
+                    long unitPrice = e.getUnitPrice() != null ? e.getUnitPrice() : 0L;
+                    int shareBps = (e.getShareBps() != null && e.getShareBps() > 0) ? e.getShareBps() : 10000;
+                    if (unitPrice > 0) {
+                        return (unitPrice * shareBps) / 10000;
+                    }
+                    long amt = e.getAmount() != null ? e.getAmount() : 0L;
+                    int feeBps = (e.getPlatformFeeBps() != null && e.getPlatformFeeBps() < 10000) ? e.getPlatformFeeBps() : 3000;
+                    return (amt * 10000L) / (10000 - feeBps);
+                })
+                .sum();
     }
 
     private Map<Integer, Long> loadRatingCounts(List<Integer> courseIds) {
