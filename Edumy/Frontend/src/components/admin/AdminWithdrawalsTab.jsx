@@ -39,20 +39,31 @@ function AdminWithdrawalsTab({ showNotification }) {
   }, [fetchWithdrawals]);
 
   const handleOpenModal = (type, item) => {
-    setModalState({ type, id: item.id, amount: item.amount });
+    setModalState({
+      type,
+      id: item.id,
+      amount: item.amount,
+      accountHolder: item.accountHolder,
+      bankName: item.bankName,
+      accountNumberLast4: item.accountNumberLast4,
+    });
     setInputValue('');
   };
 
   const handleConfirmAction = async (e) => {
     e.preventDefault();
-    if (!modalState || !inputValue.trim()) return;
+    if (!modalState) return;
+    if (modalState.type === 'reject' && !inputValue.trim()) return;
     try {
       setSubmitting(true);
       if (modalState.type === 'pay') {
-        await api.post(`/v1/admin/withdrawals/${modalState.id}/pay`, {
-          transferReference: inputValue.trim(),
-        });
-        showNotification?.('Đã xác nhận chuyển khoản rút tiền thành công!');
+        const res = await api.post(`/v1/admin/withdrawals/${modalState.id}/pay`, {});
+        const generatedCode = res.data?.transferReference;
+        showNotification?.(
+          generatedCode
+            ? `Đã xác nhận chuyển khoản rút tiền thành công! Mã GD: ${generatedCode}`
+            : 'Đã xác nhận chuyển khoản rút tiền thành công!'
+        );
       } else {
         await api.post(`/v1/admin/withdrawals/${modalState.id}/reject`, {
           reason: inputValue.trim(),
@@ -226,21 +237,34 @@ function AdminWithdrawalsTab({ showNotification }) {
               </div>
               <form onSubmit={handleConfirmAction}>
                 <div className="modal-body p-4">
-                  <p className="small text-muted mb-3">
+                  <p className="small text-muted mb-2">
                     Số tiền: <strong>₫{(modalState.amount || 0).toLocaleString('vi-VN')}</strong>
                   </p>
-                  <label className="form-label fw-semibold">
-                    {modalState.type === 'pay' ? 'Mã giao dịch chuyển khoản (bắt buộc)' : 'Lý do từ chối (bắt buộc)'}
-                  </label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={inputValue}
-                    onChange={(e) => setInputValue(e.target.value)}
-                    placeholder={modalState.type === 'pay' ? 'VD: FT26321998812' : 'VD: Sai thông tin tài khoản nhận tiền'}
-                    required
-                    autoFocus
-                  />
+                  {modalState.accountHolder && (
+                    <p className="small text-muted mb-3">
+                      Tài khoản nhận: <strong>{modalState.accountHolder}</strong> ({modalState.bankName} ••••{modalState.accountNumberLast4})
+                    </p>
+                  )}
+                  {modalState.type === 'pay' ? (
+                    <div className="alert alert-info py-2 px-3 small mb-0">
+                      Mã giao dịch chuyển khoản sẽ được hệ thống <strong>tự động sinh</strong> sau khi bạn nhấn xác nhận.
+                    </div>
+                  ) : (
+                    <>
+                      <label className="form-label fw-semibold">
+                        Lý do từ chối (bắt buộc)
+                      </label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={inputValue}
+                        onChange={(e) => setInputValue(e.target.value)}
+                        placeholder="VD: Sai thông tin tài khoản nhận tiền"
+                        required
+                        autoFocus
+                      />
+                    </>
+                  )}
                 </div>
                 <div className="modal-footer border-top">
                   <button type="button" className="btn btn-outline-secondary" onClick={() => setModalState(null)}>
@@ -249,7 +273,7 @@ function AdminWithdrawalsTab({ showNotification }) {
                   <button
                     type="submit"
                     className={`btn ${modalState.type === 'pay' ? 'btn-success' : 'btn-danger'}`}
-                    disabled={submitting || !inputValue.trim()}
+                    disabled={submitting || (modalState.type === 'reject' && !inputValue.trim())}
                   >
                     {submitting ? 'Đang xử lý...' : 'Xác nhận'}
                   </button>

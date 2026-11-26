@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import {
   ChevronLeft,
   ChevronRight,
@@ -23,7 +24,8 @@ import {
   EyeOff,
   Eye,
   Ban,
-  Unlock
+  Unlock,
+  ExternalLink
 } from 'lucide-react';
 import api from '../api/axiosConfig';
 import './AdminDashboard.css';
@@ -491,7 +493,16 @@ function AdminDashboard() {
                     {paginatedCourses.map(course => (
                       <tr key={course.courseId}>
                         <td style={{ fontWeight: 600, color: '#0f172a' }}>
-                          {course.title}
+                          <Link
+                            to={`/courses/${course.courseId}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ color: '#0f172a', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}
+                            title="Mở trang khóa học"
+                          >
+                            <span>{course.title}</span>
+                            <ExternalLink size={13} style={{ color: '#64748b', flexShrink: 0 }} aria-hidden="true" />
+                          </Link>
                         </td>
                         <td>{course.instructor?.fullName || 'Chưa xác định'}</td>
                         <td>
@@ -814,30 +825,77 @@ function AdminDashboard() {
                   <thead>
                     <tr>
                       <th>Mã</th>
+                      <th>Khóa học</th>
                       <th>Học viên</th>
                       <th>Số sao</th>
                       <th>Nội dung bình luận</th>
+                      <th>Trạng thái</th>
                       <th style={{ textAlign: 'right' }}>Thao tác</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {adminReviews.map((rev) => (
-                      <tr key={rev.reviewId}>
-                        <td>#{rev.reviewId}</td>
-                        <td>{rev.userName || rev.user?.fullName || `User #${rev.userId}`}</td>
-                        <td style={{ color: '#d97706', fontWeight: 700 }}>{rev.rating} ★</td>
-                        <td>{rev.comment}</td>
-                        <td style={{ textAlign: 'right' }}>
-                          <button
-                            type="button"
-                            className="btn-admin-action outline-danger"
-                            onClick={() => handleHideReview(rev.reviewId)}
-                          >
-                            Ẩn đánh giá
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
+                    {adminReviews.map((rev) => {
+                      const isHidden = String(rev.visibility || rev.visibilityStatus || '').toUpperCase() === 'HIDDEN_BY_ADMIN';
+                      const courseLabel = rev.courseTitle || rev.course?.title || `Khóa học #${rev.courseId}`;
+                      return (
+                        <tr key={rev.reviewId}>
+                          <td>#{rev.reviewId}</td>
+                          <td style={{ maxWidth: 230, fontWeight: 600 }}>
+                            {rev.courseId ? (
+                              <Link
+                                to={`/courses/${rev.courseId}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={{ color: '#2563eb', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}
+                                title={`Xem khóa học: ${courseLabel}`}
+                              >
+                                <span>{courseLabel}</span>
+                                <ExternalLink size={13} style={{ flexShrink: 0 }} aria-hidden="true" />
+                              </Link>
+                            ) : (
+                              courseLabel
+                            )}
+                          </td>
+                          <td>{rev.studentName || rev.userName || rev.user?.fullName || `User #${rev.userId}`}</td>
+                          <td style={{ color: '#d97706', fontWeight: 700 }}>{rev.rating} ★</td>
+                          <td>
+                            <div>{rev.comment}</div>
+                            {isHidden && rev.moderationReason && (
+                              <div style={{ fontSize: '0.78rem', color: '#dc2626', marginTop: 2 }}>
+                                Lý do ẩn: {rev.moderationReason}
+                              </div>
+                            )}
+                          </td>
+                          <td>
+                            <span
+                              style={{
+                                padding: '0.2rem 0.6rem',
+                                borderRadius: '999px',
+                                fontSize: '0.75rem',
+                                fontWeight: 700,
+                                backgroundColor: isHidden ? '#fee2e2' : '#dcfce7',
+                                color: isHidden ? '#dc2626' : '#16a34a'
+                              }}
+                            >
+                              {isHidden ? 'ĐÃ ẨN' : 'HIỂN THỊ'}
+                            </span>
+                          </td>
+                          <td style={{ textAlign: 'right' }}>
+                            {isHidden ? (
+                              <span style={{ fontSize: '0.8rem', color: '#94a3b8' }}>Đã xử lý</span>
+                            ) : (
+                              <button
+                                type="button"
+                                className="btn-admin-action outline-danger"
+                                onClick={() => handleHideReview(rev.reviewId)}
+                              >
+                                Ẩn đánh giá
+                              </button>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               )}
@@ -884,7 +942,22 @@ function AdminDashboard() {
                       return (
                         <tr key={qId}>
                           <td>#{qId}</td>
-                          <td style={{ maxWidth: 200, fontWeight: 600 }}>{q.courseTitle}</td>
+                          <td style={{ maxWidth: 220, fontWeight: 600 }}>
+                            {q.courseId ? (
+                              <Link
+                                to={`/courses/${q.courseId}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={{ color: '#2563eb', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}
+                                title={`Xem khóa học: ${q.courseTitle}`}
+                              >
+                                <span>{q.courseTitle}</span>
+                                <ExternalLink size={13} style={{ flexShrink: 0 }} aria-hidden="true" />
+                              </Link>
+                            ) : (
+                              q.courseTitle
+                            )}
+                          </td>
                           <td>{q.askerName || `User #${q.askerId}`}</td>
                           <td style={{ maxWidth: 340 }}>
                             <div style={{ fontWeight: 700, color: '#0f172a', marginBottom: 2 }}>{q.title}</div>

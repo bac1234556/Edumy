@@ -188,4 +188,25 @@ class WithdrawalServiceImplTest {
         assertThat(startCaptor.getValue().toLocalTime()).isEqualTo(java.time.LocalTime.MIDNIGHT);
         assertThat(endCaptor.getValue()).isEqualTo(startCaptor.getValue().plusMonths(1));
     }
+
+    @Test
+    @DisplayName("Auto-generates transferReference when admin confirms payout without manual input")
+    void testPayWithdrawalAutoGeneratesTransferReference() {
+        WithdrawalRequest req = WithdrawalRequest.builder()
+                .id(42)
+                .instructorId(1)
+                .amount(1_000_000L)
+                .status("requested")
+                .build();
+        when(withdrawalRequestRepository.findByIdForUpdate(42)).thenReturn(Optional.of(req));
+        when(withdrawalRequestRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
+
+        WithdrawalResponseDto result = withdrawalService.payWithdrawal(42, null);
+
+        assertThat(result.getStatus()).isEqualTo("paid");
+        assertThat(result.getTransferReference()).isNotBlank();
+        assertThat(result.getTransferReference()).startsWith("FT");
+        assertThat(result.getTransferReference()).contains("-0042-");
+        assertThat(result.getProcessedAt()).isNotNull();
+    }
 }

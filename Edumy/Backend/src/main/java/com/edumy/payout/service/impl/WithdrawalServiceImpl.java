@@ -20,9 +20,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.UUID;
 
 @Service
 public class WithdrawalServiceImpl implements WithdrawalService {
@@ -152,11 +155,6 @@ public class WithdrawalServiceImpl implements WithdrawalService {
     @Override
     @Transactional
     public WithdrawalResponseDto payWithdrawal(Integer withdrawalId, String transferReference) {
-        if (transferReference == null || transferReference.trim().isEmpty()) {
-            throw new BusinessException(HttpStatus.BAD_REQUEST, "BAD_REQUEST",
-                    "Vui lòng nhập mã giao dịch chuyển khoản.");
-        }
-
         WithdrawalRequest req = withdrawalRequestRepository.findByIdForUpdate(withdrawalId)
                 .orElseThrow(() -> new NoSuchElementException("Không tìm thấy yêu cầu rút tiền."));
 
@@ -165,11 +163,21 @@ public class WithdrawalServiceImpl implements WithdrawalService {
                     "Yêu cầu rút tiền này đã được xử lý trước đó.");
         }
 
+        String resolvedRef = (transferReference != null && !transferReference.trim().isEmpty())
+                ? transferReference.trim()
+                : generateTransferReference(req.getId());
+
         req.setStatus("paid");
-        req.setTransferReference(transferReference.trim());
-        req.setProcessedAt(LocalDateTime.now());
+        req.setTransferReference(resolvedRef);
+        req.setProcessedAt(TimeUtils.now(timeZone));
         WithdrawalRequest saved = withdrawalRequestRepository.save(req);
         return toDto(saved);
+    }
+
+    private String generateTransferReference(Integer withdrawalId) {
+        String timestamp = DateTimeFormatter.ofPattern("yyyyMMddHHmmss").format(TimeUtils.now(timeZone));
+        String randomSuffix = UUID.randomUUID().toString().replace("-", "").substring(0, 6).toUpperCase(Locale.ROOT);
+        return String.format("FT%s-%04d-%s", timestamp, withdrawalId != null ? withdrawalId : 0, randomSuffix);
     }
 
     @Override

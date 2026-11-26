@@ -597,6 +597,17 @@ function CoursePlayer() {
         </div>
 
         <div className="topbar-right" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+          {progressPercent >= 100 && certificateUrl && (
+            <Link
+              to={`/certificates/verify/${encodeURIComponent(certificateUrl)}`}
+              className="btn-sidebar-collapse-toggle"
+              style={{ background: '#10b981', color: '#ffffff', borderColor: '#10b981', fontWeight: 700, textDecoration: 'none' }}
+              title="Xem chứng chỉ hoàn thành khóa học"
+            >
+              <Award size={16} />
+              <span>Xem chứng chỉ</span>
+            </Link>
+          )}
           <Link
             to={`/courses/${id}#reviews`}
             className="btn-sidebar-collapse-toggle"
@@ -965,6 +976,28 @@ function CoursePlayer() {
               <strong>{progressPercent}%</strong>
             </div>
 
+            {progressPercent >= 100 && certificateUrl && (
+              <Link
+                to={`/certificates/verify/${encodeURIComponent(certificateUrl)}`}
+                style={{
+                  marginTop: '0.75rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '0.45rem',
+                  background: '#10b981',
+                  color: '#ffffff',
+                  fontWeight: 700,
+                  fontSize: '0.86rem',
+                  padding: '0.55rem 0.9rem',
+                  borderRadius: '8px',
+                  textDecoration: 'none',
+                }}
+              >
+                <Award size={16} /> 🏆 Xem chứng chỉ hoàn thành
+              </Link>
+            )}
+
             {progressPercent >= 100 && (
               <Link
                 to={`/courses/${id}#reviews`}
@@ -1133,6 +1166,66 @@ function CoursePlayer() {
           </div>
         </aside>
       </div>
+
+      {/* Modal Chúc mừng hoàn thành khóa học & nhận chứng chỉ */}
+      {showCongratsModal && (
+        <div
+          className="modal show d-block"
+          style={{ backgroundColor: 'rgba(15, 23, 42, 0.72)', zIndex: 1055 }}
+          tabIndex="-1"
+          onClick={() => setShowCongratsModal(false)}
+        >
+          <div className="modal-dialog modal-dialog-centered" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-content border-0 shadow-lg rounded-4 text-center p-4">
+              <div
+                className="mx-auto mb-3 d-flex align-items-center justify-content-center rounded-circle"
+                style={{ width: 68, height: 68, background: '#fef3c7', color: '#d97706', border: '2px solid #f59e0b' }}
+              >
+                <Award size={36} />
+              </div>
+              <h4 className="fw-bold mb-2 text-dark">Chúc mừng bạn đã hoàn thành khóa học!</h4>
+              <p className="text-muted small mb-3">
+                Bạn đã hoàn tất 100% chương trình học của khóa <strong>{course?.title}</strong> và được cấp chứng chỉ hoàn thành từ Edumy.
+              </p>
+              {certificateUrl && (
+                <div className="bg-light border rounded-3 py-2 px-3 mb-4">
+                  <div className="text-muted" style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.08em' }}>
+                    MÃ CHỨNG CHỈ
+                  </div>
+                  <div className="fw-bold text-primary" style={{ fontFamily: 'monospace', fontSize: '1rem' }}>
+                    {certificateUrl}
+                  </div>
+                </div>
+              )}
+              <div className="d-flex flex-wrap justify-content-center gap-2">
+                {certificateUrl && (
+                  <Link
+                    to={`/certificates/verify/${encodeURIComponent(certificateUrl)}`}
+                    className="btn btn-primary fw-semibold px-4"
+                    onClick={() => setShowCongratsModal(false)}
+                  >
+                    🏆 Xem chứng chỉ ngay
+                  </Link>
+                )}
+                <Link
+                  to={`/courses/${id}#reviews`}
+                  className="btn btn-warning fw-semibold px-3 text-dark"
+                  onClick={() => setShowCongratsModal(false)}
+                >
+                  ⭐ Đánh giá khóa học
+                </Link>
+                <button
+                  type="button"
+                  className="btn btn-outline-secondary px-3"
+                  onClick={() => setShowCongratsModal(false)}
+                >
+                  Đóng
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

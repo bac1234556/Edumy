@@ -252,11 +252,14 @@ public class QaService {
 
         Course course = courseRepository.findById(question.getCourseId()).orElse(null);
 
-        // AC-33: Chỉ giảng viên/đồng giảng viên của khóa, quản trị viên, hoặc chính học viên đặt câu hỏi mới được phản hồi
+        // Cho phép giảng viên/đồng giảng viên của khóa, quản trị viên, học viên đặt câu hỏi,
+        // hoặc bất kỳ học viên nào đã ghi danh cùng khóa học phản hồi câu hỏi
         boolean isCourseInstructor = isCourseInstructorOrAdmin(course, userId, userRole);
         boolean isQuestionAsker = Objects.equals(question.getUserId(), userId);
-        if (!isCourseInstructor && !isQuestionAsker) {
-            throw new BusinessException(ErrorCode.FORBIDDEN, "Bạn không có quyền phản hồi câu hỏi này.");
+        boolean isEnrolledStudent = enrollmentRepository != null
+                && enrollmentRepository.isUserEnrolledActive(userId, question.getCourseId());
+        if (!isCourseInstructor && !isQuestionAsker && !isEnrolledStudent) {
+            throw new BusinessException(ErrorCode.FORBIDDEN, "Bạn phải ghi danh khóa học này mới có thể phản hồi câu hỏi.");
         }
 
         String authorType = isCourseInstructor ? "INSTRUCTOR" : "STUDENT";
@@ -358,6 +361,17 @@ public class QaService {
         answer.setVisibilityStatus("DELETED");
         answer.setUpdatedAt(LocalDateTime.now());
         answerRepository.save(answer);
+
+        long remainingAnswers = answerRepository.countByQuestionIdAndVisibilityStatus(answer.getQuestionId(), "VISIBLE");
+        if (remainingAnswers == 0) {
+            questionRepository.findById(answer.getQuestionId()).ifPresent(q -> {
+                if (Boolean.TRUE.equals(q.getIsResolved())) {
+                    q.setIsResolved(false);
+                    q.setUpdatedAt(LocalDateTime.now());
+                    questionRepository.save(q);
+                }
+            });
+        }
     }
 
     /**
@@ -381,6 +395,12 @@ public class QaService {
         }
 
         boolean target = resolved != null ? resolved : !Boolean.TRUE.equals(question.getIsResolved());
+        if (target) {
+            long visibleAnswers = answerRepository.countByQuestionIdAndVisibilityStatus(questionId, "VISIBLE");
+            if (visibleAnswers < 1) {
+                throw new BusinessException(ErrorCode.BAD_REQUEST, "Câu hỏi phải có ít nhất 1 câu trả lời mới được phép đánh dấu đã xác nhận.");
+            }
+        }
         question.setIsResolved(target);
         question.setUpdatedAt(LocalDateTime.now());
         questionRepository.save(question);

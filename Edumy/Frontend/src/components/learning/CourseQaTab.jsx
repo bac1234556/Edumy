@@ -222,6 +222,12 @@ export default function CourseQaTab({ courseId, activeLesson, currentUser }) {
 
   // Toggle resolve status (UC-S19)
   const handleToggleResolve = async (questionId) => {
+    const answerCount = threadData?.answers?.length || 0;
+    const currentlyResolved = Boolean(threadData?.isResolved);
+    if (!currentlyResolved && answerCount < 1) {
+      alert('Câu hỏi phải có ít nhất 1 câu trả lời mới được phép đánh dấu đã xác nhận.');
+      return;
+    }
     try {
       await qaApi.toggleResolve(questionId);
       if (selectedQuestionId === questionId && threadData) {
@@ -254,6 +260,14 @@ export default function CourseQaTab({ courseId, activeLesson, currentUser }) {
 
   const isQuestionOwner = threadData && currentUser &&
     (String(threadData.askerId) === String(currentUser.userId || currentUser.id) || currentUser.role === 'Admin');
+  const canResolveThread = Boolean(
+    isQuestionOwner || currentUser?.role === 'Instructor' || currentUser?.role === 'Admin'
+  );
+  const threadAnswerCount = threadData?.answers?.length || 0;
+  const isThreadResolved = Boolean(
+    threadData?.isResolved || threadData?.answers?.some(a => a.authorType === 'INSTRUCTOR')
+  );
+  const cannotResolveWithoutAnswer = !isThreadResolved && threadAnswerCount < 1;
 
   return (
     <div className="qa-tab-container">
@@ -516,15 +530,23 @@ export default function CourseQaTab({ courseId, activeLesson, currentUser }) {
                           </button>
                         </>
                       )}
-                      <button
-                        type="button"
-                        className={`qa-btn-toggle-resolve ${threadData.isResolved || threadData.answers?.some(a => a.authorType === 'INSTRUCTOR') ? 'is-resolved' : ''}`}
-                        onClick={() => handleToggleResolve(threadData.id || threadData.questionId)}
-                        title="Nhấn để đổi trạng thái đã xác nhận"
-                      >
-                        <CheckCircle2 size={16} />
-                        {threadData.isResolved || threadData.answers?.some(a => a.authorType === 'INSTRUCTOR') ? 'Đã xác nhận' : 'Đánh dấu đã xác nhận'}
-                      </button>
+                      {canResolveThread && (
+                        <button
+                          type="button"
+                          className={`qa-btn-toggle-resolve ${isThreadResolved ? 'is-resolved' : ''}`}
+                          onClick={() => handleToggleResolve(threadData.id || threadData.questionId)}
+                          disabled={cannotResolveWithoutAnswer}
+                          style={cannotResolveWithoutAnswer ? { opacity: 0.5, cursor: 'not-allowed' } : undefined}
+                          title={
+                            cannotResolveWithoutAnswer
+                              ? 'Phải có ít nhất 1 câu trả lời mới được phép đánh dấu đã xác nhận'
+                              : 'Nhấn để đổi trạng thái đã xác nhận'
+                          }
+                        >
+                          <CheckCircle2 size={16} />
+                          {isThreadResolved ? 'Đã xác nhận' : 'Đánh dấu đã xác nhận'}
+                        </button>
+                      )}
                     </div>
                   </div>
 

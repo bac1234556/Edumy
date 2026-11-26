@@ -21,6 +21,7 @@ const BACKEND_URL = (import.meta.env.VITE_API_URL || '/api').replace('/api', '')
 function MyLearning() {
   const { user } = useContext(AuthContext);
   const [enrolledCourses, setEnrolledCourses] = useState([]);
+  const [certByCourseId, setCertByCourseId] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   
@@ -32,8 +33,19 @@ function MyLearning() {
     const fetchEnrolledCourses = async () => {
       try {
         setLoading(true);
-        const response = await courseApi.getEnrolledCourses();
-        setEnrolledCourses(Array.isArray(response.data) ? response.data : []);
+        const [courseRes, certRes] = await Promise.all([
+          courseApi.getEnrolledCourses(),
+          api.get('/certificates/my').catch(() => ({ data: [] })),
+        ]);
+        setEnrolledCourses(Array.isArray(courseRes.data) ? courseRes.data : []);
+        const certList = Array.isArray(certRes.data) ? certRes.data : [];
+        const certMap = {};
+        certList.forEach((c) => {
+          if (c?.courseId && c?.certificateUrl) {
+            certMap[c.courseId] = c.certificateUrl;
+          }
+        });
+        setCertByCourseId(certMap);
       } catch (err) {
         setError('Không thể tải danh sách khóa học của bạn.');
       } finally {
@@ -263,6 +275,15 @@ function MyLearning() {
                           <PlayCircle size={16} />
                           {isCompleted ? 'Xem lại bài học' : 'Vào học tiếp'}
                         </Link>
+                        {isCompleted && certByCourseId[item.courseId] && (
+                          <Link
+                            to={`/certificates/verify/${encodeURIComponent(certByCourseId[item.courseId])}`}
+                            className="btn btn-success w-100 d-flex align-items-center justify-content-center gap-2 fw-bold"
+                            style={{ borderRadius: '10px', padding: '0.55rem 1rem', fontSize: '0.88rem' }}
+                          >
+                            <Award size={16} /> Xem chứng chỉ hoàn thành
+                          </Link>
+                        )}
                         {isCompleted && (
                           <Link
                             to={`/courses/${item.courseId}#reviews`}

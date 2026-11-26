@@ -167,11 +167,22 @@ public class InstructorChannelController {
             }
         }
 
-        BigDecimal grossBd = courseIds.isEmpty() ? BigDecimal.ZERO : orderItemRepository.sumPaidGrossSalesByCourseIds(courseIds);
-        long grossSales = grossBd != null ? grossBd.longValue() : 0L;
-
         EarningSummaryDto earningSummary = earningService.getSummary(userId);
         long netEarnings = earningSummary.getTotalEarned();
+
+        List<EarningEntry> myEntries = earningEntryRepository.findByInstructorId(userId);
+        long grossSales = myEntries.stream()
+                .mapToLong(e -> {
+                    long unitPrice = e.getUnitPrice() != null ? e.getUnitPrice() : 0L;
+                    int shareBps = (e.getShareBps() != null && e.getShareBps() > 0) ? e.getShareBps() : 10000;
+                    if (unitPrice > 0) {
+                        return (unitPrice * shareBps) / 10000;
+                    }
+                    long amt = e.getAmount() != null ? e.getAmount() : 0L;
+                    int feeBps = (e.getPlatformFeeBps() != null && e.getPlatformFeeBps() < 10000) ? e.getPlatformFeeBps() : 3000;
+                    return (amt * 10000L) / (10000 - feeBps);
+                })
+                .sum();
 
         LocalDate today = LocalDate.now();
         LocalDate startDate = today.minusDays(29);
@@ -184,7 +195,6 @@ public class InstructorChannelController {
                 .filter(e -> e.getEnrolledAt() != null)
                 .collect(Collectors.groupingBy(e -> e.getEnrolledAt().toLocalDate(), Collectors.counting()));
 
-        List<EarningEntry> myEntries = earningEntryRepository.findByInstructorId(userId);
         Map<LocalDate, Long> earningsByDay = myEntries.stream()
                 .filter(e -> e.getEarnedAt() != null && !e.getEarnedAt().toLocalDate().isBefore(startDate))
                 .collect(Collectors.groupingBy(
